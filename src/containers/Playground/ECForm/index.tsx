@@ -24,9 +24,9 @@ import { Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 
 const EceForm = () => {
-  const [total, setTotal] = React.useState([
-    { exmillPrice: "", transportationCharges: "" },
-  ]);
+  // const [total, setTotal] = React.useState([
+  //   { exmillPrice: "", transportationCharges: "" },
+  // ]);
 
   const [count, setCount] = React.useState(5);
   // console.log("count");
@@ -92,8 +92,6 @@ const EceForm = () => {
 
   const handleSubmit = (values: typeof form.values) => {
     console.log("values", values);
-    setTotal(values);
-    console.log("total ", total);
 
     let price: any = values.exMill;
     const discount: any = values.brokenPercentage;
@@ -117,6 +115,7 @@ const EceForm = () => {
       { InsuranceCost: values?.InsuranceCost },
       { MarginCost: values?.MarginCost },
     ];
+
     console.log(totalvalues);
 
     let arr: any = [];
@@ -138,7 +137,7 @@ const EceForm = () => {
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Card p="xl">
-        {eceForm.map((k, i) => {
+        {eceForm.map((k: any, i: number) => {
           if (k.type === "input") {
             return (
               <TextInput
@@ -148,7 +147,6 @@ const EceForm = () => {
               />
             );
           }
-
 
           if (k.type === "select") {
             return (
@@ -172,58 +170,54 @@ const EceForm = () => {
           }
           if (k.type === "radio") {
             return (
-              <Radio.Group label={k.label} >
-                {k?.options.map((d,i)=>{
-                  return(
-                    <Radio key={i} value={d.name}   />
-                  );
-                })}
-                
-              </Radio.Group>
-            );
-          }
-          <Space h="md" />;
-          if (k.name === "bookingType") {
-            return (
               <Radio.Group label={k.label}>
-                <Radio value="FCL" label="FCL" />
-              </Radio.Group>
-            );
-          }
-          <Space h="md" />;
-          if (k.name === "containerWeight") {
-            return (
-              <Radio.Group label={k.label}>
-                <Radio value="Metric tons" label="Metric tons" />
-                <Radio value="Kg" label="Kg" />
-                <Radio value="Quintel" label="Quintel" />
+                {k &&
+                  k.options.map((d: any, i: number) => {
+                    return <Radio key={i} value={d.name} />;
+                  })}
               </Radio.Group>
             );
           }
 
           <Space h="md" />;
-          if (k.type === "counter"&& k.name==="brokenPercentage") {
-            return (
-              <Group key={i}>
-                   {k.label}
-                  <Button onClick={() => setCount(count-5)} disabled={count===0}>-</Button>
-                  <Box className="counter ">{count}</Box>
-                  <Button className="rounded-full ring-1" onClick={() => setCount(count+5)} >+</Button>
-
-                
-              </Group>
-            );
-          }
-          if (k.type === "counter" && k.name==="containerCount") {
+          if (k.type === "counter" && k.name === "brokenPercentage") {
             return (
               <Group key={i}>
                 {k.label}
-                  <Button onClick={() => setCountWeight(countWeight-1)} disabled={countWeight===0}>-</Button>
+                <Button
+                  onClick={() => setCount(count - 5)}
+                  disabled={count === 0}
+                >
+                  -
+                </Button>
+                <Box className="counter ">{count}</Box>
+                <Button
+                  className="rounded-full ring-1"
+                  onClick={() => setCount(count + 5)}
+                >
+                  +
+                </Button>
+              </Group>
+            );
+          }
+          if (k.type === "counter" && k.name === "containerCount") {
+            return (
+              <Group key={i}>
+                {k.label}
+                <Button
+                  onClick={() => setCountWeight(countWeight - 1)}
+                  disabled={countWeight === 0}
+                >
+                  -
+                </Button>
 
-                  <Button className="counter ">{countWeight}</Button>
-                  <Button className="rounded-full ring-1" onClick={() => setCountWeight(countWeight+1)} >+</Button>
-
-                
+                <Button className="counter ">{countWeight}</Button>
+                <Button
+                  className="rounded-full ring-1"
+                  onClick={() => setCountWeight(countWeight + 1)}
+                >
+                  +
+                </Button>
               </Group>
             );
           }
