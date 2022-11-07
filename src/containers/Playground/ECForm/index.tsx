@@ -173,7 +173,7 @@ const EceForm = () => {
               <Radio.Group label={k.label}>
                 {k &&
                   k.options.map((d: any, i: number) => {
-                    return <Radio key={i} value={d.name} />;
+                    return <Radio label={d.name} key={i} value={d.name} />;
                   })}
               </Radio.Group>
             );
@@ -190,9 +190,9 @@ const EceForm = () => {
                 >
                   -
                 </Button>
-                <Box className="counter ">{count}</Box>
+                <Input >{count}</Input>
                 <Button
-                  className="rounded-full ring-1"
+                  
                   onClick={() => setCount(count + 5)}
                 >
                   +
