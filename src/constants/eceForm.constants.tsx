@@ -80,7 +80,7 @@ export const eceForm = [
       { value: "IR64", label: "IR64" },
     ],
   },
-
+ 
   {
     label: "Sourcing Location",
     name: "sourcingLocation",
@@ -96,7 +96,7 @@ export const eceForm = [
   {
     label: "Origin Port / City",
     name: "originPort",
-    type: "Select",
+    type: "select",
     placeholder: "Seach here",
     options: [
       { value: "Chennai", label: "Chennai" },
@@ -108,7 +108,7 @@ export const eceForm = [
   {
     label: "Destination Port / City",
     name: "destinationPort",
-    type: "Select",
+    type: "select",
     placeholder: "Seach here",
     options: [
       { value: "Singapore", label: "Singapore" },
@@ -130,7 +130,7 @@ export const eceForm = [
     type: "input",
     placeholder: "write down ex-mill price",
   },
-
+  
   {
     label: "Type of Container",
     name: "containerType",
@@ -192,17 +192,13 @@ export const eceForm = [
     type: "input",
     placeholder: "Fill the handling charges:",
   },
-  { label: "Craft Paper", name: "CraftPaper", type: "input" },
-  { label: "Silica Gel", name: "SilicaGel", type: "input" },
-  { label: "Loading Charges", name: "LoadingCharges", type: "input" },
-  {
-    label: "Transportation Charges",
-    name: "TransportationCharges",
-    type: "input",
-  },
-  { label: "Custom Charges", name: "CustomCharges", type: "input" },
-  { label: "PQ Certificate", name: "PQCertificate", type: "input" },
-  { label: "COO", name: "COO", type: "input" },
+  // {label:"Craft Paper" ,name:"CraftPaper" , type:"input"},
+  // {label:"Silica Gel" ,name:"SilicaGel" , type:"input"},
+  // {label:"Loading Charges" ,name:"LoadingCharges" , type:"input"},
+  // {label:"Transportation Charges" ,name:"TransportationCharges" , type:"input"},
+  // {label:"Custom Charges" ,name:"CustomCharges" , type:"input"},
+  // {label:"PQ Certificate" ,name:"PQCertificate" , type:"input"},
+  // {label:"COO" ,name:"COO" , type:"input"},
   {
     label: "Finance Cost (Rs/mt ton)",
     name: "FinanceCost",
@@ -226,24 +222,15 @@ export const eceForm = [
     name: "ShippingCost",
     type: "input",
     placeholder: "Fill the Shipping Line Charges:",
+    
   },
-  { label: "THC", name: "Thc", type: "input", hiden: "true" },
-  {
-    label: "Original B/L Fee",
-    name: "OriginalB/LFee",
-    type: "input",
-    hiden: "true",
-  },
-  { label: "Surrender", name: "Surrender", type: "input", hiden: "true" },
-  { label: "MUC", name: "Muc", type: "input", hiden: "true" },
-  { label: "Seal", name: "Seal", type: "input", hiden: "true" },
-  {
-    label: "Convenience fee",
-    name: "ConvenienceFee",
-    type: "input",
-    hiden: "true",
-  },
-  { label: "Others", name: "Others", type: "input", hiden: "true" },
+      // {label:"THC" ,name:"Thc" , type:"input" },
+      {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input"},
+      // {label:"Surrender" ,name:"Surrender" , type:"input" },
+      // {label:"MUC" ,name:"Muc" , type:"input"},
+      // {label:"Seal" ,name:"Seal" , type:"input"},
+      // {label:"Convenience fee" ,name:"ConvenienceFee" , type:"input"},
+      // {label:"Others" ,name:"Others" , type:"input" },
   {
     label: "OFC(Ocean Freight Charges) (Rs/mt ton)",
     name: "Ofc",
@@ -262,28 +249,26 @@ export const eceForm = [
     type: "input",
     placeholder: "Fill the margin cost:",
   },
+
+
 ];
 
-export const AllCfsCost = [
-  { label: "Craft Paper", name: "CraftPaper", type: "input" },
-  { label: "Silica Gel", name: "SilicaGel", type: "input" },
-  { label: "Loading Charges", name: "LoadingCharges", type: "input" },
-  {
-    label: "Transportation Charges",
-    name: "LTransportationCharges",
-    type: "input",
-  },
-  { label: "Custom Charges", name: "CustomCharges", type: "input" },
-  { label: "PQ Certificate", name: "PQCertificate", type: "input" },
-  { label: "COO", name: "COO", type: "input" },
-];
+// export const AllCfsCost = [
+//   {label:"Craft Paper" ,name:"CraftPaper" , type:"input"},
+//   {label:"Silica Gel" ,name:"SilicaGel" , type:"input"},
+//   {label:"Loading Charges" ,name:"LoadingCharges" , type:"input"},
+//   {label:"Transportation Charges" ,name:"LTransportationCharges" , type:"input"},
+//   {label:"Custom Charges" ,name:"CustomCharges" , type:"input"},
+//   {label:"PQ Certificate" ,name:"PQCertificate" , type:"input"},
+//   {label:"COO" ,name:"COO" , type:"input"},
+// ];
 
-export const ALLShippingCost = [
-  { label: "THC", name: "Thc", type: "input" },
-  { label: "Original B/L Fee", name: "OriginalBLFee", type: "input" },
-  { label: "Surrender", name: "Surrender", type: "input" },
-  { label: "MUC", name: "Muc", type: "input" },
-  { label: "Seal", name: "Seal", type: "input" },
-  { label: "Convenience fee", name: "ConvenienceFee", type: "input" },
-  { label: "Others", name: "Others", type: "input" },
-];
+// export const ALLShippingCost = [
+//   {label:"THC" ,name:"Thc" , type:"input"},
+//   {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input"},
+//   {label:"Surrender" ,name:"Surrender" , type:"input"},
+//   {label:"MUC" ,name:"Muc" , type:"input"},
+//   {label:"Seal" ,name:"Seal" , type:"input"},
+//   {label:"Convenience fee" ,name:"ConvenienceFee" , type:"input"},
+//   {label:"Others" ,name:"Others" , type:"input"},
+// ];
