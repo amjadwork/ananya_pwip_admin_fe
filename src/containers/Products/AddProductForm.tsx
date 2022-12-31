@@ -135,7 +135,7 @@ function AddProductForm(props: any) {
         }}
         placeholder="eg. Categories"
       />
-
+      <Space h="md" />
       <Button onClick={handleClick}>+</Button>
 
       <Space h="lg" />

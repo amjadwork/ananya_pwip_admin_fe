@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 
-// import { useRouter } from "next/router";
+
 import {
   Container,
   MantineProvider,
@@ -17,15 +17,20 @@ import ManageProductsContainer from "../containers/ManageProducts";
 import LocationsContainer from "../containers/Locations";
 import PackagingContainer from "../containers/Packaging";
 import PlaygroundContainer from "../containers/Playground";
+import ManageChaContainer from "../containers/ManageCha";
+import ManageShlContainer from "../containers/ManageShl";
+import ManageOfcContainer from "../containers/ManageOfc";
+import ManageTransportContainer from "../containers/ManageTransport";
+import ManagePwipServicesContainer from "../containers/ManagePwipService";
+import ManageOthersContainer from "../containers/ManageOthers";
 
-// import components
 import Header from "../components/Header/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 
 const AppLayout: React.FC<any> = ({ children }) => {
   const [opened, setOpened] = useState(false);
   const navigate = useNavigate();
-  // const theme = useMantineTheme();
+  
 
   const handleNavigation = (path: string) => {
     navigate(path, { replace: true });
@@ -109,6 +114,12 @@ const AppLayout: React.FC<any> = ({ children }) => {
             <Route path="/products/:id" element={<ManageProductsContainer />} />
             <Route path="/locations" element={<LocationsContainer />} />
             <Route path="/packaging" element={<PackagingContainer />} />
+            <Route path="/cha" element={<ManageChaContainer/>} />
+            <Route path="/Shl" element={<ManageShlContainer/>} />
+            <Route path="/Ofc" element={<ManageOfcContainer/>} />
+            <Route path="/transport" element={<ManageTransportContainer/>} />
+            <Route path="/pwipServices" element={<ManagePwipServicesContainer/>} />
+            <Route path="/others" element={<ManageOthersContainer/>} />
           </Routes>
         </Container>
       </AppShell>

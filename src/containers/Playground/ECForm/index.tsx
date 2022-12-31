@@ -72,9 +72,16 @@ const initialFormState: any = {
 };
 
 const EceForm = () => {
-  // const [total, setTotal] = React.useState([
-  //   { exmillPrice: "", transportationCharges: "" },
-  // ]);
+  
+
+  const [fob ,setFob] =useState('');
+  const [cif ,setCif] =useState('');
+  const [checked, setChecked] = useState(false);
+  console.log("checked ", checked);
+
+  // if(checked==true){
+  //   updateSum=sum+20%(sum);
+  // }
 
   const [brokenPercentage, setBrokenPercentage] = useState(5);
   const [containerCount, setContainerCount] = useState(0);
@@ -87,7 +94,7 @@ const EceForm = () => {
     }
   };
 
-  
+   
 
   const handleCount = (type: string, name: string) => {
     let count: number = 0;
@@ -156,7 +163,7 @@ const EceForm = () => {
     const sum = arr.reduce(function summarize(sum: any, number: any) {
       const updatedSum = sum + number;
       return updatedSum;
-    }, 0);
+    }, 0); 
     console.log("Sum", sum);
   };
 
@@ -182,6 +189,7 @@ const EceForm = () => {
                 label={k.label}
                 placeholder={k.placeholder}
                 data={k.options}
+                // onChange={(e) => handleSelect(e, k.id)}
                 {...form.getInputProps(k.name)}
               />
             );
@@ -202,12 +210,13 @@ const EceForm = () => {
               <Radio.Group label={k.label} key={k.label + i}                     
                 onChange ={(value)=>{console.log(value);}}
               >
+                
                 {k &&
                   k.options?.map((d: any, i: number) => {
                     return (
                       <Radio key={d.name + i} value={d.name} label={d.name} 
                       // onChange ={(value)=>{console.log(value);}}
-                       />
+                       /> 
                     );
                   })}
               </Radio.Group>
@@ -265,6 +274,12 @@ const EceForm = () => {
           //   );
           // }
         })}
+         <Space h="md" />
+         <Checkbox
+             label="20% Export Duty"
+             checked={checked} 
+             onChange={(event) => setChecked(event.currentTarget.checked)} 
+          />
 
         <Space h="md" />
         <Button size="xs" color="blue" type="submit">

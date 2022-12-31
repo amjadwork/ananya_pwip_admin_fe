@@ -45,16 +45,17 @@ export const eceForm = [
     label: "Terms Of Shipment",
     name: "shipmentTerms",
     placeholder: "Select Shipment Method",
-    type: "select",
+    type: "radio",
     options: [
-      { value: "FOB ", label: "FOB" },
-      { value: "CIF", label: "CIF" },
+      { name: "FOB " },
+      { name: "CIF" },
     ],
   },
   {
     label: "Type of Product",
     name: "productType",
     type: "select",
+    placeholder: "rice",
     options: [
       { value: " Rice", label: "Rice" },
       { value: "Other", label: "Other" },
@@ -224,17 +225,16 @@ export const eceForm = [
     placeholder: "Fill the Shipping Line Charges:",
     
   },
-      // {label:"THC" ,name:"Thc" , type:"input" },
-      {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input"},
-      // {label:"Surrender" ,name:"Surrender" , type:"input" },
-      // {label:"MUC" ,name:"Muc" , type:"input"},
-      // {label:"Seal" ,name:"Seal" , type:"input"},
-      // {label:"Convenience fee" ,name:"ConvenienceFee" , type:"input"},
-      // {label:"Others" ,name:"Others" , type:"input" },
+      
+      {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input",
+      placeholder: "Original B/L Fee",
+    },
+     
   {
     label: "OFC(Ocean Freight Charges) (Rs/mt ton)",
     name: "Ofc",
     type: "input",
+    id: 'hideInput',
     placeholder: "Fill the OFC Charges:",
   },
   {
@@ -249,6 +249,7 @@ export const eceForm = [
     type: "input",
     placeholder: "Fill the margin cost:",
   },
+ 
 
 
 ];

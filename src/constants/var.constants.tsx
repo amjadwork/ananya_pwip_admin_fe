@@ -142,6 +142,7 @@ export const locationCat = [
       },
     ],
   },
+ 
   {
     name: "Destination Ports",
     list: [
@@ -159,7 +160,28 @@ export const locationCat = [
       },
     ],
   },
+  
 ];
+
+// export const locCategory = [
+//   {
+//     category:"Source Location"
+//   {
+//     name:"Region Name",
+//   },
+//   {
+//     name:"State Name",
+//   },
+//   {
+//     name:"Port Name",
+//   },
+//   {
+//     name:"City Name",
+//   },
+//   {
+//     name:"Country Name",
+//   }
+// ]
 
 export const packagingBags = [
   {
@@ -200,4 +222,167 @@ export const packagingBags = [
       },
     ],
   },
+];
+export const manageCha = [
+  {
+    name: "origin Port1",
+    list: [
+      {
+        name: "Destination1",
+        price: "800",
+      },
+      {
+        name: "Destination1",
+        price: "800",
+      },
+      {
+        name: "Destination1",
+        price: "800",
+      },
+      {
+        name: "Destination1",
+        price: "800",
+      },
+    ],
+  },
+  {
+    name: "origin Port2",
+    list: [
+      {
+        name: "Destination2",
+        price: "8",
+      },
+      {
+        name: "Destination2",
+        price: "8",
+      },
+      {
+        name: "Destination2",
+        price: "80",
+      },
+      {
+        name: "Destination2",
+        price: "800",
+      },
+      {
+        name: "Destination2",
+        price: "800",
+      },
+      {
+        name: "Destination2",
+        price: "8000",
+      },
+      {
+        name: "Destination2",
+        price: "80000",
+      },
+      {
+        name: "Destination2",
+        price: "800000",
+      },
+    ],
+  },
+  {
+    name: "origin Port3",
+    list: [
+      {
+        name: "Destination3",
+        price: "800",
+      },
+      {
+        name: "Destination3",
+        price: "8000",
+      },
+      {
+        name: "Destination3",
+        price: "8000",
+      },
+      {
+        name: "Destination3",
+        price: "80000",
+      },
+    ],
+  },
+];
+
+export const managePwipService = [
+  {
+    name: "PWIP Service Charges",
+    list: [
+      {
+        name: "pwip service1",
+        price: "500",
+      },
+      {
+        name: "pwip service2",
+        price: "600",
+      },
+      {
+        name: "pwip service3",
+        price: "700",
+      },
+      {
+        name: "pwip service4",
+        price: "800",
+      },
+    ],
+  },
+];
+
+export const manageTransport = [
+  {
+    name: "CFS Station 1",
+    list: [
+      {
+        name: "Source Location1",
+        price: "500",
+      },
+      {
+        name: "Source Location2",
+        price: "600",
+      },
+      {
+        name: "Source Location3",
+        price: "700",
+      },
+      {
+        name: "Source Location4",
+        price: "800",
+      },
+    ],
+  },
+  {
+    name: "CFS Station 2",
+    list: [
+      {
+        name: "Source Location1",
+        price: "500",
+      },
+      {
+        name: "Source Location2",
+        price: "600",
+      },
+      {
+        name: "Source Location3",
+        price: "700",
+      },
+      {
+        name: "Source Location4",
+        price: "800",
+      },
+    ],
+  },
+];
+
+export const manageOthers = [
+  {
+    name:" Others",
+    list:[
+      {
+        name:" Export Duty",
+        price:" --20%"
+      }
+
+    ]
+  }
 ];
