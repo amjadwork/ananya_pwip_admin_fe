@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Group,
   Button,
@@ -12,24 +12,35 @@ import { Plus, Minus, Check } from "tabler-icons-react";
 import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import axios from "axios";
+// import { MyContext } from './context';
+
 import { riceCategory } from "../../../constants/var.constants";
 
 function EditProductForm(props: any) {
-  const [categoriesValue, setCategoriesValue] = useState("");
-  const [catUpdateValue, setCatUpdateValue] = useState("");
+  const handleCloseModal = props.handleCloseModal;
+
+  // const [categoriesValue, setCategoriesValue] = useState("");
+  // const [catUpdateValue, setCatUpdateValue] = useState("");
   const [categoriesList, setCategoriesList] = useState([]);
+  const [numberValue,setNumberValue]= useState(0);
+  const [regionValue,setRegionValue]=useState("");
+  const [regUpdateValue,setRegUpdateValue]=useState("");
+  const [numUpdateValue,setNumUpdateValue]=useState("");
 
   const [allValue, setAllValue] = useState({});
+
+  const inputRef: any = useRef(null);
 
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
       name: "",
       category: "",
-      city: "",
-      state: "",
+      // region: "",
+      // state: "",
       // destination: "",
-      exmill: "",
+      // exmill: "",
       // transportation: "",
     },
 
@@ -41,9 +52,30 @@ function EditProductForm(props: any) {
 
   const handleClick: any = () => {
     const arr: any = [...categoriesList];
-    arr.push(categoriesValue);
-    console.log(arr);
+    const categoryObj = {
+      regionName: regionValue,
+      exmill:numberValue,
+    };
+    arr.push(categoryObj);
     setCategoriesList(arr);
+
+    console.log(arr);
+
+    setRegionValue("");
+    // setNumberValue("");
+    if (inputRef) {
+      inputRef.current.value = "";
+    }
+
+   
+    setNumberValue(0);
+    if (inputRef) {
+      inputRef.current.value = "";
+    }
+    // const arr: any = [...categoriesList];
+    // arr.push(categoriesValue);
+    // console.log(arr);
+    // setCategoriesList(arr);
   };
 
   const handleDeleteItem = (index: number) => {
@@ -65,27 +97,31 @@ function EditProductForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-  const handleUpdate = (index: number) => {
-    const arr: any = [...categoriesList];
-    arr[index] = catUpdateValue;
+  // const handleUpdate = (index: number) => {
+  //   const arr: any = [...categoriesList];
+  //   arr[index] = catUpdateValue;
 
-    setCategoriesList(arr);
+  //   setCategoriesList(arr);
 
-    console.log(arr);
-  };
+  //   console.log(arr);
+  // };
 
   const handleSubmit = (values: typeof form.values) => {
-    let arr: any = [];
+    console.log("values", values);
+    const arr:any=[];
+    arr.push(values);
+    setAllValue(arr);
+    handleCloseModal(false);
 
-    if (values.category === "Basmati") {
-      arr = [...riceCategory[0].list];
-      arr.push(values);
-      console.log("arr 1", arr);
-    } else {
-      arr = [...riceCategory[1].list];
-      arr.push(values);
-      console.log("arr 2", arr);
-    }
+    // if (values.category === "Basmati") {
+    //   arr = [...riceCategory[0].list];
+    //   arr.push(values);
+    //   console.log("arr 1", arr);
+    // } else {
+    //   arr = [...riceCategory[1].list];
+    //   arr.push(values);
+    //   console.log("arr 2", arr);
+    // }
   };
 
   return (
@@ -111,54 +147,53 @@ function EditProductForm(props: any) {
       />
 
       <Space h="md" />
-      {categoriesList.map((k, i) => {
+      {categoriesList.map((k:any, i) => {
         return (
           <Group spacing="md" key={i}>
             <Select
               required
+              defaultValue={k.regionName}
               label="Select Region"
               placeholder="Eg. Karnal"
-              data={[]}
-              {...form.getInputProps(
-                "region"
-              )}
+              data={[
+                { value: "karnal", label: "karnal" },
+                { value: "chennai", label: "chennai" },
+              ]}
+              onChange={(e: any) =>{ 
+                console.log();
+                setRegUpdateValue(e.target.value)}}
+              // name={regUpdateValue}
+              // {...form.getInputProps("region")}
             />
-           
 
             <NumberInput
               required
+              defaultValue={k.exmill }
+
               label="Ex-Mill"
               placeholder="Eg. 26500"
-              {...form.getInputProps("exmill")}
+              onChange={(e: any) => setNumUpdateValue(e.target.value)}
+              // name={numberValue}
+              // {...form.getInputProps("exmill")}
             />
-            
+
             <div
-          style={{
-            display: "inline-flex",
-            alignItems: "bottom",
-            // width: "100%",
-            marginTop: `3%`,
-            
-          }}
-        >
-          <Group spacing="md" position="right" margin-bottom="10px">
-              <ActionIcon variant="filled" onClick={() => handleDeleteItem(i)}>
-                <Minus size={20}/>
-              </ActionIcon>
+              style={{
+                display: "inline-flex",
+                alignItems: "bottom",
+                // width: "100%",
+                marginTop: `3%`,
+              }}
+            >
+              <Group spacing="md" position="right" margin-bottom="10px">
+                <ActionIcon
+                  variant="filled"
+                  onClick={() => handleDeleteItem(i)}
+                >
+                  <Minus size={20} />
+                </ActionIcon>
               </Group>
-        </div>
-            {/* <Group spacing="md" position="right" margin-bottom="10px">
-              <ActionIcon variant="filled" onClick={() => handleDeleteItem(i)}>
-                <Minus size={20}/>
-              </ActionIcon> */}
-              {/* <ActionIcon
-                variant="filled"
-                disabled={false}
-                onClick={() => handleUpdate(i)}
-              >
-                // {/* <Check size={20} /> */}
-              {/* </ActionIcon> */} 
-            {/* </Group> */}
+            </div>
           </Group>
         );
       })}
@@ -170,21 +205,29 @@ function EditProductForm(props: any) {
           required
           label="Select Region"
           placeholder="Eg. Karnal"
-          data={[]}
-          {...form.getInputProps(
-           "region"
-          )}
+          data={[
+            { value: "karnal", label: "karnal" },
+            { value: "chennai", label: "chennai" },
+          ]}
+          value={regionValue}
+          onChange={(event: any) => {
+            setRegionValue(event);
+          }}
+          ref={inputRef}
+          // {...form.getInputProps("region")}
         />
-        
 
         <NumberInput
           required
           label="Ex-Mill"
           placeholder="Eg. 26500"
-         
-          {...form.getInputProps("exmill")}
+          value={numberValue}
+          onChange={(val:number) => {
+            setNumberValue(val)}}
+          
+          ref={inputRef}
+          // {...form.getInputProps("exmill")}
         />
-       
 
         <div
           style={{
@@ -192,22 +235,9 @@ function EditProductForm(props: any) {
             alignItems: "bottom",
             width: "100%",
             marginTop: `3%`,
-            
           }}
         >
           <Button onClick={handleClick}>+</Button>
-          {/* <ArrowRightCircle size={24} style={{ marginTop: `14%` }} />
-          <Space w="md" /> */}
-          {/* <Select
-            required
-            label="Destination Port"
-            placeholder="Eg. SINGAPORE"
-            style={{
-              width: "100%",
-            }}
-            data={[]}
-            {...form.getInputProps("destination")} 
-           /> */}
         </div>
       </Group>
 

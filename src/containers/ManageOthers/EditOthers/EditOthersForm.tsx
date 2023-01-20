@@ -23,20 +23,20 @@ function EditOthersForm(props: any) {
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      name: "",
-      category: "",
-      city: "",
-      state: "",
-      // destination: "",
-      exmill: "",
-      // transportation: "",
-    },
+    // initialValues: {
+    //   name: "",
+    //   category: "",
+    //   city: "",
+    //   state: "",
+    //   // destination: "",
+    //   exmill: "",
+    //   // transportation: "",
+    // },
 
-    validate: {
-      name: (value) =>
-        value.length < 2 ? "Name must have at least 2 letters" : null,
-    },
+    // validate: {
+    //   name: (value) =>
+    //     value.length < 2 ? "Name must have at least 2 letters" : null,
+    // },
   });
 
   const handleClick: any = () => {
@@ -75,17 +75,10 @@ function EditOthersForm(props: any) {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    // let arr: any = [];
+    let arr: any = [];
+    console.log(values, "values");
 
-  //   if (values.category=== "Basmati") {
-  //     arr = [...manageCha[0].list];
-  //     arr.push(values);
-  //     console.log("arr 1", arr);
-  //   } else {
-  //     arr = [...manageCha[1].list];
-  //     arr.push(values);
-  //     console.log("arr 2", arr);
-  //   }
+  
    };
 
   return (
@@ -94,7 +87,7 @@ function EditOthersForm(props: any) {
         required
         label="Enter Others Charges"
         placeholder="Eg. 20% Export Duty"
-        {...form.getInputProps("originPort")}
+        {...form.getInputProps("others")}
       />
 
       <Space h="md" />

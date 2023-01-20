@@ -34,10 +34,10 @@ function EditChaForm(props: any) {
       // transportation: "",
     },
 
-    validate: {
-      name: (value) =>
-        value.length < 2 ? "Name must have at least 2 letters" : null,
-    },
+    // validate: {
+    //   name: (value) =>
+    //     value.length < 2 ? "Name must have at least 2 letters" : null,
+    // },
   });
 
   const handleClick: any = () => {

@@ -38,51 +38,45 @@ const initialFormState: any = {
     TransportationCharges: "",
     brokenPercentage: "",
     CfshandlingCharges: "",
-    
 
-    CraftPaper: "",
-    SilicaGel: "",
-    LoadingCharges: "",
-    LTransportationCharges: "",
-    CustomCharges: "",
-    PQCertificate: "",
-    COO: "",
+    // CraftPaper: "",
+    // SilicaGel: "",
+    // LoadingCharges: "",
+    // LTransportationCharges: "",
+    // CustomCharges: "",
+    // PQCertificate: "",
+    // COO: "",
 
     FinanceCost: "",
     InspectionCost: "",
     Overheads: "",
     ShippingCost: "",
 
-    Thc: "",
+    // Thc: "",
     OriginalBLFee: "",
-    Surrender: "",
-    Muc: "",
-    Seal: "",
-    ConvenienceFee: "",
-    Others: "",
+    // Surrender: "",
+    // Muc: "",
+    // Seal: "",
+    // ConvenienceFee: "",
+    // Others: "",
 
     MarginCost: "",
     Ofc: "",
     InsuranceCost: "",
+    // shipmentTerms:"",
 
-    chooseOne: "",
-    bookingType: "",
-    containerWeight: "",
+    // chooseOne: "",
+    // bookingType: "",
+    // containerWeight: "",
   },
 };
 
 const EceForm = () => {
-  
-
-  const [fob ,setFob] =useState('');
-  const [cif ,setCif] =useState('');
   const [checked, setChecked] = useState(false);
-  console.log("checked ", checked);
-
-  // if(checked==true){
-  //   updateSum=sum+20%(sum);
-  // }
-
+  const [term, setTerm] = useState("");
+  console.log({ term });
+  // const [sum, setSum] = useState();
+  // console.log(sum, "sum");
   const [brokenPercentage, setBrokenPercentage] = useState(5);
   const [containerCount, setContainerCount] = useState(0);
 
@@ -94,7 +88,14 @@ const EceForm = () => {
     }
   };
 
-   
+  // const handleDuty = (type: string, name: string) => {
+  //   // let x: any = { sum };
+  //   let check: any = { checked };
+  //   if (check === "true") {
+  //     let fsum: any = x + (20 % x);
+  //     console.log(fsum);
+  //   }
+  // };
 
   const handleCount = (type: string, name: string) => {
     let count: number = 0;
@@ -119,10 +120,13 @@ const EceForm = () => {
 
   const handleSubmit = (values: typeof form.values) => {
     console.log("values", values);
-    // setTotal(values);
-    // console.log("total ", total);
+
+    const terms: string = values.shipmentTerms;
+
+    setTerm(terms);
 
     let price: any = values.exMill;
+
     const discount: any = brokenPercentage;
     let res: any = discount / 5;
     let factor = res - 1;
@@ -140,10 +144,10 @@ const EceForm = () => {
       { InspectionCost: values?.InspectionCost },
       { Overheads: values?.Overheads },
       { ShippingCost: values?.ShippingCost },
-      { Ofc: values?.Ofc },
       { InsuranceCost: values?.InsuranceCost },
       { MarginCost: values?.MarginCost },
-      { OriginalBLFee: values?.OriginalBLFee},
+      { OriginalBLFee: values?.OriginalBLFee },
+      // { Ofc: values?.Ofc },
     ];
     console.log("totalvalues", totalvalues);
 
@@ -163,8 +167,35 @@ const EceForm = () => {
     const sum = arr.reduce(function summarize(sum: any, number: any) {
       const updatedSum = sum + number;
       return updatedSum;
-    }, 0); 
-    console.log("Sum", sum);
+    }, 0);
+    console.log("sum", sum);
+    // setSum(sum);
+
+    // function test() {
+    let totalsum: any = sum;
+    console.log("totalsum", totalsum);
+    if (checked === true) {
+      totalsum = totalsum + (20 * totalsum) / 100;
+      return totalsum;
+    } else {
+      totalsum = totalsum;
+    }
+    // console.log("totalsum",totalsum);
+    // };
+    // console.log("test", test);
+
+    // const newSum: any = sum;
+    // let fsum: any = 0;
+    // // console.log("newSum", newSum);
+    // console.log("check", check);
+    // // if(term==="FOB"){
+    // if (check === "true") {
+    //   fsum = newSum + (20 * newSum) / 100;
+    // } else {
+    //   fsum = newSum;
+    // }
+    // // }
+    // console.log(fsum, "fsum");
   };
 
   return (
@@ -181,6 +212,17 @@ const EceForm = () => {
               />
             );
           }
+          <Space h="xl" />;
+          if (k.type === "checkbox") {
+            return (
+              <Checkbox
+                key={i}
+                label={k.label}
+                checked={checked}
+                onChange={(event) => setChecked(event.currentTarget.checked)}
+              />
+            );
+          }
 
           if (k.type === "select") {
             return (
@@ -189,7 +231,6 @@ const EceForm = () => {
                 label={k.label}
                 placeholder={k.placeholder}
                 data={k.options}
-                // onChange={(e) => handleSelect(e, k.id)}
                 {...form.getInputProps(k.name)}
               />
             );
@@ -207,16 +248,21 @@ const EceForm = () => {
           }
           if (k.type === "radio") {
             return (
-              <Radio.Group label={k.label} key={k.label + i}                     
-                onChange ={(value)=>{console.log(value);}}
+              <Radio.Group
+                label={k.label}
+                key={k.label + i}
+                // onChange={(e) => {
+                //   console.log("e", e);
+                // }}
               >
-                
                 {k &&
                   k.options?.map((d: any, i: number) => {
                     return (
-                      <Radio key={d.name + i} value={d.name} label={d.name} 
-                      // onChange ={(value)=>{console.log(value);}}
-                       /> 
+                      <Radio
+                        key={d.name + i}
+                        value={d.name}
+                        label={d.name}
+                      ></Radio>
                     );
                   })}
               </Radio.Group>
@@ -248,38 +294,19 @@ const EceForm = () => {
               </Group>
             );
           }
-          // if (k.name === "CfshandlingCharges") {
-          //   return <Group key={k.label + i}>
-          //       <Button onClick = {()=> handleAction()}>+</Button>
-          //   </Group>;
-          // }
-
-
-         
-          // if (k.type === "counter" && k.name === "containerCount") {
+          // <Space h="md" />
+          // if (k.id === "hideInput") {
           //   return (
-          //     <Group key={i}>
-          //       {k.label}
-          //       <Button
-          //         onClick={() => setContainerCount(containerCount - 1)}
-          //         disabled={containerCount === 0}
-          //       >
-          //         -
-          //       </Button>
-          //       <Box>{containerCount}</Box>
-          //       <Button onClick={() => setContainerCount(containerCount + 1)}>
-          //         +
-          //       </Button>
-          //     </Group>
+          //     <TextInput
+          //       key={k.label + i}
+          //       label={k.label}
+          //       // disabled={fob}
+          //       placeholder={k.placeholder}
+          //       {...form.getInputProps(k.name)}
+          //     />
           //   );
           // }
         })}
-         <Space h="md" />
-         <Checkbox
-             label="20% Export Duty"
-             checked={checked} 
-             onChange={(event) => setChecked(event.currentTarget.checked)} 
-          />
 
         <Space h="md" />
         <Button size="xs" color="blue" type="submit">

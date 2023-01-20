@@ -23,20 +23,20 @@ function EditChaForm(props: any) {
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      name: "",
-      category: "",
-      city: "",
-      state: "",
-      // destination: "",
-      exmill: "",
-      // transportation: "",
-    },
+    // initialValues: {
+    //   name: "",
+    //   category: "",
+    //   city: "",
+    //   state: "",
+    //   // destination: "",
+    //   exmill: "",
+    //   // transportation: "",
+    // },
 
-    validate: {
-      name: (value) =>
-        value.length < 2 ? "Name must have at least 2 letters" : null,
-    },
+    // validate: {
+    //   name: (value) =>
+    //     value.length < 2 ? "Name must have at least 2 letters" : null,
+    // },
   });
 
   const handleClick: any = () => {
@@ -75,7 +75,7 @@ function EditChaForm(props: any) {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-   
+    console.log(values, "values");
   };
 
   return (

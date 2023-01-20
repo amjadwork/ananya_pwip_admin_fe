@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { SimpleGrid, ActionIcon } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-
+import axios from "axios";
 import Card from "../../components/Card/Card";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
@@ -48,14 +48,37 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <AddProductForm />;
+  const handleCloseModal = props.handleCloseModal;
+  return <AddProductForm handleCloseModal={handleCloseModal} />;
 };
 
-function ProductsContainer() {
+function ProductsContainer(props: any) {
   const navigate = useNavigate();
 
+  // const [stateValue, setStateValue] = useState("");
+
+  const [productList, setProductList] = useState([]);
+  const [productIds, setProductIds] = useState("");
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
+  // console.log(productList, "productList");
+
+  useEffect(() => {
+    getProduct();
+  }, []);
+
+  const getProduct = () => {
+    axios
+      .get("http://localhost:8000/api/product")
+      .then((response: any) => {
+        console.log("response", response);
+        setProductList(response.data);
+        
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <PageWrapper
@@ -73,14 +96,23 @@ function ProductsContainer() {
       modalOpen={modalOpen}
       modalTitle="Add Product"
       onModalClose={() => setModalOpen(false)}
-      ModalContent={() => <RenderModalContent />}
-    >
-      <SimpleGrid cols={4} spacing="xl">
-        <Card
-          title="Rice"
-          status="Live"
-          onClickAction={() => navigate("/admin/dashboard/products/123")}
+      ModalContent={() => (
+        <RenderModalContent
+          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
         />
+      )}
+    >
+      <SimpleGrid cols={4} spacing="md">
+        {productList.map((k: any, i: any) => {
+          return (
+            <Card
+              key={i}
+              title={k.name}
+              status={k.status}
+              onClickAction={() => navigate(`/admin/dashboard/products/${k._id}`)}
+            />
+          );
+        })}
       </SimpleGrid>
     </PageWrapper>
   );

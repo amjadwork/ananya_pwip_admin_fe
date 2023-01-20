@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect,useState} from "react";
 import {
   SimpleGrid,
   Box,
@@ -15,8 +15,9 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-
+// import { MyContext } from './context';
 import EditProductsContainer from "./EditProducts/EditProducts";
+import axios from "axios";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -89,7 +90,8 @@ const RenderPageAction = (props: any) => {
               <Button
                 size="xs"
                 color="gray"
-                onClick={() => handleEditAction(false)}
+                onClick={() => {console.log("fffff");
+                  handleEditAction(false)}}
               >
                 Cancel
               </Button>
@@ -126,11 +128,34 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-function ManageProductsContainer() {
+function ManageProductsContainer(props:any) {
+  // const productName =props.productName;
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [productName, setProductName]= useState("");
+  const [status, setStatus]= useState("");
+
+
+
+  useEffect(() => {
+    handleProductName();
+  }, []);
+
+  // console.log(window.location);
+  const handleProductName = () => {
+    const productId = window.location.pathname.split("products/")[1];
+    axios
+      .get(`http://localhost:8000/api/product/${productId}`) //single getproduct api for product name
+      .then((response: any) => {
+        setProductName(response.data.name);
+        setStatus(response.data.status);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -141,6 +166,7 @@ function ManageProductsContainer() {
     setModalType("update");
     setModalOpen(true);
   };
+  
 
   if (editModeActive) {
     return (
@@ -190,9 +216,9 @@ function ManageProductsContainer() {
         })}
       >
         <Group position="apart">
-          <Title order={1}>Rice</Title>
+      <Title order={1}>{productName}</Title>
           <Badge size="lg" color="green" variant="light">
-            Live
+            {status}
           </Badge>
         </Group>
       </Box>

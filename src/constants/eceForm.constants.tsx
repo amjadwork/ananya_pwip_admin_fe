@@ -45,10 +45,10 @@ export const eceForm = [
     label: "Terms Of Shipment",
     name: "shipmentTerms",
     placeholder: "Select Shipment Method",
-    type: "radio",
+    type: "select",
     options: [
-      { name: "FOB " },
-      { name: "CIF" },
+      { value: " FOB", label: "FOB" },
+      { value: "CIF", label: "CIF" },
     ],
   },
   {
@@ -81,7 +81,7 @@ export const eceForm = [
       { value: "IR64", label: "IR64" },
     ],
   },
- 
+
   {
     label: "Sourcing Location",
     name: "sourcingLocation",
@@ -131,7 +131,7 @@ export const eceForm = [
     type: "input",
     placeholder: "write down ex-mill price",
   },
-  
+
   {
     label: "Type of Container",
     name: "containerType",
@@ -223,20 +223,15 @@ export const eceForm = [
     name: "ShippingCost",
     type: "input",
     placeholder: "Fill the Shipping Line Charges:",
-    
   },
-      
-      {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input",
-      placeholder: "Original B/L Fee",
-    },
-     
+
   {
-    label: "OFC(Ocean Freight Charges) (Rs/mt ton)",
-    name: "Ofc",
+    label: "Original B/L Fee",
+    name: "OriginalBLFee",
     type: "input",
-    id: 'hideInput',
-    placeholder: "Fill the OFC Charges:",
+    placeholder: "Original B/L Fee",
   },
+
   {
     label: "Insurance Cost (Rs/mt ton)",
     name: "InsuranceCost",
@@ -249,27 +244,16 @@ export const eceForm = [
     type: "input",
     placeholder: "Fill the margin cost:",
   },
- 
-
-
+  {
+    label: "20% Export Duty",
+    name: "20% Export Duty",
+    type: "checkbox",
+  },
+  // {
+  //   label: "OFC(Ocean Freight Charges) (Rs/mt ton)",
+  //   name: "Ofc",
+  //   type: "input",
+  //   id: "hideInput",
+  //   placeholder: "Fill the OFC Charges:",
+  // },
 ];
-
-// export const AllCfsCost = [
-//   {label:"Craft Paper" ,name:"CraftPaper" , type:"input"},
-//   {label:"Silica Gel" ,name:"SilicaGel" , type:"input"},
-//   {label:"Loading Charges" ,name:"LoadingCharges" , type:"input"},
-//   {label:"Transportation Charges" ,name:"LTransportationCharges" , type:"input"},
-//   {label:"Custom Charges" ,name:"CustomCharges" , type:"input"},
-//   {label:"PQ Certificate" ,name:"PQCertificate" , type:"input"},
-//   {label:"COO" ,name:"COO" , type:"input"},
-// ];
-
-// export const ALLShippingCost = [
-//   {label:"THC" ,name:"Thc" , type:"input"},
-//   {label:"Original B/L Fee" ,name:"OriginalBLFee" , type:"input"},
-//   {label:"Surrender" ,name:"Surrender" , type:"input"},
-//   {label:"MUC" ,name:"Muc" , type:"input"},
-//   {label:"Seal" ,name:"Seal" , type:"input"},
-//   {label:"Convenience fee" ,name:"ConvenienceFee" , type:"input"},
-//   {label:"Others" ,name:"Others" , type:"input"},
-// ];

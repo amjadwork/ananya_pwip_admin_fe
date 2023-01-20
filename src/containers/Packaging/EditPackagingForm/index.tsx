@@ -18,11 +18,11 @@ function EditPackagingFormContainer(props: any) {
     initialValues: {
       name: "",
       category: "",
-      source: "",
-      origin: "",
-      destination: "",
-      exMillPrice: "",
-      transportation: "",
+      // source: "",
+      // origin: "",
+      // destination: "",
+      // exMillPrice: "",
+      // transportation: "",
     },
 
     validate: {
@@ -38,8 +38,7 @@ function EditPackagingFormContainer(props: any) {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-
-    let arr:any=[];
+    let arr: any = [];
     if (values.category === "ppwoven") {
       arr = [...packagingBags[0].list];
       arr.push(values);

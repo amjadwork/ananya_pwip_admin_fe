@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SimpleGrid,
   Box,
@@ -15,6 +15,8 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
+import axios from "axios";
+// import { MyContext } from './context';
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
@@ -94,6 +96,7 @@ const RenderPageAction = (props: any) => {
                 size="xs"
                 color="gray"
                 onClick={() => {
+                  console.log("ttttt");
                   handleEditAction(false);
                 }}
               >
@@ -133,7 +136,8 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <EditProductForm   />;
+  const handleCloseModal = props.handleCloseModal;
+  return <EditProductForm handleCloseModal={handleCloseModal}/>;
 };
 
 function EditProductsContainer(props: any) {
@@ -141,12 +145,57 @@ function EditProductsContainer(props: any) {
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
   const handleEditToUpdateAction = props.handleEditToUpdateAction;
+  
+
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
+  const [status, setStatus] = React.useState<any>("");
+  const [productName, setProductName] = useState("");
+
+  // console.log("name", productName);
+  // const handleName=()=>{
+  //   name:productName
+  // }
+
+  useEffect(() => {
+    handleProductName();
+  }, []);
+
+  // console.log(window.location);
+  const handleProductName = () => {
+    const productId = window.location.pathname.split("products/")[1];
+    axios
+      .get(`http://localhost:8000/api/product/${productId}`) //single getproduct api for product name
+      .then((response: any) => {
+        setProductName(response.data.name);
+        
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleSave = (bool: boolean) => {
+    const productId = window.location.pathname.split("products/")[1];
+
     handleEditAction(bool);
+    console.log("updatestatus", status);
+    
+    const payload={
+      "name": "Rice",
+      "image": "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      "status": status,
+    }
+
+    axios
+      .put(`http://localhost:8000/api/product/${productId}`, payload)
+      .then((response: any) => {
+        console.log(response, "putStatus");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -174,11 +223,13 @@ function EditProductsContainer(props: any) {
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent  />;
+          return <RenderModalContent 
+          handleCloseModal={(bool: boolean) => setModalOpen(bool)} />;
         }
 
         if (modalType === "update") {
-          return <RenderModalContent />;
+          return <RenderModalContent 
+          handleCloseModal={(bool: boolean) => setModalOpen(bool)}/>;
         }
       }}
       modalSize="70%"
@@ -201,14 +252,20 @@ function EditProductsContainer(props: any) {
         })}
       >
         <Group position="apart">
-          <Title order={1}>Rice</Title>
+          {/* //productName */}
+          <Title order={1}>{productName}</Title>
           <Group spacing="md">
             <Select
               placeholder="Status"
               data={[
                 { value: "live", label: "Live" },
+                { value: "pending", label: "Pending" },
                 { value: "disabled", label: "Disabled" },
+                { value: "review", label: "Review" },
               ]}
+              onChange={(e: any) => {
+                setStatus(e);
+              }}
             />
             <Button
               type="submit"
