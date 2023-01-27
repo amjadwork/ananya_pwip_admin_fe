@@ -21,6 +21,7 @@ function EditPwipServiceForm(props: any) {
   const [categoriesList, setCategoriesList] = useState([]);
 
   const [allValue, setAllValue] = useState({});
+  const handleCloseModal=props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -77,7 +78,7 @@ function EditPwipServiceForm(props: any) {
 
   const handleSubmit = (values: typeof form.values) => {
     let arr: any = [];
-
+    handleCloseModal(false);
   }
 
   return (

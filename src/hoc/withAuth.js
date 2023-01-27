@@ -13,7 +13,7 @@ const withAuth = (WrappedComponent) => {
 
     useEffect( () => {
       const accessToken = localStorage.getItem("access_token");
-      console.log("access_token");
+      // console.log(accessToken);
       // if no accessToken was found,then we redirect to "/" page.
       if (!accessToken) {
        

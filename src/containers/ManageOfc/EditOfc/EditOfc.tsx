@@ -134,7 +134,9 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <EditSllForm />;
+  const handleCloseModal=props.handleCloseModal;
+
+  return <EditSllForm handleCloseModal={handleCloseModal}/>;
 };
 
 function EditChaContainer(props: any) {
@@ -175,11 +177,13 @@ function EditChaContainer(props: any) {
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent />;
+          return <RenderModalContent 
+          handleCloseModal={(bool:any)=>setModalOpen(bool)}/>;
         }
 
         if (modalType === "update") {
-          return <RenderModalContent />;
+          return <RenderModalContent 
+          handleCloseModal={(bool:any)=>setModalOpen(bool)}/>;
         }
       }}
       modalSize="70%"

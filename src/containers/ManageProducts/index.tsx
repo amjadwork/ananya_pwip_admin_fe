@@ -15,14 +15,19 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import api from './../../helper/api';
+
 // import { MyContext } from './context';
 import EditProductsContainer from "./EditProducts/EditProducts";
 import axios from "axios";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import { Alert } from '@mantine/core';
 
 import { riceCategory } from "../../constants/var.constants";
+import { showNotification } from "@mantine/notifications";
+
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -136,26 +141,39 @@ function ManageProductsContainer(props:any) {
   const [modalType, setModalType] = React.useState<string>("edit");
   const [productName, setProductName]= useState("");
   const [status, setStatus]= useState("");
+  const [error, setError]= useState('');
 
 
 
+  useEffect(()=>{
+    if(error){
+      // return (
+        <Alert  title="Bummer!" color="red">
+          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
+        </Alert>
+      // );
+    
+    }
+  }, [error]);
+
+
+  const productId = window.location.pathname.split("products/")[1];
   useEffect(() => {
-    handleProductName();
-  }, []);
-
-  // console.log(window.location);
-  const handleProductName = () => {
-    const productId = window.location.pathname.split("products/")[1];
-    axios
-      .get(`http://localhost:8000/api/product/${productId}`) //single getproduct api for product name
+      api.get(`/product/${productId}`)
       .then((response: any) => {
         setProductName(response.data.name);
         setStatus(response.data.status);
       })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+       .catch((error:any)=>{
+          setError(error);
+    }) 
+    
+  }, []);
+
+  // console.log(window.location);
+  
+   
+  
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);

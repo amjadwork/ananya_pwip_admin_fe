@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { SimpleGrid, ActionIcon } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
+import { showNotification } from "@mantine/notifications";
+import { Alert } from '@mantine/core';
+import api from './../../helper/api';
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import axios from "axios";
@@ -62,23 +65,49 @@ function ProductsContainer(props: any) {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   // console.log(productList, "productList");
+  const [error,setError] =useState('');
+
+
+  useEffect(()=>{
+    if(error){
+      // return (
+        <Alert  title="Bummer!" color="red">
+          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
+        </Alert>
+      // );
+    
+    }
+  }, [error]);
+
+  // useEffect(() => {
+  //   getProduct();
+  // }, []);
 
   useEffect(() => {
-    getProduct();
+    api.get('/product')
+      .then((response:any) => {
+        setProductList(response.data);
+      })
+      .catch((error:any) => {
+        setError(error);
+      });
   }, []);
 
-  const getProduct = () => {
-    axios
-      .get("http://localhost:8000/api/product")
-      .then((response: any) => {
-        console.log("response", response);
-        setProductList(response.data);
+
+  // const getProduct = () => {
+  //   axios
+  //     .get("http://localhost:8000/api/product")
+  //     .then((response: any) => {
+  //       console.log("response", response);
+  //       setProductList(response.data);
         
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  //     })
+  //     .catch((error) => {
+  //       // console.log(error);
+  //       setError(error);
+
+  //     });
+  // };
 
   return (
     <PageWrapper

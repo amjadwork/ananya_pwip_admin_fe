@@ -20,6 +20,7 @@ function EditOthersForm(props: any) {
   const [categoriesList, setCategoriesList] = useState([]);
 
   const [allValue, setAllValue] = useState({});
+  const handleCloseModal=props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -77,6 +78,8 @@ function EditOthersForm(props: any) {
   const handleSubmit = (values: typeof form.values) => {
     let arr: any = [];
     console.log(values, "values");
+    handleCloseModal(false);
+
 
   
    };

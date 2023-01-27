@@ -19,18 +19,23 @@ function EditChaForm(props: any) {
   const [categoriesValue, setCategoriesValue] = useState("");
   const [catUpdateValue, setCatUpdateValue] = useState("");
   const [categoriesList, setCategoriesList] = useState([]);
+  const [regUpdateValue,setRegUpdateValue]=useState("");
+  const [numUpdateValue,setNumUpdateValue]=useState("");
 
   const [allValue, setAllValue] = useState({});
+  const handleCloseModal=props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
-      name: "",
-      category: "",
-      city: "",
-      state: "",
-      // destination: "",
-      exmill: "",
+      // name: "",
+      originPort:"",
+      // category: "",
+      // city: "",
+      // state: "",
+      destination:"",
+      chaPrice:"",
+      // exmill: "",
       // transportation: "",
     },
 
@@ -77,6 +82,8 @@ function EditChaForm(props: any) {
 
   const handleSubmit = (values: typeof form.values) => {
     console.log(values, "values");
+    handleCloseModal(false);
+
   };
 
   return (
@@ -96,29 +103,24 @@ function EditChaForm(props: any) {
               required
               label="Enter Destination Port"
               placeholder="Eg. singapore"
-              data={[]}
-              {...form.getInputProps("destination")}
+              // data={[]}
+              onChange={(e: any) =>{ 
+                console.log();
+                setRegUpdateValue(e.target.value)}}
+              // {...form.getInputProps("destination")}
             />
 
             <NumberInput
               required
               label="Enter CHA Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps("cha")}
-            />
-            <NumberInput
-              required
-              label="Craft Paper"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("craft")}
-            />
+              onChange={(e: any) => setNumUpdateValue(e.target.value)}
 
-            <NumberInput
-              required
-              label="Silica Gel"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("silica")}
+              // {...form.getInputProps("cha")}
             />
+            
+
+            
             <div
               style={{
                 display: "inline-flex",
@@ -136,8 +138,30 @@ function EditChaForm(props: any) {
                 </ActionIcon>
               </Group>
             </div>
+            {/* <Grid.Col span={2}> */}
+
+            <NumberInput
+              required
+              label="Silica Gel"
+              placeholder="Eg. 26500"
+              onChange={(e: any) => setNumUpdateValue(e.target.value)}
+
+              // {...form.getInputProps("silica")}
+            />
+             {/* </Grid.Col> */}
 
             <Grid>
+            
+            <Grid.Col span={2}>
+            <NumberInput
+              required
+              label="Craft Paper"
+              placeholder="Eg. 26500"
+              onChange={(e: any) => setNumUpdateValue(e.target.value)}
+
+              // {...form.getInputProps("craft")}
+            />
+            </Grid.Col>
               
               <Grid.Col span={2}>
                 <NumberInput
@@ -187,6 +211,7 @@ function EditChaForm(props: any) {
       <Space h="md" />
 
       <Group>
+      {/* <Grid.Col span={3}> */}
         <TextInput
           required
           label="Enter Destination port"
@@ -194,25 +219,17 @@ function EditChaForm(props: any) {
           data={[]}
           {...form.getInputProps("destination")}
         />
-
+         {/* </Grid.Col> */}
+         {/* <Grid.Col span={3}> */}
         <NumberInput
           required
           label="Enter CHA Charges"
           placeholder="Eg. 26500"
           {...form.getInputProps("cha")}
         />
-        <NumberInput
-          required
-          label="Craft Paper"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("craft")}
-        />
-        <NumberInput
-          required
-          label="Silica Gel"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("silica")}
-        />
+        {/* </Grid.Col> */}
+        
+       
         <div
           style={{
             display: "inline-flex",
@@ -223,10 +240,22 @@ function EditChaForm(props: any) {
         >
           <Button onClick={handleClick}>+</Button>
         </div>
+        <NumberInput
+          required
+          label="Silica Gel"
+          placeholder="Eg. 26500"
+          {...form.getInputProps("silica")}
+        />
 
         <Grid>
-         
-          <Grid.Col span={2}>
+        <Grid.Col span={2}>
+        <NumberInput
+          required
+          label="Craft Paper"
+          placeholder="Eg. 26500"
+          {...form.getInputProps("craft")}
+        /></Grid.Col>
+        <Grid.Col span={2}>
             <NumberInput
               required
               label="Transport Charges"

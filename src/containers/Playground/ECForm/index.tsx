@@ -74,7 +74,7 @@ const initialFormState: any = {
 const EceForm = () => {
   const [checked, setChecked] = useState(false);
   const [term, setTerm] = useState("");
-  console.log({ term });
+  // console.log({"term" , term });
   // const [sum, setSum] = useState();
   // console.log(sum, "sum");
   const [brokenPercentage, setBrokenPercentage] = useState(5);

@@ -13,6 +13,7 @@ import { showNotification } from "@mantine/notifications";
 import { packagingBags } from "../../../constants/var.constants";
 
 function EditPackagingFormContainer(props: any) {
+  const handleCloseModal = props.handleCloseModal;
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
@@ -48,6 +49,7 @@ function EditPackagingFormContainer(props: any) {
       arr.push(values);
       console.log("arr 2", arr);
     }
+    handleCloseModal(false);
   };
 
   return (

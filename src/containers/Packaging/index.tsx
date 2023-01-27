@@ -125,7 +125,8 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <EditPackagingFormContainer />;
+  const handleCloseModal =props.handleCloseModal;
+  return <EditPackagingFormContainer  handleCloseModal={handleCloseModal} />;
 };
 
 function PackagingContainer() {
@@ -156,7 +157,9 @@ function PackagingContainer() {
       modalOpen={modalOpen}
       modalTitle="Add a bag"
       onModalClose={() => setModalOpen(false)}
-      ModalContent={() => <RenderModalContent />}
+      ModalContent={() => <RenderModalContent 
+        handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+        />}
       modalSize="40%"
     >
       <div style={{ width: "100%", height: "auto" }}>

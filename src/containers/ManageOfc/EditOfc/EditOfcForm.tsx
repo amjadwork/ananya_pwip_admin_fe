@@ -20,6 +20,7 @@ function EditChaForm(props: any) {
   const [categoriesList, setCategoriesList] = useState([]);
 
   const [allValue, setAllValue] = useState({});
+  const handleCloseModal=props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -76,6 +77,7 @@ function EditChaForm(props: any) {
 
   const handleSubmit = (values: typeof form.values) => {
     console.log(values, "values");
+    handleCloseModal(false);
   };
 
   return (
@@ -84,13 +86,10 @@ function EditChaForm(props: any) {
         required
         label="Enter Origin Port"
         placeholder="Eg. chennai"
-        
         {...form.getInputProps("origin")}
       />
 
       <Space h="md" />
-
-      
 
       <Space h="md" />
       {categoriesList.map((k, i) => {
@@ -100,7 +99,10 @@ function EditChaForm(props: any) {
               required
               label="Enter Destination Port"
               placeholder="Eg. singapore"
-              data={[]}
+              data={[
+                { value: "karnal", label: "Karnal" },
+                { value: "karnal", label: "Karnal" }
+            ]}
               {...form.getInputProps("destination")}
             />
 

@@ -77,6 +77,7 @@ function EditTransportForm(props: any) {
   const handleSubmit = (values: typeof form.values) => {
     let arr: any = [];
     console.log(values, "values");
+    const handleCloseModal=props.handleCloseModal;
 
   //   if (values.category=== "Basmati") {
   //     arr = [...manageCha[0].list];

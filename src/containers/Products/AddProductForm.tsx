@@ -5,7 +5,12 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { arrayBuffer } from "stream/consumers";
 import axios from "axios";
+import api from './../../helper/api';
+
+// import { getProduct } from "./../../helper/api";
 import { DialogBody } from "@mantine/core/lib/Dialog/Dialog";
+import { Alert } from '@mantine/core';
+// import { IconAlertCircle } from '@tabler/icons';
 // import ProductsContainer from "./index";
 
 function AddProductForm(props: any) {
@@ -17,9 +22,21 @@ function AddProductForm(props: any) {
   const [catUpdateValue, setCatUpdateValue] = useState("");
   const [categoriesList, setCategoriesList] = useState([]);
   const [allValue, setAllValue] = useState({});
-  // const [productId,setProductId]=React.useState<any>(null);
-  // console.log(productId,"productId");
+  const [productId, setProductId] = useState("");
+  const [error,setError] =useState('');
 
+  useEffect(()=>{
+    if(error){
+      // return (
+        <Alert  title="Bummer!" color="red">
+          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
+        </Alert>
+      // );
+    
+    }
+  }, [error]);
+
+  
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
@@ -47,6 +64,7 @@ function AddProductForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
+ 
 
   const handleClick:any = () => {
     const arr: any = [...categoriesList];
@@ -85,41 +103,44 @@ function AddProductForm(props: any) {
     setAllValue(arr);
 
     //post productApi
-    const payload = {
-      name: values.name,
-      image: values.imageURL,
-      status: "live",
-    };
+    
+       const payload = {
+        name: values.name,
+        image: values.imageURL,
+        status: "live",
+      };
 
-    axios
-      .post("http://localhost:8000/api/product", payload, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response: any) => {
-        console.log(response.data._id, "post");
-        //  setProductId(response.data._id);
-        //post categoryApi
+      try{
+        api.post('/product', payload)
+        .then((response:any) => 
+        {
+        console.log(response.data._id);
+        setProductId(response.data._id);
+        
+      // post category api
         const payloadCategory = {
           _productId: response.data._id,
           category: categoriesList,
         };
-        axios
-          .post("http://localhost:8000/api/category", payloadCategory)
+        try{
+          api.post('/category',payloadCategory)
           .then((catRes: any) => {
             console.log("response cat", catRes);
             handleCloseModal(false);
           })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        }
+          catch(error:any) {
+            setError(error);   
+          }
+        })
+        
+      } catch(error:any) {
+        setError(error);
+      }
+ 
   };
+      
+  
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>

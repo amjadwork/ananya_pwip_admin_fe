@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Alert } from '@mantine/core';
+import { showNotification } from "@mantine/notifications";
+import api from './../../../helper/api';
+
 import {
   SimpleGrid,
   Box,
@@ -40,6 +44,12 @@ const RenderPageHeader = (props: any) => {
     />
   );
 };
+function Demo() {
+  return (
+    <Alert  title="Something Went Wrong!" color="red">ERROR
+    </Alert>
+  );
+}
 
 const RenderPageAction = (props: any) => {
   const handleSaveAction = props.handleSaveAction;
@@ -152,29 +162,32 @@ function EditProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [status, setStatus] = React.useState<any>("");
   const [productName, setProductName] = useState("");
+  const [error,setError] =useState('');
 
-  // console.log("name", productName);
-  // const handleName=()=>{
-  //   name:productName
-  // }
 
+  useEffect(()=>{
+    if(error){
+      // return (
+        <Alert  title="Bummer!" color="red">
+          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
+        </Alert>
+      // );
+    
+    }
+  }, [error]);
+
+  
   useEffect(() => {
-    handleProductName();
-  }, []);
-
-  // console.log(window.location);
-  const handleProductName = () => {
     const productId = window.location.pathname.split("products/")[1];
-    axios
-      .get(`http://localhost:8000/api/product/${productId}`) //single getproduct api for product name
-      .then((response: any) => {
-        setProductName(response.data.name);
-        
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+    api.get(`/product/${productId}`)
+    .then((response: any) => {
+      setProductName(response.data.name);  
+    })
+  .catch((error:any)=>{
+    setError(error);
+  })
+}, []);
+  
 
   const handleSave = (bool: boolean) => {
     const productId = window.location.pathname.split("products/")[1];
@@ -188,14 +201,15 @@ function EditProductsContainer(props: any) {
       "status": status,
     }
 
-    axios
-      .put(`http://localhost:8000/api/product/${productId}`, payload)
+    try{
+      api.put(`/product/${productId}`,payload)
       .then((response: any) => {
         console.log(response, "putStatus");
       })
-      .catch((error) => {
-        console.log(error);
-      });
+    }catch(error:any){
+      setError(error);
+    }
+
   };
 
   return (

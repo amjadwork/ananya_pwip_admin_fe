@@ -22,6 +22,8 @@ function EditShlForm(props: any) {
 
   const [allValue, setAllValue] = useState({});
 
+  const handleCloseModal=props.handleCloseModal;
+
   const form = useForm({
     clearInputErrorOnChange: true,
     // initialValues: {
@@ -78,6 +80,7 @@ function EditShlForm(props: any) {
   const handleSubmit = (values: typeof form.values) => {
     let arr: any = [];
     console.log(values, "values");
+    handleCloseModal(false);
   };
 
   return (

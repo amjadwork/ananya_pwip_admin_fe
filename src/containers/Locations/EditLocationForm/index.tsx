@@ -19,6 +19,9 @@ function EditLocationFormContainer(props: any) {
   const [state, setState] = useState(false);
   // const [origin, setorigin] = useState(false);
   const [select, setSelect] = useState(false);
+  const [selectValue,setSelectValue] =useState("");
+
+  const handleCloseModal = props.handleCloseModal;
 
 
   const form = useForm({
@@ -49,11 +52,13 @@ function EditLocationFormContainer(props: any) {
 
   const handleSubmit = (values: typeof form.values) => {
     setFieldValue(values.category);
+    
     setState(true);
     setSelect(true);
     // setorigin(false);
+    handleCloseModal(false);
 
-    console.log("arr 5", values);
+    // console.log("arr 5", values);
 
     let arr: any = [];
     if (values.name === "Source Location") {
@@ -84,15 +89,28 @@ function EditLocationFormContainer(props: any) {
           { value: "origin", label: "Origin" },
           { value: "destination", label: "Destination" },
         ]}
-        {...form.getInputProps("category")}
+        onChange={(Cat:any)=>{
+          console.log("Cat",Cat);
+          setSelectValue(Cat);
+
+        }}
+
+        // {...form.getInputProps("category")}
       />
       <Space h="md" />
-      <Group position="right" mt="md" spacing="md"> 
-        <Button type="submit" disabled={state}>Next</Button>
-      </Group>
+      {/* <Group position="right" mt="md" spacing="md"> 
+        <Button 
+        // onClick={(val:any) => {
+        //   console.log(val,"event");
+        //   // event.preventDefault()
+        // }}
+        // type="submit" 
+        // disabled={state}
+        >Next</Button>
+      </Group> */}
 
      { 
-       (fieldValue ==="source")? 
+       (selectValue ==="source")? 
        <>
        <TextInput
         required
@@ -141,11 +159,11 @@ function EditLocationFormContainer(props: any) {
        />
        <Space h="md" />
       <Group position="right" mt="md" spacing="md"> 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" >Submit</Button>
       </Group>
       </>: null}
 
-      {(fieldValue==="origin") ?(
+      {(selectValue==="origin") ?(
       <>
       <TextInput
         required
@@ -216,7 +234,7 @@ function EditLocationFormContainer(props: any) {
       </>): null}
 
       <Space h="md" />
-      {(fieldValue ==="destination")?(
+      {(selectValue ==="destination")?(
       <>
       <TextInput
         required
@@ -234,7 +252,7 @@ function EditLocationFormContainer(props: any) {
       />
       <Space h="md" />
       <Group position="right" mt="md" spacing="md"> 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" >Submit</Button>
       </Group>
       </>):null}
 

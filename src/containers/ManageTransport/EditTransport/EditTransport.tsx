@@ -134,7 +134,8 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <EditTransportForm />;
+  const handleCloseModal=props.handleCloseModal;
+  return <EditTransportForm handleCloseModal={handleCloseModal}/>;
 };
 
 function EditTransportContainer(props: any) {
@@ -175,11 +176,15 @@ function EditTransportContainer(props: any) {
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent />;
+          return <RenderModalContent 
+          handleCloseModal={(bool:any)=>setModalOpen(bool)}
+          />;
         }
 
         if (modalType === "update") {
-          return <RenderModalContent />;
+          return <RenderModalContent 
+          handleCloseModal={(bool:any)=>setModalOpen(bool)}
+          />;
         }
       }}
       modalSize="70%"

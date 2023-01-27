@@ -115,7 +115,9 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  return <EditLocationFormContainer />;
+  const handleCloseModal = props.handleCloseModal;
+
+  return <EditLocationFormContainer handleCloseModal={handleCloseModal} />;
 };
 
 function LocationsContainer() {
@@ -147,7 +149,11 @@ function LocationsContainer() {
       modalOpen={modalOpen}
       modalTitle="Add a location"
       onModalClose={() => setModalOpen(false)}
-      ModalContent={() => <RenderModalContent />}
+      ModalContent={() => (
+        <RenderModalContent
+          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+        />
+      )}
       modalSize="40%"
     >
       <div style={{ width: "100%", height: "auto" }}>
