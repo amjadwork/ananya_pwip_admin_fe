@@ -142,7 +142,7 @@ export const locationCat = [
       },
     ],
   },
- 
+
   {
     name: "Destination Ports",
     list: [
@@ -160,30 +160,9 @@ export const locationCat = [
       },
     ],
   },
-  
 ];
 
-// export const locCategory = [
-//   {
-//     category:"Source Location"
-//   {
-//     name:"Region Name",
-//   },
-//   {
-//     name:"State Name",
-//   },
-//   {
-//     name:"Port Name",
-//   },
-//   {
-//     name:"City Name",
-//   },
-//   {
-//     name:"Country Name",
-//   }
-// ]
-
-export const packagingBags = [
+export const managePackaging = [
   {
     name: "PPWOVEN",
     list: [
@@ -197,6 +176,40 @@ export const packagingBags = [
       },
       {
         name: "PP WOVEN",
+        weight: "50KG",
+      },
+    ],
+  },
+  {
+    name: "JUTE BAGS",
+    list: [
+      {
+        name: "JUTE1",
+        weight: "18KG",
+      },
+      {
+        name: " JUTE2",
+        weight: "25KG",
+      },
+      {
+        name: "JUTE3",
+        weight: "50KG",
+      },
+    ],
+  },
+  {
+    name: "PE BAGS",
+    list: [
+      {
+        name: "PE1",
+        weight: "18KG",
+      },
+      {
+        name: "PE2",
+        weight: "25KG",
+      },
+      {
+        name: "PE3",
         weight: "50KG",
       },
     ],
@@ -223,6 +236,9 @@ export const packagingBags = [
     ],
   },
 ];
+
+
+
 export const manageCha = [
   {
     name: "origin Port1",
@@ -376,13 +392,12 @@ export const manageTransport = [
 
 export const manageOthers = [
   {
-    name:" Others",
-    list:[
+    name: " Others",
+    list: [
       {
-        name:" Export Duty",
-        price:" --20%"
-      }
-
-    ]
-  }
+        name: " Export Duty",
+        price: " --20%",
+      },
+    ],
+  },
 ];

@@ -37,11 +37,7 @@ function EditProductForm(props: any) {
     initialValues: {
       name: "",
       category: "",
-      // region: "",
-      // state: "",
-      // destination: "",
-      // exmill: "",
-      // transportation: "",
+      
     },
 
     validate: {
@@ -72,10 +68,7 @@ function EditProductForm(props: any) {
     if (inputRef) {
       inputRef.current.value = "";
     }
-    // const arr: any = [...categoriesList];
-    // arr.push(categoriesValue);
-    // console.log(arr);
-    // setCategoriesList(arr);
+  
   };
 
   const handleDeleteItem = (index: number) => {
@@ -97,15 +90,7 @@ function EditProductForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-  // const handleUpdate = (index: number) => {
-  //   const arr: any = [...categoriesList];
-  //   arr[index] = catUpdateValue;
-
-  //   setCategoriesList(arr);
-
-  //   console.log(arr);
-  // };
-
+  
   const handleSubmit = (values: typeof form.values) => {
     console.log("values", values);
     const arr:any=[];
@@ -162,8 +147,7 @@ function EditProductForm(props: any) {
               onChange={(e: any) =>{ 
                 console.log();
                 setRegUpdateValue(e.target.value)}}
-              // name={regUpdateValue}
-              // {...form.getInputProps("region")}
+              
             />
 
             <NumberInput
@@ -173,8 +157,7 @@ function EditProductForm(props: any) {
               label="Ex-Mill"
               placeholder="Eg. 26500"
               onChange={(e: any) => setNumUpdateValue(e.target.value)}
-              // name={numberValue}
-              // {...form.getInputProps("exmill")}
+            
             />
 
             <div
@@ -226,7 +209,7 @@ function EditProductForm(props: any) {
             setNumberValue(val)}}
           
           ref={inputRef}
-          // {...form.getInputProps("exmill")}
+          
         />
 
         <div

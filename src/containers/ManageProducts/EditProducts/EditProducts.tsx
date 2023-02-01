@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Alert } from '@mantine/core';
+import React, { useState,useContext, useEffect } from "react";
+import { Alert } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import api from './../../../helper/api';
-
+import FetchData from "./../../../helper/api";
+import {ErrorContext } from './../../../context/errorContext';
 import {
   SimpleGrid,
   Box,
@@ -20,7 +20,6 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import axios from "axios";
-// import { MyContext } from './context';
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
@@ -33,8 +32,10 @@ import { riceCategory } from "../../../constants/var.constants";
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
+  const { error, setError } = useContext(ErrorContext);
 
   return (
+    
     <PageHeader
       title="Manage Products"
       breadcrumbs={[
@@ -42,14 +43,10 @@ const RenderPageHeader = (props: any) => {
         { title: "Manage", href: "#" },
       ]}
     />
+       
+     
   );
 };
-function Demo() {
-  return (
-    <Alert  title="Something Went Wrong!" color="red">ERROR
-    </Alert>
-  );
-}
 
 const RenderPageAction = (props: any) => {
   const handleSaveAction = props.handleSaveAction;
@@ -66,7 +63,6 @@ const RenderPageAction = (props: any) => {
             "&[data-disabled]": { opacity: 0.4 },
           }}
           onClick={() => {
-            console.log("here");
             handleEditAction(false);
           }}
         >
@@ -106,7 +102,6 @@ const RenderPageAction = (props: any) => {
                 size="xs"
                 color="gray"
                 onClick={() => {
-                  console.log("ttttt");
                   handleEditAction(false);
                 }}
               >
@@ -147,7 +142,7 @@ const RenderPageAction = (props: any) => {
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  return <EditProductForm handleCloseModal={handleCloseModal}/>;
+  return <EditProductForm handleCloseModal={handleCloseModal} />;
 };
 
 function EditProductsContainer(props: any) {
@@ -155,61 +150,54 @@ function EditProductsContainer(props: any) {
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
   const handleEditToUpdateAction = props.handleEditToUpdateAction;
-  
-
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [status, setStatus] = React.useState<any>("");
   const [productName, setProductName] = useState("");
-  const [error,setError] =useState('');
+  const { error, setError } = useContext(ErrorContext);
+  
 
-
-  useEffect(()=>{
-    if(error){
-      // return (
-        <Alert  title="Bummer!" color="red">
-          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-        </Alert>
-      // );
-    
+  useEffect(() => {
+    if (error === true) {
+      setTimeout(() => {
+        setError(false);
+      }, 5000);
     }
   }, [error]);
 
-  
-  useEffect(() => {
+
+
+  useEffect(() => { 
+    handleData();
+  }, []);
+
+  const handleData =async()=>{
     const productId = window.location.pathname.split("products/")[1];
-    api.get(`/product/${productId}`)
-    .then((response: any) => {
-      setProductName(response.data.name);  
-    })
-  .catch((error:any)=>{
-    setError(error);
-  })
-}, []);
+    const getData:any = await FetchData (`http://localhost:8000/api/product/${productId}`, 'GETBYID')
+    setProductName(getData.name);
+
+  }
+
+  
   
 
-  const handleSave = (bool: boolean) => {
+
+  const handleSave = async (bool: boolean) => {
     const productId = window.location.pathname.split("products/")[1];
 
     handleEditAction(bool);
     console.log("updatestatus", status);
-    
-    const payload={
-      "name": "Rice",
-      "image": "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      "status": status,
+
+    const payloadUpdate= {
+      name: productName,
+      image: "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      status: status,
     }
 
-    try{
-      api.put(`/product/${productId}`,payload)
-      .then((response: any) => {
-        console.log(response, "putStatus");
-      })
-    }catch(error:any){
-      setError(error);
-    }
-
+    const putData=await FetchData(`http://localhost:8000/api/product/${productId}` ,'PUT', payloadUpdate);
+    // console.log(putData);
+   
   };
 
   return (
@@ -230,20 +218,24 @@ function EditProductsContainer(props: any) {
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit"
-          ? "Add Product Variant"
-          : "Update BASMATI 1121 SELLA"
+        modalType === "edit" ? "Add Product Variant" : "Update Product Variant"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent 
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)} />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            />
+          );
         }
 
         if (modalType === "update") {
-          return <RenderModalContent 
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)}/>;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            />
+          );
         }
       }}
       modalSize="70%"
@@ -266,9 +258,10 @@ function EditProductsContainer(props: any) {
         })}
       >
         <Group position="apart">
-          {/* //productName */}
           <Title order={1}>{productName}</Title>
+
           <Group spacing="md">
+           
             <Select
               placeholder="Status"
               data={[

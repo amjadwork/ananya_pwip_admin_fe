@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { SimpleGrid, ActionIcon } from "@mantine/core";
+import React, { useState,useContext, useEffect } from "react";
+import { SimpleGrid, ActionIcon ,Group} from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
-import { showNotification } from "@mantine/notifications";
-import { Alert } from '@mantine/core';
-import api from './../../helper/api';
+import { Alert } from "@mantine/core";
+import FetchData from "./../../helper/api";
+import {ErrorContext } from './../../context/errorContext';
+
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import axios from "axios";
@@ -58,56 +59,36 @@ const RenderModalContent = (props: any) => {
 function ProductsContainer(props: any) {
   const navigate = useNavigate();
 
-  // const [stateValue, setStateValue] = useState("");
 
   const [productList, setProductList] = useState([]);
   const [productIds, setProductIds] = useState("");
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  // console.log(productList, "productList");
-  const [error,setError] =useState('');
+  const { error, setError } = useContext(ErrorContext);
 
 
-  useEffect(()=>{
-    if(error){
-      // return (
-        <Alert  title="Bummer!" color="red">
-          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-        </Alert>
-      // );
-    
+  useEffect(() => {
+    if (error === true) {
+      setTimeout(() => {
+        setError(false);
+      }, 5000);
     }
   }, [error]);
 
-  // useEffect(() => {
-  //   getProduct();
-  // }, []);
+  
 
   useEffect(() => {
-    api.get('/product')
-      .then((response:any) => {
-        setProductList(response.data);
-      })
-      .catch((error:any) => {
-        setError(error);
-      });
+    handleGetData();
+
   }, []);
 
+  const handleGetData=async()=>{
+    const getData:any = await FetchData("http://localhost:8000/api/product"  , 'GET');
+    // console.log(getData);
+    setProductList(getData);
+  }
+  
 
-  // const getProduct = () => {
-  //   axios
-  //     .get("http://localhost:8000/api/product")
-  //     .then((response: any) => {
-  //       console.log("response", response);
-  //       setProductList(response.data);
-        
-  //     })
-  //     .catch((error) => {
-  //       // console.log(error);
-  //       setError(error);
-
-  //     });
-  // };
 
   return (
     <PageWrapper
@@ -138,11 +119,21 @@ function ProductsContainer(props: any) {
               key={i}
               title={k.name}
               status={k.status}
-              onClickAction={() => navigate(`/admin/dashboard/products/${k._id}`)}
+              onClickAction={() =>
+                navigate(`/admin/dashboard/products/${k._id}`)
+              }
             />
           );
         })}
       </SimpleGrid>
+      <Group>
+      {error?(
+        <Alert  title="Bummer!" color="red">
+        Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
+      </Alert>
+      ):null}
+      </Group>
+      
     </PageWrapper>
   );
 }

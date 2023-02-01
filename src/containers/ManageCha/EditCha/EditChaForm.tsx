@@ -19,30 +19,19 @@ function EditChaForm(props: any) {
   const [categoriesValue, setCategoriesValue] = useState("");
   const [catUpdateValue, setCatUpdateValue] = useState("");
   const [categoriesList, setCategoriesList] = useState([]);
-  const [regUpdateValue,setRegUpdateValue]=useState("");
-  const [numUpdateValue,setNumUpdateValue]=useState("");
+  const [regUpdateValue, setRegUpdateValue] = useState("");
+  const [numUpdateValue, setNumUpdateValue] = useState("");
 
   const [allValue, setAllValue] = useState({});
-  const handleCloseModal=props.handleCloseModal;
+  const handleCloseModal = props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
-      // name: "",
-      originPort:"",
-      // category: "",
-      // city: "",
-      // state: "",
-      destination:"",
-      chaPrice:"",
-      // exmill: "",
-      // transportation: "",
+      originPort: "",
+      destination: "",
+      chaPrice: "",
     },
-
-    // validate: {
-    //   name: (value) =>
-    //     value.length < 2 ? "Name must have at least 2 letters" : null,
-    // },
   });
 
   const handleClick: any = () => {
@@ -71,19 +60,18 @@ function EditChaForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-  const handleUpdate = (index: number) => {
-    const arr: any = [...categoriesList];
-    arr[index] = catUpdateValue;
+  // const handleUpdate = (index: number) => {
+  //   const arr: any = [...categoriesList];
+  //   arr[index] = catUpdateValue;
 
-    setCategoriesList(arr);
+  //   setCategoriesList(arr);
 
-    console.log(arr);
-  };
+  //   console.log(arr);
+  // };
 
   const handleSubmit = (values: typeof form.values) => {
     console.log(values, "values");
     handleCloseModal(false);
-
   };
 
   return (
@@ -94,7 +82,7 @@ function EditChaForm(props: any) {
         placeholder="Eg. chennai"
         {...form.getInputProps("originPort")}
       />
- 
+
       <Space h="md" />
       {categoriesList.map((k, i) => {
         return (
@@ -104,9 +92,10 @@ function EditChaForm(props: any) {
               label="Enter Destination Port"
               placeholder="Eg. singapore"
               // data={[]}
-              onChange={(e: any) =>{ 
+              onChange={(e: any) => {
                 console.log();
-                setRegUpdateValue(e.target.value)}}
+                setRegUpdateValue(e.target.value);
+              }}
               // {...form.getInputProps("destination")}
             />
 
@@ -118,9 +107,15 @@ function EditChaForm(props: any) {
 
               // {...form.getInputProps("cha")}
             />
-            
+            <NumberInput
+              required
+              label="Silica Gel"
+              placeholder="Eg. 26500"
+              onChange={(e: any) => setNumUpdateValue(e.target.value)}
 
-            
+              // {...form.getInputProps("silica")}
+            />
+
             <div
               style={{
                 display: "inline-flex",
@@ -140,29 +135,20 @@ function EditChaForm(props: any) {
             </div>
             {/* <Grid.Col span={2}> */}
 
-            <NumberInput
-              required
-              label="Silica Gel"
-              placeholder="Eg. 26500"
-              onChange={(e: any) => setNumUpdateValue(e.target.value)}
-
-              // {...form.getInputProps("silica")}
-            />
-             {/* </Grid.Col> */}
+            {/* </Grid.Col> */}
 
             <Grid>
-            
-            <Grid.Col span={2}>
-            <NumberInput
-              required
-              label="Craft Paper"
-              placeholder="Eg. 26500"
-              onChange={(e: any) => setNumUpdateValue(e.target.value)}
+              <Grid.Col span={2}>
+                <NumberInput
+                  required
+                  label="Craft Paper"
+                  placeholder="Eg. 26500"
+                  onChange={(e: any) => setNumUpdateValue(e.target.value)}
 
-              // {...form.getInputProps("craft")}
-            />
-            </Grid.Col>
-              
+                  // {...form.getInputProps("craft")}
+                />
+              </Grid.Col>
+
               <Grid.Col span={2}>
                 <NumberInput
                   required
@@ -211,7 +197,7 @@ function EditChaForm(props: any) {
       <Space h="md" />
 
       <Group>
-      {/* <Grid.Col span={3}> */}
+        {/* <Grid.Col span={3}> */}
         <TextInput
           required
           label="Enter Destination port"
@@ -219,17 +205,22 @@ function EditChaForm(props: any) {
           data={[]}
           {...form.getInputProps("destination")}
         />
-         {/* </Grid.Col> */}
-         {/* <Grid.Col span={3}> */}
+        {/* </Grid.Col> */}
+        {/* <Grid.Col span={3}> */}
         <NumberInput
           required
           label="Enter CHA Charges"
           placeholder="Eg. 26500"
           {...form.getInputProps("cha")}
         />
+          <NumberInput
+          required
+          label="Silica Gel"
+          placeholder="Eg. 26500"
+          {...form.getInputProps("silica")}
+        />
         {/* </Grid.Col> */}
-        
-       
+
         <div
           style={{
             display: "inline-flex",
@@ -240,22 +231,18 @@ function EditChaForm(props: any) {
         >
           <Button onClick={handleClick}>+</Button>
         </div>
-        <NumberInput
-          required
-          label="Silica Gel"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("silica")}
-        />
+      
 
         <Grid>
-        <Grid.Col span={2}>
-        <NumberInput
-          required
-          label="Craft Paper"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("craft")}
-        /></Grid.Col>
-        <Grid.Col span={2}>
+          <Grid.Col span={2}>
+            <NumberInput
+              required
+              label="Craft Paper"
+              placeholder="Eg. 26500"
+              {...form.getInputProps("craft")}
+            />
+          </Grid.Col>
+          <Grid.Col span={2}>
             <NumberInput
               required
               label="Transport Charges"

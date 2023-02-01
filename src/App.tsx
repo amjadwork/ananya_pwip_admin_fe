@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import DashboardScreen from "./screens/dashboard";
-// import auth from "./hoc/withAuth";
 import Login from "./screens/login/LoginForm";
 import Otp from "./screens/login/Otp";
 
@@ -14,6 +13,7 @@ let basename = "/";
 
 function App() {
   return (
+    
     <Router basename={basename}>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -21,6 +21,7 @@ function App() {
         <Route path={`${root}/*`} element={<DashboardScreen />} />
       </Routes>
     </Router>
+    
   );
 }
 

@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from "react";
+import React, { useEffect, useContext, useState } from "react";
 import {
   SimpleGrid,
   Box,
@@ -15,19 +15,17 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import api from './../../helper/api';
+import FetchData from "./../../helper/api";
+import { ErrorContext } from "./../../context/errorContext";
 
-// import { MyContext } from './context';
 import EditProductsContainer from "./EditProducts/EditProducts";
 import axios from "axios";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { Alert } from '@mantine/core';
+import { Alert } from "@mantine/core";
 
 import { riceCategory } from "../../constants/var.constants";
-import { showNotification } from "@mantine/notifications";
-
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -95,8 +93,10 @@ const RenderPageAction = (props: any) => {
               <Button
                 size="xs"
                 color="gray"
-                onClick={() => {console.log("fffff");
-                  handleEditAction(false)}}
+                onClick={() => {
+                  console.log("fffff");
+                  handleEditAction(false);
+                }}
               >
                 Cancel
               </Button>
@@ -133,47 +133,38 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-function ManageProductsContainer(props:any) {
-  // const productName =props.productName;
+function ManageProductsContainer(props: any) {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
-  const [productName, setProductName]= useState("");
-  const [status, setStatus]= useState("");
-  const [error, setError]= useState('');
+  const [productName, setProductName] = useState("");
+  const [status, setStatus] = useState("");
 
+  const { error, setError } = useContext(ErrorContext);
 
-
-  useEffect(()=>{
-    if(error){
-      // return (
-        <Alert  title="Bummer!" color="red">
-          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-        </Alert>
-      // );
-    
+  useEffect(() => {
+    if (error === true) {
+      setTimeout(() => {
+        setError(false);
+      }, 5000);
     }
   }, [error]);
 
-
-  const productId = window.location.pathname.split("products/")[1];
   useEffect(() => {
-      api.get(`/product/${productId}`)
-      .then((response: any) => {
-        setProductName(response.data.name);
-        setStatus(response.data.status);
-      })
-       .catch((error:any)=>{
-          setError(error);
-    }) 
-    
+    handleData();
   }, []);
 
-  // console.log(window.location);
-  
-   
-  
+  const handleData = async () => {
+    const productId = window.location.pathname.split("products/")[1];
+
+    const getSingleProduct: any = await FetchData(
+      `http://localhost:8000/api/product/${productId}`,
+      "GETBYID"
+    );
+    setProductName(getSingleProduct.name);
+    setStatus(getSingleProduct.status);
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -184,7 +175,6 @@ function ManageProductsContainer(props:any) {
     setModalType("update");
     setModalOpen(true);
   };
-  
 
   if (editModeActive) {
     return (
@@ -234,7 +224,14 @@ function ManageProductsContainer(props:any) {
         })}
       >
         <Group position="apart">
-      <Title order={1}>{productName}</Title>
+          <Title order={1}>{productName}</Title>
+          <Group>
+            {error ? (
+              <Alert title="Something wrong" color="red" radius="md">
+                Didn't get name of product properly .
+              </Alert>
+            ) : null}
+          </Group>
           <Badge size="lg" color="green" variant="light">
             {status}
           </Badge>

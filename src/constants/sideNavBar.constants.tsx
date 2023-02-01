@@ -19,7 +19,7 @@ export const NavbarOptions = [
   },
   {
     option: "Packaging",
-    navigateTo: "/admin/dashboard/packaging",
+    navigateTo: "/admin/dashboard/managePackaging",
     icon: "calendar",
     color: "yellow",
     badge: "",

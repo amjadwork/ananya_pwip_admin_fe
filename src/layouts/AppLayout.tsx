@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-
+import {ErrorContext} from './../context/errorContext';
 
 import {
   Container,
@@ -15,7 +15,7 @@ import {
 import ProductsContainer from "../containers/Products";
 import ManageProductsContainer from "../containers/ManageProducts";
 import LocationsContainer from "../containers/Locations";
-import PackagingContainer from "../containers/Packaging";
+import ManagePackageContainer from "../containers/ManagePackage";
 import PlaygroundContainer from "../containers/Playground";
 import ManageChaContainer from "../containers/ManageCha";
 import ManageShlContainer from "../containers/ManageShl";
@@ -29,6 +29,7 @@ import SideNavBar from "../components/SideNavBar/SideNavBar";
 
 const AppLayout: React.FC<any> = ({ children }) => {
   const [opened, setOpened] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
   
 
@@ -107,20 +108,25 @@ const AppLayout: React.FC<any> = ({ children }) => {
           },
         })}
       >
+        
         <Container>
+        <ErrorContext.Provider value={{ error, setError }}>
+
           <Routes>
             <Route path="/" element={<PlaygroundContainer />} />
             <Route path="/products" element={<ProductsContainer />} />
             <Route path="/products/:id" element={<ManageProductsContainer />} />
             <Route path="/locations" element={<LocationsContainer />} />
-            <Route path="/packaging" element={<PackagingContainer />} />
             <Route path="/cha" element={<ManageChaContainer/>} />
             <Route path="/Shl" element={<ManageShlContainer/>} />
+            <Route path="/managePackaging" element={<ManagePackageContainer/>} />
             <Route path="/Ofc" element={<ManageOfcContainer/>} />
             <Route path="/transport" element={<ManageTransportContainer/>} />
             <Route path="/pwipServices" element={<ManagePwipServicesContainer/>} />
             <Route path="/others" element={<ManageOthersContainer/>} />
           </Routes>
+          </ErrorContext.Provider>
+
         </Container>
       </AppShell>
     </MantineProvider>

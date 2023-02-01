@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useContext,useEffect, useRef } from "react";
 import { Button, TextInput, Space, ActionIcon, Group } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { arrayBuffer } from "stream/consumers";
 import axios from "axios";
-import api from './../../helper/api';
+import FetchData from './../../helper/api';
+import {ErrorContext } from './../../context/errorContext';
 
 // import { getProduct } from "./../../helper/api";
 import { DialogBody } from "@mantine/core/lib/Dialog/Dialog";
@@ -23,18 +24,10 @@ function AddProductForm(props: any) {
   const [categoriesList, setCategoriesList] = useState([]);
   const [allValue, setAllValue] = useState({});
   const [productId, setProductId] = useState("");
-  const [error,setError] =useState('');
-
-  useEffect(()=>{
-    if(error){
-      // return (
-        <Alert  title="Bummer!" color="red">
-          Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-        </Alert>
-      // );
-    
-    }
-  }, [error]);
+  const [errorMsg,setErrorMsg] =useState('');
+  
+  
+  
 
   
   const form = useForm({
@@ -66,7 +59,7 @@ function AddProductForm(props: any) {
   };
  
 
-  const handleClick:any = () => {
+  const handleClick = () => {
     const arr: any = [...categoriesList];
     const categoryObj = {
       name: categoriesValue,
@@ -97,7 +90,7 @@ function AddProductForm(props: any) {
     // console.log(arr);
   };
 
-  const handleSubmit = (values: typeof form.values, props: any) => {
+  const handleSubmit = async (values: typeof form.values, props: any) => {
     const arr: any = [];
     arr.push(values);
     setAllValue(arr);
@@ -110,34 +103,19 @@ function AddProductForm(props: any) {
         status: "live",
       };
 
-      try{
-        api.post('/product', payload)
-        .then((response:any) => 
-        {
-        console.log(response.data._id);
-        setProductId(response.data._id);
-        
-      // post category api
-        const payloadCategory = {
-          _productId: response.data._id,
-          category: categoriesList,
-        };
-        try{
-          api.post('/category',payloadCategory)
-          .then((catRes: any) => {
-            console.log("response cat", catRes);
-            handleCloseModal(false);
-          })
-        }
-          catch(error:any) {
-            setError(error);   
-          }
-        })
-        
-      } catch(error:any) {
-        setError(error);
-      }
- 
+      const postProduct = await FetchData('http://localhost:8000/api/product','POST', payload)
+      console.log(postProduct);
+      setProductId(postProduct._id);
+
+      const payloadCategory = {
+        _productId: postProduct._id,
+        category: categoriesList,
+       };
+
+      const postCategory= await FetchData('localhost:8000/api/category','POST',payloadCategory);
+      console.log("response cat", postCategory);
+      handleCloseModal(false);
+    
   };
       
   
