@@ -1,8 +1,10 @@
 import React, { createContext, useState } from 'react';
+import { Alert } from "@mantine/core";
+
 export const ErrorContext = createContext();
 
 // export const ErrorProvider = ({ children }) => {
-//     const [error, setError] = useState(null);
+//     const [error, setError] = useState(false);
   
 //     const showError = (message) => {
 //       setError(message);
@@ -14,7 +16,11 @@ export const ErrorContext = createContext();
   
 //     return (
 //       <ErrorContext.Provider value={{ error, showError, hideError }}>
-//         {children}
+//          {error ? (
+//               <Alert title="Something wrong" color="red" radius="md">
+//                 Didn't get name of product properly .
+//               </Alert>
+//             ) : null}
 //       </ErrorContext.Provider>
 //     );
 //   };

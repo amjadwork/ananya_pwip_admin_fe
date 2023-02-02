@@ -1,8 +1,8 @@
-import React, { useState,useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Alert } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import FetchData from "./../../../helper/api";
-import {ErrorContext } from './../../../context/errorContext';
+import { ErrorContext } from "./../../../context/errorContext";
 import {
   SimpleGrid,
   Box,
@@ -35,16 +35,20 @@ const RenderPageHeader = (props: any) => {
   const { error, setError } = useContext(ErrorContext);
 
   return (
-    
-    <PageHeader
-      title="Manage Products"
-      breadcrumbs={[
-        { title: "Products", href: "/admin/dashboard/products" },
-        { title: "Manage", href: "#" },
-      ]}
-    />
-       
-     
+    <Group>
+            {error ? (
+              <Alert title="Something wrong" color="red" radius="md">
+                Didn't get name of product properly .
+              </Alert>
+            ) : null}
+          </Group>
+    // <PageHeader
+    //   title="Manage Products"
+    //   breadcrumbs={[
+    //     { title: "Products", href: "/admin/dashboard/products" },
+    //     { title: "Manage", href: "#" },
+    //   ]}
+    // />
   );
 };
 
@@ -156,8 +160,8 @@ function EditProductsContainer(props: any) {
   const [status, setStatus] = React.useState<any>("");
   const [productName, setProductName] = useState("");
   const { error, setError } = useContext(ErrorContext);
+  console.log("error",error);
   
-
   useEffect(() => {
     if (error === true) {
       setTimeout(() => {
@@ -166,22 +170,20 @@ function EditProductsContainer(props: any) {
     }
   }, [error]);
 
-
-
-  useEffect(() => { 
+  useEffect(() => {
     handleData();
   }, []);
 
-  const handleData =async()=>{
+  const handleData = async () => {
+    
     const productId = window.location.pathname.split("products/")[1];
-    const getData:any = await FetchData (`http://localhost:8000/api/product/${productId}`, 'GETBYID')
-    setProductName(getData.name);
+    const getData: any = await FetchData(
+      `http://localhost:8000/api/63c24e82488367387c5119bc`,
+      'GETBYID'
+    )
+    {getData.name==="AxiosError"? setError(true): setProductName(getData.name)}
 
-  }
-
-  
-  
-
+  };
 
   const handleSave = async (bool: boolean) => {
     const productId = window.location.pathname.split("products/")[1];
@@ -189,15 +191,19 @@ function EditProductsContainer(props: any) {
     handleEditAction(bool);
     console.log("updatestatus", status);
 
-    const payloadUpdate= {
+    const payloadUpdate = {
       name: productName,
-      image: "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      image:
+        "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
       status: status,
-    }
+    };
 
-    const putData=await FetchData(`http://localhost:8000/api/product/${productId}` ,'PUT', payloadUpdate);
+    const putData = await FetchData(
+      `http://localhost:8000/api/product/${productId}`,
+      "PUT",
+      payloadUpdate
+    );
     // console.log(putData);
-   
   };
 
   return (
@@ -261,7 +267,6 @@ function EditProductsContainer(props: any) {
           <Title order={1}>{productName}</Title>
 
           <Group spacing="md">
-           
             <Select
               placeholder="Status"
               data={[

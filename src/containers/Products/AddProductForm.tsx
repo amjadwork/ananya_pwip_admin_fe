@@ -24,7 +24,7 @@ function AddProductForm(props: any) {
   const [categoriesList, setCategoriesList] = useState([]);
   const [allValue, setAllValue] = useState({});
   const [productId, setProductId] = useState("");
-  const [errorMsg,setErrorMsg] =useState('');
+  // const [errorMsg,setErrorMsg] =useState('');
   
   
   

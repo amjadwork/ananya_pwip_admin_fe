@@ -1,15 +1,11 @@
-import React, { useState,useEffect,useContext } from "react";
+import { useContext } from 'react';
 import axios from "axios";
-import { ErrorContext } from "./../context/errorContext";
-
 //Create a context for error handling:
 
 const FetchData = async (url, method, data) => {
-  // const [error,setError]=useState(false);
-  // console.log(error,"error");
-  // // const { setError } = useContext(ErrorContext);
 
-  try {
+  
+   try {
     let response;
     switch (method) {
       case "GET":
@@ -32,10 +28,8 @@ const FetchData = async (url, method, data) => {
     }
     return response.data;
   } catch (error) {
-    console.log(error.message);
-    // setError(true);
-    // console.log(error,"error");
-    return null;
+    console.log(error,"error");
+    return error;
   }
 }
 export default FetchData;

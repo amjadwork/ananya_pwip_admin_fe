@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import {ErrorContext} from './../context/errorContext';
+// import {ErrorContext} from './../context/errorContext';
 
 import {
   Container,
@@ -29,7 +29,7 @@ import SideNavBar from "../components/SideNavBar/SideNavBar";
 
 const AppLayout: React.FC<any> = ({ children }) => {
   const [opened, setOpened] = useState(false);
-  const [error, setError] = useState(false);
+  
   const navigate = useNavigate();
   
 
@@ -110,7 +110,7 @@ const AppLayout: React.FC<any> = ({ children }) => {
       >
         
         <Container>
-        <ErrorContext.Provider value={{ error, setError }}>
+       
 
           <Routes>
             <Route path="/" element={<PlaygroundContainer />} />
@@ -125,7 +125,7 @@ const AppLayout: React.FC<any> = ({ children }) => {
             <Route path="/pwipServices" element={<ManagePwipServicesContainer/>} />
             <Route path="/others" element={<ManageOthersContainer/>} />
           </Routes>
-          </ErrorContext.Provider>
+          
 
         </Container>
       </AppShell>
