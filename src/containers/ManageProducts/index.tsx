@@ -30,15 +30,23 @@ import { riceCategory } from "../../constants/var.constants";
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
-
+  const { error, setError } = useContext(ErrorContext);
   return (
-    <PageHeader
-      title="Manage Products"
-      breadcrumbs={[
-        { title: "Products", href: "/admin/dashboard/products" },
-        { title: "Manage", href: "#" },
-      ]}
-    />
+    <Group>
+    {error ? (
+      <Alert title="Something wrong" color="red" radius="md">
+        Didn't get name of product properly .
+      </Alert>
+    ) : (
+      <PageHeader
+        title="Manage Products"
+        breadcrumbs={[
+          { title: "Products", href: "/admin/dashboard/products" },
+          { title: "Manage", href: "#" },
+        ]}
+      />
+    )}
+  </Group>
   );
 };
 
@@ -162,8 +170,12 @@ function ManageProductsContainer(props: any) {
       `http://localhost:8000/api/product/${productId}`,
       "GETBYID"
     );
-    setProductName(getSingleProduct.name);
     setStatus(getSingleProduct.status);
+    {
+      getSingleProduct.name === "AxiosError"
+        ? setError(true)
+        : setProductName(getSingleProduct.name);
+    }
   };
 
   const handleEditAction = (bool: boolean) => {
@@ -225,13 +237,13 @@ function ManageProductsContainer(props: any) {
       >
         <Group position="apart">
           <Title order={1}>{productName}</Title>
-          <Group>
+          {/* <Group>
             {error ? (
               <Alert title="Something wrong" color="red" radius="md">
                 Didn't get name of product properly .
               </Alert>
             ) : null}
-          </Group>
+          </Group> */}
           <Badge size="lg" color="green" variant="light">
             {status}
           </Badge>

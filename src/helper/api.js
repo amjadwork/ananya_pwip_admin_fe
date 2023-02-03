@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import axios from "axios";
+import { Alert } from "@mantine/core";
 //Create a context for error handling:
 
 const FetchData = async (url, method, data) => {

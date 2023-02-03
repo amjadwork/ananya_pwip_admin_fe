@@ -24,6 +24,7 @@ import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import AlertError from "../../../components/Alert/AlertError";
 
 import EditProductForm from "./EditProductsForm";
 
@@ -36,19 +37,16 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <Group>
-            {error ? (
-              <Alert title="Something wrong" color="red" radius="md">
-                Didn't get name of product properly .
-              </Alert>
-            ) : null}
-          </Group>
-    // <PageHeader
-    //   title="Manage Products"
-    //   breadcrumbs={[
-    //     { title: "Products", href: "/admin/dashboard/products" },
-    //     { title: "Manage", href: "#" },
-    //   ]}
-    // />
+      {error ? <AlertError/>: (
+        <PageHeader
+          title="Manage Products"
+          breadcrumbs={[
+            { title: "Products", href: "/admin/dashboard/products" },
+            { title: "Manage", href: "#" },
+          ]}
+        />
+      )}
+    </Group>
   );
 };
 
@@ -160,8 +158,8 @@ function EditProductsContainer(props: any) {
   const [status, setStatus] = React.useState<any>("");
   const [productName, setProductName] = useState("");
   const { error, setError } = useContext(ErrorContext);
-  console.log("error",error);
-  
+  // console.log("error", error);
+
   useEffect(() => {
     if (error === true) {
       setTimeout(() => {
@@ -175,14 +173,18 @@ function EditProductsContainer(props: any) {
   }, []);
 
   const handleData = async () => {
-    
     const productId = window.location.pathname.split("products/")[1];
     const getData: any = await FetchData(
       `http://localhost:8000/api/63c24e82488367387c5119bc`,
-      'GETBYID'
-    )
-    {getData.name==="AxiosError"? setError(true): setProductName(getData.name)}
-
+      "GETBYID"
+    );
+    console.log(getData,"getData");
+    
+    {
+      getData.name === "AxiosError"
+        ? setError(true)
+        : setProductName(getData.name);
+    }
   };
 
   const handleSave = async (bool: boolean) => {
