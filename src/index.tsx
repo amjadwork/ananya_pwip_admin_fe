@@ -3,14 +3,21 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
+  <MantineProvider withNormalizeCSS withGlobalStyles>
+  <NotificationsProvider position="bottom-center">
     <App />
-  </React.StrictMode>
+  </NotificationsProvider>
+</MantineProvider>
+
+  
 );
 
 // If you want to start measuring performance in your app, pass a function

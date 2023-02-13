@@ -9,6 +9,9 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { HeaderOptions } from "../../constants/header.constants";
+import { useNavigate } from "react-router-dom";
+import { showNotification } from "@mantine/notifications";
+
 
 import { useStyles } from "../../styles/components/header.style";
 
@@ -21,6 +24,7 @@ interface Props {
 const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
   const { classes } = useStyles();
   const theme = useMantineTheme();
+  const Router = useNavigate();
 
   return (
     <header className={classes.headerContainer}>
@@ -55,7 +59,20 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
               variant="outline"
               color="blue"
             >
-              <Text size="sm" color="blue">
+              <Text size="sm" color="blue" 
+               onClick={(
+
+               ) =>{
+                localStorage.removeItem("access_token"); 
+                Router('/')
+                showNotification({
+                  title: "Logged out succesfully",
+                   message: "",
+                  autoClose: 1500,
+                 }) 
+              }}
+
+              >
                 Logout
               </Text>
             </Button>

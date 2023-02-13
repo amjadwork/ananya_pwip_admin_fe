@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
@@ -15,26 +15,24 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import APIRequest from "./../../helper/api";
 
 import EditProductsContainer from "./EditProducts/EditProducts";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { riceCategory } from "../../constants/var.constants";
-
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
+const RenderPageHeader = () => {
   return (
-    <PageHeader
-      title="Manage Products"
-      breadcrumbs={[
-        { title: "Products", href: "/admin/dashboard/products" },
-        { title: "Manage", href: "#" },
-      ]}
-    />
+    <Group>
+      <PageHeader
+        title="Manage Products"
+        breadcrumbs={[
+          { title: "Products", href: "/admin/dashboard/products" },
+          { title: "Manage", href: "#" },
+        ]}
+      />
+    </Group>
   );
 };
 
@@ -89,7 +87,9 @@ const RenderPageAction = (props: any) => {
               <Button
                 size="xs"
                 color="gray"
-                onClick={() => handleEditAction(false)}
+                onClick={() => {
+                  handleEditAction(false);
+                }}
               >
                 Cancel
               </Button>
@@ -127,10 +127,58 @@ const RenderPageAction = (props: any) => {
 };
 
 function ManageProductsContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [productData, setProductData] = useState<any>(null);
+  const [categoryData, setCategoryData] = useState<any>([]);
+  const [variantsData, setVariantsData] = useState<any>([]);
+
+  useEffect(() => {
+    handleGetProductData();
+  }, []);
+
+  const handleGetProductData = async () => {
+    const productId = window.location.pathname.split("products/")[1];
+
+    const productDetailResponse: any = await APIRequest(
+      `product/${productId}`,
+      "GET"
+    );
+    if (productDetailResponse) {
+      setProductData(productDetailResponse);
+      handleGetCategoryData(productDetailResponse._id);
+    }
+  };
+
+  const handleGetCategoryData = async (id: string) => {
+    const productId = id;
+
+    const categoryDetailResponse: any = await APIRequest(
+      `category?_productId=${productId}`,
+      "GET"
+    );
+    if (categoryDetailResponse) {
+      setCategoryData(categoryDetailResponse[0].category || []);
+      const categoryIdArr = categoryDetailResponse[0].category.map(
+        (cat: any) => cat._id
+      );
+      handleGetVariantData(categoryIdArr);
+    }
+  };
+
+  const handleGetVariantData = async (ids: Array<[]>) => {
+    const categoryIds = ids;
+
+    const variantResponse: any = await APIRequest(
+      `variant?_categoryId=${categoryIds}`,
+      "GET"
+    );
+    if (variantResponse) {
+      setVariantsData(variantResponse);
+      handleEditAction(false);
+    }
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -142,6 +190,10 @@ function ManageProductsContainer() {
     setModalOpen(true);
   };
 
+  const handleRefreshCalls = () => {
+    handleGetProductData();
+  };
+
   if (editModeActive) {
     return (
       <EditProductsContainer
@@ -150,20 +202,18 @@ function ManageProductsContainer() {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        productData={productData || null}
+        categoryData={categoryData}
+        handleRefreshCalls={handleRefreshCalls}
+        handleSaveCallback={handleGetProductData}
+        variantsData={variantsData}
       />
     );
   }
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => <RenderPageHeader />}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
@@ -190,9 +240,9 @@ function ManageProductsContainer() {
         })}
       >
         <Group position="apart">
-          <Title order={1}>Rice</Title>
+          <Title order={1}>{productData?.name || ""}</Title>
           <Badge size="lg" color="green" variant="light">
-            Live
+            {productData?.status || ""}
           </Badge>
         </Group>
       </Box>
@@ -200,7 +250,7 @@ function ManageProductsContainer() {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {riceCategory.map((cat: any, index: number) => {
+        {categoryData?.map((cat: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -216,35 +266,49 @@ function ManageProductsContainer() {
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
+                  {variantsData.map((d: any, i: number) => {
+                    if (d._categoryId === cat._id) {
+                      return (
+                        <Box
+                          key={i}
+                          sx={(theme) => ({
+                            display: "block",
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[6]
+                                : "#fff",
+                            color:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[4]
+                                : theme.colors.dark[7],
+                            textAlign: "left",
+                            padding: theme.spacing.md,
+                            borderRadius: theme.radius.md,
+                            cursor: "default",
 
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>{d.name}</List.Item>
-                    </Box>
-                  ))}
+                            "&:hover": {
+                              backgroundColor:
+                                theme.colorScheme === "dark"
+                                  ? theme.colors.dark[5]
+                                  : theme.colors.gray[1],
+                            },
+                          })}
+                        >
+                          <List.Item>
+                            {d.name}{" "}
+                            <Text
+                              size="sm"
+                              sx={(theme) => ({
+                                color: theme.colors.dark[1],
+                              })}
+                            >
+                              available at {d.costing.length} region
+                            </Text>
+                          </List.Item>
+                        </Box>
+                      );
+                    }
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>
