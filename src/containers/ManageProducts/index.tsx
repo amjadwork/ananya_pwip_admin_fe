@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
@@ -15,29 +15,16 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import FetchData from "./../../helper/api";
-import { ErrorContext } from "./../../context/errorContext";
+import APIRequest from "./../../helper/api";
 
 import EditProductsContainer from "./EditProducts/EditProducts";
-import axios from "axios";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { Alert } from "@mantine/core";
 
-import { riceCategory } from "../../constants/var.constants";
-
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-  const { error, setError } = useContext(ErrorContext);
+const RenderPageHeader = () => {
   return (
     <Group>
-    {error ? (
-      <Alert title="Something wrong" color="red" radius="md">
-        Didn't get name of product properly .
-      </Alert>
-    ) : (
       <PageHeader
         title="Manage Products"
         breadcrumbs={[
@@ -45,8 +32,7 @@ const RenderPageHeader = (props: any) => {
           { title: "Manage", href: "#" },
         ]}
       />
-    )}
-  </Group>
+    </Group>
   );
 };
 
@@ -102,7 +88,6 @@ const RenderPageAction = (props: any) => {
                 size="xs"
                 color="gray"
                 onClick={() => {
-                  console.log("fffff");
                   handleEditAction(false);
                 }}
               >
@@ -141,40 +126,57 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-function ManageProductsContainer(props: any) {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
+function ManageProductsContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
-  const [productName, setProductName] = useState("");
-  const [status, setStatus] = useState("");
-
-  const { error, setError } = useContext(ErrorContext);
-
-  useEffect(() => {
-    if (error === true) {
-      setTimeout(() => {
-        setError(false);
-      }, 5000);
-    }
-  }, [error]);
+  const [productData, setProductData] = useState<any>(null);
+  const [categoryData, setCategoryData] = useState<any>([]);
+  const [variantsData, setVariantsData] = useState<any>([]);
 
   useEffect(() => {
-    handleData();
+    handleGetProductData();
   }, []);
 
-  const handleData = async () => {
+  const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
 
-    const getSingleProduct: any = await FetchData(
-      `http://localhost:8000/api/product/${productId}`,
-      "GETBYID"
+    const productDetailResponse: any = await APIRequest(
+      `product/${productId}`,
+      "GET"
     );
-    setStatus(getSingleProduct.status);
-    {
-      getSingleProduct.name === "AxiosError"
-        ? setError(true)
-        : setProductName(getSingleProduct.name);
+    if (productDetailResponse) {
+      setProductData(productDetailResponse);
+      handleGetCategoryData(productDetailResponse._id);
+    }
+  };
+
+  const handleGetCategoryData = async (id: string) => {
+    const productId = id;
+
+    const categoryDetailResponse: any = await APIRequest(
+      `category?_productId=${productId}`,
+      "GET"
+    );
+    if (categoryDetailResponse) {
+      setCategoryData(categoryDetailResponse[0].category || []);
+      const categoryIdArr = categoryDetailResponse[0].category.map(
+        (cat: any) => cat._id
+      );
+      handleGetVariantData(categoryIdArr);
+    }
+  };
+
+  const handleGetVariantData = async (ids: Array<[]>) => {
+    const categoryIds = ids;
+
+    const variantResponse: any = await APIRequest(
+      `variant?_categoryId=${categoryIds}`,
+      "GET"
+    );
+    if (variantResponse) {
+      setVariantsData(variantResponse);
+      handleEditAction(false);
     }
   };
 
@@ -188,6 +190,10 @@ function ManageProductsContainer(props: any) {
     setModalOpen(true);
   };
 
+  const handleRefreshCalls = () => {
+    handleGetProductData();
+  };
+
   if (editModeActive) {
     return (
       <EditProductsContainer
@@ -196,20 +202,18 @@ function ManageProductsContainer(props: any) {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        productData={productData || null}
+        categoryData={categoryData}
+        handleRefreshCalls={handleRefreshCalls}
+        handleSaveCallback={handleGetProductData}
+        variantsData={variantsData}
       />
     );
   }
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => <RenderPageHeader />}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
@@ -236,16 +240,9 @@ function ManageProductsContainer(props: any) {
         })}
       >
         <Group position="apart">
-          <Title order={1}>{productName}</Title>
-          {/* <Group>
-            {error ? (
-              <Alert title="Something wrong" color="red" radius="md">
-                Didn't get name of product properly .
-              </Alert>
-            ) : null}
-          </Group> */}
+          <Title order={1}>{productData?.name || ""}</Title>
           <Badge size="lg" color="green" variant="light">
-            {status}
+            {productData?.status || ""}
           </Badge>
         </Group>
       </Box>
@@ -253,7 +250,7 @@ function ManageProductsContainer(props: any) {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {riceCategory.map((cat: any, index: number) => {
+        {categoryData?.map((cat: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -269,35 +266,49 @@ function ManageProductsContainer(props: any) {
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
+                  {variantsData.map((d: any, i: number) => {
+                    if (d._categoryId === cat._id) {
+                      return (
+                        <Box
+                          key={i}
+                          sx={(theme) => ({
+                            display: "block",
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[6]
+                                : "#fff",
+                            color:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[4]
+                                : theme.colors.dark[7],
+                            textAlign: "left",
+                            padding: theme.spacing.md,
+                            borderRadius: theme.radius.md,
+                            cursor: "default",
 
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>{d.name}</List.Item>
-                    </Box>
-                  ))}
+                            "&:hover": {
+                              backgroundColor:
+                                theme.colorScheme === "dark"
+                                  ? theme.colors.dark[5]
+                                  : theme.colors.gray[1],
+                            },
+                          })}
+                        >
+                          <List.Item>
+                            {d.name}{" "}
+                            <Text
+                              size="sm"
+                              sx={(theme) => ({
+                                color: theme.colors.dark[1],
+                              })}
+                            >
+                              available at {d.costing.length} region
+                            </Text>
+                          </List.Item>
+                        </Box>
+                      );
+                    }
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>

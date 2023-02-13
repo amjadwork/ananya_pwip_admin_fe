@@ -152,7 +152,6 @@ function EditPwipServiceForm(props: any) {
           required
           label="Order value"
           placeholder="Eg. 780"
-          data={[]}
           {...form.getInputProps("order")}
         />
 

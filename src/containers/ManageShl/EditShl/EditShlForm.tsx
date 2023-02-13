@@ -100,7 +100,6 @@ function EditShlForm(props: any) {
               required
               label="Enter Destination Port"
               placeholder="Eg. singapore"
-              data={[]}
               {...form.getInputProps("destination")}
             />
 
@@ -196,7 +195,6 @@ function EditShlForm(props: any) {
           required
           label="Enter Destination Port"
           placeholder="Eg. singapore"
-          data={[]}
           {...form.getInputProps("destination")}
         />
 

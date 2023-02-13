@@ -1,26 +1,21 @@
-
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-
-
+import { useNavigate } from "react-router-dom";
 
 const withAuth = (WrappedComponent) => {
-
   return (props) => {
     const navigate = useNavigate();
-    
-    const [authVerified, setAuthVerified] = useState(false);
 
-    useEffect( () => {
+    const [authVerified, setAuthVerified] = useState(true);
+
+    useEffect(() => {
       const accessToken = localStorage.getItem("access_token");
       // console.log(accessToken);
       // if no accessToken was found,then we redirect to "/" page.
-      if (!accessToken) {
-       
-        window.location.href = '/'
-      } else {
-        setAuthVerified(true);
-      }
+      // if (!accessToken) {
+      //   window.location.href = "/";
+      // } else {
+      //   setAuthVerified(true);
+      // }
     }, []);
 
     if (authVerified) {
@@ -29,49 +24,36 @@ const withAuth = (WrappedComponent) => {
       return null;
     }
   };
-}
+};
 
+//
+// const [authVerified, setAuthVerified] = useState(false);
+// console.log(authVerified)
 
-  // 
-  // const [authVerified, setAuthVerified] = useState(false);
-  // console.log(authVerified)
+// // const PrivateRoute = ({ redirectTo, component , isAuth }) => {
+// //   return isAuth ?  component : <Navigate to={redirectTo} />;
+// // };
+// useEffect(() => {
+//   const accessToken = localStorage.getItem("access_token");
+//   // if no accessToken was found,then we redirect to "/" page.
+//   if (!accessToken) {
+//     navigate('/', { replace: true });
 
-  // // const PrivateRoute = ({ redirectTo, component , isAuth }) => {
-  // //   return isAuth ?  component : <Navigate to={redirectTo} />;
-  // // };
-  // useEffect(() => {
-  //   const accessToken = localStorage.getItem("access_token");
-  //   // if no accessToken was found,then we redirect to "/" page.
-  //   if (!accessToken) {
-  //     navigate('/', { replace: true });
+//   } else {
+//     setAuthVerified(true);
+//     // navigate('/admin/dashboard', { replace: true });
+//   //  < Navigate to={<DashboardScreen/>}/>
+//   }
+// }, []);
 
-  //   } else {
-  //     setAuthVerified(true);
-  //     // navigate('/admin/dashboard', { replace: true });
-  //   //  < Navigate to={<DashboardScreen/>}/>
-  //   }
-  // }, []);
+// return () => {
 
-
-  // return () => {
-   
-
-   
-
-    // if (authVerified) {
-    //   return <
-    //       DashboardScreen 
-    //        />;
-    // } else {
-    //   return null;
-    // }
- 
-
-
-
-
+// if (authVerified) {
+//   return <
+//       DashboardScreen
+//        />;
+// } else {
+//   return null;
+// }
 
 export default withAuth;
-
-
-

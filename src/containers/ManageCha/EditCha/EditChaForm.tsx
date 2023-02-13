@@ -202,7 +202,6 @@ function EditChaForm(props: any) {
           required
           label="Enter Destination port"
           placeholder="Eg. Karnal"
-          data={[]}
           {...form.getInputProps("destination")}
         />
         {/* </Grid.Col> */}

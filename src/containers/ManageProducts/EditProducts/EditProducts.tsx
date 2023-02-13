@@ -1,8 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Alert } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import FetchData from "./../../../helper/api";
-import { ErrorContext } from "./../../../context/errorContext";
+import React from "react";
 import {
   SimpleGrid,
   Box,
@@ -14,39 +10,27 @@ import {
   Select,
   Space,
   Title,
-  Badge,
   Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
-import axios from "axios";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import AlertError from "../../../components/Alert/AlertError";
 
-import EditProductForm from "./EditProductsForm";
+import AddOrEditProductForm from "./AddOrEditProductForm";
+import APIRequest from "./../../../helper/api";
 
-import { riceCategory } from "../../../constants/var.constants";
-
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-  const { error, setError } = useContext(ErrorContext);
-
+const RenderPageHeader = () => {
   return (
-    <Group>
-      {error ? <AlertError/>: (
-        <PageHeader
-          title="Manage Products"
-          breadcrumbs={[
-            { title: "Products", href: "/admin/dashboard/products" },
-            { title: "Manage", href: "#" },
-          ]}
-        />
-      )}
-    </Group>
+    <PageHeader
+      title="Manage Products"
+      breadcrumbs={[
+        { title: "Products", href: "/admin/dashboard/products" },
+        { title: "Manage", href: "#" },
+      ]}
+    />
   );
 };
 
@@ -114,7 +98,7 @@ const RenderPageAction = (props: any) => {
                 color="blue"
                 onClick={() => {
                   if (handleSaveAction) {
-                    handleSaveAction();
+                    handleSaveAction(false);
                   }
                   handleEditAction(false);
                 }}
@@ -144,104 +128,99 @@ const RenderPageAction = (props: any) => {
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  return <EditProductForm handleCloseModal={handleCloseModal} />;
+  const categoryData = props.categoryData;
+  const handleSaveCallback = props.handleSaveCallback;
+  const variantsData = props.variantsData;
+
+  let regionCostingList: any = [];
+
+  if (variantsData) {
+    regionCostingList = [...variantsData.costing];
+  }
+
+  return (
+    <AddOrEditProductForm
+      handleCloseModal={handleCloseModal}
+      categoryData={categoryData}
+      handleSaveCallback={handleSaveCallback}
+      regionCostingList={regionCostingList}
+      variantsData={variantsData}
+    />
+  );
 };
 
 function EditProductsContainer(props: any) {
+  const productData = props.productData || null;
+  const categoryData = props.categoryData || [];
   const editModeActive = props.editModeActive;
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
-  const handleEditToUpdateAction = props.handleEditToUpdateAction;
+  const handleRefreshCalls = props.handleRefreshCalls;
+  const handleSaveCallback = props.handleSaveCallback;
+  const variantsData = props.variantsData || [];
 
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [status, setStatus] = React.useState<any>("");
-  const [productName, setProductName] = useState("");
-  const { error, setError } = useContext(ErrorContext);
-  // console.log("error", error);
-
-  useEffect(() => {
-    if (error === true) {
-      setTimeout(() => {
-        setError(false);
-      }, 5000);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    handleData();
-  }, []);
-
-  const handleData = async () => {
-    const productId = window.location.pathname.split("products/")[1];
-    const getData: any = await FetchData(
-      `http://localhost:8000/api/63c24e82488367387c5119bc`,
-      "GETBYID"
-    );
-    console.log(getData,"getData");
-    
-    {
-      getData.name === "AxiosError"
-        ? setError(true)
-        : setProductName(getData.name);
-    }
-  };
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
+  const [status, setStatus] = React.useState<any>(productData.status || "");
+  const [selectedVariantData, setSelectedVariantData] =
+    React.useState<any>(null);
 
   const handleSave = async (bool: boolean) => {
-    const productId = window.location.pathname.split("products/")[1];
-
-    handleEditAction(bool);
-    console.log("updatestatus", status);
-
-    const payloadUpdate = {
-      name: productName,
-      image:
-        "https://images.unsplash.com/photo-1592997572594-34be01bc36c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    const payload = {
+      name: productData.name,
+      image: productData.image,
       status: status,
     };
 
-    const putData = await FetchData(
-      `http://localhost:8000/api/product/${productId}`,
+    const updateStatusResponse = await APIRequest(
+      `product/${productData._id}`,
       "PUT",
-      payloadUpdate
+      payload
     );
-    // console.log(putData);
+
+    if (updateStatusResponse) {
+      handleRefreshCalls();
+      handleEditAction(bool);
+    }
   };
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => <RenderPageHeader />}
       PageAction={() => (
         <RenderPageAction
           editModeActive={editModeActive}
-          handleEditAction={handleSave}
+          handleEditAction={handleEditAction}
+          handleSaveAction={handleSave}
         />
       )}
-      modalOpen={modalOpen}
+      modalOpen={modalOpen || updateModalOpen}
       modalTitle={
-        modalType === "edit" ? "Add Product Variant" : "Update Product Variant"
+        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
       }
-      onModalClose={() => setModalOpen(false)}
+      onModalClose={() => {
+        setModalOpen(false);
+        setUpdateModalOpen(false);
+        setSelectedVariantData(null);
+      }}
       ModalContent={() => {
-        if (modalType === "edit") {
+        if (modalType === "edit" && !updateModalOpen) {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+              categoryData={categoryData}
+              handleSaveCallback={handleSaveCallback}
             />
           );
         }
 
-        if (modalType === "update") {
+        if (updateModalOpen && selectedVariantData) {
           return (
             <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+              handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
+              categoryData={categoryData}
+              handleSaveCallback={handleSaveCallback}
+              variantsData={selectedVariantData}
             />
           );
         }
@@ -266,7 +245,7 @@ function EditProductsContainer(props: any) {
         })}
       >
         <Group position="apart">
-          <Title order={1}>{productName}</Title>
+          <Title order={1}>{productData?.name || ""}</Title>
 
           <Group spacing="md">
             <Select
@@ -277,8 +256,9 @@ function EditProductsContainer(props: any) {
                 { value: "disabled", label: "Disabled" },
                 { value: "review", label: "Review" },
               ]}
-              onChange={(e: any) => {
-                setStatus(e);
+              defaultValue={productData?.status || "Select status"}
+              onChange={(value: any) => {
+                setStatus(value);
               }}
             />
             <Button
@@ -286,7 +266,7 @@ function EditProductsContainer(props: any) {
               leftIcon={<Plus size={14} />}
               onClick={() => setModalOpen(true)}
             >
-              Add
+              Add Variant
             </Button>
           </Group>
         </Group>
@@ -295,7 +275,7 @@ function EditProductsContainer(props: any) {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {riceCategory.map((cat: any, index: number) => {
+        {categoryData?.map((cat: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -311,53 +291,56 @@ function EditProductsContainer(props: any) {
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
+                  {variantsData.map((d: any, i: number) => {
+                    if (d._categoryId === cat._id) {
+                      return (
+                        <Box
+                          key={i}
+                          sx={(theme) => ({
+                            display: "block",
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[6]
+                                : "#fff",
+                            color:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[4]
+                                : theme.colors.dark[7],
+                            textAlign: "left",
+                            padding: theme.spacing.md,
+                            borderRadius: theme.radius.md,
+                            cursor: "default",
 
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <Group position="apart">
-                        <List.Item>{d.name}</List.Item>
-
-                        <ActionIcon
-                          variant="outline"
-                          color="gray"
-                          size="sm"
-                          sx={{
-                            "&[data-disabled]": { opacity: 0.4 },
-                          }}
-                          onClick={() => {
-                            handleEditToUpdateAction();
-                            setModalOpen(true);
-                            console.log(d);
-                          }}
+                            "&:hover": {
+                              backgroundColor:
+                                theme.colorScheme === "dark"
+                                  ? theme.colors.dark[5]
+                                  : theme.colors.gray[1],
+                            },
+                          })}
                         >
-                          <Pencil size={12} />
-                        </ActionIcon>
-                      </Group>
-                    </Box>
-                  ))}
+                          <Group position="apart">
+                            <List.Item>{d.name}</List.Item>
+
+                            <ActionIcon
+                              variant="outline"
+                              color="gray"
+                              size="sm"
+                              sx={{
+                                "&[data-disabled]": { opacity: 0.4 },
+                              }}
+                              onClick={() => {
+                                setUpdateModalOpen(true);
+                                setSelectedVariantData(d);
+                              }}
+                            >
+                              <Pencil size={12} />
+                            </ActionIcon>
+                          </Group>
+                        </Box>
+                      );
+                    }
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>

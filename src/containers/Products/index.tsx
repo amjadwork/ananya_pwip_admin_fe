@@ -1,18 +1,16 @@
-import React, { useState,useContext, useEffect } from "react";
-import { SimpleGrid, ActionIcon ,Group} from "@mantine/core";
+import React, { useState, useContext, useEffect } from "react";
+import { SimpleGrid, ActionIcon, Group } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "@mantine/core";
-import FetchData from "./../../helper/api";
-import {ErrorContext } from './../../context/errorContext';
-
+import APIRequest from "./../../helper/api";
+import { ErrorContext } from "./../../context/errorContext";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import axios from "axios";
 import Card from "../../components/Card/Card";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import AddProductForm from "./AddProductForm";
+import AddProductForm from "./AddProduct/AddProductForm";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -56,16 +54,13 @@ const RenderModalContent = (props: any) => {
   return <AddProductForm handleCloseModal={handleCloseModal} />;
 };
 
-function ProductsContainer(props: any) {
+function ProductsContainer() {
   const navigate = useNavigate();
 
-
   const [productList, setProductList] = useState([]);
-  const [productIds, setProductIds] = useState("");
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const { error, setError } = useContext(ErrorContext);
-
 
   useEffect(() => {
     if (error === true) {
@@ -73,22 +68,18 @@ function ProductsContainer(props: any) {
         setError(false);
       }, 5000);
     }
-  }, [error]);
-
-  
+  }, [error, setError]);
 
   useEffect(() => {
     handleGetData();
-
   }, []);
 
-  const handleGetData=async()=>{
-    const getData:any = await FetchData("http://localhost:8000/api/product"  , 'GET');
-    // console.log(getData);
-    setProductList(getData);
-  }
-  
-
+  const handleGetData = async () => {
+    const productResponse: any = await APIRequest("product", "GET");
+    if (productResponse) {
+      setProductList(productResponse);
+    }
+  };
 
   return (
     <PageWrapper
@@ -127,13 +118,13 @@ function ProductsContainer(props: any) {
         })}
       </SimpleGrid>
       <Group>
-      {error?(
-        <Alert  title="Bummer!" color="red">
-        Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-      </Alert>
-      ):null}
+        {error ? (
+          <Alert title="Bummer!" color="red">
+            Something terrible happened! You made a mistake and there is no
+            going back, your data was lost forever!
+          </Alert>
+        ) : null}
       </Group>
-      
     </PageWrapper>
   );
 }
