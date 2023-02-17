@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  SimpleGrid,
   Box,
   ActionIcon,
   Group,
@@ -9,7 +8,6 @@ import {
   Button,
   Space,
   Title,
-  Badge,
   Card as SectionCard,
   List,
   ScrollArea,
@@ -24,9 +22,6 @@ import EditLocationFormContainer from "./EditLocationForm";
 import { locationCat } from "../../constants/var.constants";
 
 const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
   return <PageHeader title="Manage Locations" />;
 };
 
@@ -121,7 +116,6 @@ const RenderModalContent = (props: any) => {
 };
 
 function LocationsContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState(false);
 
@@ -131,14 +125,7 @@ function LocationsContainer() {
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => <RenderPageHeader />}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
