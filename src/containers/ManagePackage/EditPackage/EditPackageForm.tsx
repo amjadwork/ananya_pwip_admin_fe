@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Group,
   Button,
@@ -10,45 +10,43 @@ import {
 import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { managePackaging } from "../../../constants/var.constants";
+import APIRequest from "../../../helper/api";
 
 function EditPackageForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
-  const inputRef: any = useRef(null);
+  const handleSaveCallback = props.handleSaveCallback;
 
+  const inputRef: any = useRef(null);
 
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {
-      name: "",
-      category: "",
-    },
-
-    validate: {
-      name: (value) =>
-        value.length < 2 ? "Name must have at least 2 letters" : null,
+      bag: "",
+      weight: "",
+      unit: "",
+      cost: "",
+      currency: "",
     },
   });
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.name) {
-      showNotification({ message: "Please fill name field", color: "red" });
+      showNotification({ message: "Please fill all field", color: "red" });
     }
   };
 
-  const handleSubmit = (values: typeof form.values) => {
-    console.log(values)
-    // let arr: any = [];
-    // if (values.category === "ppwoven") {
-    //   arr = [...managePackaging[0].list];
-    //   arr.push(values);
-    //   console.log("arr 1", arr);
-    // } else {
-    //   arr = [...managePackaging[1].list];
-    //   arr.push(values);
-    //   console.log("arr 2", arr);
-    // }
-    handleCloseModal(false);
+  const handleSubmit = async (formValues: typeof form.values) => {
+    let obj: any = { ...formValues };
+    obj.currency = "INR";
+
+    const payload = { ...obj };
+
+    const addPackagingResponse = await APIRequest("packaging", "POST", payload);
+
+    if (addPackagingResponse) {
+      handleSaveCallback();
+      handleCloseModal(false);
+    }
   };
 
   return (
@@ -58,13 +56,13 @@ function EditPackageForm(props: any) {
         label="Select Bag"
         placeholder="Eg. BOPP"
         data={[
-          { value: "bopp", label: "BOPP" },
-          { value: "ppwoven", label: "PPWOVEN" },
-          { value: "pe", label: "PE" },
-          { value: "jute", label: "JUTE" },
+          { value: "BOPP", label: "BOPP" },
+          { value: "PPWOVEN", label: "PPWOVEN" },
+          { value: "PE", label: "PE" },
+          { value: "JUTE", label: "JUTE" },
         ]}
         ref={inputRef}
-        {...form.getInputProps("category")}
+        {...form.getInputProps("bag")}
       />
 
       <Space h="md" />
@@ -74,7 +72,22 @@ function EditPackageForm(props: any) {
         label="Weight (in KG)"
         placeholder="eg. 18"
         ref={inputRef}
-        {...form.getInputProps("name")}
+        {...form.getInputProps("weight")}
+      />
+
+      <Space h="md" />
+
+      <Select
+        required
+        label="Select weight unit"
+        placeholder="Eg. KG"
+        data={[
+          { value: "KG", label: "KG" },
+          { value: "QUINTEL", label: "Quintel" },
+          { value: "METRIC TON", label: "Metric Ton" },
+        ]}
+        ref={inputRef}
+        {...form.getInputProps("unit")}
       />
 
       <Space h="md" />
@@ -84,16 +97,14 @@ function EditPackageForm(props: any) {
         label="Cost per bag"
         placeholder="eg. 18"
         ref={inputRef}
-        {...form.getInputProps("costPerBag")}
+        {...form.getInputProps("cost")}
       />
 
       <Space h="lg" />
 
       <Group position="right" mt="md" spacing="md">
-        <Button type="button" color="blue" variant="subtle" 
-        // onClick={handleSubmit}
-        >
-          {/* Save & add another */}
+        <Button type="button" color="blue" variant="subtle">
+          Save & add another
         </Button>
         <Button type="submit">Add</Button>
       </Group>
@@ -102,6 +113,3 @@ function EditPackageForm(props: any) {
 }
 
 export default EditPackageForm;
-
-
-

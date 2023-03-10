@@ -8,10 +8,8 @@ import {
   Text,
   Button,
   Input,
-  Select,
   Space,
   Title,
-  Badge,
   Card as SectionCard,
   List,
   ScrollArea,
@@ -24,6 +22,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 import EditPackageForm from "./EditPackageForm";
 
 import { managePackaging } from "../../../constants/var.constants";
+import APIRequest from "../../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -127,8 +126,14 @@ const RenderPageAction = (props: any) => {
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
+  const handleSaveCallback = props.handleSaveCallback;
 
-  return <EditPackageForm handleCloseModal={handleCloseModal} />;
+  return (
+    <EditPackageForm
+      handleCloseModal={handleCloseModal}
+      handleSaveCallback={handleSaveCallback}
+    />
+  );
 };
 
 function EditPackageContainer(props: any) {
@@ -136,6 +141,8 @@ function EditPackageContainer(props: any) {
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
   const handleEditToUpdateAction = props.handleEditToUpdateAction;
+  const handleSaveCallback = props.handleSaveCallback;
+  const packagingList = props.packagingList;
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -162,7 +169,9 @@ function EditPackageContainer(props: any) {
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit" ? "Add Packaging Charges" : "Update Packaging Charges"
+        modalType === "edit"
+          ? "Add Packaging Charges"
+          : "Update Packaging Charges"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
@@ -170,6 +179,7 @@ function EditPackageContainer(props: any) {
           return (
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
+              handleSaveCallback={handleSaveCallback}
             />
           );
         }
@@ -219,7 +229,7 @@ function EditPackageContainer(props: any) {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {managePackaging.map((cat: any, index: number) => {
+        {packagingList.map((cat: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -263,8 +273,18 @@ function EditPackageContainer(props: any) {
                     >
                       <Group position="apart">
                         <List.Item>
-                          {d.name} -{" "}
-                          <span style={{ fontWeight: "600" }}>{d.weight}</span>
+                          <Text size="md" weight="bold">
+                            {d.bag} - {d.currency} {d.cost}{" "}
+                            <Text
+                              size="sm"
+                              weight="normal"
+                              sx={(theme) => ({
+                                color: theme.colors.dark[1],
+                              })}
+                            >
+                              Weight: {d.weight} {d.unit}
+                            </Text>
+                          </Text>
                         </List.Item>
 
                         <ActionIcon
@@ -277,7 +297,6 @@ function EditPackageContainer(props: any) {
                           onClick={() => {
                             handleEditToUpdateAction();
                             setModalOpen(true);
-                            console.log(d);
                           }}
                         >
                           <Pencil size={12} />

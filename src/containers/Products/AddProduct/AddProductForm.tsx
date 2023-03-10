@@ -7,6 +7,7 @@ import {
   Group,
   Flex,
   Box,
+  Text,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -121,6 +122,17 @@ function AddProductForm(props: any) {
 
       <Space h="sm" />
 
+      <Text
+        component="span"
+        size="sm"
+        sx={() => ({
+          marginBottom: 0,
+          paddingBottom: 0,
+        })}
+      >
+        Categories
+      </Text>
+
       {categoriesList.map((k: any, i) => {
         return (
           <React.Fragment key={`${k.name}_${i}`}>
@@ -150,7 +162,7 @@ function AddProductForm(props: any) {
         );
       })}
 
-      <Space h="sm" />
+      {categoriesList.length ? <Space h="sm" /> : null}
 
       <Flex justify="space-between" align="flex-end" direction="row">
         <Box
@@ -160,7 +172,6 @@ function AddProductForm(props: any) {
           })}
         >
           <TextInput
-            label="Categories"
             placeholder="eg. Categories"
             value={categoryInputValue}
             size="sm"

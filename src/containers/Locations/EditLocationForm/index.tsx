@@ -15,27 +15,17 @@ import { locationCat } from "../../../constants/var.constants";
 // import EditLocationForm from "./locForm";
 
 function EditLocationFormContainer(props: any) {
-  const [fieldValue, setFieldValue] = useState("");
-  const [state, setState] = useState(false);
-  // const [origin, setorigin] = useState(false);
+  const handleSettingLocationData = props.handleSettingLocationData;
+  const locationPayload = props.locationPayload;
+
   const [select, setSelect] = useState(false);
-  const [selectValue, setSelectValue] = useState("");
+  const [locationType, setLocationType] = useState("");
 
   const handleCloseModal = props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      name: "",
-      category: "",
-      // regionName:"",
-      // cityName:"",
-      // portName:"",
-      // // source: "",
-      // // origin: "",
-      // destination: "",
-      // state: "",
-    },
+    initialValues: {},
 
     // validate: {
     //   name: (value) =>
@@ -50,26 +40,42 @@ function EditLocationFormContainer(props: any) {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    setFieldValue(values.category);
-
-    setState(true);
     setSelect(true);
     handleCloseModal(false);
 
-    let arr: any = [];
-    if (values.name === "Source Location") {
-      arr = [...locationCat[0].list];
-      arr.push(values);
+    let sourceArr: any = [...locationPayload.source];
+    let originArr: any = [...locationPayload.origin];
+    let destinationArr: any = [...locationPayload.destination];
+
+    if (locationType === "source") {
+      sourceArr.push(values);
     }
-    if (values.name === "Origin Ports") {
-      arr = [...locationCat[1].list];
-      arr.push(values);
-    } else {
-      arr = [...locationCat[2].list];
-      arr.push(values);
+    if (locationType === "origin") {
+      originArr.push(values);
+    }
+    if (locationType === "destination") {
+      destinationArr.push(values);
     }
 
-    console.log(arr);
+    let payload: any = {
+      source: [],
+      origin: [],
+      destination: [],
+    };
+
+    if (sourceArr.length) {
+      payload.source = [...sourceArr];
+    }
+
+    if (originArr.length) {
+      payload.origin = [...originArr];
+    }
+
+    if (destinationArr.length) {
+      payload.destination = [...destinationArr];
+    }
+
+    handleSettingLocationData(payload);
   };
 
   return (
@@ -84,30 +90,18 @@ function EditLocationFormContainer(props: any) {
           { value: "origin", label: "Origin" },
           { value: "destination", label: "Destination" },
         ]}
-        onChange={(Cat: any) => {
-          setSelectValue(Cat);
+        onChange={(value: any) => {
+          setLocationType(value);
         }}
-
-        // {...form.getInputProps("category")}
       />
       <Space h="md" />
-      {/* <Group position="right" mt="md" spacing="md"> 
-        <Button 
-        // onClick={(val:any) => {
-        //   // event.preventDefault()
-        // }}
-        // type="submit" 
-        // disabled={state}
-        >Next</Button>
-      </Group> */}
-
-      {selectValue === "source" ? (
+      {locationType === "source" ? (
         <>
           <TextInput
             required
             label="Region Name"
             placeholder="eg. Kolkata"
-            {...form.getInputProps("name")}
+            {...form.getInputProps("region")}
           />
           <Space h="md" />
           <Select
@@ -158,27 +152,27 @@ function EditLocationFormContainer(props: any) {
         </>
       ) : null}
 
-      {selectValue === "origin" ? (
+      {locationType === "origin" ? (
         <>
           <TextInput
             required
             label="Enter Port Name"
             placeholder="eg. JNPT"
-            {...form.getInputProps("Port")}
+            {...form.getInputProps("portName")}
           />
           <Space h="md" />
           <TextInput
             required
             label="Enter CFS Station"
             placeholder="eg. Chennai cfs"
-            {...form.getInputProps("cfs")}
+            {...form.getInputProps("cfsStation")}
           />
           <Space h="md" />
           <TextInput
             required
             label="Enter City Name"
             placeholder="eg. Kolkata"
-            {...form.getInputProps("City")}
+            {...form.getInputProps("city")}
           />
           <Space h="md" />
           <Select
@@ -220,7 +214,7 @@ function EditLocationFormContainer(props: any) {
             ]}
             label="Enter State Name"
             placeholder="eg. Maharashtra"
-            {...form.getInputProps("State")}
+            {...form.getInputProps("state")}
           />
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
@@ -230,13 +224,13 @@ function EditLocationFormContainer(props: any) {
       ) : null}
 
       <Space h="md" />
-      {selectValue === "destination" ? (
+      {locationType === "destination" ? (
         <>
           <TextInput
             required
             label="Enter Port Name"
             placeholder="eg. JNPT"
-            {...form.getInputProps("Port")}
+            {...form.getInputProps("portName")}
           />
           <TextInput
             required

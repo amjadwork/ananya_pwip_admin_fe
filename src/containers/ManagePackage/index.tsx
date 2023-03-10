@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   SimpleGrid,
   Box,
@@ -14,6 +14,7 @@ import {
   Card as SectionCard,
   List,
   ScrollArea,
+  Flex,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
 
@@ -22,18 +23,13 @@ import EditPackageContainer from "./EditPackage/EditPackage";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { managePackaging } from "../../constants/var.constants";
+import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
 
-  return (
-    <PageHeader
-      title="Manage Packaging"
-      
-    />
-  );
+  return <PageHeader title="Manage Packaging" />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -124,11 +120,33 @@ const RenderPageAction = (props: any) => {
   );
 };
 
+const initialBagTypes = [
+  {
+    name: "PPWOVEN",
+    list: [],
+  },
+  {
+    name: "JUTE",
+    list: [],
+  },
+  {
+    name: "PE",
+    list: [],
+  },
+  {
+    name: "BOPP",
+    list: [],
+  },
+];
+
 function ManagePackageContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [packagingList, setPackagingList] = React.useState([
+    ...initialBagTypes,
+  ]);
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -140,14 +158,40 @@ function ManagePackageContainer() {
     setModalOpen(true);
   };
 
+  const handleGetPackagingList = async () => {
+    const packagingResponse: any = await APIRequest(`packaging`, "GET");
+    if (packagingResponse) {
+      let initialList = [...initialBagTypes];
+      const modList = initialList.map((d: any) => {
+        const list = packagingResponse.filter((p: any) => {
+          if (d.name.toLowerCase() === p.bag.toLowerCase()) {
+            return p;
+          }
+        });
+
+        return {
+          ...d,
+          list: list,
+        };
+      });
+      setPackagingList(() => [...modList]);
+    }
+  };
+
+  useEffect(() => {
+    handleGetPackagingList();
+  }, []);
+
   if (editModeActive) {
     return (
       <EditPackageContainer
         editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
+        handleEditAction={(bool: boolean) => handleEditAction(bool)}
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        handleSaveCallback={() => handleGetPackagingList()}
+        packagingList={packagingList}
       />
     );
   }
@@ -189,16 +233,14 @@ function ManagePackageContainer() {
       >
         <Group position="apart">
           <Title order={1}>Manage Packaging</Title>
-          <Input
-              placeholder="Search"
-            />
+          <Input placeholder="Search" />
         </Group>
       </Box>
 
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {managePackaging.map((cat: any, index: number) => {
+        {packagingList.map((cat: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -241,9 +283,19 @@ function ManagePackageContainer() {
                       })}
                     >
                       <List.Item>
-                          {d.name}  - {" "}
-                          <span style={{ fontWeight: "600" }}>{d.weight}</span>
-                        </List.Item>
+                        <Text size="md" weight="bold">
+                          {d.bag} - {d.currency} {d.cost}{" "}
+                          <Text
+                            size="sm"
+                            weight="normal"
+                            sx={(theme) => ({
+                              color: theme.colors.dark[1],
+                            })}
+                          >
+                            Weight: {d.weight} {d.unit}
+                          </Text>
+                        </Text>
+                      </List.Item>
                     </Box>
                   ))}
                 </List>

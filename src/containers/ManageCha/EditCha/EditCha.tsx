@@ -55,7 +55,6 @@ const RenderPageAction = (props: any) => {
             "&[data-disabled]": { opacity: 0.4 },
           }}
           onClick={() => {
-            console.log("here");
             handleEditAction(false);
           }}
         >
@@ -134,9 +133,19 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  const handleCloseModal =props.handleCloseModal;
+  const handleCloseModal = props.handleCloseModal;
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
+  const handleUpdateChaUIData = props.handleUpdateChaUIData;
 
-  return <EditChaForm handleCloseModal={handleCloseModal}/>;
+  return (
+    <EditChaForm
+      handleCloseModal={handleCloseModal}
+      regionSelectOptions={regionSelectOptions}
+      destinationSelectOptions={destinationSelectOptions}
+      handleUpdateChaUIData={handleUpdateChaUIData}
+    />
+  );
 };
 
 function EditChaContainer(props: any) {
@@ -144,12 +153,21 @@ function EditChaContainer(props: any) {
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
   const handleEditToUpdateAction = props.handleEditToUpdateAction;
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
+  const chaData = props.chaData;
+  const handleUpdateChaUIData = props.handleUpdateChaUIData;
+  const chaAPIPayload = props.chaAPIPayload;
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
 
   const handleSave = (bool: boolean) => {
     handleEditAction(bool);
+  };
+
+  const handleSaveAction = () => {
+    console.log(chaAPIPayload);
   };
 
   return (
@@ -166,26 +184,34 @@ function EditChaContainer(props: any) {
         <RenderPageAction
           editModeActive={editModeActive}
           handleEditAction={handleSave}
+          handleSaveAction={handleSaveAction}
         />
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit"
-          ? "Add CHA Charges"
-          : "Update CHA Charges"
+        modalType === "edit" ? "Add CHA Charges" : "Update CHA Charges"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent 
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+              handleUpdateChaUIData={handleUpdateChaUIData}
+            />
+          );
         }
 
         if (modalType === "update") {
-          return <RenderModalContent 
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+            />
+          );
         }
       }}
       modalSize="70%"
@@ -210,9 +236,7 @@ function EditChaContainer(props: any) {
         <Group position="apart">
           <Title order={1}>CHA Charges</Title>
           <Group spacing="md">
-            <Input
-              placeholder="Search"
-            />
+            <Input placeholder="Search" />
             <Button
               type="submit"
               leftIcon={<Plus size={14} />}
@@ -227,7 +251,7 @@ function EditChaContainer(props: any) {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageCha.map((cat: any, index: number) => {
+        {chaData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -236,63 +260,52 @@ function EditChaContainer(props: any) {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
-
-                        "&:hover": {
+                  {item.list.map((d: any, i: number) => {
+                    const destinationName = destinationSelectOptions.find(
+                      (f: any) => f.value === d._destinationPortId
+                    ).label;
+                    return (
+                      <Box
+                        key={i}
+                        sx={(theme) => ({
+                          display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <Group position="apart">
-                      <List.Item>
-                          {d.name} -RS{" "}
-                          <span style={{ fontWeight: "600" }}>{d.price}</span>
-                        </List.Item>
+                              ? theme.colors.dark[6]
+                              : "#fff",
+                          color:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[4]
+                              : theme.colors.dark[7],
+                          textAlign: "left",
+                          padding: theme.spacing.md,
+                          borderRadius: theme.radius.md,
+                          cursor: "default",
 
-                        <ActionIcon
-                          variant="outline"
-                          color="gray"
-                          size="sm"
-                          sx={{
-                            "&[data-disabled]": { opacity: 0.4 },
-                          }}
-                          onClick={() => {
-                            handleEditToUpdateAction();
-                            setModalOpen(true);
-                            console.log(d);
-                          }}
-                        >
-                          <Pencil size={12} />
-                        </ActionIcon>
-                      </Group>
-                    </Box>
-                  ))}
+                          "&:hover": {
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[5]
+                                : theme.colors.gray[1],
+                          },
+                        })}
+                      >
+                        <List.Item>
+                          {destinationName} -{" "}
+                          <span style={{ fontWeight: "800" }}>
+                            INR {d.chaCharge}
+                          </span>
+                        </List.Item>
+                      </Box>
+                    );
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Group,
   Button,
-  TextInput,
+  Divider,
   NumberInput,
   Select,
   Space,
@@ -15,44 +15,87 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { manageCha } from "../../../constants/var.constants";
 
+const initialFormValues = {
+  "_originPortId_|": "",
+  "_destinationPortId_|": "",
+  "chaCharge_|": "",
+  "silicaGel_|": "",
+  "craftPaper_|": "",
+  "transportCharge_|": "",
+  "loadingCharge_|": "",
+  "customCharge_|": "",
+  "pqc_|": "",
+  "coo_|": "",
+};
+
 function EditChaForm(props: any) {
-  const [categoriesValue, setCategoriesValue] = useState("");
-  const [catUpdateValue, setCatUpdateValue] = useState("");
-  const [categoriesList, setCategoriesList] = useState([]);
-  const [regUpdateValue, setRegUpdateValue] = useState("");
-  const [numUpdateValue, setNumUpdateValue] = useState("");
-
-  const [allValue, setAllValue] = useState({});
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
   const handleCloseModal = props.handleCloseModal;
+  const handleUpdateChaUIData = props.handleUpdateChaUIData;
 
-  const form = useForm({
+  const [chaDestinationItemList, setChaDestinationItemList] = useState([]);
+  const [chaPayload, setChaPayload] = useState(null);
+  const [chaFormValues, setChaFormValues] = useState({ ...initialFormValues });
+
+  const form: any = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      originPort: "",
-      destination: "",
-      chaPrice: "",
-    },
+    initialValues: chaFormValues,
   });
 
-  const handleClick: any = () => {
-    const arr: any = [...categoriesList];
-    arr.push(categoriesValue);
-    console.log(arr);
-    setCategoriesList(arr);
+  const handleAddItem: any = () => {
+    let arr: any = [];
+
+    arr.push("");
+    let destinationObject: any = {};
+    const object: any = { ...form.values };
+    let destinationsArr: any = [...chaDestinationItemList];
+
+    Object.keys(object)
+      .filter((key) => {
+        const _key = key.split("_|")[0];
+        if (_key !== "_originPortId") {
+          return key;
+        }
+      })
+      .map((key) => {
+        const _key = key.split("_|")[0];
+        destinationObject[_key] = object[key];
+        return {
+          [_key]: object[key],
+        };
+      });
+
+    destinationsArr.push(destinationObject);
+
+    const payloadObject: any = {
+      _originPortId: object._originPortId,
+      destinations: [...destinationsArr],
+    };
+
+    setChaPayload(payloadObject);
+    setChaDestinationItemList(destinationsArr);
+
+    // reset inital form value
+    let formResetValues: any = {};
+    Object.keys({ ...destinationObject }).map((key) => {
+      formResetValues[`${key}_|`] = "";
+    });
+    setChaFormValues(formResetValues);
+    // reset inital form value ends
   };
 
   const handleDeleteItem = (index: number) => {
-    const arr: any = [...categoriesList];
+    let destinationsArr: any = [...chaDestinationItemList];
 
     // logic to delete an item starts
     if (index > -1) {
-      arr.splice(index, 1);
+      destinationsArr.splice(index, 1);
     }
 
     // logic to delete an item end
 
-    setCategoriesList(arr);
-    console.log(arr);
+    setChaDestinationItemList(destinationsArr);
   };
 
   const handleError = (errors: typeof form.errors) => {
@@ -61,184 +104,224 @@ function EditChaForm(props: any) {
     }
   };
   // const handleUpdate = (index: number) => {
-  //   const arr: any = [...categoriesList];
+  //   const arr: any = [...chaDestinationItemList];
   //   arr[index] = catUpdateValue;
 
-  //   setCategoriesList(arr);
+  //   setChaDestinationItemList(arr);
 
   //   console.log(arr);
   // };
 
-  const handleSubmit = (values: typeof form.values) => {
-    console.log(values, "values");
+  const handleFormSubmit = (formValues: typeof form.values) => {
+    // update UI table
+    handleUpdateChaUIData(chaPayload);
+
     handleCloseModal(false);
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-      <TextInput
+    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
+      {/* <TextInput
         required
         label="Enter Origin Port"
         placeholder="Eg. chennai"
         {...form.getInputProps("originPort")}
+      /> */}
+      <Select
+        required
+        label="Select Origin Port"
+        placeholder="Eg. chennai"
+        data={regionSelectOptions}
+        {...form.getInputProps("_originPortId")}
+        sx={() => ({
+          marginBottom: 18,
+        })}
       />
 
       <Space h="md" />
-      {categoriesList.map((k, i) => {
+      {chaDestinationItemList.map((item, i) => {
         return (
-          <Group spacing="md" key={i}>
-            <TextInput
-              required
-              label="Enter Destination Port"
-              placeholder="Eg. singapore"
-              // data={[]}
-              onChange={(e: any) => {
-                console.log();
-                setRegUpdateValue(e.target.value);
-              }}
-              // {...form.getInputProps("destination")}
-            />
+          <React.Fragment key={i}>
+            <Group
+              spacing="md"
+              sx={(theme) => ({
+                border: `1px solid ${theme.colors.gray[2]}`,
+                borderRadius: 12,
+                padding: 12,
+                backgroundColor: theme.colors.gray[0],
+              })}
+            >
+              <Grid>
+                <Grid.Col span={10}>
+                  <Select
+                    defaultValue={item["_destinationPortId"]}
+                    required
+                    label="Select Destination Port"
+                    placeholder="Eg. singapore"
+                    data={destinationSelectOptions}
+                    {...form.getInputProps("_destinationPortId_|" + i)}
+                  />
+                </Grid.Col>
 
+                <Grid.Col span={2}>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <Group spacing="md" position="right" margin-bottom="5px">
+                      <ActionIcon
+                        variant="filled"
+                        onClick={() => handleDeleteItem(i)}
+                      >
+                        <Minus size={20} />
+                      </ActionIcon>
+                    </Group>
+                  </div>
+                </Grid.Col>
+
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Enter CHA Charges"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["chaCharge"]}
+                    {...form.getInputProps("chaCharge_|" + i)}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Silica Gel"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["silicaGel"]}
+                    {...form.getInputProps("silicaGel_|" + i)}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Craft Paper"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["craftPaper"]}
+                    {...form.getInputProps("craftPaper_|" + i)}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Transport Charge"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["transportCharge"]}
+                    {...form.getInputProps("transportCharge_|" + i)}
+                  />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Loading Charge"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["loadingCharge"]}
+                    {...form.getInputProps("loadingCharge_|" + i)}
+                  />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="Custom Charge"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["customCharge"]}
+                    {...form.getInputProps("customCharge_|" + i)}
+                  />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="PQC"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["pqc"]}
+                    {...form.getInputProps("pqc_|" + i)}
+                  />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <NumberInput
+                    required
+                    label="COO"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["coo"]}
+                    {...form.getInputProps("coo_|" + i)}
+                  />
+                </Grid.Col>
+              </Grid>
+            </Group>
+            <Space h="md" />
+          </React.Fragment>
+        );
+      })}
+
+      <Group
+        sx={(theme) => ({
+          border: `1px solid ${theme.colors.gray[2]}`,
+          borderRadius: 12,
+          padding: 12,
+        })}
+      >
+        <Grid>
+          <Grid.Col span={11}>
+            <Select
+              required
+              label="Select Destination Port"
+              placeholder="Eg. singapore"
+              data={destinationSelectOptions}
+              {...form.getInputProps("_destinationPortId_|")}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={1}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "flex-end",
+                height: "100%",
+                width: "100%",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button onClick={handleAddItem}>+</Button>
+            </div>
+          </Grid.Col>
+
+          <Grid.Col span={2}>
             <NumberInput
               required
               label="Enter CHA Charges"
               placeholder="Eg. 26500"
-              onChange={(e: any) => setNumUpdateValue(e.target.value)}
-
-              // {...form.getInputProps("cha")}
+              {...form.getInputProps("chaCharge_|")}
             />
+          </Grid.Col>
+
+          <Grid.Col span={2}>
             <NumberInput
               required
               label="Silica Gel"
               placeholder="Eg. 26500"
-              onChange={(e: any) => setNumUpdateValue(e.target.value)}
-
-              // {...form.getInputProps("silica")}
+              {...form.getInputProps("silicaGel_|")}
             />
+          </Grid.Col>
 
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "bottom",
-                // width: "100%",
-                marginTop: `3%`,
-              }}
-            >
-              <Group spacing="md" position="right" margin-bottom="5px">
-                <ActionIcon
-                  variant="filled"
-                  onClick={() => handleDeleteItem(i)}
-                >
-                  <Minus size={20} />
-                </ActionIcon>
-              </Group>
-            </div>
-            {/* <Grid.Col span={2}> */}
-
-            {/* </Grid.Col> */}
-
-            <Grid>
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="Craft Paper"
-                  placeholder="Eg. 26500"
-                  onChange={(e: any) => setNumUpdateValue(e.target.value)}
-
-                  // {...form.getInputProps("craft")}
-                />
-              </Grid.Col>
-
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="Transport Charge"
-                  placeholder="Eg. 26500"
-                  {...form.getInputProps("transportation")}
-                />
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="Loading Charge"
-                  placeholder="Eg. 26500"
-                  {...form.getInputProps("loading")}
-                />
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="Custom Charge"
-                  placeholder="Eg. 26500"
-                  {...form.getInputProps("custom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="PQC"
-                  placeholder="Eg. 26500"
-                  {...form.getInputProps("pqc")}
-                />
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <NumberInput
-                  required
-                  label="COO"
-                  placeholder="Eg. 26500"
-                  {...form.getInputProps("coo")}
-                />
-              </Grid.Col>
-            </Grid>
-          </Group>
-        );
-      })}
-
-      <Space h="md" />
-
-      <Group>
-        {/* <Grid.Col span={3}> */}
-        <TextInput
-          required
-          label="Enter Destination port"
-          placeholder="Eg. Karnal"
-          {...form.getInputProps("destination")}
-        />
-        {/* </Grid.Col> */}
-        {/* <Grid.Col span={3}> */}
-        <NumberInput
-          required
-          label="Enter CHA Charges"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("cha")}
-        />
-          <NumberInput
-          required
-          label="Silica Gel"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("silica")}
-        />
-        {/* </Grid.Col> */}
-
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "bottom",
-            // width: "100%",
-            marginTop: `3%`,
-          }}
-        >
-          <Button onClick={handleClick}>+</Button>
-        </div>
-      
-
-        <Grid>
           <Grid.Col span={2}>
             <NumberInput
               required
               label="Craft Paper"
               placeholder="Eg. 26500"
-              {...form.getInputProps("craft")}
+              {...form.getInputProps("craftPaper_|")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -246,7 +329,7 @@ function EditChaForm(props: any) {
               required
               label="Transport Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps("transportation")}
+              {...form.getInputProps("transportCharge_|")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -254,7 +337,7 @@ function EditChaForm(props: any) {
               required
               label="Loading Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps("loading")}
+              {...form.getInputProps("loadingCharge_|")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -262,7 +345,7 @@ function EditChaForm(props: any) {
               required
               label="Custom Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps("custom")}
+              {...form.getInputProps("customCharge_|")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -270,7 +353,7 @@ function EditChaForm(props: any) {
               required
               label="PQC"
               placeholder="Eg. 26500"
-              {...form.getInputProps("pqc")}
+              {...form.getInputProps("pqc_|")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -278,7 +361,7 @@ function EditChaForm(props: any) {
               required
               label="COO"
               placeholder="Eg. 26500"
-              {...form.getInputProps("coo")}
+              {...form.getInputProps("coo_|")}
             />
           </Grid.Col>
         </Grid>

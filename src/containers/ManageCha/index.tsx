@@ -22,21 +22,10 @@ import EditChaContainer from "./EditCha/EditCha";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { manageCha, riceCategory } from "../../constants/var.constants";
+import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
-  return (
-    <PageHeader
-      title="Manage CHA Charges"
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
-    />
-  );
+  return <PageHeader title="Manage CHA Charges" />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -132,6 +121,11 @@ function ManageChaContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [chaData, setChaData] = React.useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] =
+    React.useState<any>([]);
+  const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -143,6 +137,83 @@ function ManageChaContainer() {
     setModalOpen(true);
   };
 
+  const handleGetRegionSource = async () => {
+    const regionResponse = await APIRequest(
+      "location?filterType=origin",
+      "GET"
+    );
+    if (regionResponse) {
+      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+        return {
+          name: d.portName,
+          _originId: d._id,
+          list: [],
+        };
+      });
+
+      const regionOptions = regionResponse[0].origin.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
+
+      setRegionSelectOptions(() => [...regionOptions]);
+      setChaData(() => [...formattedRegion]);
+    }
+  };
+
+  const handleUpdateChaUIData = (formData: any) => {
+    setChaAPIPayload({ ...formData });
+    let chaArr: any = [...chaData];
+
+    chaArr = chaArr.map((d: any) => {
+      if (formData._originPortId === d._originId) {
+        return {
+          ...d,
+          list: formData.destinations,
+        };
+      }
+    });
+
+    setChaData(() => [...chaArr]);
+  };
+
+  const handleSaveAction = async () => {
+    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+
+    console.log(chaResponse);
+
+    if (chaResponse) {
+      //
+    }
+  };
+
+  const handleGetDestination = async () => {
+    const destinationResponse = await APIRequest(
+      "location?filterType=destination",
+      "GET"
+    );
+
+    if (destinationResponse) {
+      const destinationOptions = destinationResponse[0].destination.map(
+        (d: any) => {
+          return {
+            label: d.portName,
+            value: d._id,
+          };
+        }
+      );
+
+      setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetRegionSource();
+    handleGetDestination();
+  }, []);
+
   if (editModeActive) {
     return (
       <EditChaContainer
@@ -151,6 +222,11 @@ function ManageChaContainer() {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        regionSelectOptions={regionSelectOptions}
+        destinationSelectOptions={destinationSelectOptions}
+        chaData={chaData}
+        handleUpdateChaUIData={handleUpdateChaUIData}
+        chaAPIPayload={chaAPIPayload}
       />
     );
   }
@@ -170,6 +246,7 @@ function ManageChaContainer() {
           handleActionClick={() => setModalOpen(true)}
           handleEditAction={handleEditAction}
           editModeActive={editModeActive}
+          handleSaveAction={handleSaveAction}
         />
       )}
     >
@@ -192,18 +269,14 @@ function ManageChaContainer() {
       >
         <Group position="apart">
           <Title order={1}>CHA Charges</Title>
-         <Input
-              placeholder="Search"/> 
-          {/* <Badge size="lg" color="green" variant="light">
-            Live
-          </Badge> */}
+          <Input placeholder="Search" />
         </Group>
       </Box>
 
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageCha.map((cat: any, index: number) => {
+        {chaData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -212,45 +285,52 @@ function ManageChaContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
-
-                        "&:hover": {
+                  {item.list.map((d: any, i: number) => {
+                    const destinationName = destinationSelectOptions.find(
+                      (f: any) => f.value === d._destinationPortId
+                    ).label;
+                    return (
+                      <Box
+                        key={i}
+                        sx={(theme) => ({
+                          display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>
-                          {d.name}  - RS{" "}
-                          <span style={{ fontWeight: "800" }}>{d.price}</span>
+                              ? theme.colors.dark[6]
+                              : "#fff",
+                          color:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[4]
+                              : theme.colors.dark[7],
+                          textAlign: "left",
+                          padding: theme.spacing.md,
+                          borderRadius: theme.radius.md,
+                          cursor: "default",
+
+                          "&:hover": {
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[5]
+                                : theme.colors.gray[1],
+                          },
+                        })}
+                      >
+                        <List.Item>
+                          {destinationName} -{" "}
+                          <span style={{ fontWeight: "800" }}>
+                            INR {d.chaCharge}
+                          </span>
                         </List.Item>
-                    </Box>
-                  ))}
+                      </Box>
+                    );
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>

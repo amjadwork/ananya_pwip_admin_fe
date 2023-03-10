@@ -19,7 +19,7 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 
 import EditLocationFormContainer from "./EditLocationForm";
 
-import { locationCat } from "../../constants/var.constants";
+import APIRequest from "./../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage Locations" />;
@@ -111,17 +111,81 @@ const RenderPageAction = (props: any) => {
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
+  const handleSettingLocationData = props.handleSettingLocationData;
+  const locationPayload = props.locationPayload;
 
-  return <EditLocationFormContainer handleCloseModal={handleCloseModal} />;
+  return (
+    <EditLocationFormContainer
+      handleCloseModal={handleCloseModal}
+      handleSettingLocationData={handleSettingLocationData}
+      locationPayload={locationPayload}
+    />
+  );
 };
 
 function LocationsContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState(false);
+  const [locationData, setLocationData] = React.useState<any>({
+    source: [],
+    origin: [],
+    destination: [],
+  });
+  const [locationPayload, setLocationPayload] = React.useState<any>({
+    source: [],
+    origin: [],
+    destination: [],
+  });
 
   const handleEdit = (bool: boolean) => {
     setEditModeActive(bool);
   };
+
+  const handleSaveAction = () => {
+    let payload: any = {};
+
+    if (locationPayload?.source?.length) {
+      payload.source = locationPayload.source;
+    }
+
+    if (locationPayload?.origin?.length) {
+      payload.origin = locationPayload.origin;
+    }
+
+    if (locationPayload?.destination?.length) {
+      payload.destination = locationPayload.destination;
+    }
+
+    submitLocation(payload);
+  };
+
+  const submitLocation = async (payload: any) => {
+    const addLocationResponse: any = await APIRequest(
+      "location",
+      "POST",
+      payload
+    );
+
+    if (addLocationResponse) {
+      getLocations();
+    }
+  };
+
+  const getLocations = async () => {
+    const locationResponse: any = await APIRequest("location", "GET");
+
+    if (locationResponse) {
+      setLocationData({
+        source: locationResponse[0].source || [],
+        origin: locationResponse[0].origin || [],
+        destination: locationResponse[0].destination || [],
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    getLocations();
+  }, []);
 
   return (
     <PageWrapper
@@ -131,6 +195,7 @@ function LocationsContainer() {
           handleActionClick={() => setModalOpen(true)}
           handleEdit={handleEdit}
           editModeActive={editModeActive}
+          handleSaveAction={handleSaveAction}
         />
       )}
       modalOpen={modalOpen}
@@ -139,13 +204,24 @@ function LocationsContainer() {
       ModalContent={() => (
         <RenderModalContent
           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+          handleSettingLocationData={(data: any) => {
+            setLocationPayload(data);
+
+            const obj = {
+              source: [...locationData.source, ...data.source],
+              origin: [...locationData.origin, ...data.origin],
+              destination: [...locationData.destination, ...data.destination],
+            };
+            setLocationData(obj);
+          }}
+          locationPayload={locationPayload}
         />
       )}
       modalSize="40%"
     >
       <div style={{ width: "100%", height: "auto" }}>
         <Group spacing="md" grow>
-          {locationCat.map((cat: any, index: number) => {
+          {Object.keys(locationData).map((locationType: any, index: number) => {
             return (
               <SectionCard
                 key={index}
@@ -155,7 +231,7 @@ function LocationsContainer() {
                 component="a"
               >
                 <Group position="apart">
-                  <Title order={3}>{cat.name}</Title>
+                  <Title order={3}>{locationType}</Title>
 
                   {editModeActive && (
                     <ActionIcon
@@ -178,7 +254,7 @@ function LocationsContainer() {
                   style={{ maxHeight: 380, height: 360 }}
                 >
                   <List type="ordered" spacing="lg">
-                    {cat.list.map((d: any, i: number) => (
+                    {locationData[locationType].map((d: any, i: number) => (
                       <Box
                         key={i}
                         sx={(theme) => ({
@@ -204,7 +280,25 @@ function LocationsContainer() {
                           },
                         })}
                       >
-                        <List.Item>{d.name}</List.Item>
+                        <List.Item>
+                          {locationType === "source"
+                            ? d.region
+                            : locationType === "origin"
+                            ? d.portName
+                            : d.portName}
+                          <Text
+                            size="sm"
+                            sx={(theme) => ({
+                              color: theme.colors.dark[1],
+                            })}
+                          >
+                            {locationType === "source"
+                              ? d.state
+                              : locationType === "origin"
+                              ? d.state
+                              : d.country}
+                          </Text>
+                        </List.Item>
                       </Box>
                     ))}
                   </List>
