@@ -14,50 +14,86 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { manageTransport } from "../../../constants/var.constants";
 
-function EditTransportForm(props: any) {
-  const [categoriesValue, setCategoriesValue] = useState("");
-  const [catUpdateValue, setCatUpdateValue] = useState("");
-  const [categoriesList, setCategoriesList] = useState([]);
+const initialFormValues = {
+  cfsStation: "",
+  "_sourcePortId_|": "",
+  "transportationCharge_|": "",
+};
 
-  const [allValue, setAllValue] = useState({});
+function EditTransportForm(props: any) {
+  const sourceSelectOptions = props.sourceSelectOptions;
+  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
+  const handleCloseModal = props.handleCloseModal;
+
+  const [transportItemList, setTransportItemList] = useState([]);
+  const [transportPayload, setTransportPayload] = useState(null);
+  const [transportFormValues, setTransportFormValues] = useState({
+    ...initialFormValues,
+  });
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    // initialValues: {
-    //   name: "",
-    //   category: "",
-    //   city: "",
-    //   state: "",
-    //   // destination: "",
-    //   exmill: "",
-    //   // transportation: "",
-    // },
-
+    initialValues: transportFormValues,
     // validate: {
     //   name: (value) =>
     //     value.length < 2 ? "Name must have at least 2 letters" : null,
     // },
   });
 
-  const handleClick: any = () => {
-    const arr: any = [...categoriesList];
-    arr.push(categoriesValue);
-    console.log(arr);
-    setCategoriesList(arr);
+  const handleAddItem: any = () => {
+    let arr: any = [];
+
+    arr.push("");
+    let transportObject: any = {};
+    const object: any = { ...form.values };
+
+    let transportArr: any = [...transportItemList];
+
+    Object.keys(object)
+      .filter((key) => {
+        const _key = key.split("_|")[0];
+        if (_key !== "cfsStation") {
+          return key;
+        }
+      })
+      .map((key) => {
+        const _key = key.split("_|")[0];
+        transportObject[_key] = object[key];
+        return {
+          [_key]: object[key],
+        };
+      });
+
+    transportArr.push(transportObject);
+
+    const payloadObject: any = {
+      cfsStation: object.cfsStation,
+      sourceLocations: [...transportArr],
+    };
+
+    setTransportPayload(payloadObject);
+    setTransportItemList(transportArr);
+
+    // reset inital form value
+    let formResetValues: any = {};
+    Object.keys({ ...transportObject }).map((key) => {
+      formResetValues[`${key}_|`] = "";
+    });
+    setTransportFormValues(formResetValues);
+    // reset inital form value ends
   };
 
   const handleDeleteItem = (index: number) => {
-    const arr: any = [...categoriesList];
+    let transportArr: any = [...transportItemList];
 
     // logic to delete an item starts
     if (index > -1) {
-      arr.splice(index, 1);
+      transportArr.splice(index, 1);
     }
 
     // logic to delete an item end
 
-    setCategoriesList(arr);
-    console.log(arr);
+    setTransportItemList(transportArr);
   };
 
   const handleError = (errors: typeof form.errors) => {
@@ -65,60 +101,48 @@ function EditTransportForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-  const handleUpdate = (index: number) => {
-    const arr: any = [...categoriesList];
-    arr[index] = catUpdateValue;
+  // const handleUpdate = (index: number) => {
+  //   const arr: any = [...categoriesList];
+  //   arr[index] = catUpdateValue;
 
-    setCategoriesList(arr);
+  //   setCategoriesList(arr);
 
-    console.log(arr);
+  //   console.log(arr);
+  // };
+
+  const handleFormSubmit = (formValues: typeof form.values) => {
+    handleUpdateTransportUIData(transportPayload);
+    handleCloseModal(false);
   };
 
-  const handleSubmit = (values: typeof form.values) => {
-    let arr: any = [];
-    console.log(values, "values");
-    const handleCloseModal=props.handleCloseModal;
-
-  //   if (values.category=== "Basmati") {
-  //     arr = [...manageCha[0].list];
-  //     arr.push(values);
-  //     console.log("arr 1", arr);
-  //   } else {
-  //     arr = [...manageCha[1].list];
-  //     arr.push(values);
-  //     console.log("arr 2", arr);
-  //   }
-   };
-
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
       <TextInput
         required
         label="Enter CFS Station "
         placeholder="Eg. chennai cfs"
-       
-        {...form.getInputProps("originPort")}
+        {...form.getInputProps("cfsStation")}
       />
 
-      
-
       <Space h="md" />
-      {categoriesList.map((k, i) => {
+      {transportItemList.map((item, i) => {
         return (
           <Group spacing="md" key={i}>
             <Select
               required
               label="Enter Source Location"
               placeholder="Eg. karnal "
-              data={[]}
-              {...form.getInputProps("source")}
+              data={sourceSelectOptions}
+              defaultValue={item["_sourcePortId"]}
+              {...form.getInputProps("_sourcePortId_|" + i)}
             />
 
             <NumberInput
               required
               label="Enter Transport Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps("transport")}
+              defaultValue={item["transportationCharge"]}
+              {...form.getInputProps("transportationCharge_|" + i)}
             />
 
             <div
@@ -138,7 +162,6 @@ function EditTransportForm(props: any) {
                 </ActionIcon>
               </Group>
             </div>
-          
           </Group>
         );
       })}
@@ -150,15 +173,15 @@ function EditTransportForm(props: any) {
           required
           label="Enter Source Location"
           placeholder="Eg. Karnal"
-          data={[]}
-          {...form.getInputProps("source")}
+          data={sourceSelectOptions}
+          {...form.getInputProps("_sourcePortId_|")}
         />
 
         <NumberInput
           required
           label="Enter Transport charges"
           placeholder="Eg. 26500"
-          {...form.getInputProps("transport")}
+          {...form.getInputProps("transportationCharge_|")}
         />
 
         <div
@@ -169,19 +192,7 @@ function EditTransportForm(props: any) {
             marginTop: `3%`,
           }}
         >
-          <Button onClick={handleClick}>+</Button>
-          {/* <ArrowRightCircle size={24} style={{ marginTop: `14%` }} />
-          <Space w="md" /> */}
-          {/* <Select
-            required
-            label="Destination Port"
-            placeholder="Eg. SINGAPORE"
-            style={{
-              width: "100%",
-            }}
-            data={[]}
-            {...form.getInputProps("destination")} 
-           /> */}
+          <Button onClick={handleAddItem}>+</Button>
         </div>
       </Group>
 

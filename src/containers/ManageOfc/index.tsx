@@ -22,7 +22,7 @@ import EditOfcContainer from "./EditOfc/EditOfc";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { manageCha, riceCategory } from "../../constants/var.constants";
+import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -132,6 +132,45 @@ function ManageOfcContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [ofcData, setOfcData] = React.useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] =
+    React.useState<any>([]);
+  const [ofcAPIPayload, setOfcAPIPayload] = React.useState<any>(null);
+
+  const handleRefetchOfcList = (ofcPostResponse: any) => {
+    if (ofcPostResponse) {
+      handleGetRegionSource();
+      getOFCList(ofcPostResponse);
+    }
+  };
+
+  const getOFCList = async (regionList: any) => {
+    const shlResponse: any = await APIRequest("ofc", "GET");
+
+    if (shlResponse) {
+      let array: any = regionList.map((item: any) => {
+        let destinationArr: any = [];
+        let originIdStringArr: any = [];
+
+        shlResponse.forEach((region: any) => {
+          if (item._originId === region._originPortId) {
+            destinationArr.push(region.destinations);
+            originIdStringArr.push(region._originId);
+          }
+        });
+
+        return {
+          ...item,
+          list: originIdStringArr.includes(item._originPortId)
+            ? destinationArr.flat(1)
+            : [],
+        };
+      });
+
+      setOfcData(() => [...array]);
+    }
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -143,6 +182,85 @@ function ManageOfcContainer() {
     setModalOpen(true);
   };
 
+  const handleGetRegionSource = async () => {
+    const regionResponse = await APIRequest(
+      "location?filterType=origin",
+      "GET"
+    );
+    if (regionResponse) {
+      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+        return {
+          name: d.portName,
+          _originId: d._id,
+          list: [],
+        };
+      });
+
+      const regionOptions = regionResponse[0].origin.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
+
+      setRegionSelectOptions(() => [...regionOptions]);
+
+      handleGetDestination();
+      getOFCList(formattedRegion);
+    }
+  };
+
+  const handleUpdateOfcUIData = (formData: any) => {
+    setOfcAPIPayload({ ...formData });
+    let chaArr: any = [...ofcData];
+
+    chaArr = chaArr.map((d: any) => {
+      if (formData._originPortId === d._originId) {
+        return {
+          ...d,
+          list: [...d.list, ...formData.destinations],
+        };
+      }
+      return {
+        ...d,
+      };
+    });
+
+    setOfcData(() => [...chaArr]);
+  };
+
+  const handleSaveAction = async () => {
+    const ofcResponse = await APIRequest("ofc", "POST", ofcAPIPayload);
+
+    if (ofcResponse) {
+      //
+    }
+  };
+
+  const handleGetDestination = async () => {
+    const destinationResponse = await APIRequest(
+      "location?filterType=destination",
+      "GET"
+    );
+
+    if (destinationResponse) {
+      const destinationOptions = destinationResponse[0].destination.map(
+        (d: any) => {
+          return {
+            label: d.portName,
+            value: d._id,
+          };
+        }
+      );
+
+      setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetRegionSource();
+  }, []);
+
   if (editModeActive) {
     return (
       <EditOfcContainer
@@ -151,6 +269,12 @@ function ManageOfcContainer() {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        regionSelectOptions={regionSelectOptions}
+        destinationSelectOptions={destinationSelectOptions}
+        ofcData={ofcData}
+        handleUpdateOfcUIData={handleUpdateOfcUIData}
+        ofcAPIPayload={ofcAPIPayload}
+        handleRefetchOfcList={handleRefetchOfcList}
       />
     );
   }
@@ -192,16 +316,14 @@ function ManageOfcContainer() {
       >
         <Group position="apart">
           <Title order={1}>OFC Charges</Title>
-          <Input
-              placeholder="Search"
-            />
+          <Input placeholder="Search" />
         </Group>
       </Box>
 
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageCha.map((cat: any, index: number) => {
+        {ofcData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -210,45 +332,52 @@ function ManageOfcContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item?.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
-
-                        "&:hover": {
+                  {item?.list?.map((d: any, i: number) => {
+                    const destinationName = destinationSelectOptions?.find(
+                      (f: any) => f.value === d._destinationPortId
+                    )?.label;
+                    return (
+                      <Box
+                        key={i}
+                        sx={(theme) => ({
+                          display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>
-                          {d.name}  - RS{" "}
-                          <span style={{ fontWeight: "800" }}>{d.price}</span>
+                              ? theme.colors.dark[6]
+                              : "#fff",
+                          color:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[4]
+                              : theme.colors.dark[7],
+                          textAlign: "left",
+                          padding: theme.spacing.md,
+                          borderRadius: theme.radius.md,
+                          cursor: "default",
+
+                          "&:hover": {
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[5]
+                                : theme.colors.gray[1],
+                          },
+                        })}
+                      >
+                        <List.Item>
+                          {destinationName} -{" "}
+                          <span style={{ fontWeight: "800" }}>
+                            INR {d.ofcCharge}
+                          </span>
                         </List.Item>
-                    </Box>
-                  ))}
+                      </Box>
+                    );
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>

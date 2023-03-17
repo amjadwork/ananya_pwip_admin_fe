@@ -7,6 +7,7 @@ import {
   Select,
   Space,
   ActionIcon,
+  Grid,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { ArrowRightCircle } from "tabler-icons-react";
@@ -14,51 +15,84 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { manageCha } from "../../../constants/var.constants";
 
-function EditChaForm(props: any) {
-  const [categoriesValue, setCategoriesValue] = useState("");
-  const [catUpdateValue, setCatUpdateValue] = useState("");
-  const [categoriesList, setCategoriesList] = useState([]);
+const initialFormValues = {
+  "_originPortId_|": "",
+  "_destinationPortId_|": "",
+  "ofcCharge_|": "",
+};
 
-  const [allValue, setAllValue] = useState({});
-  const handleCloseModal=props.handleCloseModal;
+function EditOfcForm(props: any) {
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
+  const handleCloseModal = props.handleCloseModal;
+  const handleUpdateOfcUIData = props.handleUpdateOfcUIData;
+
+  const [ofcDestinationItemList, setOfcDestinationItemList] = useState([]);
+  const [ofcPayload, setOfcPayload] = useState(null);
+  const [ofcFormValues, setOfcFormValues] = useState({ ...initialFormValues });
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    // initialValues: {
-    //   name: "",
-    //   category: "",
-    //   city: "",
-    //   state: "",
-    //   // destination: "",
-    //   exmill: "",
-    //   // transportation: "",
-    // },
-
+    initialValues: ofcFormValues,
     // validate: {
     //   name: (value) =>
     //     value.length < 2 ? "Name must have at least 2 letters" : null,
     // },
   });
 
-  const handleClick: any = () => {
-    const arr: any = [...categoriesList];
-    arr.push(categoriesValue);
-    console.log(arr);
-    setCategoriesList(arr);
+  const handleAddItem: any = () => {
+    let arr: any = [];
+
+    arr.push("");
+    let destinationObject: any = {};
+    const object: any = { ...form.values };
+    let destinationsArr: any = [...ofcDestinationItemList];
+
+    Object.keys(object)
+      .filter((key) => {
+        const _key = key.split("_|")[0];
+        if (_key !== "_originPortId") {
+          return key;
+        }
+      })
+      .map((key) => {
+        const _key = key.split("_|")[0];
+        destinationObject[_key] = object[key];
+        return {
+          [_key]: object[key],
+        };
+      });
+
+    destinationsArr.push(destinationObject);
+
+    const payloadObject: any = {
+      _originPortId: object._originPortId,
+      destinations: [...destinationsArr],
+    };
+
+    setOfcPayload(payloadObject);
+    setOfcDestinationItemList(destinationsArr);
+
+    // reset inital form value
+    let formResetValues: any = {};
+    Object.keys({ ...destinationObject }).map((key) => {
+      formResetValues[`${key}_|`] = "";
+    });
+    setOfcFormValues(formResetValues);
+    // reset inital form value ends
   };
 
   const handleDeleteItem = (index: number) => {
-    const arr: any = [...categoriesList];
+    let destinationsArr: any = [...ofcDestinationItemList];
 
     // logic to delete an item starts
     if (index > -1) {
-      arr.splice(index, 1);
+      destinationsArr.splice(index, 1);
     }
 
     // logic to delete an item end
 
-    setCategoriesList(arr);
-    console.log(arr);
+    setOfcDestinationItemList(destinationsArr);
   };
 
   const handleError = (errors: typeof form.errors) => {
@@ -66,126 +100,141 @@ function EditChaForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-  const handleUpdate = (index: number) => {
-    const arr: any = [...categoriesList];
-    arr[index] = catUpdateValue;
+  // const handleUpdate = (index: number) => {
+  //   const arr: any = [...categoriesList];
+  //   arr[index] = catUpdateValue;
 
-    setCategoriesList(arr);
+  //   setCategoriesList(arr);
 
-    console.log(arr);
-  };
+  //   console.log(arr);
+  // };
 
-  const handleSubmit = (values: typeof form.values) => {
-    console.log(values, "values");
+  const handleFormSubmit = (formValues: typeof form.values) => {
+    handleUpdateOfcUIData(ofcPayload);
+
     handleCloseModal(false);
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-      <TextInput
+    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
+      <Select
         required
-        label="Enter Origin Port"
+        label="Select Origin Port"
         placeholder="Eg. chennai"
-        {...form.getInputProps("origin")}
+        data={regionSelectOptions}
+        {...form.getInputProps("_originPortId")}
+        sx={() => ({
+          marginBottom: 18,
+        })}
       />
 
       <Space h="md" />
 
       <Space h="md" />
-      {categoriesList.map((k, i) => {
+      {ofcDestinationItemList.map((item, i) => {
         return (
-          <Group spacing="md" key={i}>
-            <Select
-              required
-              label="Enter Destination Port"
-              placeholder="Eg. singapore"
-              data={[
-                { value: "karnal", label: "Karnal" },
-                { value: "karnal", label: "Karnal" }
-            ]}
-              {...form.getInputProps("destination")}
-            />
-
-            <NumberInput
-              required
-              label="Enter OFC Charges"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("ofc")}
-            />
-
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "bottom",
-                // width: "100%",
-                marginTop: `3%`,
-              }}
+          <React.Fragment key={i}>
+            <Group
+              spacing="md"
+              sx={(theme) => ({
+                border: `1px solid ${theme.colors.gray[2]}`,
+                borderRadius: 12,
+                padding: 12,
+                backgroundColor: theme.colors.gray[0],
+              })}
             >
-              <Group spacing="md" position="right" margin-bottom="10px">
-                <ActionIcon
-                  variant="filled"
-                  onClick={() => handleDeleteItem(i)}
-                >
-                  <Minus size={20} />
-                </ActionIcon>
-              </Group>
-            </div>
-            {/* <Group spacing="md" position="right" margin-bottom="10px">
-              <ActionIcon variant="filled" onClick={() => handleDeleteItem(i)}>
-                <Minus size={20}/>
-              </ActionIcon> */}
-            {/* <ActionIcon
-                variant="filled"
-                disabled={false}
-                onClick={() => handleUpdate(i)}
-              >
-                // {/* <Check size={20} /> */}
-            {/* </ActionIcon> */}
-            {/* </Group> */}
-          </Group>
+              <Grid>
+                <Grid.Col span={6}>
+                  <Select
+                    defaultValue={item["_destinationPortId"]}
+                    required
+                    label="Select Destination Port"
+                    placeholder="Eg. singapore"
+                    data={destinationSelectOptions}
+                    {...form.getInputProps("_destinationPortId_|" + i)}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={4}>
+                  <NumberInput
+                    required
+                    label="Enter OFC Charges"
+                    placeholder="Eg. 26500"
+                    defaultValue={item["ofcCharge"]}
+                    {...form.getInputProps("ofcCharge_|" + i)}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={2}>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <Group spacing="md" position="right" margin-bottom="5px">
+                      <ActionIcon
+                        variant="filled"
+                        onClick={() => handleDeleteItem(i)}
+                      >
+                        <Minus size={20} />
+                      </ActionIcon>
+                    </Group>
+                  </div>
+                </Grid.Col>
+              </Grid>
+            </Group>
+          </React.Fragment>
         );
       })}
 
       <Space h="md" />
 
-      <Group spacing="md" grow>
-        <Select
-          required
-          label="Enter Destination port"
-          placeholder="Eg. Karnal"
-          data={[]}
-          {...form.getInputProps("destination")}
-        />
+      <Group
+        spacing="md"
+        sx={(theme) => ({
+          border: `1px solid ${theme.colors.gray[2]}`,
+          borderRadius: 12,
+          padding: 12,
+        })}
+      >
+        <Grid>
+          <Grid.Col span={6}>
+            <Select
+              required
+              label="Select Destination Port"
+              placeholder="Eg. singapore"
+              data={destinationSelectOptions}
+              {...form.getInputProps("_destinationPortId_|")}
+            />
+          </Grid.Col>
 
-        <NumberInput
-          required
-          label="Enter OFC charge"
-          placeholder="Eg. 26500"
-          {...form.getInputProps("ofc")}
-        />
+          <Grid.Col span={4}>
+            <NumberInput
+              required
+              label="Enter OFC Charges"
+              placeholder="Eg. 26500"
+              {...form.getInputProps("ofcCharge_|")}
+            />
+          </Grid.Col>
 
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "bottom",
-            width: "100%",
-            marginTop: `3%`,
-          }}
-        >
-          <Button onClick={handleClick}>+</Button>
-          {/* <ArrowRightCircle size={24} style={{ marginTop: `14%` }} />
-          <Space w="md" /> */}
-          {/* <Select
-            required
-            label="Destination Port"
-            placeholder="Eg. SINGAPORE"
-            style={{
-              width: "100%",
-            }}
-            data={[]}
-            {...form.getInputProps("destination")} 
-           /> */}
-        </div>
+          <Grid.Col span={2}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "flex-end",
+                height: "100%",
+                width: "100%",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button onClick={handleAddItem}>+</Button>
+            </div>
+          </Grid.Col>
+        </Grid>
       </Group>
 
       <Space h="lg" />
@@ -197,4 +246,4 @@ function EditChaForm(props: any) {
   );
 }
 
-export default EditChaForm;
+export default EditOfcForm;

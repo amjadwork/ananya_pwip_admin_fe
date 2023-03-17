@@ -23,7 +23,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 
 import EditTransportForm from "./EditTransportForm";
 
-import { manageTransport } from "../../../constants/var.constants";
+import APIRequest from "../../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -134,8 +134,17 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  const handleCloseModal=props.handleCloseModal;
-  return <EditTransportForm handleCloseModal={handleCloseModal}/>;
+  const handleCloseModal = props.handleCloseModal;
+  const sourceSelectOptions = props.sourceSelectOptions;
+  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
+
+  return (
+    <EditTransportForm
+      handleCloseModal={handleCloseModal}
+      sourceSelectOptions={sourceSelectOptions}
+      handleUpdateTransportUIData={handleUpdateTransportUIData}
+    />
+  );
 };
 
 function EditTransportContainer(props: any) {
@@ -143,12 +152,29 @@ function EditTransportContainer(props: any) {
   const handleEditAction = props.handleEditAction;
   const modalType = props.modalType || "edit";
   const handleEditToUpdateAction = props.handleEditToUpdateAction;
+  const transportData = props.transportData;
+  const sourceSelectOptions = props.sourceSelectOptions;
+  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
+  const transportAPIPayload = props.transportAPIPayload;
+  const handleRefetchTransportList = props.handleRefetchTransportList;
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
 
   const handleSave = (bool: boolean) => {
     handleEditAction(bool);
+  };
+
+  const handleSaveAction = async () => {
+    const transportResponse = await APIRequest(
+      "transportation",
+      "POST",
+      transportAPIPayload
+    );
+
+    if (transportResponse) {
+      handleRefetchTransportList(transportResponse);
+    }
   };
 
   return (
@@ -165,6 +191,7 @@ function EditTransportContainer(props: any) {
         <RenderPageAction
           editModeActive={editModeActive}
           handleEditAction={handleSave}
+          handleSaveAction={handleSaveAction}
         />
       )}
       modalOpen={modalOpen}
@@ -176,15 +203,22 @@ function EditTransportContainer(props: any) {
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              sourceSelectOptions={sourceSelectOptions}
+              handleUpdateTransportUIData={handleUpdateTransportUIData}
+            />
+          );
         }
 
         if (modalType === "update") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              sourceSelectOptions={sourceSelectOptions}
+            />
+          );
         }
       }}
       modalSize="70%"
@@ -209,8 +243,7 @@ function EditTransportContainer(props: any) {
         <Group position="apart">
           <Title order={1}>Transportation Charges</Title>
           <Group spacing="md">
-          <Input
-              placeholder="Search"/> 
+            <Input placeholder="Search" />
             <Button
               type="submit"
               leftIcon={<Plus size={14} />}
@@ -225,7 +258,7 @@ function EditTransportContainer(props: any) {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageTransport.map((cat: any, index: number) => {
+        {transportData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -234,14 +267,14 @@ function EditTransportContainer(props: any) {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item?.cfsStation}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
+                  {item?.sourceLocations?.map((d: any, i: number) => (
                     <Box
                       key={i}
                       sx={(theme) => ({
@@ -268,9 +301,11 @@ function EditTransportContainer(props: any) {
                       })}
                     >
                       <Group position="apart">
-                      <List.Item>
-                          {d.name} -RS{" "}
-                          <span style={{ fontWeight: "600" }}>{d.price}</span>
+                        <List.Item>
+                          {d._sourcePortId} -{" "}
+                          <span style={{ fontWeight: "800" }}>
+                            INR {d.transportationCharge}
+                          </span>
                         </List.Item>
 
                         <ActionIcon
@@ -283,7 +318,6 @@ function EditTransportContainer(props: any) {
                           onClick={() => {
                             handleEditToUpdateAction();
                             setModalOpen(true);
-                            console.log(d);
                           }}
                         >
                           <Pencil size={12} />

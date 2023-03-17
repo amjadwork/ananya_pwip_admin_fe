@@ -38,7 +38,7 @@ const PageHeader: React.FC<Props> = ({
   ));
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <Text size="xl" weight="bold" color="gray">
         {title}
       </Text>

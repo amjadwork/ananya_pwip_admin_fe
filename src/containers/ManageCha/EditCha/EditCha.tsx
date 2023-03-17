@@ -24,6 +24,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 import EditChaForm from "./EditChaForm";
 
 import { manageCha } from "../../../constants/var.constants";
+import APIRequest from "../../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -158,6 +159,7 @@ function EditChaContainer(props: any) {
   const chaData = props.chaData;
   const handleUpdateChaUIData = props.handleUpdateChaUIData;
   const chaAPIPayload = props.chaAPIPayload;
+  const handleRefetchChaList = props.handleRefetchChaList;
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -166,8 +168,12 @@ function EditChaContainer(props: any) {
     handleEditAction(bool);
   };
 
-  const handleSaveAction = () => {
-    console.log(chaAPIPayload);
+  const handleSaveAction = async () => {
+    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+
+    if (chaResponse) {
+      handleRefetchChaList(chaResponse);
+    }
   };
 
   return (
@@ -260,17 +266,17 @@ function EditChaContainer(props: any) {
               p="lg"
               component="a"
             >
-              <Title order={3}>{item.name}</Title>
+              <Title order={3}>{item?.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {item.list.map((d: any, i: number) => {
+                  {item?.list?.map((d: any, i: number) => {
                     const destinationName = destinationSelectOptions.find(
                       (f: any) => f.value === d._destinationPortId
-                    ).label;
+                    )?.label;
                     return (
                       <Box
                         key={i}

@@ -22,7 +22,7 @@ import EditTransportContainer from "./EditTransport/EditTransport";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { manageTransport} from "../../constants/var.constants";
+import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -132,6 +132,24 @@ function ManageTransportContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [transportData, setTransportData] = React.useState<any>([]);
+  const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
+  const [transportAPIPayload, setTransportAPIPayload] =
+    React.useState<any>(null);
+
+  const handleRefetchTransportList = (transportPostResponse: any) => {
+    if (transportPostResponse) {
+      handleGetSource();
+      getTransportList();
+    }
+  };
+
+  const getTransportList = async () => {
+    const transportResponse: any = await APIRequest("transportation", "GET");
+    if (transportResponse) {
+      setTransportData(() => [...transportResponse]);
+    }
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -143,6 +161,56 @@ function ManageTransportContainer() {
     setModalOpen(true);
   };
 
+  const handleGetSource = async () => {
+    const sourceResponse = await APIRequest(
+      "location?filterType=source",
+      "GET"
+    );
+    if (sourceResponse) {
+      const formattedsource = sourceResponse[0].source.map((d: any) => {
+        return {
+          name: d.region,
+          _sourcePortId: d._id,
+          list: [],
+        };
+      });
+
+      const sourceOptions = sourceResponse[0].source.map((d: any) => {
+        return {
+          label: d.region,
+          value: d._id,
+        };
+      });
+
+      setSourceSelectOptions(() => [...sourceOptions]);
+
+      getTransportList();
+    }
+  };
+
+  const handleUpdateTransportUIData = (formData: any) => {
+    setTransportAPIPayload({ ...formData });
+    let chaArr: any = [...transportData];
+
+    chaArr = chaArr.map((d: any) => {
+      if (formData._sourcePortId === d._sourcePortId) {
+        return {
+          ...d,
+          sourceLocations: [...d.sourceLocations, ...formData.sourceLocations],
+        };
+      }
+      return {
+        ...d,
+      };
+    });
+
+    setTransportData(() => [...chaArr]);
+  };
+
+  React.useEffect(() => {
+    handleGetSource();
+  }, []);
+
   if (editModeActive) {
     return (
       <EditTransportContainer
@@ -151,6 +219,11 @@ function ManageTransportContainer() {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        sourceSelectOptions={sourceSelectOptions}
+        transportData={transportData}
+        handleUpdateTransportUIData={handleUpdateTransportUIData}
+        transportAPIPayload={transportAPIPayload}
+        handleRefetchTransportList={handleRefetchTransportList}
       />
     );
   }
@@ -192,15 +265,14 @@ function ManageTransportContainer() {
       >
         <Group position="apart">
           <Title order={1}>Transportation Charges</Title>
-          <Input
-              placeholder="Search"/> 
+          <Input placeholder="Search" />
         </Group>
       </Box>
 
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageTransport.map((cat: any, index: number) => {
+        {transportData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -209,14 +281,14 @@ function ManageTransportContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item?.cfsStation}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
+                  {item?.sourceLocations?.map((d: any, i: number) => (
                     <Box
                       key={i}
                       sx={(theme) => ({
@@ -243,9 +315,11 @@ function ManageTransportContainer() {
                       })}
                     >
                       <List.Item>
-                          {d.name}  - RS{" "}
-                          <span style={{ fontWeight: "800" }}>{d.price}</span>
-                        </List.Item>
+                        {d._sourcePortId} -{" "}
+                        <span style={{ fontWeight: "800" }}>
+                          INR {d.transportationCharge}
+                        </span>
+                      </List.Item>
                     </Box>
                   ))}
                 </List>

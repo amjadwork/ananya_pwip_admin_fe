@@ -127,6 +127,40 @@ function ManageChaContainer() {
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
 
+  const handleRefetchChaList = (chaPostResponse: any) => {
+    if (chaPostResponse) {
+      handleGetRegionSource();
+      getCHAList(chaPostResponse);
+    }
+  };
+
+  const getCHAList = async (regionList: any) => {
+    const chaResponse: any = await APIRequest("cha", "GET");
+
+    if (chaResponse) {
+      let array: any = regionList.map((item: any) => {
+        let destinationArr: any = [];
+        let originIdStringArr: any = [];
+
+        chaResponse.forEach((region: any) => {
+          if (item._originId === region._originPortId) {
+            destinationArr.push(region.destinations);
+            originIdStringArr.push(region._originId);
+          }
+        });
+
+        return {
+          ...item,
+          list: originIdStringArr.includes(item._originPortId)
+            ? destinationArr.flat(1)
+            : [],
+        };
+      });
+
+      setChaData(() => [...array]);
+    }
+  };
+
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -159,7 +193,9 @@ function ManageChaContainer() {
       });
 
       setRegionSelectOptions(() => [...regionOptions]);
-      setChaData(() => [...formattedRegion]);
+
+      handleGetDestination();
+      getCHAList(formattedRegion);
     }
   };
 
@@ -171,9 +207,12 @@ function ManageChaContainer() {
       if (formData._originPortId === d._originId) {
         return {
           ...d,
-          list: formData.destinations,
+          list: [...d.list, ...formData.destinations],
         };
       }
+      return {
+        ...d,
+      };
     });
 
     setChaData(() => [...chaArr]);
@@ -181,8 +220,6 @@ function ManageChaContainer() {
 
   const handleSaveAction = async () => {
     const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
-
-    console.log(chaResponse);
 
     if (chaResponse) {
       //
@@ -211,7 +248,6 @@ function ManageChaContainer() {
 
   React.useEffect(() => {
     handleGetRegionSource();
-    handleGetDestination();
   }, []);
 
   if (editModeActive) {
@@ -227,6 +263,7 @@ function ManageChaContainer() {
         chaData={chaData}
         handleUpdateChaUIData={handleUpdateChaUIData}
         chaAPIPayload={chaAPIPayload}
+        handleRefetchChaList={handleRefetchChaList}
       />
     );
   }
@@ -285,17 +322,17 @@ function ManageChaContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{item.name}</Title>
+              <Title order={3}>{item?.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {item.list.map((d: any, i: number) => {
-                    const destinationName = destinationSelectOptions.find(
+                  {item?.list?.map((d: any, i: number) => {
+                    const destinationName = destinationSelectOptions?.find(
                       (f: any) => f.value === d._destinationPortId
-                    ).label;
+                    )?.label;
                     return (
                       <Box
                         key={i}

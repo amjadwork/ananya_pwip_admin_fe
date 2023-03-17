@@ -22,7 +22,7 @@ import EditShlContainer from "./EditShl/EditShl";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { manageCha } from "../../constants/var.constants";
+import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -132,6 +132,45 @@ function ManageShlContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
+  const [shlData, setShlData] = React.useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] =
+    React.useState<any>([]);
+  const [shlAPIPayload, setShlAPIPayload] = React.useState<any>(null);
+
+  const handleRefetchShlList = (chaPostResponse: any) => {
+    if (chaPostResponse) {
+      handleGetRegionSource();
+      getSHLList(chaPostResponse);
+    }
+  };
+
+  const getSHLList = async (regionList: any) => {
+    const shlResponse: any = await APIRequest("shl", "GET");
+
+    if (shlResponse) {
+      let array: any = regionList.map((item: any) => {
+        let destinationArr: any = [];
+        let originIdStringArr: any = [];
+
+        shlResponse.forEach((region: any) => {
+          if (item._originId === region._originPortId) {
+            destinationArr.push(region.destinations);
+            originIdStringArr.push(region._originId);
+          }
+        });
+
+        return {
+          ...item,
+          list: originIdStringArr.includes(item._originPortId)
+            ? destinationArr.flat(1)
+            : [],
+        };
+      });
+
+      setShlData(() => [...array]);
+    }
+  };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -143,6 +182,85 @@ function ManageShlContainer() {
     setModalOpen(true);
   };
 
+  const handleGetRegionSource = async () => {
+    const regionResponse = await APIRequest(
+      "location?filterType=origin",
+      "GET"
+    );
+    if (regionResponse) {
+      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+        return {
+          name: d.portName,
+          _originId: d._id,
+          list: [],
+        };
+      });
+
+      const regionOptions = regionResponse[0].origin.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
+
+      setRegionSelectOptions(() => [...regionOptions]);
+
+      handleGetDestination();
+      getSHLList(formattedRegion);
+    }
+  };
+
+  const handleUpdateShlUIData = (formData: any) => {
+    setShlAPIPayload({ ...formData });
+    let chaArr: any = [...shlData];
+
+    chaArr = chaArr.map((d: any) => {
+      if (formData._originPortId === d._originId) {
+        return {
+          ...d,
+          list: [...d.list, ...formData.destinations],
+        };
+      }
+      return {
+        ...d,
+      };
+    });
+
+    setShlData(() => [...chaArr]);
+  };
+
+  const handleSaveAction = async () => {
+    const shlResponse = await APIRequest("cha", "POST", shlAPIPayload);
+
+    if (shlResponse) {
+      //
+    }
+  };
+
+  const handleGetDestination = async () => {
+    const destinationResponse = await APIRequest(
+      "location?filterType=destination",
+      "GET"
+    );
+
+    if (destinationResponse) {
+      const destinationOptions = destinationResponse[0].destination.map(
+        (d: any) => {
+          return {
+            label: d.portName,
+            value: d._id,
+          };
+        }
+      );
+
+      setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetRegionSource();
+  }, []);
+
   if (editModeActive) {
     return (
       <EditShlContainer
@@ -151,6 +269,12 @@ function ManageShlContainer() {
         modalType={modalType}
         modalOpen={modalOpen}
         handleEditToUpdateAction={handleEditToUpdateAction}
+        regionSelectOptions={regionSelectOptions}
+        destinationSelectOptions={destinationSelectOptions}
+        shlData={shlData}
+        handleUpdateShlUIData={handleUpdateShlUIData}
+        shlAPIPayload={shlAPIPayload}
+        handleRefetchShlList={handleRefetchShlList}
       />
     );
   }
@@ -192,15 +316,14 @@ function ManageShlContainer() {
       >
         <Group position="apart">
           <Title order={1}>Shipping Line Locals Charges</Title>
-          <Input
-              placeholder="Search"/>
+          <Input placeholder="Search" />
         </Group>
       </Box>
 
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {manageCha.map((cat: any, index: number) => {
+        {shlData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -209,45 +332,52 @@ function ManageShlContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{cat.name}</Title>
+              <Title order={3}>{item?.name}</Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
-
-                        "&:hover": {
+                  {item?.list?.map((d: any, i: number) => {
+                    const destinationName = destinationSelectOptions?.find(
+                      (f: any) => f.value === d._destinationPortId
+                    )?.label;
+                    return (
+                      <Box
+                        key={i}
+                        sx={(theme) => ({
+                          display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>
-                          {d.name}  - RS{" "}
-                          <span style={{ fontWeight: "800" }}>{d.price}</span>
+                              ? theme.colors.dark[6]
+                              : "#fff",
+                          color:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[4]
+                              : theme.colors.dark[7],
+                          textAlign: "left",
+                          padding: theme.spacing.md,
+                          borderRadius: theme.radius.md,
+                          cursor: "default",
+
+                          "&:hover": {
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[5]
+                                : theme.colors.gray[1],
+                          },
+                        })}
+                      >
+                        <List.Item>
+                          {destinationName} -{" "}
+                          <span style={{ fontWeight: "800" }}>
+                            INR {d.shlCharge}
+                          </span>
                         </List.Item>
-                    </Box>
-                  ))}
+                      </Box>
+                    );
+                  })}
                 </List>
               </ScrollArea>
             </SectionCard>
