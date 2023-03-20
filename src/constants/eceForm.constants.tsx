@@ -56,20 +56,14 @@ export const eceForm = [
     name: "productType",
     type: "select",
     placeholder: "rice",
-    options: [
-      { value: " Rice", label: "Rice" },
-      { value: "Other", label: "Other" },
-    ],
+    options: [],
   },
   {
     label: "Rice Category",
-    name: "productCategotry",
+    name: "productCategory",
     type: "select",
     placeholder: "Select Rice Category",
-    options: [
-      { value: "Basmati", label: "Basmati" },
-      { value: "Non Basmati", label: "Non Basmati" },
-    ],
+    options: [],
   },
   {
     label: "Rice Variety",
@@ -87,36 +81,21 @@ export const eceForm = [
     name: "sourcingLocation",
     type: "select",
     placeholder: "Select Sourcing Location",
-    options: [
-      { value: "Haryana", label: "Haryana " },
-      { value: "Punjab", label: "Punjab" },
-      { value: "Karnataka", label: "Raipur" },
-      { value: "Vellore", label: "Vellore" },
-    ],
+    options: [],
   },
   {
     label: "Origin Port / City",
     name: "originPort",
     type: "select",
     placeholder: "Seach here",
-    options: [
-      { value: "Chennai", label: "Chennai" },
-      { value: "Gujarat", label: "Gujarat" },
-      { value: "Mumbai", label: "Mumbai" },
-      { value: "West bengal", label: "West bengal" },
-    ],
+    options: [],
   },
   {
     label: "Destination Port / City",
     name: "destinationPort",
     type: "select",
     placeholder: "Seach here",
-    options: [
-      { value: "Singapore", label: "Singapore" },
-      { value: "Vietnam", label: "Vietnam" },
-      { value: "Qwait", label: "Qwait" },
-      { value: "Dubai", label: "Dubai" },
-    ],
+    options: [],
   },
   {
     label: "Broken Percentage(%)",

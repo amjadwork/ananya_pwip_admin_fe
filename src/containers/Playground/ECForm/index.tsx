@@ -16,8 +16,9 @@ import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { eceForm } from "../../../constants/eceForm.constants";
 
-import { Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+
+import APIRequest from "../../../helper/api";
 
 const initialFormState: any = {
   clearInputErrorOnChange: true,
@@ -39,63 +40,130 @@ const initialFormState: any = {
     brokenPercentage: "",
     CfshandlingCharges: "",
 
-    // CraftPaper: "",
-    // SilicaGel: "",
-    // LoadingCharges: "",
-    // LTransportationCharges: "",
-    // CustomCharges: "",
-    // PQCertificate: "",
-    // COO: "",
-
     FinanceCost: "",
     InspectionCost: "",
     Overheads: "",
     ShippingCost: "",
 
-    // Thc: "",
     OriginalBLFee: "",
-    // Surrender: "",
-    // Muc: "",
-    // Seal: "",
-    // ConvenienceFee: "",
-    // Others: "",
-
     MarginCost: "",
     Ofc: "",
     InsuranceCost: "",
-    // shipmentTerms:"",
-
-    // chooseOne: "",
-    // bookingType: "",
-    // containerWeight: "",
   },
 };
 
 const EceForm = () => {
   const [checked, setChecked] = useState(false);
   const [term, setTerm] = useState("");
-  // console.log({"term" , term });
-  // const [sum, setSum] = useState();
-  // console.log(sum, "sum");
+
   const [brokenPercentage, setBrokenPercentage] = useState(5);
   const [containerCount, setContainerCount] = useState(0);
+  const [initialFormValue, setInitialFormValue] = useState([...eceForm]);
+  const [productList, setProductList] = useState([]);
+  const [categoryList, setCategoryList] = useState<any>([]);
+  const [variantsList, setVariantsList] = useState<any>([]);
+  const [locationList, setLocationList] = useState<any>([]);
 
   const form: any = useForm(initialFormState);
+
+  const handleSettingFormValues = (response: any, compareString: any) => {
+    const formValues = [...initialFormValue].map((d: any) => {
+      let obj = { ...d };
+      if (obj.name === compareString) {
+        obj.options = response.map((p: any) => ({
+          label: p.name,
+          value: p._id,
+        }));
+      }
+      return { ...obj };
+    });
+
+    console.log("formValues", formValues);
+
+    setInitialFormValue(formValues);
+  };
+
+  const handleGetProductData = async () => {
+    const productResponse: any = await APIRequest("product", "GET");
+
+    if (productResponse) {
+      setProductList(productResponse);
+
+      handleSettingFormValues(productResponse, "productType");
+    }
+  };
+
+  const handleGetCategoryData = async (id: string) => {
+    const productId = id;
+
+    const categoryDetailResponse: any = await APIRequest(
+      `category?_productId=${productId}`,
+      "GET"
+    );
+    if (categoryDetailResponse) {
+      setCategoryList(categoryDetailResponse[0].category || []);
+
+      handleSettingFormValues(
+        categoryDetailResponse[0].category,
+        "productCategory"
+      );
+    }
+  };
+
+  const handleGetVariantData = async (ids: Array<[]>) => {
+    const categoryIds = ids;
+
+    const variantResponse: any = await APIRequest(
+      `variant?_categoryId=${categoryIds}`,
+      "GET"
+    );
+    if (variantResponse) {
+      setVariantsList(variantResponse);
+
+      handleSettingFormValues(variantResponse, "variety");
+    }
+  };
+
+  const handleGetLocationsData = async () => {
+    const locationResponse: any = await APIRequest(`location`, "GET");
+    // setLocationList
+    if (locationResponse) {
+      setVariantsList(locationResponse);
+
+      const formValues = [...initialFormValue].map((d: any) => {
+        let obj = { ...d };
+        if (obj.name === "sourcingLocation") {
+          obj.options = locationResponse[0].source.map((p: any) => ({
+            label: p.region,
+            value: p._id,
+          }));
+        }
+
+        if (obj.name === "originPort") {
+          obj.options = locationResponse[0].origin.map((p: any) => ({
+            label: p.portName,
+            value: p._id,
+          }));
+        }
+
+        if (obj.name === "destinationPort") {
+          obj.options = locationResponse[0].destination.map((p: any) => ({
+            label: p.portName,
+            value: p._id,
+          }));
+        }
+        return { ...obj };
+      });
+
+      setInitialFormValue(formValues);
+    }
+  };
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.name) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-
-  // const handleDuty = (type: string, name: string) => {
-  //   // let x: any = { sum };
-  //   let check: any = { checked };
-  //   if (check === "true") {
-  //     let fsum: any = x + (20 % x);
-  //     console.log(fsum);
-  //   }
-  // };
 
   const handleCount = (type: string, name: string) => {
     let count: number = 0;
@@ -119,8 +187,6 @@ const EceForm = () => {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    console.log("values", values);
-
     const terms: string = values.shipmentTerms;
 
     setTerm(terms);
@@ -133,7 +199,6 @@ const EceForm = () => {
     let discountPrice = 300 * factor;
 
     let finalPrice = price - discountPrice;
-    console.log("exMillPrice with discount", finalPrice);
 
     const totalvalues: any = [
       { exMill: finalPrice },
@@ -149,11 +214,8 @@ const EceForm = () => {
       { OriginalBLFee: values?.OriginalBLFee },
       // { Ofc: values?.Ofc },
     ];
-    console.log("totalvalues", totalvalues);
 
     let arr: any = [];
-
-    console.log("arr", arr);
 
     totalvalues.forEach((mobile: any) => {
       for (let key in mobile) {
@@ -162,46 +224,48 @@ const EceForm = () => {
         }
       }
     });
-    console.log("Array", arr);
 
     const sum = arr.reduce(function summarize(sum: any, number: any) {
       const updatedSum = sum + number;
       return updatedSum;
     }, 0);
-    console.log("sum", sum);
-    // setSum(sum);
 
-    // function test() {
     let totalsum: any = sum;
-    console.log("totalsum", totalsum);
+
     if (checked === true) {
       totalsum = totalsum + (20 * totalsum) / 100;
       return totalsum;
     } else {
       totalsum = totalsum;
     }
-    // console.log("totalsum",totalsum);
-    // };
-    // console.log("test", test);
-
-    // const newSum: any = sum;
-    // let fsum: any = 0;
-    // // console.log("newSum", newSum);
-    // console.log("check", check);
-    // // if(term==="FOB"){
-    // if (check === "true") {
-    //   fsum = newSum + (20 * newSum) / 100;
-    // } else {
-    //   fsum = newSum;
-    // }
-    // // }
-    // console.log(fsum, "fsum");
   };
+
+  React.useEffect(() => {
+    handleGetProductData();
+  }, []);
+
+  React.useEffect(() => {
+    if (productList.length && variantsList.length) {
+      handleGetLocationsData();
+    }
+  }, [productList, variantsList]);
+
+  function onChangeHandler(name: any, value: any) {
+    if (name === "productType") {
+      const productId = value;
+      handleGetCategoryData(productId);
+    }
+
+    if (name === "productCategory") {
+      const catIds = [value];
+      handleGetVariantData(catIds);
+    }
+  }
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Card p="xl">
-        {eceForm.map((k, i) => {
+        {initialFormValue?.map((k: any, i: number) => {
           if (k.type === "input") {
             return (
               <TextInput
@@ -212,7 +276,9 @@ const EceForm = () => {
               />
             );
           }
+
           <Space h="xl" />;
+
           if (k.type === "checkbox") {
             return (
               <Checkbox
@@ -230,8 +296,10 @@ const EceForm = () => {
                 key={k.label + i}
                 label={k.label}
                 placeholder={k.placeholder}
-                data={k.options}
-                {...form.getInputProps(k.name)}
+                data={k.options || []}
+                name={k.name}
+                onChange={(value) => onChangeHandler(k.name, value)}
+                // {...form.getInputProps(k.name)}
               />
             );
           }
@@ -248,13 +316,7 @@ const EceForm = () => {
           }
           if (k.type === "radio") {
             return (
-              <Radio.Group
-                label={k.label}
-                key={k.label + i}
-                // onChange={(e) => {
-                //   console.log("e", e);
-                // }}
-              >
+              <Radio.Group label={k.label} key={k.label + i}>
                 {k &&
                   k.options?.map((d: any, i: number) => {
                     return (
@@ -294,18 +356,6 @@ const EceForm = () => {
               </Group>
             );
           }
-          // <Space h="md" />
-          // if (k.id === "hideInput") {
-          //   return (
-          //     <TextInput
-          //       key={k.label + i}
-          //       label={k.label}
-          //       // disabled={fob}
-          //       placeholder={k.placeholder}
-          //       {...form.getInputProps(k.name)}
-          //     />
-          //   );
-          // }
         })}
 
         <Space h="md" />
