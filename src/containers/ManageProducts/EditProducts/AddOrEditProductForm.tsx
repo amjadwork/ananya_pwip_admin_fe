@@ -27,6 +27,7 @@ function AddOrEditProductForm(props: any) {
   );
   const [numberValue, setNumberValue] = useState(0);
   const [regionValue, setRegionValue] = useState("");
+  const [regionOptions, setRegionOptions] = useState<any>([]);
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -40,6 +41,23 @@ function AddOrEditProductForm(props: any) {
         value.length < 2 ? "Name must have at least 2 letters" : null,
     },
   });
+
+  const handleGetRegions: any = async () => {
+    const regionResponse = await APIRequest(
+      "location?filterType=source",
+      "GET"
+    );
+
+    if (regionResponse) {
+      const options: any = regionResponse[0].source.map((d: any) => ({
+        label: d.region,
+        value: d._id,
+      }));
+      setRegionOptions([...options]);
+    }
+
+    console.log(regionResponse);
+  };
 
   const handleAddRegionCost: any = () => {
     const arr: any = [...variantRegionCostingList];
@@ -100,6 +118,10 @@ function AddOrEditProductForm(props: any) {
     label: cat.name,
   }));
 
+  React.useEffect(() => {
+    handleGetRegions();
+  }, []);
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Select
@@ -128,10 +150,7 @@ function AddOrEditProductForm(props: any) {
               defaultValue={k.region}
               label="Select Region"
               placeholder="Eg. Karnal"
-              data={[
-                { value: "karnal", label: "karnal" },
-                { value: "chennai", label: "chennai" },
-              ]}
+              data={regionOptions}
             />
 
             <NumberInput
@@ -169,10 +188,7 @@ function AddOrEditProductForm(props: any) {
           required
           label="Select Region"
           placeholder="Eg. Karnal"
-          data={[
-            { value: "karnal", label: "karnal" },
-            { value: "chennai", label: "chennai" },
-          ]}
+          data={regionOptions}
           value={regionValue}
           onChange={(event: any) => {
             setRegionValue(event);

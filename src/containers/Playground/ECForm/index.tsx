@@ -4,6 +4,7 @@ import {
   Button,
   TextInput,
   NumberInput,
+  Flex,
   Radio,
   Box,
   Select,
@@ -11,6 +12,7 @@ import {
   Card,
   Input,
   Checkbox,
+  Stepper,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -55,6 +57,7 @@ const initialFormState: any = {
 const EceForm = () => {
   const [checked, setChecked] = useState(false);
   const [term, setTerm] = useState("");
+  const [playgroundSlidesData, setPlaygroundSlidesData] = useState<any>(null);
 
   const [brokenPercentage, setBrokenPercentage] = useState(5);
   const [containerCount, setContainerCount] = useState(0);
@@ -63,22 +66,59 @@ const EceForm = () => {
   const [categoryList, setCategoryList] = useState<any>([]);
   const [variantsList, setVariantsList] = useState<any>([]);
   const [locationList, setLocationList] = useState<any>([]);
+  const [bagList, setBagList] = useState<any>([]);
+  const [activeSlide, setActiveSlide] = useState<any>(1);
+
+  const [selectedProductVariant, setSelectedProductVariant] =
+    useState<any>(null);
+  const [exMillPrice, setExMillPrice] = useState<any>(0);
 
   const form: any = useForm(initialFormState);
 
-  const handleSettingFormValues = (response: any, compareString: any) => {
+  const handleNextSlide = () => {
+    let currentStep = activeSlide;
+
+    if (currentStep < eceForm.length + 1) {
+      currentStep = currentStep + 1;
+    }
+
+    setActiveSlide(currentStep);
+  };
+
+  const handlePrevSlide = () => {
+    let currentStep = activeSlide;
+
+    if (currentStep > 1) {
+      currentStep = currentStep - 1;
+    }
+
+    setActiveSlide(currentStep);
+  };
+
+  const handleSettingFormValues = (
+    response: any,
+    compareString: any,
+    key?: string
+  ) => {
     const formValues = [...initialFormValue].map((d: any) => {
       let obj = { ...d };
       if (obj.name === compareString) {
-        obj.options = response.map((p: any) => ({
-          label: p.name,
-          value: p._id,
-        }));
+        obj.options = response.map((p: any) => {
+          if (key) {
+            return {
+              label: p[key],
+              value: p._id,
+            };
+          }
+
+          return {
+            label: p.name,
+            value: p._id,
+          };
+        });
       }
       return { ...obj };
     });
-
-    console.log("formValues", formValues);
 
     setInitialFormValue(formValues);
   };
@@ -121,6 +161,18 @@ const EceForm = () => {
       setVariantsList(variantResponse);
 
       handleSettingFormValues(variantResponse, "variety");
+    }
+  };
+
+  const handleGetPackageData = async (dataType?: any) => {
+    const packagingResponse: any = await APIRequest(`packaging`, "GET");
+    if (packagingResponse) {
+      if (dataType === "weight") {
+        handleSettingFormValues(packagingResponse, "bagWeight", "weight");
+      } else {
+        setBagList(packagingResponse);
+        handleSettingFormValues(packagingResponse, "bagTypes", "bag");
+      }
     }
   };
 
@@ -238,6 +290,8 @@ const EceForm = () => {
     } else {
       totalsum = totalsum;
     }
+
+    console.log(totalsum);
   };
 
   React.useEffect(() => {
@@ -245,10 +299,23 @@ const EceForm = () => {
   }, []);
 
   React.useEffect(() => {
-    if (productList.length && variantsList.length) {
+    if (productList.length) {
       handleGetLocationsData();
     }
-  }, [productList, variantsList]);
+  }, [productList]);
+
+  React.useEffect(() => {
+    if (variantsList.length) {
+      handleGetPackageData("bag");
+    }
+  }, [variantsList]);
+
+  // bagList
+  React.useEffect(() => {
+    if (bagList.length) {
+      handleGetPackageData("weight");
+    }
+  }, [bagList]);
 
   function onChangeHandler(name: any, value: any) {
     if (name === "productType") {
@@ -260,109 +327,224 @@ const EceForm = () => {
       const catIds = [value];
       handleGetVariantData(catIds);
     }
+
+    if (name === "variety") {
+      const selectedVariant = variantsList.find((f: any) => f._id === value);
+      console.log(selectedVariant);
+      setSelectedProductVariant(selectedVariant);
+    }
   }
 
+  var groupBy = function (xs: any, key: any) {
+    return xs.reduce(function (rv: any, x: any) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  };
+
+  useEffect(() => {
+    const slides = groupBy([...initialFormValue], "step");
+    setPlaygroundSlidesData(slides);
+  }, [initialFormValue]);
+
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-      <Card p="xl">
-        {initialFormValue?.map((k: any, i: number) => {
-          if (k.type === "input") {
+    <form
+      style={{ height: "100%" }}
+      onSubmit={form.onSubmit(handleSubmit, handleError)}
+    >
+      <Space h="xl" />
+      <Stepper
+        active={activeSlide - 1}
+        breakpoint="sm"
+        onStepClick={(index: number) => setActiveSlide(index + 1)}
+        iconSize={32}
+      >
+        {playgroundSlidesData &&
+          Object.keys(playgroundSlidesData)?.map((key: any, index: any) => {
+            if (parseInt(key) === 13) {
+              return (
+                <Stepper.Completed key={index}>
+                  Completed, click back button to get to previous step
+                </Stepper.Completed>
+              );
+            }
+            return <Stepper.Step>Step {key}</Stepper.Step>;
+          })}
+      </Stepper>
+      <Space h="xl" />
+      {playgroundSlidesData &&
+        Object.keys(playgroundSlidesData)?.map((step: any, index: number) => {
+          if (parseInt(step) === activeSlide) {
             return (
-              <TextInput
-                key={k.label + i}
-                label={k.label}
-                placeholder={k.placeholder}
-                {...form.getInputProps(k.name)}
-              />
-            );
-          }
-
-          <Space h="xl" />;
-
-          if (k.type === "checkbox") {
-            return (
-              <Checkbox
-                key={i}
-                label={k.label}
-                checked={checked}
-                onChange={(event) => setChecked(event.currentTarget.checked)}
-              />
-            );
-          }
-
-          if (k.type === "select") {
-            return (
-              <Select
-                key={k.label + i}
-                label={k.label}
-                placeholder={k.placeholder}
-                data={k.options || []}
-                name={k.name}
-                onChange={(value) => onChangeHandler(k.name, value)}
-                // {...form.getInputProps(k.name)}
-              />
-            );
-          }
-
-          if (k.type === "date") {
-            return (
-              <DatePicker
-                key={k.label + i}
-                label={k.label}
-                placeholder="Pick date"
-                {...form.getInputProps(k.name)}
-              />
-            );
-          }
-          if (k.type === "radio") {
-            return (
-              <Radio.Group label={k.label} key={k.label + i}>
-                {k &&
-                  k.options?.map((d: any, i: number) => {
-                    return (
-                      <Radio
-                        key={d.name + i}
-                        value={d.name}
-                        label={d.name}
-                      ></Radio>
-                    );
-                  })}
-              </Radio.Group>
-            );
-          }
-
-          <Space h="md" />;
-          if (k.type === "counter") {
-            return (
-              <Group key={k.label + i}>
-                {k.label}
-                <Button
-                  onClick={() => handleCount("reduce", k.name)}
-                  disabled={
-                    (k.name === "brokenPercentage" && brokenPercentage === 0) ||
-                    (k.name === "containerCount" && containerCount === 0)
-                  }
+              <Card
+                p="xl"
+                key={step + index}
+                mih={350}
+                mah={350}
+                pos="relative"
+              >
+                <Flex
+                  gap="lg"
+                  justify="flex-start"
+                  align="flex-start"
+                  direction="column"
+                  wrap="wrap"
+                  w="100%"
                 >
-                  -
-                </Button>
-                <Box>
-                  {k.name === "containerCount"
-                    ? containerCount
-                    : brokenPercentage}
-                </Box>
-                <Button onClick={() => handleCount("increase", k.name)}>
-                  +
-                </Button>
-              </Group>
+                  {playgroundSlidesData[step]?.map((k: any, i: number) => {
+                    if (k.type === "input") {
+                      return (
+                        <TextInput
+                          key={k.label + i}
+                          label={k.label}
+                          placeholder={k.placeholder}
+                          w="100%"
+                          {...form.getInputProps(k.name)}
+                        />
+                      );
+                    }
+
+                    if (k.type === "checkbox") {
+                      return (
+                        <Checkbox
+                          key={i}
+                          label={k.label}
+                          checked={checked}
+                          onChange={(event) =>
+                            setChecked(event.currentTarget.checked)
+                          }
+                          w="100%"
+                        />
+                      );
+                    }
+
+                    if (k.type === "select") {
+                      return (
+                        <Select
+                          key={k.label + i}
+                          label={k.label}
+                          placeholder={k.placeholder}
+                          data={k.options || []}
+                          name={k.name}
+                          onChange={(value) => onChangeHandler(k.name, value)}
+                          w="100%"
+                          // {...form.getInputProps(k.name)}
+                        />
+                      );
+                    }
+
+                    if (k.type === "date") {
+                      return (
+                        <DatePicker
+                          key={k.label + i}
+                          label={k.label}
+                          placeholder="Pick date"
+                          w="100%"
+                          {...form.getInputProps(k.name)}
+                        />
+                      );
+                    }
+                    if (k.type === "radio") {
+                      return (
+                        <Radio.Group label={k.label} key={k.label + i} w="100%">
+                          {k &&
+                            k.options?.map((d: any, i: number) => {
+                              return (
+                                <Radio
+                                  key={d.name + i}
+                                  value={d.name}
+                                  label={d.name}
+                                ></Radio>
+                              );
+                            })}
+                        </Radio.Group>
+                      );
+                    }
+
+                    if (k.type === "counter") {
+                      return (
+                        <Group key={k.label + i} w="100%">
+                          {k.label}
+                          <Button
+                            onClick={() => handleCount("reduce", k.name)}
+                            disabled={
+                              (k.name === "brokenPercentage" &&
+                                brokenPercentage === 0) ||
+                              (k.name === "containerCount" &&
+                                containerCount === 0)
+                            }
+                          >
+                            -
+                          </Button>
+                          <Box>
+                            {k.name === "containerCount"
+                              ? containerCount
+                              : brokenPercentage}
+                          </Box>
+                          <Button
+                            onClick={() => handleCount("increase", k.name)}
+                          >
+                            +
+                          </Button>
+                        </Group>
+                      );
+                    }
+                  })}
+                </Flex>
+
+                <Space h="xl" />
+
+                <Flex
+                  gap="md"
+                  justify="flex-end"
+                  align="center"
+                  direction="row"
+                  wrap="wrap"
+                  pos="absolute"
+                  w="100%"
+                  bottom={0}
+                  right={0}
+                  px={24}
+                  pb={24}
+                >
+                  <Button
+                    size="xs"
+                    color="gray"
+                    type="button"
+                    onClick={handlePrevSlide}
+                    disabled={activeSlide === 1}
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    size="xs"
+                    color="blue"
+                    type="submit"
+                    disabled={activeSlide !== 13}
+                    sx={{
+                      display: parseInt(step) === 13 ? "block" : "none",
+                    }}
+                  >
+                    Submit
+                  </Button>
+
+                  {parseInt(step) !== 13 && (
+                    <Button
+                      size="xs"
+                      color="blue"
+                      type="button"
+                      onClick={handleNextSlide}
+                      disabled={activeSlide === 13}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </Flex>
+              </Card>
             );
           }
         })}
-
-        <Space h="md" />
-        <Button size="xs" color="blue" type="submit">
-          Submit
-        </Button>
-      </Card>
     </form>
   );
 };

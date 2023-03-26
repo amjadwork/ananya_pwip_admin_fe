@@ -1,45 +1,47 @@
 export const eceForm = [
-  {
-    label: "Name",
-    name: "name",
-    type: "input",
-    placeholder: "Fill the name",
-  },
-  {
-    label: "Company Name",
-    name: "companyName",
-    type: "input",
-    placeholder: "Fill the Comapny Name",
-  },
-  {
-    label: "Contact Details",
-    name: "contactDetails",
-    type: "input",
-    placeholder: "Fill the Company Details",
-  },
-  {
-    label: "Date",
-    name: "date",
-    type: "date",
-    placeholder: "Fill the date",
-  },
-  {
-    label: "Choose One",
-    name: "chooseOne",
-    type: "radio",
-    options: [{ name: "Exporter" }, { name: "Importer" }, { name: "Miller" }],
-  },
+  // {
+  //   label: "Name",
+  //   name: "name",
+  //   type: "input",
+  //   placeholder: "Fill the name",
+  // },
+  // {
+  //   label: "Company Name",
+  //   name: "companyName",
+  //   type: "input",
+  //   placeholder: "Fill the Comapny Name",
+  // },
+  // {
+  //   label: "Contact Details",
+  //   name: "contactDetails",
+  //   type: "input",
+  //   placeholder: "Fill the Company Details",
+  // },
+  // {
+  //   label: "Date",
+  //   name: "date",
+  //   type: "date",
+  //   placeholder: "Fill the date",
+  // },
+  // {
+  //   label: "Choose One",
+  //   name: "chooseOne",
+  //   type: "radio",
+  //   options: [{ name: "Exporter" }, { name: "Importer" }, { name: "Miller" }],
+  // },
   {
     label: "Today's Dollar Price (Rs 75.0)",
     name: "dollarPrice",
     type: "input",
     placeholder: "Enter the Dollar Price",
+    step: 1,
   },
   {
     label: "Type of Booking",
     name: "bookingType",
     type: "radio",
     options: [{ name: "FCL" }],
+    step: 1,
   },
   {
     label: "Terms Of Shipment",
@@ -50,6 +52,7 @@ export const eceForm = [
       { value: " FOB", label: "FOB" },
       { value: "CIF", label: "CIF" },
     ],
+    step: 1,
   },
   {
     label: "Type of Product",
@@ -57,6 +60,7 @@ export const eceForm = [
     type: "select",
     placeholder: "rice",
     options: [],
+    step: 2,
   },
   {
     label: "Rice Category",
@@ -64,16 +68,15 @@ export const eceForm = [
     type: "select",
     placeholder: "Select Rice Category",
     options: [],
+    step: 2,
   },
   {
     label: "Rice Variety",
     name: "variety",
     type: "select",
     placeholder: "Select Rice Variety",
-    options: [
-      { value: "SonaMasori ", label: "SonaMasori" },
-      { value: "IR64", label: "IR64" },
-    ],
+    options: [],
+    step: 2,
   },
 
   {
@@ -82,13 +85,7 @@ export const eceForm = [
     type: "select",
     placeholder: "Select Sourcing Location",
     options: [],
-  },
-  {
-    label: "Origin Port / City",
-    name: "originPort",
-    type: "select",
-    placeholder: "Seach here",
-    options: [],
+    step: 3,
   },
   {
     label: "Destination Port / City",
@@ -96,12 +93,22 @@ export const eceForm = [
     type: "select",
     placeholder: "Seach here",
     options: [],
+    step: 4,
+  },
+  {
+    label: "Origin Port / City",
+    name: "originPort",
+    type: "select",
+    placeholder: "Seach here",
+    options: [],
+    step: 5,
   },
   {
     label: "Broken Percentage(%)",
     name: "brokenPercentage",
     type: "counter",
     placeholder: "@5",
+    step: 6,
   },
 
   {
@@ -109,6 +116,7 @@ export const eceForm = [
     name: "exMill",
     type: "input",
     placeholder: "write down ex-mill price",
+    step: 7,
   },
 
   {
@@ -117,53 +125,51 @@ export const eceForm = [
     type: "select",
     placeholder: "Select type of container",
     options: [{ value: "20ft", label: "General Container(20ft)" }],
+    step: 8,
   },
   {
     label: "Container Count",
     name: "containerCount",
     type: "counter",
     placeholder: "@1",
+    step: 8,
   },
   {
     label: "Container Weight ",
     name: "containerWeight",
     type: "radio",
     options: [{ name: "Metric tons" }, { name: "Kg" }, { name: "Quintel" }],
+    step: 8,
   },
   {
     label: "Type of Bags ",
     name: "bagTypes",
     type: "select",
     placeholder: "Eg. BOPP",
-    options: [
-      { value: "BOPP ", label: "BOPP" },
-      { value: "PP Woven", label: "PP Woven" },
-      { value: "Jute Bags ", label: "Jute Bags" },
-      { value: "PE Bags", label: "PE Bags" },
-    ],
+    options: [],
+    step: 9,
   },
   {
     label: "Bag Weight",
     name: "bagWeight",
     type: "select",
     placeholder: "Bag weight in kg ",
-    options: [
-      { value: "18kg ", label: "18kg" },
-      { value: "25kg", label: "25kg" },
-      { value: "50kg", label: "50kg" },
-    ],
+    options: [],
+    step: 9,
   },
   {
     label: "Bags Charges",
     name: "BagsCharges",
     type: "input",
     placeholder: "Fill the Bags charges:",
+    step: 9,
   },
   {
     label: "Transportation Charges(Rs/mt ton)",
     name: "TransportationCharges",
     type: "input",
     placeholder: "Fill the Transport charges:",
+    step: 10,
   },
 
   {
@@ -171,6 +177,7 @@ export const eceForm = [
     name: "CfshandlingCharges",
     type: "input",
     placeholder: "Fill the handling charges:",
+    step: 10,
   },
   // {label:"Craft Paper" ,name:"CraftPaper" , type:"input"},
   // {label:"Silica Gel" ,name:"SilicaGel" , type:"input"},
@@ -184,24 +191,28 @@ export const eceForm = [
     name: "FinanceCost",
     type: "input",
     placeholder: "Fill the finance costing:",
+    step: 10,
   },
   {
     label: "Inspection Cost (Rs/mt ton)",
     name: "InspectionCost",
     type: "input",
     placeholder: "Fill the Inspection cost:",
+    step: 11,
   },
   {
     label: "Overheads (Rs/mt ton)",
     name: "Overheads",
     type: "input",
     placeholder: "Overheads:",
+    step: 11,
   },
   {
     label: "Shipping Line Local Charges (Rs/mt ton)",
     name: "ShippingCost",
     type: "input",
     placeholder: "Fill the Shipping Line Charges:",
+    step: 12,
   },
 
   {
@@ -209,6 +220,7 @@ export const eceForm = [
     name: "OriginalBLFee",
     type: "input",
     placeholder: "Original B/L Fee",
+    step: 12,
   },
 
   {
@@ -216,17 +228,20 @@ export const eceForm = [
     name: "InsuranceCost",
     type: "input",
     placeholder: "Fill the Insurance cost:",
+    step: 13,
   },
   {
     label: "Margin (Rs/mt ton)",
     name: "MarginCost",
     type: "input",
     placeholder: "Fill the margin cost:",
+    step: 13,
   },
   {
     label: "20% Export Duty",
     name: "20% Export Duty",
     type: "checkbox",
+    step: 13,
   },
   // {
   //   label: "OFC(Ocean Freight Charges) (Rs/mt ton)",

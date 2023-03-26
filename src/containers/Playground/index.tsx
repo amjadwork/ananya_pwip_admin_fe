@@ -71,12 +71,7 @@ function PlaygroundContainer() {
           }
         />
       )}
-      PageAction={() => (
-        <RenderPageAction
-          handleEdit={handleEdit}
-          editModeActive={editModeActive}
-        />
-      )}
+      PageAction={() => null}
     >
       <div style={{ width: "100%", height: "auto" }}>
         <EceForm />
