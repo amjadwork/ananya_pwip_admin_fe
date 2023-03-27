@@ -1,20 +1,22 @@
 import React, { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
+import { useDisclosure } from "@mantine/hooks";
 
 import {
   // SimpleGrid,
   // Box,
-  ActionIcon,
+  Modal,
   // Group,
   // Popover,
   // Text,
-  // Button,
+  Button,
   // Space,
   // Title,
   // Badge,
   // Card as SectionCard,
   // List,
   // ScrollArea,
+  Flex,
 } from "@mantine/core";
 import {
   // Pencil, X, Check,
@@ -36,15 +38,20 @@ const RenderPageHeader = (props: any) => {
 };
 
 function PlaygroundContainer() {
+  const [opened, { open, close }] = useDisclosure(false);
+
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [printData, setPrintData] = React.useState<any>(null);
 
   const handleExportPlayground = (data: any) => {
     setPrintData(data);
+    open();
   };
 
   function printDocument() {
-    const input: any = document.getElementById("divToPrint");
+    let input: any = document.getElementById("divToPrint");
+    input.style = "display: block; padding: 24px; max-height: 100%;";
+    console.log(input);
 
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
@@ -52,13 +59,9 @@ function PlaygroundContainer() {
       pdf.addImage(imgData, "PNG", 0, 0);
       pdf.save(`ec-${moment(new Date()).format("DD-MM-YYYY HH-mm")}.pdf`);
     });
+    close();
+    // window.location.href = window.location.pathname;
   }
-
-  useEffect(() => {
-    if (printData && Object.keys(printData).length) {
-      printDocument();
-    }
-  }, [printData]);
 
   return (
     <PageWrapper
@@ -67,36 +70,79 @@ function PlaygroundContainer() {
     >
       <EceForm handleExportPlayground={handleExportPlayground} />
 
-      <div id="divToPrint" style={{ display: "block", padding: 24 }}>
-        <div>PWIP Export Costing</div>
-
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="PWIP Export Costing"
+        // centered
+        size="70%"
+      >
         <div
+          id="divToPrint"
           style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
+            display: "block",
+            padding: 24,
+            maxHeight: `calc(100vh - 210px)`,
+            overflow: "auto",
           }}
         >
-          {printData &&
-            Object.keys(printData).map((key: any, index: number) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <span>{key}:</span>
-                  <span style={{ marginLeft: 12 }}>
-                    {printData[key] || "-"}
-                  </span>
-                </div>
-              );
-            })}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {printData &&
+              Object.keys(printData).map((key: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      width: "100%",
+                      borderBottom: "1px solid #e3e3e3",
+                      padding: `4px 12px`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        minWidth: 200,
+                      }}
+                    >
+                      <span>{key}:</span>
+                    </div>
+                    <span style={{ marginLeft: 12 }}>
+                      {printData[key] || "-"}
+                    </span>
+                  </div>
+                );
+              })}
+          </div>
         </div>
-      </div>
+
+        <Flex
+          gap="md"
+          justify="flex-end"
+          align="center"
+          direction="row"
+          wrap="wrap"
+          w="100%"
+        >
+          <Button
+            size="xs"
+            color="blue"
+            type="button"
+            onClick={printDocument}
+            disabled={!printData}
+          >
+            Download
+          </Button>
+        </Flex>
+      </Modal>
     </PageWrapper>
   );
 }
