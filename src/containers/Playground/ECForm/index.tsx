@@ -21,21 +21,33 @@ import { eceForm } from "../../../constants/eceForm.constants";
 import { showNotification } from "@mantine/notifications";
 
 import APIRequest from "../../../helper/api";
+import axios from "axios";
+import moment from "moment";
 
 const initialFormState: any = {
   clearInputErrorOnChange: true,
   initialValues: {
-    name: "",
-    companyName: "",
-    contactDetails: "",
-    date: "",
-    category: "",
+    bookingType: "",
+
+    dollarPrice: "",
+
+    shipmentTerms: "",
+
+    productType: "",
+    productCategory: "",
+    variety: "",
 
     sourcingLocation: "",
     originPort: "",
     destinationPort: "",
 
+    containerType: "",
+    containerCount: "",
+    containerWeight: "",
     exMill: "",
+
+    bagTypes: "",
+    bagWeight: "",
     BagsCharges: "",
 
     TransportationCharges: "",
@@ -49,12 +61,13 @@ const initialFormState: any = {
 
     OriginalBLFee: "",
     MarginCost: "",
-    Ofc: "",
     InsuranceCost: "",
   },
 };
 
-const EceForm = () => {
+const EceForm: any = (props: any) => {
+  let handleExportPlayground: any = props.handleExportPlayground;
+
   const [checked, setChecked] = useState(false);
   const [term, setTerm] = useState("");
   const [playgroundSlidesData, setPlaygroundSlidesData] = useState<any>(null);
@@ -67,13 +80,17 @@ const EceForm = () => {
   const [variantsList, setVariantsList] = useState<any>([]);
   const [locationList, setLocationList] = useState<any>([]);
   const [bagList, setBagList] = useState<any>([]);
+  const [bagWeightList, setBagWeightList] = useState<any>([]);
+  const [intialFormValueState, setIntialFormValueState] =
+    useState<any>(initialFormState);
+
   const [activeSlide, setActiveSlide] = useState<any>(1);
 
   const [selectedProductVariant, setSelectedProductVariant] =
     useState<any>(null);
   const [exMillPrice, setExMillPrice] = useState<any>(0);
 
-  const form: any = useForm(initialFormState);
+  const form: any = useForm(intialFormValueState);
 
   const handleNextSlide = () => {
     let currentStep = activeSlide;
@@ -93,6 +110,38 @@ const EceForm = () => {
     }
 
     setActiveSlide(currentStep);
+  };
+
+  const handleGetUSDRate = async () => {
+    const headers = new Headers();
+    headers.append("apikey", "LeZx4lzxu88JcvSJ4BXAViKIWqgUrNdB");
+
+    const requestOptions: any = {
+      method: "GET",
+      redirect: "follow",
+      headers: headers,
+    };
+
+    fetch(
+      "https://api.apilayer.com/exchangerates_data/convert?to=INR&from=USD&amount=1",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        playgroundSlidesData[
+          "1"
+        ][0].label = `Today's Dollar Price ($1 = Rs ${result?.result})`;
+
+        let obj: any = {
+          ...intialFormValueState,
+        };
+
+        obj.initialValues.dollarPrice = result?.result;
+
+        setIntialFormValueState(obj);
+        setPlaygroundSlidesData(playgroundSlidesData);
+      })
+      .catch((error) => console.log("error", error));
   };
 
   const handleSettingFormValues = (
@@ -130,6 +179,10 @@ const EceForm = () => {
       setProductList(productResponse);
 
       handleSettingFormValues(productResponse, "productType");
+
+      return true;
+    } else {
+      return false;
     }
   };
 
@@ -169,6 +222,7 @@ const EceForm = () => {
     if (packagingResponse) {
       if (dataType === "weight") {
         handleSettingFormValues(packagingResponse, "bagWeight", "weight");
+        setBagWeightList(packagingResponse);
       } else {
         setBagList(packagingResponse);
         handleSettingFormValues(packagingResponse, "bagTypes", "bag");
@@ -236,6 +290,10 @@ const EceForm = () => {
     } else {
       setBrokenPercentage(() => count);
     }
+
+    let obj = { ...intialFormValueState };
+    obj.initialValues[name] = count;
+    setIntialFormValueState(obj);
   };
 
   const handleSubmit = (values: typeof form.values) => {
@@ -291,7 +349,7 @@ const EceForm = () => {
       totalsum = totalsum;
     }
 
-    console.log(totalsum);
+    handleExportPlayground({ ...values, total: totalsum });
   };
 
   React.useEffect(() => {
@@ -317,7 +375,18 @@ const EceForm = () => {
     }
   }, [bagList]);
 
+  React.useEffect(() => {
+    if (bagWeightList.length) {
+      handleGetUSDRate();
+    }
+  }, [bagWeightList]);
+
   function onChangeHandler(name: any, value: any) {
+    let obj = { ...intialFormValueState };
+    obj.initialValues[name] = value;
+
+    setIntialFormValueState(obj);
+
     if (name === "productType") {
       const productId = value;
       handleGetCategoryData(productId);
