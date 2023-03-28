@@ -202,16 +202,47 @@ const EceForm = () => {
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Card p="xl">
         {eceForm.map((k, i) => {
+          // if (k.type === "input") {
+          //   return (
+          //     <TextInput
+          //       key={k.label + i}
+          //       label={k.label}
+          //       placeholder={k.placeholder}
+          //       {...form.getInputProps(k.name)}
+          //       withAsterisk
+          //     />
+          //   );
+          // }
+          console.log(eceForm, "eceForm");
+          let textInputFields = [ "name", "companyName" ];
+          let numberInputFields = [ "contactDetails", "dollarPrice", "exMill", "BagsCharges", "TransportationCharges", "CfshandlingCharges", "FinanceCost" , "InspectionCost", "Overheads", "ShippingCost", "OriginalBLFee", "InsuranceCost", "MarginCost"];
+
           if (k.type === "input") {
-            return (
-              <TextInput
-                key={k.label + i}
-                label={k.label}
-                placeholder={k.placeholder}
-                {...form.getInputProps(k.name)}
+           if (textInputFields.includes(k.name)) {
+             return (
+               <TextInput
+                 key={k.label + i}
+                 label={k.label}
+                 placeholder={k.placeholder}
+                 {...form.getInputProps(k.name)}
+                 withAsterisk
               />
             );
           }
+           else if (numberInputFields.includes(k.name)) {
+             return (
+               <NumberInput
+                 key={k.label + i}
+                 label={k.label}
+                 placeholder={k.placeholder}
+                 {...form.getInputProps(k.name)}
+                 min={0}
+                 hideControls
+                 withAsterisk
+              />
+            );
+          }
+}
           <Space h="xl" />;
           if (k.type === "checkbox") {
             return (
