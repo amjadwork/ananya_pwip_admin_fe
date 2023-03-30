@@ -468,10 +468,10 @@ const EceForm: any = (props: any) => {
                           label={k.label}
                           placeholder={k.placeholder}
                           w="100%"
-                          {...form.getInputProps(k.name)}
                           withAsterisk
                           min={0}
                           hideControls
+                          {...form.getInputProps(k.name)}
                         />
                       );
                     }
