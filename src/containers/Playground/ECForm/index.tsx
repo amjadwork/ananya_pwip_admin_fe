@@ -461,14 +461,17 @@ const EceForm: any = (props: any) => {
                   w="100%"
                 >
                   {playgroundSlidesData[step]?.map((k: any, i: number) => {
-                    if (k.type === "input") {
+                    if (k.type === "numInput") {
                       return (
-                        <TextInput
+                        <NumberInput
                           key={k.label + i}
                           label={k.label}
                           placeholder={k.placeholder}
                           w="100%"
                           {...form.getInputProps(k.name)}
+                          withAsterisk
+                          min={0}
+                          hideControls
                         />
                       );
                     }
@@ -497,6 +500,7 @@ const EceForm: any = (props: any) => {
                           name={k.name}
                           onChange={(value) => onChangeHandler(k.name, value)}
                           w="100%"
+                          withAsterisk
                           // {...form.getInputProps(k.name)}
                         />
                       );
