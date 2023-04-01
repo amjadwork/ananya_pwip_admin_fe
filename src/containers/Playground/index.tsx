@@ -51,7 +51,6 @@ function PlaygroundContainer() {
   function printDocument() {
     let input: any = document.getElementById("divToPrint");
     input.style = "display: block; padding: 24px; max-height: 100%;";
-    console.log(input);
 
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
