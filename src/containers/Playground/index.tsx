@@ -44,6 +44,7 @@ function PlaygroundContainer() {
   const [printData, setPrintData] = React.useState<any>(null);
 
   const handleExportPlayground = (data: any) => {
+    console.log(data)
     setPrintData(data);
     open();
   };

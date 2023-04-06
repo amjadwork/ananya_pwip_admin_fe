@@ -29,7 +29,7 @@ const initialFormState: any = {
   initialValues: {
     bookingType: "",
 
-    dollarPrice: "",
+    dollarPrice: 82,
 
     shipmentTerms: "",
 
@@ -48,7 +48,7 @@ const initialFormState: any = {
 
     bagTypes: "",
     bagWeight: "",
-    BagsCharges: "",
+    bagsCharges: "",
 
     TransportationCharges: "",
     brokenPercentage: "",
@@ -83,6 +83,7 @@ const EceForm: any = (props: any) => {
   const [bagWeightList, setBagWeightList] = useState<any>([]);
   const [intialFormValueState, setIntialFormValueState] =
     useState<any>(initialFormState);
+  const [bagPrice, setBagPrice] = useState<any>("");
 
   const [activeSlide, setActiveSlide] = useState<any>(1);
 
@@ -141,7 +142,7 @@ const EceForm: any = (props: any) => {
         setIntialFormValueState(obj);
         setPlaygroundSlidesData(playgroundSlidesData);
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.error("error", error));
   };
 
   const handleSettingFormValues = (
@@ -168,7 +169,6 @@ const EceForm: any = (props: any) => {
       }
       return { ...obj };
     });
-
     setInitialFormValue(formValues);
   };
 
@@ -232,25 +232,24 @@ const EceForm: any = (props: any) => {
 
   const handleGetLocationsData = async () => {
     const locationResponse: any = await APIRequest(`location`, "GET");
-    // setLocationList
     if (locationResponse) {
-      setVariantsList(locationResponse);
+      setLocationList(locationResponse)
 
       const formValues = [...initialFormValue].map((d: any) => {
         let obj = { ...d };
-        if (obj.name === "sourcingLocation") {
-          obj.options = locationResponse[0].source.map((p: any) => ({
-            label: p.region,
-            value: p._id,
-          }));
-        }
+        // if (obj.name === "sourcingLocation") {
+        //   obj.options = locationResponse[0].source.map((p: any) => ({
+        //     label: p.region,
+        //     value: p._id,
+        //   }));
+        // }
 
-        if (obj.name === "originPort") {
-          obj.options = locationResponse[0].origin.map((p: any) => ({
-            label: p.portName,
-            value: p._id,
-          }));
-        }
+        // if (obj.name === "originPort") {
+        //   obj.options = locationResponse[0].origin.map((p: any) => ({
+        //     label: p.portName,
+        //     value: p._id,
+        //   }));
+        // }
 
         if (obj.name === "destinationPort") {
           obj.options = locationResponse[0].destination.map((p: any) => ({
@@ -312,7 +311,7 @@ const EceForm: any = (props: any) => {
 
     const totalvalues: any = [
       { exMill: finalPrice },
-      { BagsCharges: values?.BagsCharges },
+      { bagsCharges: values?.bagsCharges },
       { transportationCharges: values?.TransportationCharges },
       { handlingCharges: values?.CfshandlingCharges },
       { FinanceCost: values?.FinanceCost },
@@ -376,10 +375,8 @@ const EceForm: any = (props: any) => {
   }, [bagList]);
 
   React.useEffect(() => {
-    if (bagWeightList.length) {
-      handleGetUSDRate();
-    }
-  }, [bagWeightList]);
+    handleGetUSDRate();
+  }, []);
 
   function onChangeHandler(name: any, value: any) {
     let obj = { ...intialFormValueState };
@@ -399,8 +396,78 @@ const EceForm: any = (props: any) => {
 
     if (name === "variety") {
       const selectedVariant = variantsList.find((f: any) => f._id === value);
-      console.log(selectedVariant);
       setSelectedProductVariant(selectedVariant);
+
+      const formValues = [...initialFormValue].map((d: any) => {
+        let obj = { ...d };
+        if (obj.name === "sourcingLocation") {
+          obj.options = selectedVariant?.costing?.map((p: any) => ({
+            label: p?.regionName || '',
+            value: p._id,
+          }));
+        }
+        
+        return { ...obj };
+      });
+
+      setInitialFormValue(formValues);
+    }
+
+    if (name === "sourcingLocation") {
+      const formValues = [...initialFormValue].map((d: any) => {
+        let obj = { ...d };
+        if (obj.name === 'exMill') {
+          const selectedSource = selectedProductVariant?.costing?.find((f: any) => f?._id === value)
+          obj.value = selectedSource?.exMill
+        }
+        
+        return { ...obj };
+      });
+
+      setIntialFormValueState({...obj, initialValues: {
+        ...obj.initialValues,
+        exMill: formValues[10].value
+      }})
+      setInitialFormValue(formValues);
+    }
+
+    if (name === "destinationPort") {
+      const formValues = [...initialFormValue].map((d: any) => {
+        let obj = { ...d };
+        if (obj.name === 'originPort') {
+          const selectedDestination = locationList[0]?.destination?.find((f: any) => {
+
+            if(f?._id === value) {
+              return f
+            }
+          })
+
+          obj.options = selectedDestination?.linkedOrigin.map((d: any) => ({label: d.originPortName, value: d._originId}))
+        }
+        
+        return { ...obj };
+      });
+      setInitialFormValue(formValues);
+    }
+
+    if (name === "bagTypes") {
+      const selectedBags = bagList.find((f: any) => f._id === value);
+      setBagPrice(selectedBags.cost);
+      setIntialFormValueState({...obj, initialValues: {
+        ...obj.initialValues,
+        bagsCharges: selectedBags.cost
+      }})
+
+      const formValues = [...initialFormValue].map((d: any) => {
+        let obj = { ...d };
+        if (obj.name === 'bagsCharges') {
+          obj.value = parseFloat(selectedBags.cost)
+        }
+        
+        return { ...obj };
+      });
+
+      setInitialFormValue(formValues);
     }
   }
 
@@ -415,6 +482,7 @@ const EceForm: any = (props: any) => {
     const slides = groupBy([...initialFormValue], "step");
     setPlaygroundSlidesData(slides);
   }, [initialFormValue]);
+
 
   return (
     <form
@@ -471,6 +539,7 @@ const EceForm: any = (props: any) => {
                           withAsterisk
                           min={0}
                           hideControls
+                          defaultValue={k.value || 0}
                           {...form.getInputProps(k.name)}
                         />
                       );
@@ -519,7 +588,7 @@ const EceForm: any = (props: any) => {
                     }
                     if (k.type === "radio") {
                       return (
-                        <Radio.Group label={k.label} key={k.label + i} w="100%">
+                        <Radio.Group label={k.label} key={k.label + i} w="100%" {...form.getInputProps(k.name)}>
                           {k &&
                             k.options?.map((d: any, i: number) => {
                               return (

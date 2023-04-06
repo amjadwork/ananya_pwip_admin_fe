@@ -55,13 +55,17 @@ function AddOrEditProductForm(props: any) {
       }));
       setRegionOptions([...options]);
     }
-
-    console.log(regionResponse);
   };
 
   const handleAddRegionCost: any = () => {
-    const arr: any = [...variantRegionCostingList];
+    let arr: any = [...variantRegionCostingList];
+    const regionName = regionOptions.filter((d: any) => {
+      if(d.value === regionValue) {
+        return d
+      }
+    })[0].label
     const categoryObj = {
+      regionName: regionName,
       region: regionValue,
       exMill: numberValue,
     };

@@ -6,6 +6,7 @@ import {
   NumberInput,
   Select,
   Space,
+  MultiSelect,
 } from "@mantine/core";
 import { ArrowRightCircle, Category } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -17,6 +18,7 @@ import { locationCat } from "../../../constants/var.constants";
 function EditLocationFormContainer(props: any) {
   const handleSettingLocationData = props.handleSettingLocationData;
   const locationPayload = props.locationPayload;
+  const locationData = props.locationData;
 
   const [select, setSelect] = useState(false);
   const [locationType, setLocationType] = useState("");
@@ -77,6 +79,10 @@ function EditLocationFormContainer(props: any) {
 
     handleSettingLocationData(payload);
   };
+
+  const originOptions = locationData?.origin?.map((d: any) => {
+    return {label: d.portName, value: d._id};
+  })
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
@@ -232,11 +238,19 @@ function EditLocationFormContainer(props: any) {
             placeholder="eg. JNPT"
             {...form.getInputProps("portName")}
           />
+          <Space h="md" />
           <TextInput
             required
             label="Enter Country Name"
             placeholder="eg. Vietnam"
             {...form.getInputProps("country")}
+          />
+          <Space h="md" />
+          <MultiSelect
+            data={originOptions || []}
+            label="Select origin ports"
+            placeholder="Eg. Vishakapatnam"
+            {...form.getInputProps("linkedOrigin")}
           />
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">

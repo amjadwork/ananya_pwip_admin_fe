@@ -30,7 +30,7 @@ export const eceForm = [
   //   options: [{ name: "Exporter" }, { name: "Importer" }, { name: "Miller" }],
   // },
   {
-    label: "Today's Dollar Price (Rs 75.0)",
+    label: "Today's Dollar Price",
     name: "dollarPrice",
     type: "numInput",
     placeholder: "Enter the Dollar Price",
@@ -159,7 +159,7 @@ export const eceForm = [
   },
   {
     label: "Bags Charges",
-    name: "BagsCharges",
+    name: "bagsCharges",
     type: "numInput",
     placeholder: "Fill the Bags charges:",
     step: 9,

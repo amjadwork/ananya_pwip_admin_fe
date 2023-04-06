@@ -113,12 +113,14 @@ const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const handleSettingLocationData = props.handleSettingLocationData;
   const locationPayload = props.locationPayload;
+  const locationData = props.locationData;
 
   return (
     <EditLocationFormContainer
       handleCloseModal={handleCloseModal}
       handleSettingLocationData={handleSettingLocationData}
       locationPayload={locationPayload}
+      locationData={locationData}
     />
   );
 };
@@ -205,16 +207,38 @@ function LocationsContainer() {
         <RenderModalContent
           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
           handleSettingLocationData={(data: any) => {
-            setLocationPayload(data);
+            let payload = {...data};
 
-            const obj = {
-              source: [...locationData.source, ...data.source],
-              origin: [...locationData.origin, ...data.origin],
-              destination: [...locationData.destination, ...data.destination],
+            payload.destination = payload.destination.map((p: any) => {
+              const linkedOrigin = [...p.linkedOrigin];
+              const newLinkedOrigin = locationData.origin.filter((o: any) => {
+                if(linkedOrigin.includes(o._id)) {
+                  return o
+                }
+              }).map((o: any) => {
+                return {
+                  originPortName: o.portName,
+                  _originId: o._id
+                }
+              })
+
+              return {
+                ...p,
+                linkedOrigin: [...newLinkedOrigin]
+              }
+            })
+            setLocationPayload(payload);
+
+            const obj: any = {
+              source: [...locationData.source, ...payload.source],
+              origin: [...locationData.origin, ...payload.origin],
+              destination: [...locationData.destination, ...payload.destination],
             };
+            
             setLocationData(obj);
           }}
           locationPayload={locationPayload}
+          locationData={locationData}
         />
       )}
       modalSize="40%"
