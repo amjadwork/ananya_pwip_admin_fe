@@ -29,7 +29,7 @@ const initialFormState: any = {
   initialValues: {
     bookingType: "",
 
-    dollarPrice: 82,
+    dollarPrice: "",
 
     shipmentTerms: "",
 
@@ -298,6 +298,7 @@ const EceForm: any = (props: any) => {
   const handleSubmit = (values: typeof form.values) => {
     const terms: string = values.shipmentTerms;
 
+
     setTerm(terms);
 
     let price: any = values.exMill;
@@ -310,8 +311,8 @@ const EceForm: any = (props: any) => {
     let finalPrice = price - discountPrice;
 
     const totalvalues: any = [
-      { exMill: finalPrice },
-      { bagsCharges: values?.bagsCharges },
+      { exMill: intialFormValueState?.initialValues?.exMill },
+      { bagsCharges: intialFormValueState?.initialValues?.bagsCharges },
       { transportationCharges: values?.TransportationCharges },
       { handlingCharges: values?.CfshandlingCharges },
       { FinanceCost: values?.FinanceCost },
@@ -348,7 +349,27 @@ const EceForm: any = (props: any) => {
       totalsum = totalsum;
     }
 
-    handleExportPlayground({ ...values, total: totalsum });
+    const displayData = {
+      ...values,
+      ...intialFormValueState.initialValues,
+      TransportationCharges: values?.TransportationCharges,
+      CfshandlingCharges: values?.CfshandlingCharges,
+      FinanceCost: values?.FinanceCost,
+      InspectionCost: values?.InspectionCost,
+      Overheads: values?.Overheads,
+      ShippingCost: values?.ShippingCost,
+      OriginalBLFee: values?.OriginalBLFee,
+      MarginCost: values?.MarginCost,
+      InsuranceCost: values?.InsuranceCost,
+      dollarPrice: values?.dollarPrice || intialFormValueState.initialValues.dollarPrice || 0,
+      containerWeight: values?.containerWeight,
+      bookingType: values?.bookingType
+    }
+
+    console.log(values, displayData);
+
+
+    handleExportPlayground({ ...displayData, total: totalsum });
   };
 
   React.useEffect(() => {
