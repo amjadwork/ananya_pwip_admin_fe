@@ -31,7 +31,7 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <PageHeader
-      title="Manage Shipping Line Local Charges"
+      title="Manage Shipping Line Locals Charges"
       // breadcrumbs={[
       //   { title: "Products", href: "/admin/dashboard/products" },
       //   { title: "Manage", href: "#" },

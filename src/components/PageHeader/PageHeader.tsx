@@ -38,7 +38,7 @@ const PageHeader: React.FC<Props> = ({
   ));
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "50vw"}}>
       <Text size="xl" weight="bold" color="gray">
         {title}
       </Text>
@@ -73,14 +73,14 @@ const PageHeader: React.FC<Props> = ({
           </div>
         </div>
       )}
-
+{/* 
       {breadcrumbs && (
         <div className={classes.breadcrumbWrapper}>
           <div style={{ display: "inline-flex", alignItems: "center" }}>
             <Breadcrumbs>{itemsForBreadcrumbs}</Breadcrumbs>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
