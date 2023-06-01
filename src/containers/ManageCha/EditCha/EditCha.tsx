@@ -11,7 +11,6 @@ import {
   Space,
   Title,
   Input,
-  Badge,
   Card as SectionCard,
   List,
   ScrollArea,
@@ -21,9 +20,7 @@ import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
-import EditChaForm from "./EditChaForm";
-
-import { manageCha } from "../../../constants/var.constants";
+import EditChaForm from "../../../forms/ManageCha";
 import APIRequest from "../../../helper/api";
 
 const RenderPageHeader = (props: any) => {

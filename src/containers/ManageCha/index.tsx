@@ -10,7 +10,6 @@ import {
   Input,
   Space,
   Title,
-  Badge,
   Card as SectionCard,
   List,
   ScrollArea,
