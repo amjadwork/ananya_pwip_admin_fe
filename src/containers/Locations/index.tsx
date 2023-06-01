@@ -16,8 +16,8 @@ import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-
-import EditLocationFormContainer from "./EditLocationForm";
+// import EditLocationFormContainer from "./EditLocationForm";
+import EditLocationFormContainer from "../../forms/Location/index";
 
 import APIRequest from "./../../helper/api";
 
