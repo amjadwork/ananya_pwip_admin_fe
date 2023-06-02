@@ -14,7 +14,7 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
+import { Pencil, X, Check, Plus, IdBadge2 } from "tabler-icons-react";
 
 // import EditChaContainer from "./EditCha/EditCha";
 import EditChaForm from "../../forms/ManageCha/index";
@@ -132,32 +132,149 @@ const RenderModalContent = (props: any) => {
 };
 
 
-function EditChaContainer(props: any) {
-  const editModeActive = props.editModeActive;
-  const handleEditAction = props.handleEditAction;
-  const modalType = props.modalType || "edit";
-  const handleEditToUpdateAction = props.handleEditToUpdateAction;
-  const regionSelectOptions = props.regionSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
-  const chaData = props.chaData;
-  const handleUpdateChaUIData = props.handleUpdateChaUIData;
-  const chaAPIPayload = props.chaAPIPayload;
-  const handleRefetchChaList = props.handleRefetchChaList;
-
+function ManageChaContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
+  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
+  const [modalType, setModalType] = React.useState<string>("edit");
+  const [chaData, setChaData] = React.useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] =
+    React.useState<any>([]);
+  const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
+
+  const handleRefetchChaList = (chaPostResponse: any) => {
+    if (chaPostResponse) {
+      handleGetRegionSource();
+      getCHAList(chaPostResponse);
+    }
+  };
+
+  const getCHAList = async (regionList: any) => {
+    const chaResponse: any = await APIRequest("cha", "GET");
+    try {
+      if (chaResponse) {
+        console.log(regionList)
+        let array: any = regionList?.map((item: any) => {
+          let destinationArr: any = [];
+          let originIdStringArr: any = [];
+  
+          chaResponse.forEach((region: any) => {
+            if (item._originId === region._originPortId) {
+              destinationArr.push(region.destinations);
+              originIdStringArr.push(region._originId);
+            }
+          });
+  
+          return {
+            ...item,
+            list: originIdStringArr.includes(item._originPortId)
+              ? destinationArr.flat(1)
+              : [],
+          };
+        });
+  
+        setChaData(() => [...array]);
+      }  
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  const handleEditAction = (bool: boolean) => {
+    setEditModeActive(() => bool);
+    setModalType("edit");
+  };
+
+  const handleEditToUpdateAction = () => {
+    setModalType("update");
+    setModalOpen(true);
+  };
+
+  const handleGetRegionSource = async () => {
+    const regionResponse = await APIRequest(
+      "location?filterType=origin",
+      "GET"
+    );
+    if (regionResponse) {
+      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+        return {
+          name: d.portName,
+          _originId: d._id,
+          list: [],
+        };
+      });
+
+      const regionOptions = regionResponse[0].origin.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
+
+      setRegionSelectOptions(() => [...regionOptions]);
+
+      handleGetDestination();
+      getCHAList(formattedRegion);
+    }
+  };
+
+  const handleUpdateChaUIData = (formData: any) => {
+    setChaAPIPayload({ ...formData });
+    let chaArr: any = [...chaData];
+
+    chaArr = chaArr.map((d: any) => {
+      if (formData._originPortId === d._originId) {
+        return {
+          ...d,
+          list: [...d.list, ...formData.destinations],
+        };
+      }
+      return {
+        ...d,
+      };
+    });
+
+    setChaData(() => [...chaArr]);
+  };
+
+  const handleSaveAction = async () => {
+    if(chaAPIPayload){
+    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+    
+    if (chaResponse) {
+      handleGetRegionSource()
+    }
+  }
+  };
 
   const handleSave = (bool: boolean) => {
     handleEditAction(bool);
   };
 
-  const handleSaveAction = async () => {
-    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+  const handleGetDestination = async () => {
+    const destinationResponse = await APIRequest(
+      "location?filterType=destination",
+      "GET"
+    );
 
-    if (chaResponse) {
-      handleRefetchChaList(chaResponse);
+    if (destinationResponse) {
+      const destinationOptions = destinationResponse[0].destination.map(
+        (d: any) => {
+          return {
+            label: d.portName,
+            value: d._id,
+          };
+        }
+      );
+
+      setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
+
+  React.useEffect(() => {
+    handleGetRegionSource();
+  }, []);
 
   return (
     <PageWrapper
@@ -226,13 +343,13 @@ function EditChaContainer(props: any) {
           <Title order={1}>CHA Charges</Title>
           <Group spacing="md">
             <Input placeholder="Search" />
-            <Button
+            {editModeActive && <Button
               type="submit"
               leftIcon={<Plus size={14} />}
               onClick={() => setModalOpen(true)}
             >
               Add
-            </Button>
+            </Button>}
           </Group>
         </Group>
       </Box>
@@ -302,270 +419,134 @@ function EditChaContainer(props: any) {
         })}
       </SimpleGrid>
     </PageWrapper>
-  );
-}
+  )
 
+  // if (editModeActive) {
+  //   return (
+  //     <EditChaContainer
+  //       editModeActive={editModeActive}
+  //       handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
+  //       modalType={modalType}
+  //       modalOpen={modalOpen}
+  //       handleEditToUpdateAction={handleEditToUpdateAction}
+  //       regionSelectOptions={regionSelectOptions}
+  //       destinationSelectOptions={destinationSelectOptions}
+  //       chaData={chaData}
+  //       handleUpdateChaUIData={handleUpdateChaUIData}
+  //       chaAPIPayload={chaAPIPayload}
+  //       handleRefetchChaList={handleRefetchChaList}
+  //     />
+  //   );
+  // }
 
-function ManageChaContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
-  const [chaData, setChaData] = React.useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] =
-    React.useState<any>([]);
-  const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
+  // return (
+  //   <PageWrapper
+  //     PageHeader={() => (
+  //       <RenderPageHeader
+  //         activeFilter={activeFilter}
+  //         handleRadioChange={(value: any, index: number) =>
+  //           setActiveFilter(index)
+  //         }
+  //       />
+  //     )}
+  //     PageAction={() => (
+  //       <RenderPageAction
+  //         handleActionClick={() => setModalOpen(true)}
+  //         handleEditAction={handleEditAction}
+  //         editModeActive={editModeActive}
+  //         handleSaveAction={handleSaveAction}
+  //       />
+  //     )}
+  //   >
+  //     <Box
+  //       sx={(theme) => ({
+  //         display: "block",
+  //         backgroundColor:
+  //           theme.colorScheme === "dark"
+  //             ? theme.colors.dark[6]
+  //             : theme.colors.gray[1],
+  //         color:
+  //           theme.colorScheme === "dark"
+  //             ? theme.colors.dark[4]
+  //             : theme.colors.dark[7],
+  //         textAlign: "center",
+  //         padding: theme.spacing.xl,
+  //         borderRadius: theme.radius.md,
+  //         cursor: "default",
+  //       })}
+  //     >
+  //       <Group position="apart">
+  //         <Title order={1}>CHA Charges</Title>
+  //         <Input placeholder="Search" />
+  //       </Group>
+  //     </Box>
 
-  const handleRefetchChaList = (chaPostResponse: any) => {
-    if (chaPostResponse) {
-      handleGetRegionSource();
-      getCHAList(chaPostResponse);
-    }
-  };
+  //     <Space h="lg" />
 
-  const getCHAList = async (regionList: any) => {
-    const chaResponse: any = await APIRequest("cha", "GET");
+  //     <SimpleGrid cols={2}>
+  //       {chaData.map((item: any, index: number) => {
+  //         return (
+  //           <SectionCard
+  //             key={index}
+  //             withBorder
+  //             radius="md"
+  //             p="lg"
+  //             component="a"
+  //           >
+  //             <Title order={3}>{item?.name}</Title>
+  //             <Space h="xl" />
+  //             <ScrollArea
+  //               scrollbarSize={2}
+  //               style={{ maxHeight: 380, height: 360 }}
+  //             >
+  //               <List type="ordered" spacing="lg">
+  //                 {item?.list?.map((d: any, i: number) => {
+  //                   const destinationName = destinationSelectOptions?.find(
+  //                     (f: any) => f.value === d._destinationPortId
+  //                   )?.label;
+  //                   return (
+  //                     <Box
+  //                       key={i}
+  //                       sx={(theme) => ({
+  //                         display: "block",
+  //                         backgroundColor:
+  //                           theme.colorScheme === "dark"
+  //                             ? theme.colors.dark[6]
+  //                             : "#fff",
+  //                         color:
+  //                           theme.colorScheme === "dark"
+  //                             ? theme.colors.dark[4]
+  //                             : theme.colors.dark[7],
+  //                         textAlign: "left",
+  //                         padding: theme.spacing.md,
+  //                         borderRadius: theme.radius.md,
+  //                         cursor: "default",
 
-    if (chaResponse) {
-      let array: any = regionList.map((item: any) => {
-        let destinationArr: any = [];
-        let originIdStringArr: any = [];
-
-        chaResponse.forEach((region: any) => {
-          if (item._originId === region._originPortId) {
-            destinationArr.push(region.destinations);
-            originIdStringArr.push(region._originId);
-          }
-        });
-
-        return {
-          ...item,
-          list: originIdStringArr.includes(item._originPortId)
-            ? destinationArr.flat(1)
-            : [],
-        };
-      });
-
-      setChaData(() => [...array]);
-    }
-  };
-
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
-  };
-
-  const handleGetRegionSource = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
-    if (regionResponse) {
-      const formattedRegion = regionResponse[0].origin.map((d: any) => {
-        return {
-          name: d.portName,
-          _originId: d._id,
-          list: [],
-        };
-      });
-
-      const regionOptions = regionResponse[0].origin.map((d: any) => {
-        return {
-          label: d.portName,
-          value: d._id,
-        };
-      });
-
-      setRegionSelectOptions(() => [...regionOptions]);
-
-      handleGetDestination();
-      getCHAList(formattedRegion);
-    }
-  };
-
-  const handleUpdateChaUIData = (formData: any) => {
-    setChaAPIPayload({ ...formData });
-    let chaArr: any = [...chaData];
-
-    chaArr = chaArr.map((d: any) => {
-      if (formData._originPortId === d._originId) {
-        return {
-          ...d,
-          list: [...d.list, ...formData.destinations],
-        };
-      }
-      return {
-        ...d,
-      };
-    });
-
-    setChaData(() => [...chaArr]);
-  };
-
-  const handleSaveAction = async () => {
-    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
-
-    if (chaResponse) {
-      //
-    }
-  };
-
-  const handleGetDestination = async () => {
-    const destinationResponse = await APIRequest(
-      "location?filterType=destination",
-      "GET"
-    );
-
-    if (destinationResponse) {
-      const destinationOptions = destinationResponse[0].destination.map(
-        (d: any) => {
-          return {
-            label: d.portName,
-            value: d._id,
-          };
-        }
-      );
-
-      setDestinationSelectOptions(() => [...destinationOptions]);
-    }
-  };
-
-  React.useEffect(() => {
-    handleGetRegionSource();
-  }, []);
-
-  if (editModeActive) {
-    return (
-      <EditChaContainer
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        regionSelectOptions={regionSelectOptions}
-        destinationSelectOptions={destinationSelectOptions}
-        chaData={chaData}
-        handleUpdateChaUIData={handleUpdateChaUIData}
-        chaAPIPayload={chaAPIPayload}
-        handleRefetchChaList={handleRefetchChaList}
-      />
-    );
-  }
-
-  return (
-    <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
-          editModeActive={editModeActive}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
-    >
-      <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>CHA Charges</Title>
-          <Input placeholder="Search" />
-        </Group>
-      </Box>
-
-      <Space h="lg" />
-
-      <SimpleGrid cols={2}>
-        {chaData.map((item: any, index: number) => {
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}>{item?.name}</Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {item?.list?.map((d: any, i: number) => {
-                    const destinationName = destinationSelectOptions?.find(
-                      (f: any) => f.value === d._destinationPortId
-                    )?.label;
-                    return (
-                      <Box
-                        key={i}
-                        sx={(theme) => ({
-                          display: "block",
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[6]
-                              : "#fff",
-                          color:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[4]
-                              : theme.colors.dark[7],
-                          textAlign: "left",
-                          padding: theme.spacing.md,
-                          borderRadius: theme.radius.md,
-                          cursor: "default",
-
-                          "&:hover": {
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[5]
-                                : theme.colors.gray[1],
-                          },
-                        })}
-                      >
-                        <List.Item>
-                          {destinationName} -{" "}
-                          <span style={{ fontWeight: "800" }}>
-                            INR {d.chaCharge}
-                          </span>
-                        </List.Item>
-                      </Box>
-                    );
-                  })}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
-    </PageWrapper>
-  );
+  //                         "&:hover": {
+  //                           backgroundColor:
+  //                             theme.colorScheme === "dark"
+  //                               ? theme.colors.dark[5]
+  //                               : theme.colors.gray[1],
+  //                         },
+  //                       })}
+  //                     >
+  //                       <List.Item>
+  //                         {destinationName} -{" "}
+  //                         <span style={{ fontWeight: "800" }}>
+  //                           INR {d.chaCharge}
+  //                         </span>
+  //                       </List.Item>
+  //                     </Box>
+  //                   );
+  //                 })}
+  //               </List>
+  //             </ScrollArea>
+  //           </SectionCard>
+  //         );
+  //       })}
+  //     </SimpleGrid>
+  //   </PageWrapper>
+  // );
 }
 
 export default ManageChaContainer;
