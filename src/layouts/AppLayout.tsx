@@ -98,6 +98,7 @@ const AppLayout: React.FC<any> = ({ children }) => {
         }
         styles={(theme) => ({
           main: {
+            minHeight:'95vh',
             backgroundColor:
               theme.colorScheme === "dark"
                 ? theme.colors.dark[8]
