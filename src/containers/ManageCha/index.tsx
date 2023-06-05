@@ -14,7 +14,7 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check, Plus, IdBadge2 } from "tabler-icons-react";
+import { Pencil, X, Check, Plus } from "tabler-icons-react";
 
 // import EditChaContainer from "./EditCha/EditCha";
 import EditChaForm from "../../forms/ManageCha/index";
@@ -138,6 +138,7 @@ function ManageChaContainer() {
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [chaData, setChaData] = React.useState<any>([]);
+  const [tempChaArray, setTempChaArray] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
@@ -420,133 +421,6 @@ function ManageChaContainer() {
       </SimpleGrid>
     </PageWrapper>
   )
-
-  // if (editModeActive) {
-  //   return (
-  //     <EditChaContainer
-  //       editModeActive={editModeActive}
-  //       handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-  //       modalType={modalType}
-  //       modalOpen={modalOpen}
-  //       handleEditToUpdateAction={handleEditToUpdateAction}
-  //       regionSelectOptions={regionSelectOptions}
-  //       destinationSelectOptions={destinationSelectOptions}
-  //       chaData={chaData}
-  //       handleUpdateChaUIData={handleUpdateChaUIData}
-  //       chaAPIPayload={chaAPIPayload}
-  //       handleRefetchChaList={handleRefetchChaList}
-  //     />
-  //   );
-  // }
-
-  // return (
-  //   <PageWrapper
-  //     PageHeader={() => (
-  //       <RenderPageHeader
-  //         activeFilter={activeFilter}
-  //         handleRadioChange={(value: any, index: number) =>
-  //           setActiveFilter(index)
-  //         }
-  //       />
-  //     )}
-  //     PageAction={() => (
-  //       <RenderPageAction
-  //         handleActionClick={() => setModalOpen(true)}
-  //         handleEditAction={handleEditAction}
-  //         editModeActive={editModeActive}
-  //         handleSaveAction={handleSaveAction}
-  //       />
-  //     )}
-  //   >
-  //     <Box
-  //       sx={(theme) => ({
-  //         display: "block",
-  //         backgroundColor:
-  //           theme.colorScheme === "dark"
-  //             ? theme.colors.dark[6]
-  //             : theme.colors.gray[1],
-  //         color:
-  //           theme.colorScheme === "dark"
-  //             ? theme.colors.dark[4]
-  //             : theme.colors.dark[7],
-  //         textAlign: "center",
-  //         padding: theme.spacing.xl,
-  //         borderRadius: theme.radius.md,
-  //         cursor: "default",
-  //       })}
-  //     >
-  //       <Group position="apart">
-  //         <Title order={1}>CHA Charges</Title>
-  //         <Input placeholder="Search" />
-  //       </Group>
-  //     </Box>
-
-  //     <Space h="lg" />
-
-  //     <SimpleGrid cols={2}>
-  //       {chaData.map((item: any, index: number) => {
-  //         return (
-  //           <SectionCard
-  //             key={index}
-  //             withBorder
-  //             radius="md"
-  //             p="lg"
-  //             component="a"
-  //           >
-  //             <Title order={3}>{item?.name}</Title>
-  //             <Space h="xl" />
-  //             <ScrollArea
-  //               scrollbarSize={2}
-  //               style={{ maxHeight: 380, height: 360 }}
-  //             >
-  //               <List type="ordered" spacing="lg">
-  //                 {item?.list?.map((d: any, i: number) => {
-  //                   const destinationName = destinationSelectOptions?.find(
-  //                     (f: any) => f.value === d._destinationPortId
-  //                   )?.label;
-  //                   return (
-  //                     <Box
-  //                       key={i}
-  //                       sx={(theme) => ({
-  //                         display: "block",
-  //                         backgroundColor:
-  //                           theme.colorScheme === "dark"
-  //                             ? theme.colors.dark[6]
-  //                             : "#fff",
-  //                         color:
-  //                           theme.colorScheme === "dark"
-  //                             ? theme.colors.dark[4]
-  //                             : theme.colors.dark[7],
-  //                         textAlign: "left",
-  //                         padding: theme.spacing.md,
-  //                         borderRadius: theme.radius.md,
-  //                         cursor: "default",
-
-  //                         "&:hover": {
-  //                           backgroundColor:
-  //                             theme.colorScheme === "dark"
-  //                               ? theme.colors.dark[5]
-  //                               : theme.colors.gray[1],
-  //                         },
-  //                       })}
-  //                     >
-  //                       <List.Item>
-  //                         {destinationName} -{" "}
-  //                         <span style={{ fontWeight: "800" }}>
-  //                           INR {d.chaCharge}
-  //                         </span>
-  //                       </List.Item>
-  //                     </Box>
-  //                   );
-  //                 })}
-  //               </List>
-  //             </ScrollArea>
-  //           </SectionCard>
-  //         );
-  //       })}
-  //     </SimpleGrid>
-  //   </PageWrapper>
-  // );
 }
 
 export default ManageChaContainer;
