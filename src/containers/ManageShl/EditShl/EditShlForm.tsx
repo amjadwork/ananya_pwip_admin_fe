@@ -25,7 +25,6 @@ const initialFormValues = {
   "convenienceFee_|": "",
   "muc_|": "",
   "seal_|": "",
-  "coo_|": "",
 };
 
 function EditShlForm(props: any) {
@@ -247,14 +246,6 @@ function EditShlForm(props: any) {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    label="COO"
-                    placeholder="Eg. 26500"
-                    {...form.getInputProps("coo_|" + i)}
-                  />
-                </Grid.Col>
               </Grid>
             </Group>
             <Space h="md" />
@@ -357,14 +348,6 @@ function EditShlForm(props: any) {
               label="Seal"
               placeholder="Eg. 26500"
               {...form.getInputProps("seal_|")}
-            />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              label="COO"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("coo_|")}
             />
           </Grid.Col>
         </Grid>
