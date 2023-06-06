@@ -15,19 +15,15 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check } from "tabler-icons-react";
+import { Pencil, X,Plus, Check } from "tabler-icons-react";
 
-import EditShlContainer from "./EditShl/EditShl";
-
+import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
   return (
     <PageHeader
       title="Manage Shipping Line Locals Charges"
@@ -84,7 +80,7 @@ const RenderPageAction = (props: any) => {
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes</Text>
+            <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
@@ -124,6 +120,22 @@ const RenderPageAction = (props: any) => {
     >
       <Pencil size={16} />
     </ActionIcon>
+  );
+};
+
+const RenderModalContent = (props: any) => {
+  const handleCloseModal = props.handleCloseModal;
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
+  const handleUpdateShlUIData = props.handleUpdateShlUIData;
+
+  return (
+    <EditShlForm
+      handleCloseModal={handleCloseModal}
+      regionSelectOptions={regionSelectOptions}
+      destinationSelectOptions={destinationSelectOptions}
+      handleUpdateShlUIData={handleUpdateShlUIData}
+    />
   );
 };
 
@@ -229,12 +241,19 @@ function ManageShlContainer() {
     setShlData(() => [...chaArr]);
   };
 
+
+  const handleSave = (bool: boolean) => {
+    handleEditAction(bool);
+  };
+
   const handleSaveAction = async () => {
+    if(shlAPIPayload){
     const shlResponse = await APIRequest("cha", "POST", shlAPIPayload);
 
     if (shlResponse) {
-      //
+      handleGetRegionSource()
     }
+  }
   };
 
   const handleGetDestination = async () => {
@@ -261,23 +280,6 @@ function ManageShlContainer() {
     handleGetRegionSource();
   }, []);
 
-  if (editModeActive) {
-    return (
-      <EditShlContainer
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        regionSelectOptions={regionSelectOptions}
-        destinationSelectOptions={destinationSelectOptions}
-        shlData={shlData}
-        handleUpdateShlUIData={handleUpdateShlUIData}
-        shlAPIPayload={shlAPIPayload}
-        handleRefetchShlList={handleRefetchShlList}
-      />
-    );
-  }
 
   return (
     <PageWrapper
@@ -292,10 +294,41 @@ function ManageShlContainer() {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
+          handleEditAction={handleSave}
+          handleSaveAction={handleSaveAction}
           editModeActive={editModeActive}
         />
       )}
+         modalOpen={modalOpen}
+      modalTitle={
+        modalType === "edit"
+          ? "Add Shipping Line Local Charges"
+          : "Update Shipping Line Local Charges"
+      }
+      onModalClose={() => setModalOpen(false)}
+      ModalContent={() => {
+        if (modalType === "edit") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+              handleUpdateShlUIData={handleUpdateShlUIData}
+            />
+          );
+        }
+
+        if (modalType === "update") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+            />
+          );
+        }
+      }}
+      modalSize="70%"
     >
       <Box
         sx={(theme) => ({
@@ -316,7 +349,16 @@ function ManageShlContainer() {
       >
         <Group position="apart">
           <Title order={1}>Shipping Line Locals Charges</Title>
+          <Group spacing="md">
           <Input placeholder="Search" />
+          {editModeActive && <Button
+              type="submit"
+              leftIcon={<Plus size={14} />}
+              onClick={() => setModalOpen(true)}
+             >
+              Add
+            </Button>}
+        </Group>
         </Group>
       </Box>
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Group,
   Button,
-  TextInput,
   NumberInput,
   Select,
   Space,
@@ -10,10 +9,8 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
-import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { manageCha } from "../../../constants/var.constants";
 
 const initialFormValues = {
   "_originPortId_|": "",
