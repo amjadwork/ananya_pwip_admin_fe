@@ -138,12 +138,13 @@ function ManageChaContainer() {
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [chaData, setChaData] = React.useState<any>([]);
-  const [tempChaArray, setTempChaArray] = React.useState<any>([]);
+  // const [tempChaArray, setTempChaArray] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
 
+//What does this below function do? Is it necessary? #askSwain
   const handleRefetchChaList = (chaPostResponse: any) => {
     if (chaPostResponse) {
       handleGetRegionSource();
@@ -289,6 +290,7 @@ function ManageChaContainer() {
       )}
       PageAction={() => (
         <RenderPageAction
+          handleActionClick={() => setModalOpen(true)}
           editModeActive={editModeActive}
           handleEditAction={handleSave}
           handleSaveAction={handleSaveAction}

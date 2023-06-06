@@ -10,10 +10,8 @@ import {
   Grid,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
-import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { manageCha } from "../../../constants/var.constants";
 
 const initialFormValues = {
   "_originPortId_|": "",
