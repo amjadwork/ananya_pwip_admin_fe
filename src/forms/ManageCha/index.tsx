@@ -22,7 +22,6 @@ const initialFormValues = {
   "loadingCharge_|": "",
   "customCharge_|": "",
   "pqc_|": "",
-  "coo_|": "",
 };
 
 function EditChaForm(props: any) {

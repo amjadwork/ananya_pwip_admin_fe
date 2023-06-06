@@ -223,6 +223,10 @@ function ManageShlContainer() {
   };
 
   const handleUpdateShlUIData = (formData: any) => {
+    console.log(formData)
+    console.log(formData)
+    console.log(formData)
+    console.log(formData)
     setShlAPIPayload({ ...formData });
     let chaArr: any = [...shlData];
 
@@ -247,8 +251,9 @@ function ManageShlContainer() {
   };
 
   const handleSaveAction = async () => {
+    console.log(shlAPIPayload)
     if(shlAPIPayload){
-    const shlResponse = await APIRequest("cha", "POST", shlAPIPayload);
+    const shlResponse = await APIRequest("shl", "POST", shlAPIPayload);
 
     if (shlResponse) {
       handleGetRegionSource()

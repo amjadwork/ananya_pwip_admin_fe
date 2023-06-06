@@ -22,6 +22,7 @@ const initialFormValues = {
   "convenienceFee_|": "",
   "muc_|": "",
   "seal_|": "",
+  "coo_|": 0,
 };
 
 function EditShlForm(props: any) {
