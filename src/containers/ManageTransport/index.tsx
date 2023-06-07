@@ -128,11 +128,13 @@ const RenderPageAction = (props: any) => {
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const sourceSelectOptions = props.sourceSelectOptions;
+  const regionSelectOptions = props.regionSelectOptions;
   const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
 
   return (
     <EditTransportForm
       handleCloseModal={handleCloseModal}
+      regionSelectOptions={regionSelectOptions}
       sourceSelectOptions={sourceSelectOptions}
       handleUpdateTransportUIData={handleUpdateTransportUIData}
     />
@@ -146,6 +148,7 @@ function ManageTransportContainer() {
   const [modalType, setModalType] = React.useState<string>("edit");
   const [transportData, setTransportData] = React.useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [transportAPIPayload, setTransportAPIPayload] =
     React.useState<any>(null);
 
@@ -193,12 +196,38 @@ function ManageTransportContainer() {
           value: d._id,
         };
       });
-
       setSourceSelectOptions(() => [...sourceOptions]);
+      getTransportList();
+    }
 
+    const regionResponse = await APIRequest(
+      "location?filterType=origin",
+      "GET"
+    );
+
+    if (regionResponse) {
+      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+        return {
+          name: d.portName,
+          _originId: d._id,
+          list: [],
+        };
+      });
+
+      const regionOptions = regionResponse[0].origin.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
+
+      setRegionSelectOptions(() => [...regionOptions]);
       getTransportList();
     }
   };
+ 
+  
+
 
   const handleUpdateTransportUIData = (formData: any) => {
     setTransportAPIPayload({ ...formData });
@@ -272,7 +301,7 @@ function ManageTransportContainer() {
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
               sourceSelectOptions={sourceSelectOptions}
-              
+              regionSelectOptions={regionSelectOptions}            
               handleUpdateTransportUIData={handleUpdateTransportUIData}
             />
           );
@@ -282,6 +311,7 @@ function ManageTransportContainer() {
           return (
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
               sourceSelectOptions={sourceSelectOptions}
             />
           );

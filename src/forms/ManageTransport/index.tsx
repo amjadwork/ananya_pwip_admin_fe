@@ -13,12 +13,13 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 
 const initialFormValues = {
-  cfsStation: "",
-  "_sourcePortId_|": "",
-  "transportationCharge_|": "",
+  "_originPortId": "",
+  "_sourcePortId": "",
+  "transportationCharge": "",
 };
 
 function EditTransportForm(props: any) {
+  const regionSelectOptions = props.regionSelectOptions || [];
   const sourceSelectOptions = props.sourceSelectOptions;
   const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
   const handleCloseModal = props.handleCloseModal;
@@ -49,20 +50,20 @@ function EditTransportForm(props: any) {
 
     Object.keys(object)
       .filter((key) => {
-        const _key = key.split("_|")[0];
-        if (_key !== "cfsStation") {
+        // const _key = key.split("_|")[0];
+        if (key !== "_originPortId") {
           return key;
         }
       })
       .map((key) => {
-        const _key = key.split("_|")[0];
-        transportObject[_key] = object[key];
-        return {
-          [_key]: object[key],
-        };
+        // const _key = key.split("_|")[0];
+        transportObject[key] = object[key];
+        return null;
       });
 
     transportArr.push(transportObject);
+
+    console.log(transportArr)
 
     const payloadObject: any = {
       cfsStation: object.cfsStation,
@@ -115,11 +116,12 @@ function EditTransportForm(props: any) {
 
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
-      <TextInput
+      <Select
         required
         label="Enter CFS Station "
         placeholder="Eg. chennai cfs"
-        {...form.getInputProps("cfsStation")}
+        data={regionSelectOptions}
+        {...form.getInputProps("_originPortId")}
       />
 
       <Space h="md" />
@@ -132,7 +134,7 @@ function EditTransportForm(props: any) {
               placeholder="Eg. karnal "
               data={sourceSelectOptions}
               defaultValue={item["_sourcePortId"]}
-              {...form.getInputProps("_sourcePortId_|" + i)}
+              {...form.getInputProps("_sourcePortId" + i)}
             />
 
             <NumberInput
@@ -140,7 +142,7 @@ function EditTransportForm(props: any) {
               label="Enter Transport Charges"
               placeholder="Eg. 26500"
               defaultValue={item["transportationCharge"]}
-              {...form.getInputProps("transportationCharge_|" + i)}
+              {...form.getInputProps("transportationCharge" + i)}
             />
 
             <div
@@ -172,14 +174,14 @@ function EditTransportForm(props: any) {
           label="Enter Source Location"
           placeholder="Eg. Karnal"
           data={sourceSelectOptions}
-          {...form.getInputProps("_sourcePortId_|")}
+          {...form.getInputProps("_sourcePortId")}
         />
 
         <NumberInput
           required
           label="Enter Transport charges"
           placeholder="Eg. 26500"
-          {...form.getInputProps("transportationCharge_|")}
+          {...form.getInputProps("transportationCharge")}
         />
 
         <div
