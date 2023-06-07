@@ -21,8 +21,7 @@ import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
-import EditTransportForm from "./EditTransportForm";
-
+import EditTransportForm from "../../../forms/ManageTransport/index";
 import APIRequest from "../../../helper/api";
 
 const RenderPageHeader = (props: any) => {
@@ -207,6 +206,7 @@ function EditTransportContainer(props: any) {
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
               sourceSelectOptions={sourceSelectOptions}
+              
               handleUpdateTransportUIData={handleUpdateTransportUIData}
             />
           );
@@ -224,21 +224,6 @@ function EditTransportContainer(props: any) {
       modalSize="70%"
     >
       <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
       >
         <Group position="apart">
           <Title order={1}>Transportation Charges</Title>

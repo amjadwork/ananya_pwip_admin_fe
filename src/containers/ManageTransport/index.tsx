@@ -15,10 +15,8 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check } from "tabler-icons-react";
-
-import EditTransportContainer from "./EditTransport/EditTransport";
-
+import { Pencil, X, Check, Plus} from "tabler-icons-react";
+import EditTransportForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
@@ -127,6 +125,20 @@ const RenderPageAction = (props: any) => {
   );
 };
 
+const RenderModalContent = (props: any) => {
+  const handleCloseModal = props.handleCloseModal;
+  const sourceSelectOptions = props.sourceSelectOptions;
+  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
+
+  return (
+    <EditTransportForm
+      handleCloseModal={handleCloseModal}
+      sourceSelectOptions={sourceSelectOptions}
+      handleUpdateTransportUIData={handleUpdateTransportUIData}
+    />
+  );
+};
+
 function ManageTransportContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -207,26 +219,27 @@ function ManageTransportContainer() {
     setTransportData(() => [...chaArr]);
   };
 
+  const handleSave = (bool: boolean) => {
+    handleEditAction(bool);
+  };
+
+  const handleSaveAction = async () => {
+    if(transportAPIPayload){
+    const transportResponse = await APIRequest(
+      "transportation",
+      "POST",
+      transportAPIPayload
+    );
+    if(transportResponse){
+      handleGetSource()
+    }
+  }
+};
+
   React.useEffect(() => {
     handleGetSource();
   }, []);
 
-  if (editModeActive) {
-    return (
-      <EditTransportContainer
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        sourceSelectOptions={sourceSelectOptions}
-        transportData={transportData}
-        handleUpdateTransportUIData={handleUpdateTransportUIData}
-        transportAPIPayload={transportAPIPayload}
-        handleRefetchTransportList={handleRefetchTransportList}
-      />
-    );
-  }
 
   return (
     <PageWrapper
@@ -241,10 +254,40 @@ function ManageTransportContainer() {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
+          handleEditAction={handleSave}
           editModeActive={editModeActive}
+          handleSaveAction={handleSaveAction}
         />
       )}
+      modalOpen={modalOpen}
+      modalTitle={
+        modalType === "edit"
+          ? "Add Transportation Charges"
+          : "Update Transportation Charges"
+      }
+      onModalClose={() => setModalOpen(false)}
+      ModalContent={() => {
+        if (modalType === "edit") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              sourceSelectOptions={sourceSelectOptions}
+              
+              handleUpdateTransportUIData={handleUpdateTransportUIData}
+            />
+          );
+        }
+
+        if (modalType === "update") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              sourceSelectOptions={sourceSelectOptions}
+            />
+          );
+        }
+      }}
+      modalSize="70%"
     >
       <Box
         sx={(theme) => ({
@@ -265,7 +308,16 @@ function ManageTransportContainer() {
       >
         <Group position="apart">
           <Title order={1}>Transportation Charges</Title>
+          <Group spacing="md">
           <Input placeholder="Search" />
+         {editModeActive && <Button
+              type="submit"
+              leftIcon={<Plus size={14} />}
+              onClick={() => setModalOpen(true)}
+            >
+              Add
+            </Button>}
+            </Group>
         </Group>
       </Box>
 
@@ -331,5 +383,7 @@ function ManageTransportContainer() {
     </PageWrapper>
   );
 }
+
+
 
 export default ManageTransportContainer;

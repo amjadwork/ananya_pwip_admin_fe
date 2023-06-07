@@ -9,10 +9,8 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
-import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { manageTransport } from "../../../constants/var.constants";
 
 const initialFormValues = {
   cfsStation: "",
