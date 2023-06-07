@@ -324,6 +324,7 @@ console.log("abc",regionList);
 
       <SimpleGrid cols={2}>
         {shlData.map((item: any, index: number) => {
+          console.log(item)
           return (
             <SectionCard
               key={index}

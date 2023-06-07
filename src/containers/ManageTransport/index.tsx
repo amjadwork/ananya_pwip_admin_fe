@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
@@ -166,6 +166,7 @@ function ManageTransportContainer() {
     }
   };
 
+
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -265,6 +266,28 @@ function ManageTransportContainer() {
   }
 };
 
+const[ originListData , setOriginListData] = useState<any>([])
+
+const getOrginList = async () => {
+  const regionResponse = await APIRequest(
+    "location?filterType=origin",
+    "GET"
+  );
+  // console.log(regionResponse[0])
+  setOriginListData(regionResponse[0].origin)
+  
+};
+   useEffect(()=>{
+    // console.log(transportData)
+    getOrginList()
+   },[transportData])
+   
+   useEffect(()=>{
+    console.log(originListData)
+    
+   },[originListData])
+
+
   React.useEffect(() => {
     handleGetSource();
   }, []);
@@ -355,6 +378,20 @@ function ManageTransportContainer() {
 
       <SimpleGrid cols={2}>
         {transportData.map((item: any, index: number) => {
+          console.log("item",item._originPortId)
+          console.log(originListData)
+          // const x =
+          // {
+          //   console.log("originPort")
+          //   if(originPort._id === item._originPortId){
+          //     return(originPort.portName)
+          //     // return(originPort)
+      
+          //   }
+          // }
+          // )
+          // console.log(x)
+          
           return (
             <SectionCard
               key={index}
@@ -363,7 +400,10 @@ function ManageTransportContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{item?.cfsStation}</Title>
+              <Title order={3}>{originListData.find((originPort:any)=>originPort._id === item._originPortId
+               )?.portName}
+
+              </Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
