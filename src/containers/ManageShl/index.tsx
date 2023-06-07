@@ -15,15 +15,19 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X,Plus, Check } from "tabler-icons-react";
+import { Pencil, X, Check } from "tabler-icons-react";
 
 import EditShlForm from "../../forms/ManageShl/index";
+
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
+  const activeFilter = props.activeFilter;
+  const handleRadioChange = props.handleRadioChange;
+
   return (
     <PageHeader
       title="Manage Shipping Line Locals Charges"
@@ -80,7 +84,7 @@ const RenderPageAction = (props: any) => {
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
+            <Text size="sm">Are you sure you want to save the changes</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
@@ -123,22 +127,6 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-const RenderModalContent = (props: any) => {
-  const handleCloseModal = props.handleCloseModal;
-  const regionSelectOptions = props.regionSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
-  const handleUpdateShlUIData = props.handleUpdateShlUIData;
-
-  return (
-    <EditShlForm
-      handleCloseModal={handleCloseModal}
-      regionSelectOptions={regionSelectOptions}
-      destinationSelectOptions={destinationSelectOptions}
-      handleUpdateShlUIData={handleUpdateShlUIData}
-    />
-  );
-};
-
 function ManageShlContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -159,7 +147,7 @@ function ManageShlContainer() {
 
   const getSHLList = async (regionList: any) => {
     const shlResponse: any = await APIRequest("shl", "GET");
-
+console.log("abc",regionList);
     if (shlResponse) {
       let array: any = regionList.map((item: any) => {
         let destinationArr: any = [];
@@ -223,10 +211,6 @@ function ManageShlContainer() {
   };
 
   const handleUpdateShlUIData = (formData: any) => {
-    console.log(formData)
-    console.log(formData)
-    console.log(formData)
-    console.log(formData)
     setShlAPIPayload({ ...formData });
     let chaArr: any = [...shlData];
 
@@ -245,20 +229,12 @@ function ManageShlContainer() {
     setShlData(() => [...chaArr]);
   };
 
-
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
-  };
-
   const handleSaveAction = async () => {
-    console.log(shlAPIPayload)
-    if(shlAPIPayload){
-    const shlResponse = await APIRequest("shl", "POST", shlAPIPayload);
+    const shlResponse = await APIRequest("cha", "POST", shlAPIPayload);
 
     if (shlResponse) {
-      handleGetRegionSource()
+      //
     }
-  }
   };
 
   const handleGetDestination = async () => {
@@ -285,6 +261,23 @@ function ManageShlContainer() {
     handleGetRegionSource();
   }, []);
 
+  if (editModeActive) {
+    return (
+      <EditShlForm
+        editModeActive={editModeActive}
+        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
+        modalType={modalType}
+        modalOpen={modalOpen}
+        handleEditToUpdateAction={handleEditToUpdateAction}
+        regionSelectOptions={regionSelectOptions}
+        destinationSelectOptions={destinationSelectOptions}
+        shlData={shlData}
+        handleUpdateShlUIData={handleUpdateShlUIData}
+        shlAPIPayload={shlAPIPayload}
+        handleRefetchShlList={handleRefetchShlList}
+      />
+    );
+  }
 
   return (
     <PageWrapper
@@ -299,41 +292,10 @@ function ManageShlContainer() {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleSave}
-          handleSaveAction={handleSaveAction}
+          handleEditAction={handleEditAction}
           editModeActive={editModeActive}
         />
       )}
-         modalOpen={modalOpen}
-      modalTitle={
-        modalType === "edit"
-          ? "Add Shipping Line Local Charges"
-          : "Update Shipping Line Local Charges"
-      }
-      onModalClose={() => setModalOpen(false)}
-      ModalContent={() => {
-        if (modalType === "edit") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-              handleUpdateShlUIData={handleUpdateShlUIData}
-            />
-          );
-        }
-
-        if (modalType === "update") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-            />
-          );
-        }
-      }}
-      modalSize="70%"
     >
       <Box
         sx={(theme) => ({
@@ -354,16 +316,7 @@ function ManageShlContainer() {
       >
         <Group position="apart">
           <Title order={1}>Shipping Line Locals Charges</Title>
-          <Group spacing="md">
           <Input placeholder="Search" />
-          {editModeActive && <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-             >
-              Add
-            </Button>}
-        </Group>
         </Group>
       </Box>
 
