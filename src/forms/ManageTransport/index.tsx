@@ -66,7 +66,7 @@ function EditTransportForm(props: any) {
     console.log(transportArr)
 
     const payloadObject: any = {
-      cfsStation: object.cfsStation,
+      _originPortId: object._originPortId,
       sourceLocations: [...transportArr],
     };
 
@@ -118,7 +118,7 @@ function EditTransportForm(props: any) {
     <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
       <Select
         required
-        label="Enter CFS Station "
+        label="Enter origin port"
         placeholder="Eg. chennai cfs"
         data={originSelectOptions}
         {...form.getInputProps("_originPortId")}

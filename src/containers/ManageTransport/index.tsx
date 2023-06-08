@@ -155,6 +155,10 @@ function ManageTransportContainer() {
   const[ sourceListData , setSourceListData] = useState<any>([]);
 
 
+  // const [originCardData, setOriginCardData] = React.useState<any>([]);
+
+
+
   const handleRefetchTransportList = (transportPostResponse: any) => {
     if (transportPostResponse) {
       handleGetSource();
@@ -223,18 +227,20 @@ function ManageTransportContainer() {
       getTransportList();
     }
   };
-  console.log("originSelectOption",originSelectOptions);
-  console.log("transportData", transportData)
+  // console.log("originSelectOption",originSelectOptions);
+  // console.log("transportData", transportData)
+
+  // console.log('here ', transportData)
 
 
   const handleUpdateTransportUIData = (formData: any) => {
-    console.log(formData)
+    // console.log(formData)
     setTransportAPIPayload({ ...formData });
   
     let chaArr: any = [...transportData];
 
-    chaArr = chaArr.map((d: any) => {
-      if (formData._sourcePortId === d._sourcePortId) {
+    const arr = chaArr.map((d: any) => {
+      if (d?._originPortId === formData?._originPortId) {
         return {
           ...d,
           sourceLocations: [...d.sourceLocations, ...formData.sourceLocations],
@@ -245,8 +251,7 @@ function ManageTransportContainer() {
       };
     });
 
-
-    setTransportData(() => [...chaArr]);
+    setTransportData(() => [...arr]);
   };
 
   const handleSave = (bool: boolean) => {
@@ -274,6 +279,9 @@ function ManageTransportContainer() {
     handleGetSource();
     handleGetOrigin();
   }, []);
+
+
+  const compareArr = transportData.map((d: any) => d._originPortId);
 
 
   return (
@@ -360,7 +368,7 @@ function ManageTransportContainer() {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {transportData.map((item: any, index: number) => {
+        {originListData.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -369,17 +377,17 @@ function ManageTransportContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}>{originListData.find((originPort:any)=>originPort._id === item._originPortId
-               )?.portName}
-
-              </Title>
+              <Title order={3}> {item?.portName} </Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
-                <List type="ordered" spacing="lg">
-                  {item?.sourceLocations?.map((d: any, i: number) =>{ 
+                {transportData?.map((originPortId: any) => {
+                  if(originPortId._originPortId === item._id) {
+                    return (
+                      <List type="ordered" spacing="lg">
+                  {originPortId?.sourceLocations?.map((d: any, i: number) =>{ 
                     console.log(d)
                     console.log(sourceListData)
                     return(
@@ -418,6 +426,9 @@ function ManageTransportContainer() {
                     </Box>
                   )})}
                 </List>
+                    )
+                  }
+                })}
               </ScrollArea>
             </SectionCard>
           );
