@@ -151,11 +151,8 @@ function ManageTransportContainer() {
   const [originSelectOptions, setOriginSelectOptions] = React.useState<any>([]);
   const [transportAPIPayload, setTransportAPIPayload] =
     React.useState<any>(null);
-  const[ originListData , setOriginListData] = useState<any>([]);
-  const[ sourceListData , setSourceListData] = useState<any>([]);
-
-
-  // const [originCardData, setOriginCardData] = React.useState<any>([]);
+  const[ originList , setOriginList] = useState<any>([]);
+  const[ sourceList , setSourceList] = useState<any>([]);
 
 
 
@@ -191,7 +188,7 @@ function ManageTransportContainer() {
       "GET"
     );
     console.log("sourceResponse", sourceResponse[0])
-    setSourceListData(sourceResponse[0].source)
+    setSourceList(sourceResponse[0].source)
 
     if (sourceResponse) {
       const sourceOptions = sourceResponse[0].source.map((d: any) => {
@@ -204,7 +201,7 @@ function ManageTransportContainer() {
       getTransportList();
     }
   }; 
-   console.log("sourceListData", sourceListData);
+   console.log("sourceList", sourceList);
    console.log("sourceSelectOption",sourceSelectOptions);
 
   
@@ -214,7 +211,7 @@ function ManageTransportContainer() {
       "GET"
     );
      console.log("originResponse", originResponse[0])
-     setOriginListData(originResponse[0].origin)
+     setOriginList(originResponse[0].origin)
     if (originResponse) {
       const regionOptions = originResponse[0].origin.map((d: any) => {
         return {
@@ -272,8 +269,8 @@ function ManageTransportContainer() {
   }
 };
   useEffect(()=>{
-    console.log("sourceListData",sourceListData)
-  },[sourceListData])
+    console.log("sourceList",sourceList)
+  },[sourceList])
 
   React.useEffect(() => {
     handleGetSource();
@@ -368,7 +365,7 @@ function ManageTransportContainer() {
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
-        {originListData.map((item: any, index: number) => {
+        {originList.map((list: any, index: number) => {
           return (
             <SectionCard
               key={index}
@@ -377,19 +374,16 @@ function ManageTransportContainer() {
               p="lg"
               component="a"
             >
-              <Title order={3}> {item?.portName} </Title>
+              <Title order={3}> {list?.portName} </Title>
               <Space h="xl" />
               <ScrollArea
                 scrollbarSize={2}
                 style={{ maxHeight: 380, height: 360 }}
               >
-                {transportData?.map((originPortId: any) => {
-                  if(originPortId._originPortId === item._id) {
-                    return (
-                      <List type="ordered" spacing="lg">
-                  {originPortId?.sourceLocations?.map((d: any, i: number) =>{ 
-                    console.log(d)
-                    console.log(sourceListData)
+                <List type="ordered" spacing="lg">
+                {transportData?.map((data: any) => {
+                  if(data._originPortId === list._id) {
+                    return data?.sourceLocations?.map((d: any, i: number) =>{ 
                     return(
                     <Box
                       key={i}
@@ -416,8 +410,8 @@ function ManageTransportContainer() {
                         },
                       })}
                     >
-                      <List.Item style={{ fontWeight: "700" }}>
-                      {sourceListData.find((sourceData:any)=>sourceData._id === d._sourcePortId
+                      <List.Item style={{ fontWeight: "500" }}>
+                      {sourceList.find((sourceData:any)=>sourceData._id === d._sourcePortId
                )?.region} -{" "}
                         <span style={{ fontWeight: "800" }}>
                           INR {d.transportationCharge}
@@ -425,10 +419,9 @@ function ManageTransportContainer() {
                       </List.Item>
                     </Box>
                   )})}
-                </List>
-                    )
-                  }
                 })}
+          </List>
+
               </ScrollArea>
             </SectionCard>
           );
