@@ -268,7 +268,7 @@ function ManageTransportContainer() {
 
 const[ originListData , setOriginListData] = useState<any>([])
 
-const getOrginList = async () => {
+const getOriginList = async () => {
   const regionResponse = await APIRequest(
     "location?filterType=origin",
     "GET"
@@ -279,7 +279,7 @@ const getOrginList = async () => {
 };
    useEffect(()=>{
     // console.log(transportData)
-    getOrginList()
+    getOriginList()
    },[transportData])
    
    useEffect(()=>{
