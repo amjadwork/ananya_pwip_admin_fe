@@ -151,6 +151,9 @@ function ManageTransportContainer() {
   const [originSelectOptions, setOriginSelectOptions] = React.useState<any>([]);
   const [transportAPIPayload, setTransportAPIPayload] =
     React.useState<any>(null);
+  const[ originListData , setOriginListData] = useState<any>([]);
+  const[ sourceListData , setSourceListData] = useState<any>([]);
+
 
   const handleRefetchTransportList = (transportPostResponse: any) => {
     if (transportPostResponse) {
@@ -183,15 +186,10 @@ function ManageTransportContainer() {
       "location?filterType=source",
       "GET"
     );
-    if (sourceResponse) {
-      const formattedsource = sourceResponse[0].source.map((d: any) => {
-        return {
-          name: d.region,
-          _sourcePortId: d._id,
-          list: [],
-        };
-      });
+    console.log("sourceResponse", sourceResponse[0])
+    setSourceListData(sourceResponse[0].source)
 
+    if (sourceResponse) {
       const sourceOptions = sourceResponse[0].source.map((d: any) => {
         return {
           label: d.region,
@@ -201,26 +199,20 @@ function ManageTransportContainer() {
       setSourceSelectOptions(() => [...sourceOptions]);
       getTransportList();
     }
+  }; 
+   console.log("sourceListData", sourceListData);
+   console.log("sourceSelectOption",sourceSelectOptions);
 
-   
-  };
   
   const handleGetOrigin= async () => {
-    const regionResponse = await APIRequest(
+    const originResponse = await APIRequest(
       "location?filterType=origin",
       "GET"
     );
-
-    if (regionResponse) {
-      const formattedRegion = regionResponse[0].origin.map((d: any) => {
-        return {
-          name: d.portName,
-          _originId: d._id,
-          list: [],
-        };
-      });
-
-      const regionOptions = regionResponse[0].origin.map((d: any) => {
+     console.log("originResponse", originResponse[0])
+     setOriginListData(originResponse[0].origin)
+    if (originResponse) {
+      const regionOptions = originResponse[0].origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
@@ -231,11 +223,14 @@ function ManageTransportContainer() {
       getTransportList();
     }
   };
-  
+  console.log("originSelectOption",originSelectOptions);
+  console.log("transportData", transportData)
 
 
   const handleUpdateTransportUIData = (formData: any) => {
+    console.log(formData)
     setTransportAPIPayload({ ...formData });
+  
     let chaArr: any = [...transportData];
 
     chaArr = chaArr.map((d: any) => {
@@ -249,6 +244,7 @@ function ManageTransportContainer() {
         ...d,
       };
     });
+
 
     setTransportData(() => [...chaArr]);
   };
@@ -270,28 +266,9 @@ function ManageTransportContainer() {
     }
   }
 };
-
-const[ originListData , setOriginListData] = useState<any>([])
-
-const getOriginList = async () => {
-  const regionResponse = await APIRequest(
-    "location?filterType=origin",
-    "GET"
-  );
-  // console.log(regionResponse[0])
-  setOriginListData(regionResponse[0].origin)
-  
-};
-   useEffect(()=>{
-    // console.log(transportData)
-    getOriginList()
-   },[transportData])
-   
-   useEffect(()=>{
-    console.log(originListData)
-    
-   },[originListData])
-
+  useEffect(()=>{
+    console.log("sourceListData",sourceListData)
+  },[sourceListData])
 
   React.useEffect(() => {
     handleGetSource();
@@ -384,20 +361,6 @@ const getOriginList = async () => {
 
       <SimpleGrid cols={2}>
         {transportData.map((item: any, index: number) => {
-          console.log("item",item._originPortId)
-          console.log(originListData)
-          // const x =
-          // {
-          //   console.log("originPort")
-          //   if(originPort._id === item._originPortId){
-          //     return(originPort.portName)
-          //     // return(originPort)
-      
-          //   }
-          // }
-          // )
-          // console.log(x)
-          
           return (
             <SectionCard
               key={index}
@@ -416,7 +379,10 @@ const getOriginList = async () => {
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                  {item?.sourceLocations?.map((d: any, i: number) => (
+                  {item?.sourceLocations?.map((d: any, i: number) =>{ 
+                    console.log(d)
+                    console.log(sourceListData)
+                    return(
                     <Box
                       key={i}
                       sx={(theme) => ({
@@ -442,14 +408,15 @@ const getOriginList = async () => {
                         },
                       })}
                     >
-                      <List.Item>
-                        {d._sourcePortId} -{" "}
+                      <List.Item style={{ fontWeight: "700" }}>
+                      {sourceListData.find((sourceData:any)=>sourceData._id === d._sourcePortId
+               )?.region} -{" "}
                         <span style={{ fontWeight: "800" }}>
                           INR {d.transportationCharge}
                         </span>
                       </List.Item>
                     </Box>
-                  ))}
+                  )})}
                 </List>
               </ScrollArea>
             </SectionCard>
