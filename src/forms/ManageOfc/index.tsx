@@ -117,6 +117,7 @@ function EditOfcForm(props: any) {
     <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
       <Select
         required
+        searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
         data={regionSelectOptions}
@@ -146,6 +147,7 @@ function EditOfcForm(props: any) {
                   <Select
                     defaultValue={item["_destinationPortId"]}
                     required
+                    searchable
                     label="Select Destination Port"
                     placeholder="Eg. singapore"
                     data={destinationSelectOptions}
@@ -156,8 +158,11 @@ function EditOfcForm(props: any) {
                 <Grid.Col span={4}>
                   <NumberInput
                     required
+                    type="number"
                     label="Enter OFC Charges"
                     placeholder="Eg. 26500"
+                    precision={2}
+                    hideControls
                     defaultValue={item["ofcCharge"]}
                     {...form.getInputProps("ofcCharge_|" + i)}
                   />
@@ -203,6 +208,7 @@ function EditOfcForm(props: any) {
           <Grid.Col span={6}>
             <Select
               required
+              searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
               data={destinationSelectOptions}
@@ -215,6 +221,9 @@ function EditOfcForm(props: any) {
               required
               label="Enter OFC Charges"
               placeholder="Eg. 26500"
+              precision={2}
+              hideControls
+              type="number"
               {...form.getInputProps("ofcCharge_|")}
             />
           </Grid.Col>

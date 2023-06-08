@@ -123,6 +123,7 @@ function EditShlForm(props: any) {
     <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
       <Select
         required
+        searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
         data={regionSelectOptions}
@@ -150,6 +151,7 @@ function EditShlForm(props: any) {
                   <Select
                     defaultValue={item["_destinationPortId"]}
                     required
+                    searchable
                     label="Select Destination Port"
                     placeholder="Eg. singapore"
                     data={destinationSelectOptions}
@@ -181,6 +183,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Enter CHA Charges"
                     placeholder="Eg. 26500"
                     defaultValue={item["shlCharge"]}
@@ -191,6 +195,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Surrender"
                     placeholder="Eg. 26500"
                     defaultValue={item["surrender"]}
@@ -201,6 +207,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="THC"
                     placeholder="Eg. 26500"
                     defaultValue={item["thc"]}
@@ -211,6 +219,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="B/L Fee"
                     placeholder="Eg. 26500"
                     {...form.getInputProps("blFee_|" + i)}
@@ -220,6 +230,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Seal"
                     placeholder="Eg. 26500"
                     {...form.getInputProps("seal_|" + i)}
@@ -229,6 +241,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Convenience Fees"
                     placeholder="Eg. 26500"
                     {...form.getInputProps("convenienceFee_|" + i)}
@@ -238,6 +252,8 @@ function EditShlForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="MUC"
                     placeholder="Eg. 26500"
                     {...form.getInputProps("muc_|" + i)}
@@ -268,6 +284,7 @@ function EditShlForm(props: any) {
           <Grid.Col span={11}>
             <Select
               required
+              searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
               data={destinationSelectOptions}
@@ -292,6 +309,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Enter SHL Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("shlCharge_|")}
@@ -301,6 +320,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="THC"
               placeholder="Eg. 26500"
               {...form.getInputProps("thc_|")}
@@ -310,6 +331,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="B/L Fee"
               placeholder="Eg. 26500"
               {...form.getInputProps("blFee_|")}
@@ -319,6 +342,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Surrender"
               placeholder="Eg. 26500"
               {...form.getInputProps("surrender_|")}
@@ -327,6 +352,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Convenience Fees"
               placeholder="Eg. 26500"
               {...form.getInputProps("convenienceFee_|")}
@@ -335,6 +362,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="MUC"
               placeholder="Eg. 26500"
               {...form.getInputProps("muc_|")}
@@ -343,6 +372,8 @@ function EditShlForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Seal"
               placeholder="Eg. 26500"
               {...form.getInputProps("seal_|")}

@@ -125,6 +125,7 @@ function EditChaForm(props: any) {
       /> */}
       <Select
         required
+        searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
         data={regionSelectOptions}
@@ -152,6 +153,7 @@ function EditChaForm(props: any) {
                   <Select
                     defaultValue={item["_destinationPortId"]}
                     required
+                    searchable
                     label="Select Destination Port"
                     placeholder="Eg. singapore"
                     data={destinationSelectOptions}
@@ -183,6 +185,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Enter CHA Charges"
                     placeholder="Eg. 26500"
                     defaultValue={item["chaCharge"]}
@@ -193,6 +197,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Silica Gel"
                     placeholder="Eg. 26500"
                     defaultValue={item["silicaGel"]}
@@ -203,6 +209,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Craft Paper"
                     placeholder="Eg. 26500"
                     defaultValue={item["craftPaper"]}
@@ -213,6 +221,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Transport Charge"
                     placeholder="Eg. 26500"
                     defaultValue={item["transportCharge"]}
@@ -222,6 +232,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Loading Charge"
                     placeholder="Eg. 26500"
                     defaultValue={item["loadingCharge"]}
@@ -231,6 +243,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="Custom Charge"
                     placeholder="Eg. 26500"
                     defaultValue={item["customCharge"]}
@@ -240,6 +254,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="PQC"
                     placeholder="Eg. 26500"
                     defaultValue={item["pqc"]}
@@ -249,6 +265,8 @@ function EditChaForm(props: any) {
                 <Grid.Col span={2}>
                   <NumberInput
                     required
+                    precision={2}
+                    hideControls
                     label="COO"
                     placeholder="Eg. 26500"
                     defaultValue={item["coo"]}
@@ -273,6 +291,7 @@ function EditChaForm(props: any) {
           <Grid.Col span={11}>
             <Select
               required
+              searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
               data={destinationSelectOptions}
@@ -297,6 +316,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Enter CHA Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("chaCharge_|")}
@@ -306,6 +327,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Silica Gel"
               placeholder="Eg. 26500"
               {...form.getInputProps("silicaGel_|")}
@@ -315,6 +338,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Craft Paper"
               placeholder="Eg. 26500"
               {...form.getInputProps("craftPaper_|")}
@@ -323,6 +348,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Transport Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("transportCharge_|")}
@@ -331,6 +358,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Loading Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("loadingCharge_|")}
@@ -339,6 +368,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="Custom Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("customCharge_|")}
@@ -347,6 +378,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="PQC"
               placeholder="Eg. 26500"
               {...form.getInputProps("pqc_|")}
@@ -355,6 +388,8 @@ function EditChaForm(props: any) {
           <Grid.Col span={2}>
             <NumberInput
               required
+              precision={2}
+              hideControls
               label="COO"
               placeholder="Eg. 26500"
               {...form.getInputProps("coo_|")}

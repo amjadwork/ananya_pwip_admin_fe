@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Group,
   Button,
-  TextInput,
   NumberInput,
   Select,
   Space,
@@ -118,8 +117,9 @@ function EditTransportForm(props: any) {
     <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
       <Select
         required
-        label="Enter origin port"
-        placeholder="Eg. chennai cfs"
+        searchable
+        label="Enter Origin Port"
+        placeholder="Eg. Chennai"
         data={originSelectOptions}
         {...form.getInputProps("_originPortId")}
       />
@@ -130,8 +130,9 @@ function EditTransportForm(props: any) {
           <Group spacing="md" key={i}>
             <Select
               required
+              searchable
               label="Enter Source Location"
-              placeholder="Eg. karnal "
+              placeholder="eg. Karnal "
               data={sourceSelectOptions}
               defaultValue={item["_sourcePortId"]}
               {...form.getInputProps("_sourcePortId" + i)}
@@ -141,6 +142,8 @@ function EditTransportForm(props: any) {
               required
               label="Enter Transport Charges"
               placeholder="Eg. 26500"
+              precision={2}
+              hideControls
               defaultValue={item["transportationCharge"]}
               {...form.getInputProps("transportationCharge" + i)}
             />
@@ -171,8 +174,9 @@ function EditTransportForm(props: any) {
       <Group spacing="md" grow>
         <Select
           required
+          searchable
           label="Enter Source Location"
-          placeholder="Eg. Karnal"
+          placeholder="eg. Punjab"
           data={sourceSelectOptions}
           {...form.getInputProps("_sourcePortId")}
         />
@@ -181,6 +185,8 @@ function EditTransportForm(props: any) {
           required
           label="Enter Transport charges"
           placeholder="Eg. 26500"
+          precision={2}
+          hideControls
           {...form.getInputProps("transportationCharge")}
         />
 

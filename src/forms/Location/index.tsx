@@ -84,6 +84,7 @@ function EditLocationFormContainer(props: any) {
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Select
         required
+        searchable
         label="Select location type"
         placeholder="Eg. Source"
         disabled={select}
