@@ -19,7 +19,7 @@ const initialFormValues = {
 };
 
 function EditTransportForm(props: any) {
-  const regionSelectOptions = props.regionSelectOptions || [];
+  const originSelectOptions = props.originSelectOptions || [];
   const sourceSelectOptions = props.sourceSelectOptions;
   const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
   const handleCloseModal = props.handleCloseModal;
@@ -120,7 +120,7 @@ function EditTransportForm(props: any) {
         required
         label="Enter CFS Station "
         placeholder="Eg. chennai cfs"
-        data={regionSelectOptions}
+        data={originSelectOptions}
         {...form.getInputProps("_originPortId")}
       />
 

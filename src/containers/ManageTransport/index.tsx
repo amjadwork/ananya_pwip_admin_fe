@@ -128,13 +128,13 @@ const RenderPageAction = (props: any) => {
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const sourceSelectOptions = props.sourceSelectOptions;
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
 
   return (
     <EditTransportForm
       handleCloseModal={handleCloseModal}
-      regionSelectOptions={regionSelectOptions}
+      originSelectOptions={originSelectOptions}
       sourceSelectOptions={sourceSelectOptions}
       handleUpdateTransportUIData={handleUpdateTransportUIData}
     />
@@ -148,13 +148,14 @@ function ManageTransportContainer() {
   const [modalType, setModalType] = React.useState<string>("edit");
   const [transportData, setTransportData] = React.useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
+  const [originSelectOptions, setOriginSelectOptions] = React.useState<any>([]);
   const [transportAPIPayload, setTransportAPIPayload] =
     React.useState<any>(null);
 
   const handleRefetchTransportList = (transportPostResponse: any) => {
     if (transportPostResponse) {
       handleGetSource();
+      handleGetOrigin();
       getTransportList();
     }
   };
@@ -201,6 +202,10 @@ function ManageTransportContainer() {
       getTransportList();
     }
 
+   
+  };
+  
+  const handleGetOrigin= async () => {
     const regionResponse = await APIRequest(
       "location?filterType=origin",
       "GET"
@@ -222,11 +227,10 @@ function ManageTransportContainer() {
         };
       });
 
-      setRegionSelectOptions(() => [...regionOptions]);
+      setOriginSelectOptions(() => [...regionOptions]);
       getTransportList();
     }
   };
- 
   
 
 
@@ -261,7 +265,8 @@ function ManageTransportContainer() {
       transportAPIPayload
     );
     if(transportResponse){
-      handleGetSource()
+      handleGetSource();
+      handleGetOrigin()
     }
   }
 };
@@ -290,6 +295,7 @@ const getOriginList = async () => {
 
   React.useEffect(() => {
     handleGetSource();
+    handleGetOrigin();
   }, []);
 
 
@@ -324,7 +330,7 @@ const getOriginList = async () => {
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
               sourceSelectOptions={sourceSelectOptions}
-              regionSelectOptions={regionSelectOptions}            
+              originSelectOptions={originSelectOptions}            
               handleUpdateTransportUIData={handleUpdateTransportUIData}
             />
           );
@@ -334,7 +340,7 @@ const getOriginList = async () => {
           return (
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
+              originSelectOptions={originSelectOptions}
               sourceSelectOptions={sourceSelectOptions}
             />
           );
