@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
 import { useDisclosure } from "@mantine/hooks";
-
 import {
   // SimpleGrid,
   // Box,
@@ -18,17 +17,15 @@ import {
   // ScrollArea,
   Flex,
 } from "@mantine/core";
-import {
-  // Pencil, X, Check,
-  PlayerPlay,
-} from "tabler-icons-react";
+// import { Pencil, X, Check,PlayerPlay} from "tabler-icons-react";
+
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import EceForm from "./ECForm";
+import EceForm from "../../forms/Playground/index";
 import moment from "moment";
 
 // import { packagingBags } from "../../constants/var.constants";
