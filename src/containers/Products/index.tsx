@@ -10,7 +10,7 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import Card from "../../components/Card/Card";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import AddProductForm from "./AddProduct/AddProductForm";
+import AddProductForm from "../../forms/Products/index";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;

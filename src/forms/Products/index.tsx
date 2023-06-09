@@ -12,7 +12,7 @@ import {
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import APIRequest from "./../../../helper/api";
+import APIRequest from "../../helper/api";
 
 function AddProductForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
