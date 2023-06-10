@@ -82,7 +82,7 @@ const RenderPageAction = (props: any) => {
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes</Text>
+            <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
@@ -166,7 +166,7 @@ function ManageProductsContainer(props:any) {
   const [selectedVariantData, setSelectedVariantData] =
   React.useState<any>(null);
 
-  const handleSaveCallback = props.handleSaveCallback;
+
 
   useEffect(() => {
     handleGetProductData();
@@ -290,9 +290,10 @@ function ManageProductsContainer(props:any) {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
+          handleEditAction={handleSave}
           editModeActive={editModeActive}
           handleSaveAction={handleSave}
+
         />
       )}
       modalOpen={modalOpen || updateModalOpen}
@@ -310,7 +311,6 @@ function ManageProductsContainer(props:any) {
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               categoryData={categoryData}
-              handleSaveCallback={handleSaveCallback}
             />
           );
         }
@@ -320,7 +320,6 @@ function ManageProductsContainer(props:any) {
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
               categoryData={categoryData}
-              handleSaveCallback={handleSaveCallback}
               variantsData={selectedVariantData}
             />
           );

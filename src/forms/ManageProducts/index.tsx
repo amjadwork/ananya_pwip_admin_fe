@@ -78,10 +78,10 @@ function AddOrEditProductForm(props: any) {
       inputRef.current.value = "";
     }
 
-    setNumberValue(0);
+    // setNumberValue(0);
 
     if (inputRef) {
-      inputRef.current.value = "";
+      inputRef.current.value = " ";
     }
   };
 
@@ -103,6 +103,7 @@ function AddOrEditProductForm(props: any) {
 
   const handleSubmit = async (formValues: typeof form.values) => {
     let obj: any = { ...formValues };
+    handleSaveCallback();
     if (variantRegionCostingList.length) {
       obj.costing = variantRegionCostingList;
     }
@@ -113,7 +114,8 @@ function AddOrEditProductForm(props: any) {
 
     if (addVariantResponse) {
       handleCloseModal(false);
-      handleSaveCallback();
+      // handleSaveCallback();
+
     }
   };
 
@@ -151,17 +153,21 @@ function AddOrEditProductForm(props: any) {
           <Group spacing="md" key={i}>
             <Select
               required
+              searchable
               defaultValue={k.region}
-              label="Select Region"
-              placeholder="Eg. Karnal"
+              label="Select Source"
+              placeholder="Eg. Punjab"
               data={regionOptions}
             />
 
             <NumberInput
               required
+              precision={2}
+              hideControls
+              type="number"
               defaultValue={k.exMill}
               label="Ex-Mill"
-              placeholder="Eg. 26500"
+              placeholder="eg. 2650.00"
             />
 
             <Flex
@@ -190,6 +196,7 @@ function AddOrEditProductForm(props: any) {
       <Group spacing="md" grow>
         <Select
           required
+          searchable
           label="Select Region"
           placeholder="Eg. Karnal"
           data={regionOptions}
@@ -202,8 +209,11 @@ function AddOrEditProductForm(props: any) {
 
         <NumberInput
           required
+          precision={2}
+          hideControls
+          type="number"
           label="Ex-Mill"
-          placeholder="Eg. 26500"
+          placeholder="eg. 2650.00"
           value={numberValue}
           onChange={(val: number) => {
             setNumberValue(val);
