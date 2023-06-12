@@ -7,7 +7,7 @@ import {
   Grid,
   ActionIcon, 
 } from "@mantine/core";
-import { Select } from "../../components";
+import { Select } from "../../components/index";
 import { Minus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";

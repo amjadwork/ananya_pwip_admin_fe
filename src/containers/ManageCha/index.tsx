@@ -10,11 +10,12 @@ import {
   Input,
   Space,
   Title,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
+
+import {Card as SectionCard} from "../../components/index"
 
 // import EditChaContainer from "./EditCha/EditCha";
 import EditChaForm from "../../forms/ManageCha/index";
