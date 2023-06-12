@@ -24,14 +24,13 @@ import ManageTransportContainer from "../containers/ManageTransport";
 import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
 
-import Header from "../components/Header/Header";
+import Header from "../components/common/Header/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 
 const AppLayout: React.FC<any> = ({ children }) => {
   const [opened, setOpened] = useState(false);
-  
+
   const navigate = useNavigate();
-  
 
   const handleNavigation = (path: string) => {
     navigate(path, { replace: true });
@@ -98,7 +97,7 @@ const AppLayout: React.FC<any> = ({ children }) => {
         }
         styles={(theme) => ({
           main: {
-            minHeight:'95vh',
+            minHeight: "95vh",
             backgroundColor:
               theme.colorScheme === "dark"
                 ? theme.colors.dark[8]
@@ -109,25 +108,26 @@ const AppLayout: React.FC<any> = ({ children }) => {
           },
         })}
       >
-        
         <Container>
-       
-
           <Routes>
             <Route path="/" element={<PlaygroundContainer />} />
             <Route path="/products" element={<ProductsContainer />} />
             <Route path="/products/:id" element={<ManageProductsContainer />} />
             <Route path="/locations" element={<LocationsContainer />} />
-            <Route path="/cha" element={<ManageChaContainer/>} />
-            <Route path="/Shl" element={<ManageShlContainer/>} />
-            <Route path="/managePackaging" element={<ManagePackageContainer/>} />
-            <Route path="/Ofc" element={<ManageOfcContainer/>} />
-            <Route path="/transport" element={<ManageTransportContainer/>} />
-            <Route path="/pwipServices" element={<ManagePwipServicesContainer/>} />
-            <Route path="/others" element={<ManageOthersContainer/>} />
+            <Route path="/cha" element={<ManageChaContainer />} />
+            <Route path="/Shl" element={<ManageShlContainer />} />
+            <Route
+              path="/managePackaging"
+              element={<ManagePackageContainer />}
+            />
+            <Route path="/Ofc" element={<ManageOfcContainer />} />
+            <Route path="/transport" element={<ManageTransportContainer />} />
+            <Route
+              path="/pwipServices"
+              element={<ManagePwipServicesContainer />}
+            />
+            <Route path="/others" element={<ManageOthersContainer />} />
           </Routes>
-          
-
         </Container>
       </AppShell>
     </MantineProvider>
