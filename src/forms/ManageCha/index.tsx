@@ -3,12 +3,12 @@ import {
   Group,
   Button,
   NumberInput,
-  Select,
   Space,
   Grid,
   ActionIcon,
 } from "@mantine/core";
-import { Plus, Minus, Check } from "tabler-icons-react";
+import { Select } from "../../components";
+import { Minus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 
