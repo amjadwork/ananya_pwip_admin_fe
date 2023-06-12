@@ -267,22 +267,22 @@ function ManageProductsContainer(props:any) {
     handleGetProductData();
   };
 
-  // if (editModeActive) {
-  //   return (
-  //     <EditProductsContainer
-  //       editModeActive={editModeActive}
-  //       handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-  //       modalType={modalType}
-  //       modalOpen={modalOpen}
-  //       handleEditToUpdateAction={handleEditToUpdateAction}
-  //       productData={productData || null}
-  //       categoryData={categoryData}
-  //       handleRefreshCalls={handleRefreshCalls}
-  //       handleSaveCallback={handleGetProductData}
-  //       variantsData={variantsData}
-  //     />
-  //   );
-  // }
+  if (editModeActive) {
+    return (
+      <AddOrEditProductForm
+        editModeActive={editModeActive}
+        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
+        modalType={modalType}
+        modalOpen={modalOpen}
+        handleEditToUpdateAction={handleEditToUpdateAction}
+        productData={productData || null}
+        categoryData={categoryData}
+        handleRefreshCalls={handleRefreshCalls}
+        handleSaveCallback={handleGetProductData}
+        variantsData={variantsData}
+      />
+    );
+  }
 
   return (
     <PageWrapper
@@ -346,10 +346,11 @@ function ManageProductsContainer(props:any) {
       >
         <Group position="apart">
           <Title order={1}>{productData?.name || ""}</Title>
-          {/* <Badge size="lg" color="green" variant="light">
-            {productData?.status || ""}</Badge> */}
-             <Group spacing="md">
-            <Select
+          <Badge size="lg" color="green" variant="light">
+            {productData?.status || ""}</Badge>
+            {editModeActive && 
+            <Group spacing="md">
+             <Select
               placeholder="Status"
               data={[
                 { value: "live", label: "Live" },
@@ -362,14 +363,14 @@ function ManageProductsContainer(props:any) {
                 setStatus(value);
               }}
             />
-             <Button
+           <Button
               type="submit"
               leftIcon={<Plus size={14} />}
               onClick={() => setModalOpen(true)}
             >
               Add Variant
-            </Button>
-            </Group>
+             </Button>
+            </Group>}
         </Group>
       </Box>
 
