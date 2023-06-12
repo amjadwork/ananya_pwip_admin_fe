@@ -10,7 +10,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 
-import { useStyles } from "../../styles/components/header.style";
+import { useStyles } from "../../../styles/components/header.style";
 
 interface Props {
   title: string;

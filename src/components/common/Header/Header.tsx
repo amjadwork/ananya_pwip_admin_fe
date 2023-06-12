@@ -8,12 +8,11 @@ import {
   Burger,
   useMantineTheme,
 } from "@mantine/core";
-import { HeaderOptions } from "../../constants/header.constants";
+import { HeaderOptions } from "../../../constants/header.constants";
 import { useNavigate } from "react-router-dom";
 import { showNotification } from "@mantine/notifications";
 
-
-import { useStyles } from "../../styles/components/header.style";
+import { useStyles } from "../../../styles/components/header.style";
 
 interface Props {
   action?: any;
@@ -59,19 +58,18 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
               variant="outline"
               color="blue"
             >
-              <Text size="sm" color="blue" 
-               onClick={(
-
-               ) =>{
-                localStorage.removeItem("access_token"); 
-                Router('/')
-                showNotification({
-                  title: "Logged out succesfully",
-                   message: "",
-                  autoClose: 1500,
-                 }) 
-              }}
-
+              <Text
+                size="sm"
+                color="blue"
+                onClick={() => {
+                  localStorage.removeItem("access_token");
+                  Router("/");
+                  showNotification({
+                    title: "Logged out succesfully",
+                    message: "",
+                    autoClose: 1500,
+                  });
+                }}
               >
                 Logout
               </Text>
