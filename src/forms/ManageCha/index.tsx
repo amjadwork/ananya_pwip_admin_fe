@@ -5,7 +5,7 @@ import {
   NumberInput,
   Space,
   Grid,
-  ActionIcon,
+  ActionIcon, 
 } from "@mantine/core";
 import { Select } from "../../components";
 import { Minus } from "tabler-icons-react";
