@@ -14,10 +14,8 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
+import { Card as SectionCard} from "../../components/index";
 
-import {Card as SectionCard} from "../../components/index"
-
-// import EditChaContainer from "./EditCha/EditCha";
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";

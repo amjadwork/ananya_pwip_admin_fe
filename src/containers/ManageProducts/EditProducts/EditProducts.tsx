@@ -7,14 +7,14 @@ import {
   Popover,
   Text,
   Button,
-  Select,
   Space,
   Title,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
+import { Card as SectionCard, Select} from "../../../components/index";
+
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";

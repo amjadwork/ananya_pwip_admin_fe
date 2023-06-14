@@ -7,7 +7,7 @@ import APIRequest from "./../../helper/api";
 import { ErrorContext } from "./../../context/errorContext";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import Card from "../../components/common/Card";
+import {ProductCard as Card}from "../../components/index";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 import AddProductForm from "../../forms/Products/index";

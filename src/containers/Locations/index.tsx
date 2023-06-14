@@ -8,11 +8,11 @@ import {
   Button,
   Space,
   Title,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
+import { Card as SectionCard} from "../../components/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";

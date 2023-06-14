@@ -9,13 +9,12 @@ import {
   Button,
   Space,
   Title,
-  Badge,
-  Input,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import { Card as SectionCard, Input} from "../../components/index";
+
 
 import EditShlForm from "../../forms/ManageShl/index";
 

@@ -3,11 +3,11 @@ import {
   Group,
   Button,
   TextInput,
-  Select,
   Space,
   MultiSelect,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { Select } from "../../components";
 import { showNotification } from "@mantine/notifications";
 import { stateName } from "../../constants/state.constants";
 

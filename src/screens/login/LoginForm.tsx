@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Center, AspectRatio, Image, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Container } from "@mantine/core";
-import { TextInput, Grid, Box, Card } from "@mantine/core";
+import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Otp from "./Otp";
 import { Notification } from "@mantine/core";
 
 import { showNotification } from "@mantine/notifications";
+import { Card } from "../../components";
+
 import axios from "axios";
 
 import { useNavigate } from "react-router-dom";

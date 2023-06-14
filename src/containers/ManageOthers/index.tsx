@@ -9,13 +9,11 @@ import {
   Button,
   Space,
   Title,
-  Input,
-  Badge,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import { Card as SectionCard} from "../../components/index";
 
 import EditOthersContainer from "./EditOthers/EditOthers";
 

@@ -7,15 +7,14 @@ import {
   Popover,
   Text,
   Button,
-  Input,
   Space,
   Title,
-  Badge,
-  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import { Card as SectionCard , Input} from "../../components/index";
+
 
 import EditChaContainer from "./EditPwipService/EditPwipService";
 

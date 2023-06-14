@@ -2,19 +2,17 @@ import React, { useState, useEffect } from "react";
 import {
   Group,
   Button,
-  TextInput,
   NumberInput,
   Flex,
   Radio,
-  Box,
-  Select,
+  Box, 
   Space,
-  Card,
-  Input,
   Checkbox,
   Stepper,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
+import { Card, Select} from "../../components/index";
+
 import { useForm } from "@mantine/form";
 import { eceForm } from "../../constants/eceForm.constants";
 
@@ -586,7 +584,7 @@ const EceForm: any = (props: any) => {
                           placeholder={k.placeholder}
                           data={k.options || []}
                           name={k.name}
-                          onChange={(value) => onChangeHandler(k.name, value)}
+                          onChange={(value:any) => onChangeHandler(k.name, value)}
                           w="100%"
                           withAsterisk
                           // {...form.getInputProps(k.name)}
