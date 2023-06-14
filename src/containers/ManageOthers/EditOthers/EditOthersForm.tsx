@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import {
   Group,
-  Button,
   TextInput,
   NumberInput,
   Select,
   Space,
   ActionIcon,
 } from "@mantine/core";
-import { Plus, Minus, Check } from "tabler-icons-react";
-import { ArrowRightCircle } from "tabler-icons-react";
+import { Button } from "../../../components/index";
+// import { Plus, Minus, Check } from "tabler-icons-react";
+// import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { manageOthers } from "../../../constants/var.constants";

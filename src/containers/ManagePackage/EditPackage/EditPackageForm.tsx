@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Group,
-  Button,
   TextInput,
   NumberInput,
-  Select,
   Space,
 } from "@mantine/core";
-import { ArrowRightCircle } from "tabler-icons-react";
+import {Button, Select} from "../../../components/index"
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../../helper/api";

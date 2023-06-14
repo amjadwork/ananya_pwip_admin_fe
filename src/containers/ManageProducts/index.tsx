@@ -6,16 +6,14 @@ import {
   Group,
   Popover,
   Text,
-  Button,
   Space,
   Title,
-  Select,
   Badge,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import { Card as SectionCard} from "../../components/index";
+import { Card as SectionCard, Button, Select} from "../../components/index";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts/index";

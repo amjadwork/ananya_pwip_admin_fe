@@ -3,9 +3,10 @@ import ReactDOMServer from "react-dom/server";
 import { useDisclosure } from "@mantine/hooks";
 import {
   Modal,
-  Button,
   Flex,
 } from "@mantine/core";
+
+import {Button} from "../../components/index"
 // import { Pencil, X, Check,PlayerPlay} from "tabler-icons-react";
 
 import jsPDF from "jspdf";

@@ -6,14 +6,13 @@ import {
   Group,
   Popover,
   Text,
-  Button,
   Space,
   Title,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard} from "../../../components/index";
+import { Card as SectionCard, Button} from "../../../components/index";
 
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";

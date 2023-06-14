@@ -1,13 +1,14 @@
 import React from "react";
 
 import {
-  Button,
   Anchor,
   Text,
   MediaQuery,
   Burger,
   useMantineTheme,
 } from "@mantine/core";
+
+import Button from "../Button";
 import { HeaderOptions } from "../../../constants/header.constants";
 import { useNavigate } from "react-router-dom";
 import { showNotification } from "@mantine/notifications";

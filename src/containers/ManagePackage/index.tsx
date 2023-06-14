@@ -6,17 +6,13 @@ import {
   Group,
   Popover,
   Text,
-  Button,
   Space,
   Title,
-  Badge,
-  Input,
-  Card as SectionCard,
   List,
   ScrollArea,
-  Flex,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
+import {Card as SectionCard, Button, Input} from "../../components/index"
 
 
 

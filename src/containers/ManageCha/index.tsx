@@ -6,15 +6,13 @@ import {
   Group,
   Popover,
   Text,
-  Button,
-  Input,
   Space,
   Title,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard} from "../../components/index";
+import { Card as SectionCard, Button, Input} from "../../components/index";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
