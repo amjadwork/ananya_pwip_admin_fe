@@ -10,11 +10,8 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
-import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { managePwipService } from "../../../constants/var.constants";
-
 function EditPwipServiceForm(props: any) {
   const [categoriesValue, setCategoriesValue] = useState("");
   const [catUpdateValue, setCatUpdateValue] = useState("");

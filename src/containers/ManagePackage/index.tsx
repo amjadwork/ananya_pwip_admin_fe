@@ -2,17 +2,15 @@ import React, { useEffect } from "react";
 import {
   SimpleGrid,
   Box,
-  ActionIcon,
   Group,
   Popover,
-  Text,
   Space,
   Title,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import {Card as SectionCard, Button, Input} from "../../components/index"
+import {Card as SectionCard, Button, Input, ActionIcon, Text} from "../../components/index"
 
 
 

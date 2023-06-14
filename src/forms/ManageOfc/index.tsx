@@ -3,10 +3,9 @@ import {
   Group,
   NumberInput,
   Space,
-  ActionIcon,
   Grid,
 } from "@mantine/core";
-import {Select,Button} from "../../components/index"
+import {Select,Button,ActionIcon} from "../../components/index"
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";

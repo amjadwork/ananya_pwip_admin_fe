@@ -2,17 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
-  ActionIcon,
   Group,
   Popover,
-  Text,
   Space,
   Title,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus} from "tabler-icons-react";
-import { Card as SectionCard,Input, Button} from "../../components/index";
+import { Card as SectionCard,Input, Button, Text, ActionIcon} from "../../components/index";
 
 import EditTransportForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";

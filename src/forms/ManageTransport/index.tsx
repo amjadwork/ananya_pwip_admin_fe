@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import {
   Group,
-  Button,
   NumberInput,
-  Select,
   Space,
-  ActionIcon,
-} from "@mantine/core";
+} from "@mantine/core"; 
+import {Button, Select, ActionIcon} from "../../components/index"
 import { Plus, Minus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";

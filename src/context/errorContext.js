@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { Alert } from "@mantine/core";
+import { Alert } from "../components/index";
 
 export const ErrorContext = createContext();
 

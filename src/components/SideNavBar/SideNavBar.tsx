@@ -1,11 +1,8 @@
 import React from "react";
-// import { useRouter } from "next/router";
-
 import {
   Badge,
   UnstyledButton,
   ThemeIcon,
-  Text,
   useMantineTheme,
 } from "@mantine/core";
 import {
@@ -18,6 +15,7 @@ import {
   Star,
 } from "tabler-icons-react";
 
+import {Text} from "../../components/index"
 import { NavbarOptions } from "../../constants/sideNavBar.constants";
 import { useStyles } from "../../styles/components/sideNavBar.style";
 

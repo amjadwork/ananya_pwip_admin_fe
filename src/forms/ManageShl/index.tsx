@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import {
   Group,
-  Button,
   NumberInput,
-  Select,
   Space,
   Grid,
-  ActionIcon,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
+import { Button,Select,ActionIcon } from "../../components/index";
+
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 

@@ -1,13 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SimpleGrid, ActionIcon, Group } from "@mantine/core";
+import { SimpleGrid, Group } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
-import { Alert } from "@mantine/core";
 import APIRequest from "./../../helper/api";
 import { ErrorContext } from "./../../context/errorContext";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import {ProductCard as Card}from "../../components/index";
+import {ProductCard as Card, ActionIcon, Alert}from "../../components/index";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 import AddProductForm from "../../forms/Products/index";

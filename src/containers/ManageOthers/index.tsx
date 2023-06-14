@@ -2,17 +2,15 @@ import React from "react";
 import {
   SimpleGrid,
   Box,
-  ActionIcon,
   Group,
   Popover,
-  Text,
   Space,
   Title,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import { Card as SectionCard, Button} from "../../components/index";
+import { Card as SectionCard, Button, Text, ActionIcon} from "../../components/index";
 
 import EditOthersContainer from "./EditOthers/EditOthers";
 

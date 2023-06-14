@@ -3,11 +3,9 @@ import {
   Group,
   TextInput,
   NumberInput,
-  Select,
   Space,
-  ActionIcon,
 } from "@mantine/core";
-import { Button } from "../../../components/index";
+import { Button, Select, ActionIcon} from "../../../components/index";
 // import { Plus, Minus, Check } from "tabler-icons-react";
 // import { ArrowRightCircle } from "tabler-icons-react";
 import { useForm } from "@mantine/form";

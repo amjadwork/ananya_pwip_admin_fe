@@ -1,16 +1,12 @@
 import React from "react";
 
 import {
-  RadioProps,
-  Radio,
-  Text,
-  Breadcrumbs,
   Anchor,
   useMantineTheme,
 } from "@mantine/core";
 
 import { useStyles } from "../../styles/components/pageHeader.style";
-
+import {Radio,Text} from "../../components";
 interface Props {
   title?: string;
   label?: string;
@@ -61,7 +57,7 @@ const PageHeader: React.FC<Props> = ({
                     label={opt.label}
                     size="xs"
                     color="blue"
-                    onChange={(value) => {
+                    onChange={(value:any) => {
                       handleRadioChange(value, index);
                     }}
                     style={{

@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
-  ActionIcon,
   Group,
   Popover,
-  Text,
   Space,
   Title,
   Badge,
@@ -13,7 +11,7 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import { Card as SectionCard, Button, Select} from "../../components/index";
+import { Card as SectionCard, Button, Select, Text, ActionIcon} from "../../components/index";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts/index";

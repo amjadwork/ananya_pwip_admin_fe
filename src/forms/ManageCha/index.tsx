@@ -4,9 +4,8 @@ import {
   NumberInput,
   Space,
   Grid,
-  ActionIcon, 
 } from "@mantine/core";
-import { Select,Button } from "../../components/index";
+import { Select,Button,ActionIcon } from "../../components/index";
 import { Minus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";

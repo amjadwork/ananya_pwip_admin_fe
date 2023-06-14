@@ -2,14 +2,12 @@ import React, { useState, useRef } from "react";
 import {
   TextInput,
   Space,
-  ActionIcon,
   Group,
   Flex,
   Box,
-  Text,
 } from "@mantine/core";
 import { Plus, Minus, Check } from "tabler-icons-react";
-import {Button} from "../../components/index";
+import {Button, ActionIcon, Text} from "../../components/index";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
