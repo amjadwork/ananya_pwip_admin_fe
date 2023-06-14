@@ -24,7 +24,7 @@ import ManageTransportContainer from "../containers/ManageTransport";
 import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
 
-import Header from "../components/common/Header/Header";
+import Header from "../components/common/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 
 const AppLayout: React.FC<any> = ({ children }) => {
