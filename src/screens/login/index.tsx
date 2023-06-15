@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Center, AspectRatio, Image, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Container } from "@mantine/core";
@@ -17,8 +18,43 @@ import { useNavigate } from "react-router-dom";
 import { getValue } from "@testing-library/user-event/dist/utils";
 import { setConstantValue } from "typescript";
 
-const Login = () => {
+const LoginButton = () => {
+  const { loginWithRedirect } = useAuth0();
+
+  return (
+    <Button
+      radius="xl"
+      size="xs"
+      type="submit"
+      variant="outline"
+      onClick={() => loginWithRedirect()}
+    >
+      Login
+    </Button>
+  );
+};
+
+const LogoutButton = () => {
+  const { logout } = useAuth0();
+
+  return (
+    <Button
+      radius="xl"
+      size="xs"
+      type="submit"
+      variant="outline"
+      onClick={() =>
+        logout({ logoutParams: { returnTo: window.location.origin } })
+      }
+    >
+      Logout
+    </Button>
+  );
+};
+
+const LoginScreen = () => {
   const Router = useNavigate();
+  const { user, isAuthenticated, isLoading } = useAuth0();
 
   const [values, setValues] = useState("");
   // const [validation, setValidation] = useState(true);
@@ -98,7 +134,7 @@ const Login = () => {
               <Text>Login on EC Admin</Text>
             </Grid.Col>
             <Space h={80} />
-            <Grid.Col span={4} offset={4}>
+            {/* <Grid.Col span={4} offset={4}>
               <TextInput
                 placeholder="XXXXX-XXXXX"
                 label="Enter Mobile Number"
@@ -113,18 +149,10 @@ const Login = () => {
                 }}
                 // {...form.getInputProps(mobileNumber)}
               />
-            </Grid.Col>
+            </Grid.Col> */}
 
-            <Grid.Col span={2} offset={4}>
-              <Button
-                radius="xl"
-                size="xs"
-                type="submit"
-                variant="outline"
-                onClick={handleSubmit}
-              >
-                Request Otp
-              </Button>
+            <Grid.Col span={6} offset={5}>
+              {isAuthenticated ? <LogoutButton /> : <LoginButton />}
             </Grid.Col>
           </Grid>
         </Card>
@@ -133,4 +161,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginScreen;

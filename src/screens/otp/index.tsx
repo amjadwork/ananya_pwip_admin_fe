@@ -14,7 +14,7 @@ import axios from "axios";
 import { OutputFileType } from "typescript";
 // import { isDisabled } from "@testing-library/user-event/dist/utils";
 
-const Otp = (props: any) => {
+const OTPScreen = (props: any) => {
   const Router = useNavigate();
   const [timer, setTimer] = useState(60);
 
@@ -227,4 +227,4 @@ const Otp = (props: any) => {
   );
 };
 
-export default Otp;
+export default OTPScreen;
