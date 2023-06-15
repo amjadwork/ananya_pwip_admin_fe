@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Center, AspectRatio, Image, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Container } from "@mantine/core";
-import { TextInput, Grid, Box} from "@mantine/core";
+import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import DashboardScreen from "../dashboard";
@@ -14,7 +14,7 @@ import axios from "axios";
 import { OutputFileType } from "typescript";
 // import { isDisabled } from "@testing-library/user-event/dist/utils";
 
-const Otp = (props: any) => {
+const OTPScreen = (props: any) => {
   const Router = useNavigate();
   const [timer, setTimer] = useState(60);
 
@@ -227,4 +227,4 @@ const Otp = (props: any) => {
   );
 };
 
-export default Otp;
+export default OTPScreen;

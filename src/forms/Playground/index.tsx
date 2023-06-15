@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {
-  Group, 
+  Group,
   NumberInput,
-  Flex, 
-  Box, 
-  Space, 
+  Flex,
+  Box,
+  Space,
   Stepper,
-  Radio
+  Radio,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { Card, Select, Button, Checkbox} from "../../components/index";
+import { Card, Select, Button, Checkbox } from "../../components/index";
 import { useForm } from "@mantine/form";
 import { eceForm } from "../../constants/eceForm.constants";
 
@@ -226,7 +226,7 @@ const EceForm: any = (props: any) => {
   const handleGetLocationsData = async () => {
     const locationResponse: any = await APIRequest(`location`, "GET");
     if (locationResponse) {
-      setLocationList(locationResponse)
+      setLocationList(locationResponse);
 
       const formValues = [...initialFormValue].map((d: any) => {
         let obj = { ...d };
@@ -291,7 +291,6 @@ const EceForm: any = (props: any) => {
   const handleSubmit = (values: typeof form.values) => {
     const terms: string = values.shipmentTerms;
 
-
     setTerm(terms);
 
     let price: any = values.exMill;
@@ -354,13 +353,15 @@ const EceForm: any = (props: any) => {
       OriginalBLFee: values?.OriginalBLFee,
       MarginCost: values?.MarginCost,
       InsuranceCost: values?.InsuranceCost,
-      dollarPrice: values?.dollarPrice || intialFormValueState.initialValues.dollarPrice || 0,
+      dollarPrice:
+        values?.dollarPrice ||
+        intialFormValueState.initialValues.dollarPrice ||
+        0,
       containerWeight: values?.containerWeight,
-      bookingType: values?.bookingType
-    }
+      bookingType: values?.bookingType,
+    };
 
     console.log(values, displayData);
-
 
     handleExportPlayground({ ...displayData, total: totalsum });
   };
@@ -416,11 +417,11 @@ const EceForm: any = (props: any) => {
         let obj = { ...d };
         if (obj.name === "sourcingLocation") {
           obj.options = selectedVariant?.costing?.map((p: any) => ({
-            label: p?.regionName || '',
+            label: p?.regionName || "",
             value: p._id,
           }));
         }
-        
+
         return { ...obj };
       });
 
@@ -430,35 +431,44 @@ const EceForm: any = (props: any) => {
     if (name === "sourcingLocation") {
       const formValues = [...initialFormValue].map((d: any) => {
         let obj = { ...d };
-        if (obj.name === 'exMill') {
-          const selectedSource = selectedProductVariant?.costing?.find((f: any) => f?._id === value)
-          obj.value = selectedSource?.exMill
+        if (obj.name === "exMill") {
+          const selectedSource = selectedProductVariant?.costing?.find(
+            (f: any) => f?._id === value
+          );
+          obj.value = selectedSource?.exMill;
         }
-        
+
         return { ...obj };
       });
 
-      setIntialFormValueState({...obj, initialValues: {
-        ...obj.initialValues,
-        exMill: formValues[10].value
-      }})
+      setIntialFormValueState({
+        ...obj,
+        initialValues: {
+          ...obj.initialValues,
+          exMill: formValues[10].value,
+        },
+      });
       setInitialFormValue(formValues);
     }
 
     if (name === "destinationPort") {
       const formValues = [...initialFormValue].map((d: any) => {
         let obj = { ...d };
-        if (obj.name === 'originPort') {
-          const selectedDestination = locationList[0]?.destination?.find((f: any) => {
-
-            if(f?._id === value) {
-              return f
+        if (obj.name === "originPort") {
+          const selectedDestination = locationList[0]?.destination?.find(
+            (f: any) => {
+              if (f?._id === value) {
+                return f;
+              }
             }
-          })
+          );
 
-          obj.options = selectedDestination?.linkedOrigin.map((d: any) => ({label: d.originPortName, value: d._originId}))
+          obj.options = selectedDestination?.linkedOrigin.map((d: any) => ({
+            label: d.originPortName,
+            value: d._originId,
+          }));
         }
-        
+
         return { ...obj };
       });
       setInitialFormValue(formValues);
@@ -467,17 +477,20 @@ const EceForm: any = (props: any) => {
     if (name === "bagTypes") {
       const selectedBags = bagList.find((f: any) => f._id === value);
       setBagPrice(selectedBags.cost);
-      setIntialFormValueState({...obj, initialValues: {
-        ...obj.initialValues,
-        bagsCharges: selectedBags.cost
-      }})
+      setIntialFormValueState({
+        ...obj,
+        initialValues: {
+          ...obj.initialValues,
+          bagsCharges: selectedBags.cost,
+        },
+      });
 
       const formValues = [...initialFormValue].map((d: any) => {
         let obj = { ...d };
-        if (obj.name === 'bagsCharges') {
-          obj.value = parseFloat(selectedBags.cost)
+        if (obj.name === "bagsCharges") {
+          obj.value = parseFloat(selectedBags.cost);
         }
-        
+
         return { ...obj };
       });
 
@@ -496,7 +509,6 @@ const EceForm: any = (props: any) => {
     const slides = groupBy([...initialFormValue], "step");
     setPlaygroundSlidesData(slides);
   }, [initialFormValue]);
-
 
   return (
     <form
@@ -519,7 +531,7 @@ const EceForm: any = (props: any) => {
                 </Stepper.Completed>
               );
             }
-            return <Stepper.Step>Step {key}</.Step>;
+            return <Stepper.Step>Step {key}</Stepper.Step>;
           })}
       </Stepper>
       <Space h="xl" />
@@ -565,7 +577,7 @@ const EceForm: any = (props: any) => {
                           key={i}
                           label={k.label}
                           checked={checked}
-                          onChange={(event:any) =>
+                          onChange={(event: any) =>
                             setChecked(event.currentTarget.checked)
                           }
                           w="100%"
@@ -581,7 +593,9 @@ const EceForm: any = (props: any) => {
                           placeholder={k.placeholder}
                           data={k.options || []}
                           name={k.name}
-                          onChange={(value:any) => onChangeHandler(k.name, value)}
+                          onChange={(value: any) =>
+                            onChangeHandler(k.name, value)
+                          }
                           w="100%"
                           withAsterisk
                           // {...form.getInputProps(k.name)}
@@ -602,7 +616,12 @@ const EceForm: any = (props: any) => {
                     }
                     if (k.type === "radio") {
                       return (
-                        <Radio.Group label={k.label} key={k.label + i} w="100%" {...form.getInputProps(k.name)}>
+                        <Radio.Group
+                          label={k.label}
+                          key={k.label + i}
+                          w="100%"
+                          {...form.getInputProps(k.name)}
+                        >
                           {k &&
                             k.options?.map((d: any, i: number) => {
                               return (

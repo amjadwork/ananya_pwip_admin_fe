@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Center, AspectRatio, Image, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Container } from "@mantine/core";
 import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Otp from "./Otp";
+import Otp from "../otp";
 import { Notification } from "@mantine/core";
 
 import { showNotification } from "@mantine/notifications";
@@ -17,8 +18,43 @@ import { useNavigate } from "react-router-dom";
 import { getValue } from "@testing-library/user-event/dist/utils";
 import { setConstantValue } from "typescript";
 
-const Login = () => {
+const LoginButton = () => {
+  const { loginWithRedirect } = useAuth0();
+
+  return (
+    <Button
+      radius="xl"
+      size="xs"
+      type="submit"
+      variant="outline"
+      onClick={() => loginWithRedirect()}
+    >
+      Login
+    </Button>
+  );
+};
+
+const LogoutButton = () => {
+  const { logout } = useAuth0();
+
+  return (
+    <Button
+      radius="xl"
+      size="xs"
+      type="submit"
+      variant="outline"
+      onClick={() =>
+        logout({ logoutParams: { returnTo: window.location.origin } })
+      }
+    >
+      Logout
+    </Button>
+  );
+};
+
+const LoginScreen = () => {
   const Router = useNavigate();
+  const { user, isAuthenticated, isLoading } = useAuth0();
 
   const [values, setValues] = useState("");
   // const [validation, setValidation] = useState(true);
@@ -39,7 +75,7 @@ const Login = () => {
     },
   };
 
-   const form: any = useForm(initialFormState);
+  const form: any = useForm(initialFormState);
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.values) {
@@ -50,7 +86,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (e:React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("values", typeof values);
     console.log("creating payload");
@@ -58,8 +94,7 @@ const Login = () => {
       mobileNumber: values,
       userType: "admin",
     };
-    
-    
+
     console.log("hitting api");
     axios
       .post("https://uat.pwip.co/user/public/initiate/signin", payload)
@@ -67,16 +102,14 @@ const Login = () => {
         console.log(res);
         if (res.data.data.data.type === "success") {
           console.log(res);
-         
+
           showNotification({
-              title: "OTP sent succesfully",
-               message: "",
-              autoClose: 1000,
-             })
-            
-            Router('/otp');
-          
-         
+            title: "OTP sent succesfully",
+            message: "",
+            autoClose: 1000,
+          });
+
+          Router("/otp");
         }
       })
       .catch((error) => {
@@ -101,14 +134,14 @@ const Login = () => {
               <Text>Login on EC Admin</Text>
             </Grid.Col>
             <Space h={80} />
-            <Grid.Col span={4} offset={4}>
+            {/* <Grid.Col span={4} offset={4}>
               <TextInput
                 placeholder="XXXXX-XXXXX"
                 label="Enter Mobile Number"
                 type="number"
                 size="md"
                 radius="lg"
-                error={values.length > 10|| values.length <10}
+                error={values.length > 10 || values.length < 10}
                 onChange={(e) => {
                   // console.log("enter mobileNumber" , e.target.value);
                   setValues(e.target.value);
@@ -116,18 +149,10 @@ const Login = () => {
                 }}
                 // {...form.getInputProps(mobileNumber)}
               />
-            </Grid.Col>
+            </Grid.Col> */}
 
-            <Grid.Col span={2} offset={4}>
-              <Button
-                radius="xl"
-                size="xs"
-                type="submit"
-                variant="outline"
-                onClick={handleSubmit}
-              >
-                Request Otp
-              </Button>
+            <Grid.Col span={6} offset={5}>
+              {isAuthenticated ? <LogoutButton /> : <LoginButton />}
             </Grid.Col>
           </Grid>
         </Card>
@@ -136,4 +161,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginScreen;

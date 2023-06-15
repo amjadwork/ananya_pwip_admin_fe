@@ -15,8 +15,8 @@ import {
   Star,
 } from "tabler-icons-react";
 
-import {Text} from "../../components/index"
-import { NavbarOptions } from "../../constants/sideNavBar.constants";
+import { Text } from "../../components/index";
+import { NavbarOptions } from "../../constants/sideNavBarOptions.constants";
 import { useStyles } from "../../styles/components/sideNavBar.style";
 
 interface Props {
