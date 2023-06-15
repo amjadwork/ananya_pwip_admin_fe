@@ -5,10 +5,11 @@ import {
   Flex, 
   Box, 
   Space, 
+  Stepper,
+  Radio
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { Card, Select, Button, Radio, Checkbox, Stepper} from "../../components/index";
-
+import { Card, Select, Button, Checkbox} from "../../components/index";
 import { useForm } from "@mantine/form";
 import { eceForm } from "../../constants/eceForm.constants";
 
@@ -518,7 +519,7 @@ const EceForm: any = (props: any) => {
                 </Stepper.Completed>
               );
             }
-            return <Stepper.Step>Step {key}</Stepper.Step>;
+            return <Stepper.Step>Step {key}</.Step>;
           })}
       </Stepper>
       <Space h="xl" />
@@ -564,7 +565,7 @@ const EceForm: any = (props: any) => {
                           key={i}
                           label={k.label}
                           checked={checked}
-                          onChange={(event) =>
+                          onChange={(event:any) =>
                             setChecked(event.currentTarget.checked)
                           }
                           w="100%"
