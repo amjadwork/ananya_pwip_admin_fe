@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Center, AspectRatio, Image, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Container } from "@mantine/core";
-import { TextInput, Grid, Box} from "@mantine/core";
+import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import DashboardScreen from "../dashboard";

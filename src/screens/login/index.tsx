@@ -5,7 +5,7 @@ import { Container } from "@mantine/core";
 import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Otp from "./Otp";
+import Otp from "../otp";
 import { Notification } from "@mantine/core";
 
 import { showNotification } from "@mantine/notifications";
@@ -39,7 +39,7 @@ const Login = () => {
     },
   };
 
-   const form: any = useForm(initialFormState);
+  const form: any = useForm(initialFormState);
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.values) {
@@ -50,7 +50,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (e:React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("values", typeof values);
     console.log("creating payload");
@@ -58,8 +58,7 @@ const Login = () => {
       mobileNumber: values,
       userType: "admin",
     };
-    
-    
+
     console.log("hitting api");
     axios
       .post("https://uat.pwip.co/user/public/initiate/signin", payload)
@@ -67,16 +66,14 @@ const Login = () => {
         console.log(res);
         if (res.data.data.data.type === "success") {
           console.log(res);
-         
+
           showNotification({
-              title: "OTP sent succesfully",
-               message: "",
-              autoClose: 1000,
-             })
-            
-            Router('/otp');
-          
-         
+            title: "OTP sent succesfully",
+            message: "",
+            autoClose: 1000,
+          });
+
+          Router("/otp");
         }
       })
       .catch((error) => {
@@ -108,7 +105,7 @@ const Login = () => {
                 type="number"
                 size="md"
                 radius="lg"
-                error={values.length > 10|| values.length <10}
+                error={values.length > 10 || values.length < 10}
                 onChange={(e) => {
                   // console.log("enter mobileNumber" , e.target.value);
                   setValues(e.target.value);
