@@ -24,6 +24,7 @@ root.render(
         clientId={REACT_APP_AUTH0_CLIENT_ID}
         authorizationParams={{
           redirect_uri: window?.location?.origin || "http://localhost:3000/",
+          display: "popup",
         }}
       >
         <App />
