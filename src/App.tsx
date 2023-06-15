@@ -5,7 +5,6 @@ import "./App.css";
 
 import DashboardScreen from "./screens/dashboard";
 import LoginScreen from "./screens/login";
-import OTPScreen from "./screens/otp";
 
 let root = "/admin/dashboard";
 
@@ -16,7 +15,6 @@ function App() {
     <Router basename={basename}>
       <Routes>
         <Route path="/" element={<LoginScreen />} />
-        <Route path="/otp" element={<OTPScreen />} />
         <Route path={`${root}/*`} element={<DashboardScreen />} />
       </Routes>
     </Router>
