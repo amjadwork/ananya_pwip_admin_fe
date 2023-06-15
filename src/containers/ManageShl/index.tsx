@@ -208,9 +208,9 @@ console.log("abc",regionList);
 
   const handleUpdateShlUIData = (formData: any) => {
     setShlAPIPayload({ ...formData });
-    let chaArr: any = [...shlData];
+    let shlArr: any = [...shlData];
 
-    chaArr = chaArr.map((d: any) => {
+    shlArr = shlArr.map((d: any) => {
       if (formData._originPortId === d._originId) {
         return {
           ...d,
@@ -222,7 +222,7 @@ console.log("abc",regionList);
       };
     });
 
-    setShlData(() => [...chaArr]);
+    setShlData(() => [...shlArr]);
   };
 
   const handleSaveAction = async () => {

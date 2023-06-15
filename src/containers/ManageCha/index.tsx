@@ -60,7 +60,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme) => ({
+            sx={(theme:any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -321,7 +321,7 @@ function ManageChaContainer() {
       modalSize="70%"
     >
       <Box
-        sx={(theme) => ({
+        sx={(theme:any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -378,7 +378,7 @@ function ManageChaContainer() {
                     return (
                       <Box
                         key={i}
-                        sx={(theme) => ({
+                        sx={(theme:any) => ({
                           display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"

@@ -72,7 +72,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme) => ({
+            sx={(theme:any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -325,7 +325,7 @@ function ManageProductsContainer(props:any) {
       modalSize="70%"
     >
       <Box
-        sx={(theme) => ({
+        sx={(theme:any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -395,7 +395,7 @@ function ManageProductsContainer(props:any) {
                       return (
                         <Box
                           key={i}
-                          sx={(theme) => ({
+                          sx={(theme:any) => ({
                             display: "block",
                             backgroundColor:
                               theme.colorScheme === "dark"
@@ -422,7 +422,7 @@ function ManageProductsContainer(props:any) {
                             {d.name}{" "}
                             <Text
                               size="sm"
-                              sx={(theme) => ({
+                              sx={(theme:any) => ({
                                 color: theme.colors.dark[1],
                               })}
                             >

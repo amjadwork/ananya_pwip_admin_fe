@@ -66,7 +66,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme) => ({
+            sx={(theme:any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -211,7 +211,7 @@ function ManagePackageContainer() {
       )}
     >
       <Box
-        sx={(theme) => ({
+        sx={(theme:any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -255,7 +255,7 @@ function ManagePackageContainer() {
                   {cat.list.map((d: any, i: number) => (
                     <Box
                       key={i}
-                      sx={(theme) => ({
+                      sx={(theme:any) => ({
                         display: "block",
                         backgroundColor:
                           theme.colorScheme === "dark"
@@ -284,7 +284,7 @@ function ManagePackageContainer() {
                           <Text
                             size="sm"
                             weight="normal"
-                            sx={(theme) => ({
+                            sx={(theme:any) => ({
                               color: theme.colors.dark[1],
                             })}
                           >

@@ -230,9 +230,9 @@ function ManageTransportContainer() {
     // console.log(formData)
     setTransportAPIPayload({ ...formData });
   
-    let chaArr: any = [...transportData];
+    let transportArr: any = [...transportData];
 
-    const arr = chaArr.map((d: any) => {
+    const arr = transportArr.map((d: any) => {
       if (d?._originPortId === formData?._originPortId) {
         return {
           ...d,

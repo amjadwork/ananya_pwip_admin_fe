@@ -225,9 +225,9 @@ function ManageOfcContainer() {
 
   const handleUpdateOfcUIData = (formData: any) => {
     setOfcAPIPayload({ ...formData });
-    let chaArr: any = [...ofcData];
+    let ofcArr: any = [...ofcData];
 
-    chaArr = chaArr.map((d: any) => {
+    ofcArr = ofcArr.map((d: any) => {
       if (formData._originPortId === d._originId) {
         return {
           ...d,
@@ -239,7 +239,7 @@ function ManageOfcContainer() {
       };
     });
 
-    setOfcData(() => [...chaArr]);
+    setOfcData(() => [...ofcArr]);
   };
 
   const handleSaveAction = async () => {
