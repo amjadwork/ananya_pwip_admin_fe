@@ -1,24 +1,24 @@
 import APIRequest from "../../../helper/api";
 
 export const getOfcData = async (regionList: any) => {
-  const ofcResponse: any = await APIRequest("ofc", "GET");
-  return ofcResponse;
+  const response: any = await APIRequest("ofc", "GET");
+  return response;
 };
 
 export const getRegionSource = async () => {
-  const regionResponse = await APIRequest("location?filterType=origin", "GET");
-  return regionResponse;
+  const response = await APIRequest("location?filterType=origin", "GET");
+  return response;
 };
 
 export const getDestinationData = async () => {
-  const destinationDataResponse = await APIRequest(
+  const response = await APIRequest(
     "location?filterType=destination",
     "GET"
   );
-  return destinationDataResponse;
+  return response;
 };
 
 export const postOfcData = async (ofcAPIPayload: any) => {
-  const ofcResponse = await APIRequest("ofc", "POST", ofcAPIPayload);
-  return ofcResponse;
+  const response = await APIRequest("ofc", "POST", ofcAPIPayload);
+  return response;
 };

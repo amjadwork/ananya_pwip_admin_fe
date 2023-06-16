@@ -1,24 +1,24 @@
 import APIRequest from "../../../helper/api";
 
 export const getShlData = async (regionList: any) => {
-  const shlResponse: any = await APIRequest("shl", "GET");
-  return shlResponse;
+  const response: any = await APIRequest("shl", "GET");
+  return response;
 };
 
 export const getRegionSource = async () => {
-  const regionResponse = await APIRequest("location?filterType=origin", "GET");
-  return regionResponse;
+  const response = await APIRequest("location?filterType=origin", "GET");
+  return response;
 };
 
 export const getDestinationData = async () => {
-  const destinationDataResponse = await APIRequest(
+  const response = await APIRequest(
     "location?filterType=destination",
     "GET"
   );
-  return destinationDataResponse;
+  return response;
 };
 
 export const postShlData = async (shlAPIPayload: any) => {
-  const shlResponse = await APIRequest("shl", "POST", shlAPIPayload);
-  return shlResponse;
+  const response = await APIRequest("shl", "POST", shlAPIPayload);
+  return response;
 };

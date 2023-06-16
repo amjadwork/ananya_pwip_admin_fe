@@ -1,36 +1,36 @@
 import APIRequest from "../../../helper/api";
 
 export const getLocationData = async () => {
-  const locationResponse: any = await APIRequest("location", "GET");
-  return locationResponse;
+  const response: any = await APIRequest("location", "GET");
+  return response;
 };
 
 export const submitLocationData = async (payload: any) => {
-  const addLocationResponse: any = await APIRequest(
+  const response: any = await APIRequest(
     "location",
     "POST",
     payload
   );
-  return addLocationResponse;
+  return response;
 };
 
 //get list of destination
 export const getDestinationData = async () => {
-  const destinationDataResponse = await APIRequest(
+  const response = await APIRequest(
     "location?filterType=destination",
     "GET"
   );
-  return destinationDataResponse;
+  return response;
 };
 
 //to get list of Origin
 export const getOriginData = async () => {
-  const originDataResponse = await APIRequest("location?filterType=origin", "GET");
-  return originDataResponse;
+  const response = await APIRequest("location?filterType=origin", "GET");
+  return response;
 };
 
 //to get list of source
 export const getSourceData = async () => {
-  const sourceDataResponse = await APIRequest("location?filterType=source", "GET");
-  return sourceDataResponse;
+  const response = await APIRequest("location?filterType=source", "GET");
+  return response;
 };
