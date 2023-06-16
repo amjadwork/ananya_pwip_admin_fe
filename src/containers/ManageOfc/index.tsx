@@ -11,14 +11,25 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, Plus, X, Check } from "tabler-icons-react";
-import { Card as SectionCard, Input, Button, Text, ActionIcon} from "../../components/index";
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditOfcForm from "../../forms/ManageOfc/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import {getDestinationData, getOfcData,getRegionSource, postOfcData} from "../../services/ManageOfc"
+import {
+  getDestinationData,
+  getOfcData,
+  getRegionSource,
+  postOfcData,
+} from "../../services/export-costing/OFC";
 
 const RenderPageHeader = (props: any) => {
   return (
@@ -134,7 +145,7 @@ const RenderModalContent = (props: any) => {
       handleUpdateOfcUIData={handleUpdateOfcUIData}
     />
   );
-}; 
+};
 
 function ManageOfcContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
@@ -155,34 +166,34 @@ function ManageOfcContainer() {
   };
 
   const getOFCList = async (regionList: any) => {
-    const ofcResponse= await getOfcData(regionList)
-  try{
-    if (ofcResponse) {
-      console.log(regionList)
-      let array: any = regionList?.map((item: any) => {
-        let destinationArr: any = [];
-        let originIdStringArr: any = [];
+    const ofcResponse = await getOfcData(regionList);
+    try {
+      if (ofcResponse) {
+        console.log(regionList);
+        let array: any = regionList?.map((item: any) => {
+          let destinationArr: any = [];
+          let originIdStringArr: any = [];
 
-        ofcResponse.forEach((region: any) => {
-          if (item._originId === region._originPortId) {
-            destinationArr.push(region.destinations);
-            originIdStringArr.push(region._originId);
-          }
+          ofcResponse.forEach((region: any) => {
+            if (item._originId === region._originPortId) {
+              destinationArr.push(region.destinations);
+              originIdStringArr.push(region._originId);
+            }
+          });
+
+          return {
+            ...item,
+            list: originIdStringArr.includes(item._originPortId)
+              ? destinationArr.flat(1)
+              : [],
+          };
         });
 
-        return {
-          ...item,
-          list: originIdStringArr.includes(item._originPortId)
-            ? destinationArr.flat(1)
-            : [],
-        };
-      });
-
-      setOfcData(() => [...array]);
+        setOfcData(() => [...array]);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch(error){
-    console.log(error)
-  }
   };
 
   const handleEditAction = (bool: boolean) => {
@@ -196,7 +207,7 @@ function ManageOfcContainer() {
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource()
+    const regionResponse = await getRegionSource();
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -240,13 +251,13 @@ function ManageOfcContainer() {
   };
 
   const handleSaveAction = async () => {
-    if(ofcAPIPayload){
-    const ofcResponse = await postOfcData(ofcAPIPayload)
+    if (ofcAPIPayload) {
+      const ofcResponse = await postOfcData(ofcAPIPayload);
 
-    if (ofcResponse) {
-      handleGetRegionSource()
+      if (ofcResponse) {
+        handleGetRegionSource();
+      }
     }
-  }
   };
 
   const handleSave = (bool: boolean) => {
@@ -254,7 +265,7 @@ function ManageOfcContainer() {
   };
 
   const handleGetDestination = async () => {
-    const destinationResponse = await getDestinationData()
+    const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(
@@ -285,14 +296,14 @@ function ManageOfcContainer() {
         />
       )}
       PageAction={() => (
-        <RenderPageAction   
-          handleActionClick={() => setModalOpen(true)}   
+        <RenderPageAction
+          handleActionClick={() => setModalOpen(true)}
           editModeActive={editModeActive}
           handleEditAction={handleSave}
           handleSaveAction={handleSaveAction}
         />
       )}
-        modalOpen={modalOpen}
+      modalOpen={modalOpen}
       modalTitle={
         modalType === "edit" ? "Add OFC Charges" : "Update OFC Charges"
       }
@@ -341,15 +352,17 @@ function ManageOfcContainer() {
         <Group position="apart">
           <Title order={1}>OFC Charges</Title>
           <Group spacing="md">
-          <Input placeholder="Search" />
-         {editModeActive && <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add
-            </Button>}
-            </Group>
+            <Input placeholder="Search" />
+            {editModeActive && (
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add
+              </Button>
+            )}
+          </Group>
         </Group>
       </Box>
 

@@ -9,14 +9,25 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check, Plus} from "tabler-icons-react";
-import { Card as SectionCard,Input, Button, Text, ActionIcon} from "../../components/index";
+import { Pencil, X, Check, Plus } from "tabler-icons-react";
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditTransportForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import { getOriginData, getSourceData, getTransportData, postTransportData } from "../../services/ManageTransport";
+import {
+  getOriginData,
+  getSourceData,
+  getTransportData,
+  postTransportData,
+} from "../../services/export-costing/Transport";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -147,10 +158,8 @@ function ManageTransportContainer() {
   const [originSelectOptions, setOriginSelectOptions] = React.useState<any>([]);
   const [transportAPIPayload, setTransportAPIPayload] =
     React.useState<any>(null);
-  const[ originList , setOriginList] = useState<any>([]);
-  const[ sourceList , setSourceList] = useState<any>([]);
-
-
+  const [originList, setOriginList] = useState<any>([]);
+  const [sourceList, setSourceList] = useState<any>([]);
 
   const handleRefetchTransportList = (transportPostResponse: any) => {
     if (transportPostResponse) {
@@ -160,12 +169,11 @@ function ManageTransportContainer() {
   };
 
   const getTransportList = async () => {
-    const transportResponse: any = await getTransportData()
+    const transportResponse: any = await getTransportData();
     if (transportResponse) {
       setTransportData(() => [...transportResponse]);
     }
   };
-
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
@@ -178,10 +186,10 @@ function ManageTransportContainer() {
   };
 
   const handleGetSource = async () => {
-    const sourceResponse = await getSourceData()
+    const sourceResponse = await getSourceData();
 
-    console.log("sourceResponse", sourceResponse[0])
-    setSourceList(sourceResponse[0].source)
+    console.log("sourceResponse", sourceResponse[0]);
+    setSourceList(sourceResponse[0].source);
 
     if (sourceResponse) {
       const sourceOptions = sourceResponse[0].source.map((d: any) => {
@@ -193,16 +201,15 @@ function ManageTransportContainer() {
       setSourceSelectOptions(() => [...sourceOptions]);
       getTransportList();
     }
-  }; 
-   console.log("sourceList", sourceList);
-   console.log("sourceSelectOption",sourceSelectOptions);
+  };
+  console.log("sourceList", sourceList);
+  console.log("sourceSelectOption", sourceSelectOptions);
 
-  
-  const handleGetOrigin= async () => {
-    const originResponse = await getOriginData()
+  const handleGetOrigin = async () => {
+    const originResponse = await getOriginData();
 
-     console.log("originResponse", originResponse[0])
-     setOriginList(originResponse[0].origin)
+    console.log("originResponse", originResponse[0]);
+    setOriginList(originResponse[0].origin);
     if (originResponse) {
       const regionOptions = originResponse[0].origin.map((d: any) => {
         return {
@@ -218,7 +225,7 @@ function ManageTransportContainer() {
   const handleUpdateTransportUIData = (formData: any) => {
     // console.log(formData)
     setTransportAPIPayload({ ...formData });
-  
+
     let transportArr: any = [...transportData];
 
     const arr = transportArr.map((d: any) => {
@@ -241,27 +248,25 @@ function ManageTransportContainer() {
   };
 
   const handleSaveAction = async () => {
-    if(transportAPIPayload){
-    const transportResponse = await postTransportData(transportAPIPayload)
-    console.log("transportAPIload", transportAPIPayload);
-    if(transportResponse){
-      handleGetSource();
-      handleGetOrigin()
+    if (transportAPIPayload) {
+      const transportResponse = await postTransportData(transportAPIPayload);
+      console.log("transportAPIload", transportAPIPayload);
+      if (transportResponse) {
+        handleGetSource();
+        handleGetOrigin();
+      }
     }
-  }
-};
-  useEffect(()=>{
-    console.log("sourceList",sourceList)
-  },[sourceList])
+  };
+  useEffect(() => {
+    console.log("sourceList", sourceList);
+  }, [sourceList]);
 
   React.useEffect(() => {
     handleGetSource();
     handleGetOrigin();
   }, []);
 
-
   const compareArr = transportData.map((d: any) => d._originPortId);
-
 
   return (
     <PageWrapper
@@ -294,7 +299,7 @@ function ManageTransportContainer() {
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
               sourceSelectOptions={sourceSelectOptions}
-              originSelectOptions={originSelectOptions}            
+              originSelectOptions={originSelectOptions}
               handleUpdateTransportUIData={handleUpdateTransportUIData}
             />
           );
@@ -332,15 +337,17 @@ function ManageTransportContainer() {
         <Group position="apart">
           <Title order={1}>Transportation Charges</Title>
           <Group spacing="md">
-          <Input placeholder="Search" />
-         {editModeActive && <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add
-            </Button>}
-            </Group>
+            <Input placeholder="Search" />
+            {editModeActive && (
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add
+              </Button>
+            )}
+          </Group>
         </Group>
       </Box>
 
@@ -363,47 +370,53 @@ function ManageTransportContainer() {
                 style={{ maxHeight: 380, height: 360 }}
               >
                 <List type="ordered" spacing="lg">
-                {transportData?.map((data: any) => {
-                  if(data._originPortId === list._id) {
-                    return data?.sourceLocations?.map((d: any, i: number) =>{ 
-                    return(
-                    <Box
-                      key={i}
-                      sx={(theme) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
+                  {transportData?.map((data: any) => {
+                    if (data._originPortId === list._id) {
+                      return data?.sourceLocations?.map((d: any, i: number) => {
+                        return (
+                          <Box
+                            key={i}
+                            sx={(theme) => ({
+                              display: "block",
+                              backgroundColor:
+                                theme.colorScheme === "dark"
+                                  ? theme.colors.dark[6]
+                                  : "#fff",
+                              color:
+                                theme.colorScheme === "dark"
+                                  ? theme.colors.dark[4]
+                                  : theme.colors.dark[7],
+                              textAlign: "left",
+                              padding: theme.spacing.md,
+                              borderRadius: theme.radius.md,
+                              cursor: "default",
 
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item style={{ fontWeight: "500" }}>
-                      {sourceList.find((sourceData:any)=>sourceData._id === d._sourcePortId
-               )?.region} -{" "}
-                        <span style={{ fontWeight: "800" }}>
-                          INR {d.transportationCharge}
-                        </span>
-                      </List.Item>
-                    </Box>
-                  )})}
-                })}
-          </List>
-
+                              "&:hover": {
+                                backgroundColor:
+                                  theme.colorScheme === "dark"
+                                    ? theme.colors.dark[5]
+                                    : theme.colors.gray[1],
+                              },
+                            })}
+                          >
+                            <List.Item style={{ fontWeight: "500" }}>
+                              {
+                                sourceList.find(
+                                  (sourceData: any) =>
+                                    sourceData._id === d._sourcePortId
+                                )?.region
+                              }{" "}
+                              -{" "}
+                              <span style={{ fontWeight: "800" }}>
+                                INR {d.transportationCharge}
+                              </span>
+                            </List.Item>
+                          </Box>
+                        );
+                      });
+                    }
+                  })}
+                </List>
               </ScrollArea>
             </SectionCard>
           );
@@ -412,7 +425,5 @@ function ManageTransportContainer() {
     </PageWrapper>
   );
 }
-
-
 
 export default ManageTransportContainer;

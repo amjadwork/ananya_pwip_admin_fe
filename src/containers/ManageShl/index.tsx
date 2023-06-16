@@ -10,14 +10,24 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import { Card as SectionCard, Input, Button,Text, ActionIcon} from "../../components/index";
-
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditShlForm from "../../forms/ManageShl/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { getDestinationData, getRegionSource, getShlData, postShlData } from "../../services/ManageShl";
+import {
+  getDestinationData,
+  getRegionSource,
+  getShlData,
+  postShlData,
+} from "../../services/export-costing/SHL";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -138,8 +148,6 @@ const RenderModalContent = (props: any) => {
   );
 };
 
-
-
 function ManageShlContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -159,8 +167,8 @@ function ManageShlContainer() {
   };
 
   const getSHLList = async (regionList: any) => {
-    const shlResponse: any = await getShlData(regionList)
-console.log("abc",regionList);
+    const shlResponse: any = await getShlData(regionList);
+    console.log("abc", regionList);
     if (shlResponse) {
       let array: any = regionList.map((item: any) => {
         let destinationArr: any = [];
@@ -200,7 +208,7 @@ console.log("abc",regionList);
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource()
+    const regionResponse = await getRegionSource();
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -244,8 +252,7 @@ console.log("abc",regionList);
   };
 
   const handleSaveAction = async () => {
-
-    const shlResponse = await postShlData(shlAPIPayload)
+    const shlResponse = await postShlData(shlAPIPayload);
     if (shlResponse) {
       //
     }
@@ -366,7 +373,7 @@ console.log("abc",regionList);
 
       <SimpleGrid cols={2}>
         {shlData.map((item: any, index: number) => {
-          console.log(item)
+          console.log(item);
           return (
             <SectionCard
               key={index}

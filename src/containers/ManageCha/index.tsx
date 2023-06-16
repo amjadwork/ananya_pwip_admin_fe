@@ -10,13 +10,24 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Button, Input, ActionIcon,Text} from "../../components/index";
+import {
+  Card as SectionCard,
+  Button,
+  Input,
+  ActionIcon,
+  Text,
+} from "../../components/index";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import {getChaData, getDestinationData, getRegionSource, postChaData} from "../../services/ManageCha"
+import {
+  getChaData,
+  getDestinationData,
+  getRegionSource,
+  postChaData,
+} from "../../services/export-costing/CHA";
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage CHA Charges" />;
@@ -60,7 +71,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -126,7 +137,6 @@ const RenderModalContent = (props: any) => {
   );
 };
 
-
 function ManageChaContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -139,7 +149,7 @@ function ManageChaContainer() {
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
 
-//What does this below function do? Is it necessary? #askSwain
+  //What does this below function do? Is it necessary? #askSwain
   const handleRefetchChaList = (chaPostResponse: any) => {
     if (chaPostResponse) {
       handleGetRegionSource();
@@ -148,21 +158,21 @@ function ManageChaContainer() {
   };
 
   const getCHAList = async (regionList: any) => {
-    const chaDataResponse: any= await getChaData(regionList)
+    const chaDataResponse: any = await getChaData(regionList);
     try {
       if (chaDataResponse) {
-        console.log(regionList)
+        console.log(regionList);
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
-  
+
           chaDataResponse.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
             }
           });
-  
+
           return {
             ...item,
             list: originIdStringArr.includes(item._originPortId)
@@ -170,11 +180,11 @@ function ManageChaContainer() {
               : [],
           };
         });
-  
+
         setChaData(() => [...array]);
-      }  
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -189,7 +199,7 @@ function ManageChaContainer() {
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource()
+    const regionResponse = await getRegionSource();
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -233,13 +243,13 @@ function ManageChaContainer() {
   };
 
   const handleSaveAction = async () => {
-    if(chaAPIPayload){
-    const chaResponse = await postChaData(chaAPIPayload)
-    
-    if (chaResponse) {
-      handleGetRegionSource()
+    if (chaAPIPayload) {
+      const chaResponse = await postChaData(chaAPIPayload);
+
+      if (chaResponse) {
+        handleGetRegionSource();
+      }
     }
-  }
   };
 
   const handleSave = (bool: boolean) => {
@@ -247,7 +257,7 @@ function ManageChaContainer() {
   };
 
   const handleGetDestination = async () => {
-    const destinationResponse = await getDestinationData()
+    const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(
@@ -315,7 +325,7 @@ function ManageChaContainer() {
       modalSize="70%"
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -335,13 +345,15 @@ function ManageChaContainer() {
           <Title order={1}>CHA Charges</Title>
           <Group spacing="md">
             <Input placeholder="Search" />
-            {editModeActive && <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add
-            </Button>}
+            {editModeActive && (
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add
+              </Button>
+            )}
           </Group>
         </Group>
       </Box>
@@ -372,7 +384,7 @@ function ManageChaContainer() {
                     return (
                       <Box
                         key={i}
-                        sx={(theme:any) => ({
+                        sx={(theme: any) => ({
                           display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
@@ -411,7 +423,7 @@ function ManageChaContainer() {
         })}
       </SimpleGrid>
     </PageWrapper>
-  )
+  );
 }
 
 export default ManageChaContainer;
