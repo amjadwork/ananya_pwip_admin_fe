@@ -28,6 +28,7 @@ import {
   getRegionSource,
   postShlData,
 } from "../../services/export-costing/SHL";
+import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage SHL Charges" />;
@@ -40,7 +41,7 @@ const RenderPageAction = (props: any) => {
 
   if (editModeActive) {
     return (
-      <Group position="right" spacing="md">
+      <Group position="right" spacing="md" >
         <ActionIcon
           variant="filled"
           color="gray"
@@ -51,11 +52,12 @@ const RenderPageAction = (props: any) => {
         >
           <X size={16} />
         </ActionIcon>
+        
 
         <Popover
-          width={250}
+          width={200}
           trapFocus
-          position="bottom-end"
+          position="bottom"
           withArrow
           shadow="md"
         >
@@ -70,14 +72,14 @@ const RenderPageAction = (props: any) => {
               <Check size={16} />
             </ActionIcon>
           </Popover.Target>
-          <Popover.Dropdown
+          <Popover.Dropdown 
             sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
                   : theme.white,
-            })}
-          >
+            }) 
+        } >
             <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
