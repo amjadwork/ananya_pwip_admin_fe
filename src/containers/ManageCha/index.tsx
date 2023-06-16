@@ -143,7 +143,6 @@ function ManageChaContainer() {
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [chaData, setChaData] = React.useState<any>([]);
-  // const [tempChaArray, setTempChaArray] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
@@ -235,7 +234,7 @@ function ManageChaContainer() {
         };
       }
       return {
-        ...d,
+       ...d,
       };
     });
 

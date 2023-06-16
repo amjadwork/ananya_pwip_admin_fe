@@ -81,7 +81,7 @@ const RenderPageAction = (props: any) => {
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes</Text>
+            <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
