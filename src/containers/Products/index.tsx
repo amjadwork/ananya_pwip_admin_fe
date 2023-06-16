@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { SimpleGrid, Group } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
-import APIRequest from "./../../helper/api";
-import { ErrorContext } from "./../../context/errorContext";
 
+import { ErrorContext } from "./../../context/errorContext";
+import {getProductData} from "../../services/export-costing/Products"
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import {ProductCard as Card, ActionIcon, Alert}from "../../components/index";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -74,7 +74,7 @@ function ProductsContainer() {
   }, []);
 
   const handleGetData = async () => {
-    const productResponse: any = await APIRequest("product", "GET");
+    const productResponse: any = await getProductData()
     if (productResponse) {
       setProductList(productResponse);
     }

@@ -16,7 +16,7 @@ import { Card as SectionCard, Select, Button, Text, ActionIcon} from "../../../c
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
-import AddOrEditProductForm from "./AddOrEditProductForm";
+import AddOrEditProductForm from "../../../forms/ManageProducts";
 import APIRequest from "./../../../helper/api";
 
 const RenderPageHeader = () => {
