@@ -2,25 +2,25 @@ import React, { useEffect, useState } from "react";
 import {
   SimpleGrid,
   Box,
+  ActionIcon,
   Group,
   Popover,
+  Text,
+  Button,
   Space,
   Title,
   Badge,
+  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import { Card as SectionCard, Button, Select, Text, ActionIcon} from "../../components/index";
+import { Pencil, X, Check } from "tabler-icons-react";
+import APIRequest from "./../../helper/api";
 
-import { getSpecificCategoryData, getSpecificProductData, getSpecificVariantData, putProductData } from "../../services/export-costing/Products";
-import { getSourceData } from "../../services/export-costing/Locations";
-import AddOrEditProductForm from "../../forms/ManageProducts/index";
-// import EditProductsContainer from "./EditProducts/EditProducts";
+import EditProductsContainer from "./EditProducts/EditProducts";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-
 
 const RenderPageHeader = () => {
   return (
@@ -74,14 +74,14 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
+            <Text size="sm">Are you sure you want to save the changes</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
@@ -126,73 +126,25 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-
-const RenderModalContent = (props: any) => {
-  const handleCloseModal = props.handleCloseModal;
-  const categoryData = props.categoryData;
-  const handleSaveCallback = props.handleSaveCallback;
-  const variantsData = props.variantsData;
-
-  let regionCostingList: any = [];
-
-  if (variantsData) {
-    regionCostingList = [...variantsData.costing];
-  }
-
-  return (
-    <AddOrEditProductForm
-      handleCloseModal={handleCloseModal}
-      categoryData={categoryData}
-      handleSaveCallback={handleSaveCallback}
-      regionCostingList={regionCostingList}
-      variantsData={variantsData}
-    />
-  );
-};
-
-function ManageProductsContainer(props:any) {
+function ManageProductsContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
-  const [productData, setProductData] = useState<any>("");
+  const [productData, setProductData] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
-  const[ sourceList , setSourceList] = useState<any>([]);
-  const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
-
-  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<any>(productData.status || "");
-  const [selectedVariantData, setSelectedVariantData] =
-  React.useState<any>(null);
-
-
 
   useEffect(() => {
     handleGetProductData();
-    handleGetSource();
   }, []);
-
-  const handleSave = async (bool: boolean) => {
-    const payload = {
-      name: productData.name,
-      image: productData.image,
-      status: status,
-    };
-
-    const updateStatusResponse = await putProductData(payload,productData)
-
-
-    if (updateStatusResponse) {
-      handleRefreshCalls();
-      handleEditAction(bool);
-    }
-  };
 
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
 
-    const productDetailResponse: any = await getSpecificProductData(productId)
-
+    const productDetailResponse: any = await APIRequest(
+      `product/${productId}`,
+      "GET"
+    );
     if (productDetailResponse) {
       setProductData(productDetailResponse);
       handleGetCategoryData(productDetailResponse._id);
@@ -202,8 +154,10 @@ function ManageProductsContainer(props:any) {
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
 
-    const categoryDetailResponse: any = await getSpecificCategoryData(productId)
-
+    const categoryDetailResponse: any = await APIRequest(
+      `category?_productId=${productId}`,
+      "GET"
+    );
     if (categoryDetailResponse) {
       setCategoryData(categoryDetailResponse[0].category || []);
       const categoryIdArr = categoryDetailResponse[0].category.map(
@@ -216,30 +170,16 @@ function ManageProductsContainer(props:any) {
   const handleGetVariantData = async (ids: Array<[]>) => {
     const categoryIds = ids;
 
-    const variantResponse: any = await getSpecificVariantData(categoryIds)
-
+    const variantResponse: any = await APIRequest(
+      `variant?_categoryId=${categoryIds}`,
+      "GET"
+    );
     if (variantResponse) {
       setVariantsData(variantResponse);
       handleEditAction(false);
     }
   };
 
-  const handleGetSource = async () => {
-    const sourceResponse = await getSourceData()
-
-    console.log("sourceResponse", sourceResponse[0])
-    setSourceList(sourceResponse[0].source)
-
-    if (sourceResponse) {
-      const sourceOptions = sourceResponse[0].source.map((d: any) => {
-        return {
-          label: d.region,
-          value: d._id,
-        };
-      });
-      setSourceSelectOptions(() => [...sourceOptions]);
-    }
-  }; 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -256,7 +196,7 @@ function ManageProductsContainer(props:any) {
 
   if (editModeActive) {
     return (
-      <AddOrEditProductForm
+      <EditProductsContainer
         editModeActive={editModeActive}
         handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
         modalType={modalType}
@@ -277,45 +217,13 @@ function ManageProductsContainer(props:any) {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleSave}
+          handleEditAction={handleEditAction}
           editModeActive={editModeActive}
-          handleSaveAction={handleSave}
-
         />
       )}
-      modalOpen={modalOpen || updateModalOpen}
-      modalTitle={
-        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
-      }
-      onModalClose={() => {
-        setModalOpen(false);
-        setUpdateModalOpen(false);
-        setSelectedVariantData(null);
-      }}
-      ModalContent={() => {
-        if (modalType === "edit" && !updateModalOpen) {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              categoryData={categoryData}
-            />
-          );
-        }
-
-        if (updateModalOpen && selectedVariantData) {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
-              categoryData={categoryData}
-              variantsData={selectedVariantData}
-            />
-          );
-        }
-      }}
-      modalSize="70%"
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -334,30 +242,8 @@ function ManageProductsContainer(props:any) {
         <Group position="apart">
           <Title order={1}>{productData?.name || ""}</Title>
           <Badge size="lg" color="green" variant="light">
-            {productData?.status || ""}</Badge>
-            {editModeActive && 
-            <Group spacing="md">
-             <Select
-              placeholder="Status"
-              data={[
-                { value: "live", label: "Live" },
-                { value: "pending", label: "Pending" },
-                { value: "disabled", label: "Disabled" },
-                { value: "review", label: "Review" },
-              ]}
-              defaultValue={productData?.status || "Select status"}
-              onChange={(value: any) => {
-                setStatus(value);
-              }}
-            />
-           <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add Variant
-             </Button>
-            </Group>}
+            {productData?.status || ""}
+          </Badge>
         </Group>
       </Box>
 
@@ -385,7 +271,7 @@ function ManageProductsContainer(props:any) {
                       return (
                         <Box
                           key={i}
-                          sx={(theme:any) => ({
+                          sx={(theme) => ({
                             display: "block",
                             backgroundColor:
                               theme.colorScheme === "dark"
@@ -412,7 +298,7 @@ function ManageProductsContainer(props:any) {
                             {d.name}{" "}
                             <Text
                               size="sm"
-                              sx={(theme:any) => ({
+                              sx={(theme) => ({
                                 color: theme.colors.dark[1],
                               })}
                             >
