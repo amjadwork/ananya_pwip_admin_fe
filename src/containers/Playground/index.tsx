@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import ReactDOMServer from "react-dom/server";
-import { useDisclosure } from "@mantine/hooks";
-import {
-  Modal,
-  Flex,
-} from "@mantine/core";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import {Button} from "../../components/index"
+import { useDisclosure } from "@mantine/hooks";
+import { Modal, Flex } from "@mantine/core";
+
+import { Button } from "../../components/index";
 // import { Pencil, X, Check,PlayerPlay} from "tabler-icons-react";
 
 import jsPDF from "jspdf";
@@ -24,7 +23,7 @@ const RenderPageHeader = (props: any) => {
   return <PageHeader title="Playground" />;
 };
 
-function PlaygroundContainer() {
+function PlaygroundContainer(props: any) {
   const [opened, { open, close }] = useDisclosure(false);
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
@@ -133,4 +132,24 @@ function PlaygroundContainer() {
   );
 }
 
-export default PlaygroundContainer;
+const mapStateToProps = (state: any) => {
+  return {
+    state: {
+      user: state.userData.user,
+    },
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  ...bindActionCreators(
+    {
+      // action will go here
+    },
+    dispatch
+  ),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PlaygroundContainer);

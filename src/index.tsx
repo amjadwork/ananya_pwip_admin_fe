@@ -1,11 +1,14 @@
 import React from "react";
+import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { MantineProvider } from "@mantine/core";
-import { NotificationsProvider } from "@mantine/notifications";
+
+import { store } from "./redux/store";
 
 const REACT_APP_AUTH0_DOMAIN: string = process.env
   .REACT_APP_AUTH0_DOMAIN as string;
@@ -17,21 +20,22 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <MantineProvider withNormalizeCSS withGlobalStyles>
-    <NotificationsProvider position="bottom-center">
-      <Auth0Provider
-        domain={REACT_APP_AUTH0_DOMAIN}
-        clientId={REACT_APP_AUTH0_CLIENT_ID}
-        authorizationParams={{
-          redirect_uri: window?.location?.origin || "http://localhost:3000/",
-          display: "popup",
-        }}
-      >
-        <App />
-      </Auth0Provider>
-      ,
-    </NotificationsProvider>
-  </MantineProvider>
+  <Provider store={store}>
+    <MantineProvider withNormalizeCSS withGlobalStyles>
+      <NotificationsProvider position="bottom-center">
+        <Auth0Provider
+          domain={REACT_APP_AUTH0_DOMAIN}
+          clientId={REACT_APP_AUTH0_CLIENT_ID}
+          authorizationParams={{
+            redirect_uri: window?.location?.origin || "http://localhost:3000/",
+            display: "popup",
+          }}
+        >
+          <App />
+        </Auth0Provider>
+      </NotificationsProvider>
+    </MantineProvider>
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
