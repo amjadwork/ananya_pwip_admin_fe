@@ -1,24 +1,24 @@
 import APIRequest from "../../../helper/api";
 
 export const getChaData = async (regionList: any) => {
-  const chaDataResponse: any = await APIRequest("cha", "GET");
-  return chaDataResponse;
+  const response: any = await APIRequest("cha", "GET");
+  return response;
 };
 
 export const getDestinationData = async () => {
-  const destinationDataResponse = await APIRequest(
+  const response = await APIRequest(
     "location?filterType=destination",
     "GET"
   );
-  return destinationDataResponse;
+  return response;
 };
 
 export const getRegionSource = async () => {
-  const regionResponse = await APIRequest("location?filterType=origin", "GET");
-  return regionResponse;
+  const response = await APIRequest("location?filterType=origin", "GET");
+  return response;
 };
 
 export const postChaData = async (chaAPIPayload: any) => {
-  const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
-  return chaResponse;
+  const response = await APIRequest("cha", "POST", chaAPIPayload);
+  return response;
 };

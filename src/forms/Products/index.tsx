@@ -10,7 +10,7 @@ import { Plus, Minus, Check } from "tabler-icons-react";
 import {Button, ActionIcon, Text} from "../../components/index";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import APIRequest from "../../helper/api";
+import { postCategoryData, postProductData } from "../../services/export-costing/Products";
 
 function AddProductForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
@@ -80,7 +80,7 @@ function AddProductForm(props: any) {
       status: "live",
     };
 
-    const addProductResponse = await APIRequest("product", "POST", payload);
+    const addProductResponse = await postProductData(payload)
 
     if (addProductResponse) {
       const payloadCategory = {
@@ -88,11 +88,8 @@ function AddProductForm(props: any) {
         category: categoriesList,
       };
 
-      const addCategoryResponse = await APIRequest(
-        "category",
-        "POST",
-        payloadCategory
-      );
+      const addCategoryResponse = await postCategoryData(payloadCategory)
+
       if (addCategoryResponse) {
         handleCloseModal(false);
       }

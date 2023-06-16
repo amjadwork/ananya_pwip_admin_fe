@@ -9,39 +9,29 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check } from "tabler-icons-react";
+import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
   Card as SectionCard,
-  Input,
   Button,
-  Text,
+  Input,
   ActionIcon,
+  Text,
 } from "../../components/index";
 
 import EditShlForm from "../../forms/ManageShl/index";
-
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+
 import {
+  getShlData,
   getDestinationData,
   getRegionSource,
-  getShlData,
   postShlData,
 } from "../../services/export-costing/SHL";
+import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
-  return (
-    <PageHeader
-      title="Manage Shipping Line Locals Charges"
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
-    />
-  );
+  return <PageHeader title="Manage SHL Charges" />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -51,7 +41,7 @@ const RenderPageAction = (props: any) => {
 
   if (editModeActive) {
     return (
-      <Group position="right" spacing="md">
+      <Group position="right" spacing="md" >
         <ActionIcon
           variant="filled"
           color="gray"
@@ -62,11 +52,12 @@ const RenderPageAction = (props: any) => {
         >
           <X size={16} />
         </ActionIcon>
+        
 
         <Popover
-          width={250}
+          width={200}
           trapFocus
-          position="bottom-end"
+          position="bottom"
           withArrow
           shadow="md"
         >
@@ -81,15 +72,15 @@ const RenderPageAction = (props: any) => {
               <Check size={16} />
             </ActionIcon>
           </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme) => ({
+          <Popover.Dropdown 
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
                   : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes</Text>
+            }) 
+        } >
+            <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button
@@ -159,47 +150,48 @@ function ManageShlContainer() {
     React.useState<any>([]);
   const [shlAPIPayload, setShlAPIPayload] = React.useState<any>(null);
 
-  const handleRefetchShlList = (chaPostResponse: any) => {
-    if (chaPostResponse) {
+  //What does this below function do? Is it necessary? #askSwain
+  const handleRefetchShlList = (shlPostResponse: any) => {
+    if (shlPostResponse) {
       handleGetRegionSource();
-      getSHLList(chaPostResponse);
+      getSHLList(shlPostResponse);
     }
   };
 
   const getSHLList = async (regionList: any) => {
-    const shlResponse: any = await getShlData(regionList);
-    console.log("abc", regionList);
-    if (shlResponse) {
-      let array: any = regionList.map((item: any) => {
-        let destinationArr: any = [];
-        let originIdStringArr: any = [];
+    const shlDataResponse: any = await getShlData(regionList);
+    try {
+      if (shlDataResponse) {
+        console.log(regionList);
+        let array: any = regionList?.map((item: any) => {
+          let destinationArr: any = [];
+          let originIdStringArr: any = [];
 
-        shlResponse.forEach((region: any) => {
-          if (item._originId === region._originPortId) {
-            destinationArr.push(region.destinations);
-            originIdStringArr.push(region._originId);
-          }
+          shlDataResponse.forEach((region: any) => {
+            if (item._originId === region._originPortId) {
+              destinationArr.push(region.destinations);
+              originIdStringArr.push(region._originId);
+            }
+          });
+
+          return {
+            ...item,
+            list: originIdStringArr.includes(item._originPortId)
+              ? destinationArr.flat(1)
+              : [],
+          };
         });
 
-        return {
-          ...item,
-          list: originIdStringArr.includes(item._originPortId)
-            ? destinationArr.flat(1)
-            : [],
-        };
-      });
-
-      setShlData(() => [...array]);
+        setShlData(() => [...array]);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
-  };
-
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
   };
 
   const handleEditToUpdateAction = () => {
@@ -252,10 +244,17 @@ function ManageShlContainer() {
   };
 
   const handleSaveAction = async () => {
-    const shlResponse = await postShlData(shlAPIPayload);
-    if (shlResponse) {
-      //
+    if (shlAPIPayload) {
+      const shlResponse = await postShlData(shlAPIPayload);
+
+      if (shlResponse) {
+        handleGetRegionSource();
+      }
     }
+  };
+
+  const handleSave = (bool: boolean) => {
+    handleEditAction(bool);
   };
 
   const handleGetDestination = async () => {
@@ -279,24 +278,6 @@ function ManageShlContainer() {
     handleGetRegionSource();
   }, []);
 
-  if (editModeActive) {
-    return (
-      <EditShlForm
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        regionSelectOptions={regionSelectOptions}
-        destinationSelectOptions={destinationSelectOptions}
-        shlData={shlData}
-        handleUpdateShlUIData={handleUpdateShlUIData}
-        shlAPIPayload={shlAPIPayload}
-        handleRefetchShlList={handleRefetchShlList}
-      />
-    );
-  }
-
   return (
     <PageWrapper
       PageHeader={() => (
@@ -310,23 +291,21 @@ function ManageShlContainer() {
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
+          editModeActive={editModeActive}
           handleEditAction={handleSave}
           handleSaveAction={handleSaveAction}
-          editModeActive={editModeActive}
         />
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit"
-          ? "Add Shipping Line Local Charges"
-          : "Update Shipping Line Local Charges"
+        modalType === "edit" ? "Add SHL Charges" : "Update SHL Charges"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
           return (
             <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               regionSelectOptions={regionSelectOptions}
               destinationSelectOptions={destinationSelectOptions}
               handleUpdateShlUIData={handleUpdateShlUIData}
@@ -337,7 +316,7 @@ function ManageShlContainer() {
         if (modalType === "update") {
           return (
             <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               regionSelectOptions={regionSelectOptions}
               destinationSelectOptions={destinationSelectOptions}
             />
@@ -347,7 +326,7 @@ function ManageShlContainer() {
       modalSize="70%"
     >
       <Box
-        sx={(theme) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -365,7 +344,18 @@ function ManageShlContainer() {
       >
         <Group position="apart">
           <Title order={1}>Shipping Line Locals Charges</Title>
-          <Input placeholder="Search" />
+          <Group spacing="md">
+            <Input placeholder="Search" />
+            {editModeActive && (
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add
+              </Button>
+            )}
+          </Group>
         </Group>
       </Box>
 
@@ -373,7 +363,6 @@ function ManageShlContainer() {
 
       <SimpleGrid cols={2}>
         {shlData.map((item: any, index: number) => {
-          console.log(item);
           return (
             <SectionCard
               key={index}
@@ -390,13 +379,13 @@ function ManageShlContainer() {
               >
                 <List type="ordered" spacing="lg">
                   {item?.list?.map((d: any, i: number) => {
-                    const destinationName = destinationSelectOptions?.find(
+                    const destinationName = destinationSelectOptions.find(
                       (f: any) => f.value === d._destinationPortId
                     )?.label;
                     return (
                       <Box
                         key={i}
-                        sx={(theme) => ({
+                        sx={(theme: any) => ({
                           display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"

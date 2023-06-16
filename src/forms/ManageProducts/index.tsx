@@ -10,7 +10,8 @@ import { Minus, Check, Plus } from "tabler-icons-react";
 import { Button,Select,ActionIcon } from "../../components/index";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import APIRequest from "../../helper/api";
+import { getSourceData } from "../../services/export-costing/Locations";
+import { postVariantData, getProductData } from "../../services/export-costing/Products";
 
 function AddOrEditProductForm(props: any) {
   const inputRef: any = useRef(null);
@@ -41,13 +42,10 @@ function AddOrEditProductForm(props: any) {
   });
 
   const handleGetRegions: any = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
+    const sourceResponse= await getSourceData()
 
-    if (regionResponse) {
-      const options: any = regionResponse[0].source.map((d: any) => ({
+    if (sourceResponse) {
+      const options: any = sourceResponse[0].source.map((d: any) => ({
         label: d.region,
         value: d._id,
       }));
@@ -108,7 +106,7 @@ function AddOrEditProductForm(props: any) {
 
     const payload = { ...obj };
 
-    const addVariantResponse = await APIRequest("variant", "POST", payload);
+    const addVariantResponse = await postVariantData(payload)
 
     if (addVariantResponse) {
       handleCloseModal(false);
