@@ -13,12 +13,14 @@ import {
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
 import { Card as SectionCard, Button, Select, Text, ActionIcon} from "../../components/index";
 
-import APIRequest from "./../../helper/api";
+import { getSpecificCategoryData, getSpecificProductData, getSpecificVariantData, putProductData } from "../../services/export-costing/Products";
+import { getSourceData } from "../../services/export-costing/Locations";
 import AddOrEditProductForm from "../../forms/ManageProducts/index";
 // import EditProductsContainer from "./EditProducts/EditProducts";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+
 
 const RenderPageHeader = () => {
   return (
@@ -177,11 +179,7 @@ function ManageProductsContainer(props:any) {
       status: status,
     };
 
-    const updateStatusResponse = await APIRequest(
-      `product/${productData._id}`,
-      "PUT",
-      payload
-    );
+    const updateStatusResponse = await putProductData(payload,productData)
 
 
     if (updateStatusResponse) {
@@ -193,10 +191,8 @@ function ManageProductsContainer(props:any) {
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
 
-    const productDetailResponse: any = await APIRequest(
-      `product/${productId}`,
-      "GET"
-    );
+    const productDetailResponse: any = await getSpecificProductData(productId)
+
     if (productDetailResponse) {
       setProductData(productDetailResponse);
       handleGetCategoryData(productDetailResponse._id);
@@ -206,10 +202,8 @@ function ManageProductsContainer(props:any) {
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
 
-    const categoryDetailResponse: any = await APIRequest(
-      `category?_productId=${productId}`,
-      "GET"
-    );
+    const categoryDetailResponse: any = await getSpecificCategoryData(productId)
+
     if (categoryDetailResponse) {
       setCategoryData(categoryDetailResponse[0].category || []);
       const categoryIdArr = categoryDetailResponse[0].category.map(
@@ -222,10 +216,8 @@ function ManageProductsContainer(props:any) {
   const handleGetVariantData = async (ids: Array<[]>) => {
     const categoryIds = ids;
 
-    const variantResponse: any = await APIRequest(
-      `variant?_categoryId=${categoryIds}`,
-      "GET"
-    );
+    const variantResponse: any = await getSpecificVariantData(categoryIds)
+
     if (variantResponse) {
       setVariantsData(variantResponse);
       handleEditAction(false);
@@ -233,10 +225,8 @@ function ManageProductsContainer(props:any) {
   };
 
   const handleGetSource = async () => {
-    const sourceResponse = await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
+    const sourceResponse = await getSourceData()
+
     console.log("sourceResponse", sourceResponse[0])
     setSourceList(sourceResponse[0].source)
 
