@@ -16,7 +16,7 @@ import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-import APIRequest from "../../helper/api";
+import {getChaData, getDestinationData, getRegionSource, postChaData} from "../../services/ManageCha"
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage CHA Charges" />;
@@ -148,15 +148,15 @@ function ManageChaContainer() {
   };
 
   const getCHAList = async (regionList: any) => {
-    const chaResponse: any = await APIRequest("cha", "GET");
+    const chaDataResponse: any= await getChaData(regionList)
     try {
-      if (chaResponse) {
+      if (chaDataResponse) {
         console.log(regionList)
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
   
-          chaResponse.forEach((region: any) => {
+          chaDataResponse.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
@@ -189,10 +189,7 @@ function ManageChaContainer() {
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
+    const regionResponse = await getRegionSource()
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -237,7 +234,7 @@ function ManageChaContainer() {
 
   const handleSaveAction = async () => {
     if(chaAPIPayload){
-    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+    const chaResponse = await postChaData(chaAPIPayload)
     
     if (chaResponse) {
       handleGetRegionSource()
@@ -250,10 +247,7 @@ function ManageChaContainer() {
   };
 
   const handleGetDestination = async () => {
-    const destinationResponse = await APIRequest(
-      "location?filterType=destination",
-      "GET"
-    );
+    const destinationResponse = await getDestinationData()
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(

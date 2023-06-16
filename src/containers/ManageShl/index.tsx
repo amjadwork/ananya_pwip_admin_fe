@@ -17,8 +17,7 @@ import EditShlForm from "../../forms/ManageShl/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-
-import APIRequest from "../../helper/api";
+import { getDestinationData, getRegionSource, getShlData, postShlData } from "../../services/ManageShl";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -123,6 +122,24 @@ const RenderPageAction = (props: any) => {
   );
 };
 
+const RenderModalContent = (props: any) => {
+  const handleCloseModal = props.handleCloseModal;
+  const regionSelectOptions = props.regionSelectOptions;
+  const destinationSelectOptions = props.destinationSelectOptions;
+  const handleUpdateShlUIData = props.handleUpdateShlUIData;
+
+  return (
+    <EditShlForm
+      handleCloseModal={handleCloseModal}
+      regionSelectOptions={regionSelectOptions}
+      destinationSelectOptions={destinationSelectOptions}
+      handleUpdateShlUIData={handleUpdateShlUIData}
+    />
+  );
+};
+
+
+
 function ManageShlContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -142,7 +159,7 @@ function ManageShlContainer() {
   };
 
   const getSHLList = async (regionList: any) => {
-    const shlResponse: any = await APIRequest("shl", "GET");
+    const shlResponse: any = await getShlData(regionList)
 console.log("abc",regionList);
     if (shlResponse) {
       let array: any = regionList.map((item: any) => {
@@ -173,16 +190,17 @@ console.log("abc",regionList);
     setModalType("edit");
   };
 
+  const handleSave = (bool: boolean) => {
+    handleEditAction(bool);
+  };
+
   const handleEditToUpdateAction = () => {
     setModalType("update");
     setModalOpen(true);
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
+    const regionResponse = await getRegionSource()
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -226,18 +244,15 @@ console.log("abc",regionList);
   };
 
   const handleSaveAction = async () => {
-    const shlResponse = await APIRequest("cha", "POST", shlAPIPayload);
 
+    const shlResponse = await postShlData(shlAPIPayload)
     if (shlResponse) {
       //
     }
   };
 
   const handleGetDestination = async () => {
-    const destinationResponse = await APIRequest(
-      "location?filterType=destination",
-      "GET"
-    );
+    const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(
@@ -288,10 +303,41 @@ console.log("abc",regionList);
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
+          handleEditAction={handleSave}
+          handleSaveAction={handleSaveAction}
           editModeActive={editModeActive}
         />
       )}
+      modalOpen={modalOpen}
+      modalTitle={
+        modalType === "edit"
+          ? "Add Shipping Line Local Charges"
+          : "Update Shipping Line Local Charges"
+      }
+      onModalClose={() => setModalOpen(false)}
+      ModalContent={() => {
+        if (modalType === "edit") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+              handleUpdateShlUIData={handleUpdateShlUIData}
+            />
+          );
+        }
+
+        if (modalType === "update") {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              regionSelectOptions={regionSelectOptions}
+              destinationSelectOptions={destinationSelectOptions}
+            />
+          );
+        }
+      }}
+      modalSize="70%"
     >
       <Box
         sx={(theme) => ({

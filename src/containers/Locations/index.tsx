@@ -10,12 +10,12 @@ import {
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import { Card as SectionCard, Button, ActionIcon, Text} from "../../components/index";
-
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import EditLocationFormContainer from "../../forms/Location/index";
 
-import APIRequest from "./../../helper/api";
+import { getLocationData, submitLocationData } from "../../services/Locations";
+
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage Locations" />;
@@ -158,11 +158,8 @@ function LocationsContainer() {
   };
 
   const submitLocation = async (payload: any) => {
-    const addLocationResponse: any = await APIRequest(
-      "location",
-      "POST",
-      payload
-    );
+
+    const addLocationResponse = await submitLocationData(payload)
 
     if (addLocationResponse) {
       getLocations();
@@ -170,8 +167,7 @@ function LocationsContainer() {
   };
 
   const getLocations = async () => {
-    const locationResponse: any = await APIRequest("location", "GET");
-
+    const locationResponse = await getLocationData()
     if (locationResponse) {
       setLocationData({
         source: locationResponse[0].source || [],
