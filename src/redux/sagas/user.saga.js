@@ -3,7 +3,6 @@ import { put, takeEvery } from "redux-saga/effects";
 import { types as userTypes } from "../ducks/user";
 
 function* willSetUserData(action) {
-  console.log(action);
   yield put({
     type: userTypes.SET_USER_DATA,
     user: action.user,

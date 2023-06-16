@@ -24,7 +24,6 @@ const RenderPageHeader = (props: any) => {
 };
 
 function PlaygroundContainer(props: any) {
-  console.log(props);
   const [opened, { open, close }] = useDisclosure(false);
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
