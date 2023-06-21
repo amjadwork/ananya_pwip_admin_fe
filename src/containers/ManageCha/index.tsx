@@ -1,29 +1,16 @@
 import React from "react";
-import {
-  Group,
-  Popover,
-  Space,
-} from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Button,
-  ActionIcon,
-  Text,
-} from "../../components/index";
+
+import {Group,Popover,Space} from "@mantine/core";
+import {Pencil,X,Check} from "tabler-icons-react";
+import {Button,ActionIcon,Text} from "../../components/index";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import PageLabel from "../../components/PageLabel/PageLabel";
-import ModalContent from "../../components/CardModal/CardModal";
-
-import {
-  getChaData,
-  getDestinationData,
-  getRegionSource,
-  postChaData,
-} from "../../services/export-costing/CHA";
 import CardModal from "../../components/CardModal/CardModal";
+
+import {getChaData,getDestinationData,getRegionSource,postChaData} from "../../services/export-costing/CHA";
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage CHA Charges" />;

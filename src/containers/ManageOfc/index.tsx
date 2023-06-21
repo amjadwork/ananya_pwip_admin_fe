@@ -1,37 +1,16 @@
 import React from "react";
-import {
-  SimpleGrid,
-  Box,
-  Group,
-  Popover,
-  Space,
-  Title,
-  Badge,
-  List,
-  ScrollArea,
-} from "@mantine/core";
-import { Pencil, Plus, X, Check } from "tabler-icons-react";
-import {
-  Card as SectionCard,
-  Input,
-  Button,
-  Text,
-  ActionIcon,
-} from "../../components/index";
+
+import {Group,Popover,Space} from "@mantine/core";
+import {Pencil,X,Check} from "tabler-icons-react";
+import {Button,Text,ActionIcon} from "../../components/index";
 
 import EditOfcForm from "../../forms/ManageOfc/index";
-
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import PageLabel from "../../components/PageLabel/PageLabel"
 import CardModal from "../../components/CardModal/CardModal"
 
-import {
-  getDestinationData,
-  getOfcData,
-  getRegionSource,
-  postOfcData,
-} from "../../services/export-costing/OFC";
+import {getDestinationData,getOfcData,getRegionSource,postOfcData} from "../../services/export-costing/OFC";
 
 const RenderPageHeader = (props: any) => {
   return (
@@ -349,7 +328,7 @@ function ManageOfcContainer() {
       dataCopy={dataCopy}
       destinationSelectOptions={destinationSelectOptions}
       />
-      
+
     </PageWrapper>
   );
 }
