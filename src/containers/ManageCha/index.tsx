@@ -324,6 +324,7 @@ function ManageChaContainer() {
       modalSize="70%"
     >
 <PageLabel
+title="CHA Charges"
 editModeActive={editModeActive}
 setModalOpen={setModalOpen}
 />
