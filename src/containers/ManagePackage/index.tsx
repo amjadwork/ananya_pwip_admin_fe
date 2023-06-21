@@ -18,6 +18,7 @@ import EditPackageContainer from "./EditPackage/EditPackage";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
 import APIRequest from "../../helper/api";
 
@@ -210,28 +211,13 @@ function ManagePackageContainer() {
         />
       )}
     >
-      <Box
-        sx={(theme:any) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>Manage Packaging</Title>
-          <Input placeholder="Search" />
-        </Group>
-      </Box>
+     
+     <PageLabel
+        title="Packaging Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
+      
 
       <Space h="lg" />
 

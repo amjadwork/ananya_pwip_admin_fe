@@ -23,6 +23,7 @@ import EditOfcForm from "../../forms/ManageOfc/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel"
 
 import {
   getDestinationData,
@@ -332,41 +333,12 @@ function ManageOfcContainer() {
       }}
       modalSize="70%"
     >
-      <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>OFC Charges</Title>
-          <Group spacing="md">
-            <Input placeholder="Search" />
-            {editModeActive && (
-              <Button
-                type="submit"
-                leftIcon={<Plus size={14} />}
-                onClick={() => setModalOpen(true)}
-              >
-                Add
-              </Button>
-            )}
-          </Group>
-        </Group>
-      </Box>
-
-      <Space h="lg" />
+      <PageLabel
+         title="OFC Charges"
+         editModeActive={editModeActive}
+         setModalOpen={setModalOpen}
+      />
+     <Space h="lg" />
 
       <SimpleGrid cols={2}>
         {ofcData.map((item: any, index: number) => {

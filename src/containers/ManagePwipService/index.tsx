@@ -11,12 +11,11 @@ import {
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
 import { Card as SectionCard , Input, Button, Text, ActionIcon} from "../../components/index";
-
-
 import EditChaContainer from "./EditPwipService/EditPwipService";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel  from "../../components/PageLabel/PageLabel";
 
 import { managePwipService } from "../../constants/var.constants";
 
@@ -169,33 +168,13 @@ function ManagePwipServiceContainer() {
         />
       )}
     >
-      <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>PWIP Service Charges</Title>
-         <Input
-              placeholder="Search"/> 
-          {/* <Badge size="lg" color="green" variant="light">
-            Live
-          </Badge> */}
-        </Group>
-      </Box>
 
+     <PageLabel
+        title="PWIP Service Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
+      
       <Space h="lg" />
 
       <SimpleGrid cols={2}>
