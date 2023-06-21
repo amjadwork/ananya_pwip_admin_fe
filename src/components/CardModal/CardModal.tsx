@@ -10,9 +10,13 @@ import {
 import {Card as SectionCard} from "../index";
 
 
-const CardModal = (props:any) => {
-  const chaData=props.chaData;
-  const destinationSelectOptions=props.destinationSelectOptions;
+interface CardModalProps {
+  chaData: any[];
+  destinationSelectOptions: any[];
+}
+
+const CardModal = (props: CardModalProps) => {
+  const { chaData, destinationSelectOptions } = props;
 
 return(
   <SimpleGrid cols={2}>
