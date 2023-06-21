@@ -1,17 +1,11 @@
 import React from "react";
 import {
-  SimpleGrid,
-  Box,
   Group,
   Popover,
   Space,
-  Title,
-  List,
-  ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
-  Card as SectionCard,
   Button,
   ActionIcon,
   Text,
@@ -149,6 +143,7 @@ function ManageChaContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
+  const [dataCopy,setDataCopy]= React.useState<any>([]);
 
   //What does this below function do? Is it necessary? #askSwain
   const handleRefetchChaList = (chaPostResponse: any) => {
@@ -183,6 +178,8 @@ function ManageChaContainer() {
         });
 
         setChaData(() => [...array]);
+        setDataCopy(() => [...array]);
+
       }
     } catch (error) {
       console.log(error);
@@ -241,6 +238,7 @@ function ManageChaContainer() {
     });
 
     setChaData(() => [...chaArr]);
+    setDataCopy(() => [...chaArr]);
   };
 
   const handleSaveAction = async () => {
@@ -334,7 +332,7 @@ function ManageChaContainer() {
       <Space h="lg" />
 
       <CardModal
-      chaData={chaData}
+      dataCopy={dataCopy}
       destinationSelectOptions={destinationSelectOptions}
       />
     </PageWrapper>

@@ -11,16 +11,16 @@ import {Card as SectionCard} from "../index";
 
 
 interface CardModalProps {
-  chaData: any[];
+  dataCopy: any[];
   destinationSelectOptions: any[];
 }
 
 const CardModal = (props: CardModalProps) => {
-  const { chaData, destinationSelectOptions } = props;
+  const { dataCopy, destinationSelectOptions } = props;
 
 return(
   <SimpleGrid cols={2}>
-        {chaData.map((item: any, index: number) => {
+        {dataCopy.map((item: any, index: number) => {
           return (
             <SectionCard
               key={index}
