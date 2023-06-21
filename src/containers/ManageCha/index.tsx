@@ -268,7 +268,6 @@ function ManageChaContainer() {
       PageHeader={() => (
         <RenderPageHeader
           activeFilter={activeFilter}
-          ModalContent={ModalContent}
           handleRadioChange={(value: any, index: number) =>
             setActiveFilter(index)
           }
