@@ -13,7 +13,6 @@ import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
   Card as SectionCard,
   Button,
-  Input,
   ActionIcon,
   Text,
 } from "../../components/index";
@@ -21,6 +20,7 @@ import {
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
 import {
   getChaData,
@@ -323,7 +323,11 @@ function ManageChaContainer() {
       }}
       modalSize="70%"
     >
-      <Box
+<PageLabel
+editModeActive={editModeActive}
+setModalOpen={setModalOpen}
+/>
+      {/* <Box
         sx={(theme: any) => ({
           display: "block",
           backgroundColor:
@@ -355,7 +359,7 @@ function ManageChaContainer() {
             )}
           </Group>
         </Group>
-      </Box>
+      </Box> */}
 
       <Space h="lg" />
 
