@@ -1,10 +1,7 @@
 import React,{useState} from 'react';
-import {
-Table,
-
-} from "@mantine/core";
+import {ScrollArea, Table, Box} from "@mantine/core";
  import {Input} from "../../components"
-import { Book } from 'tabler-icons-react';
+
 
 interface DataTableProps {
   dataCopy: any[];
@@ -28,6 +25,8 @@ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilteredData(filtered);
   };
 
+  console.log("d", destinationSelectOptions)
+
   const rows = filteredData.map((item:any) =>(
       <React.Fragment key={item.name}>
         {item.list.map((listItem: any) => {
@@ -40,6 +39,12 @@ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                 <td>{item.name}</td>
               <td>{destinationName}</td>
               <td>{listItem.chaCharge}</td>
+              <td>{listItem.silicaGel}</td>
+              <td>{listItem.craftPaper}</td>
+              <td>{listItem.transportCharge}</td>
+              <td>{listItem.customCharge}</td>
+              <td>{listItem.loadingCharge}</td>
+              <td>{listItem.coo}</td>
             </tr>
           );
         })}
@@ -47,29 +52,62 @@ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     ));
   
     return (
-        <div>
+        <Box>
         <Input
+          style={{marginBottom:"8px"}}
           type="text"
           placeholder="Search by Origin Port"
           value={searchQuery}
           onChange={handleSearchChange}
         />
       <Table 
-      style={{marginTop:"20px"}}
-      striped 
+      sx={(theme: any) => ({
+        display: "block",
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[6]
+            : "#fff",
+        color:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[4]
+            : theme.colors.dark[9],
+        textAlign: "left",
+        cursor: "default",
+        "&:hover": {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[5]
+              : theme.colors.gray[1],
+        },
+      })}
       highlightOnHover 
       withBorder 
       withColumnBorders>
-        <thead>
+
+        {/* <thead style={{ position: "sticky", top: 0}}> */}
+        <ScrollArea w={890} h={400} >
+        <thead style={{ position: "sticky", top:0, backgroundColor:"#666666"}}>
           <tr>
-            <th>Origin Port</th>
-            <th>Destination Port</th>
-            <th>Charge</th>
+            <th style={{ opacity:1, color: "#fffff"}}>Origin</th>
+            <th>Destination</th>
+            <th>CHA</th>
+            <th>SilicaGel</th>
+            <th>CraftPaper</th>
+            <th>Transport</th>
+            <th>Custom</th>
+            <th>Loading</th>
+            <th>COO</th>   
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        
+        <tbody  style={{
+       width: "100%",
+       borderCollapse: "collapse",
+       tableLayout: "fixed",
+       }} >{rows}</tbody>
+        </ScrollArea>
       </Table>
-      </div>
+      </Box>
     );
   };
 
