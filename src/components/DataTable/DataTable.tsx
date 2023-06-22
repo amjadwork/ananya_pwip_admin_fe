@@ -1,9 +1,10 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {
 Table,
 
 } from "@mantine/core";
-
+ import {Input} from "../../components"
+import { Book } from 'tabler-icons-react';
 
 interface DataTableProps {
   dataCopy: any[];
@@ -12,8 +13,22 @@ interface DataTableProps {
 
 const DataTable = (props: DataTableProps) => {
     const { dataCopy, destinationSelectOptions } = props;
-  
-    const rows = dataCopy.map((item) => (
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredData, setFilteredData] = useState(dataCopy);
+
+
+
+const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    const filtered = dataCopy.filter((item) =>
+      item.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
+  const rows = filteredData.map((item:any) =>(
       <React.Fragment key={item.name}>
         {item.list.map((listItem: any) => {
           const destinationName = destinationSelectOptions.find(
@@ -32,8 +47,15 @@ const DataTable = (props: DataTableProps) => {
     ));
   
     return (
-        
+        <div>
+        <Input
+          type="text"
+          placeholder="Search by Origin Port"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
       <Table 
+      style={{marginTop:"20px"}}
       striped 
       highlightOnHover 
       withBorder 
@@ -47,6 +69,7 @@ const DataTable = (props: DataTableProps) => {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
+      </div>
     );
   };
 
