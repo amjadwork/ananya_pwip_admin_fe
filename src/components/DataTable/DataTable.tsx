@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {ScrollArea, Table, Box} from "@mantine/core";
+import {ScrollArea, Table, Box, Pagination,Group} from "@mantine/core";
  import {Input} from "../../components"
 
 
@@ -10,9 +10,9 @@ interface DataTableProps {
 
 const DataTable = (props: DataTableProps) => {
     const { dataCopy, destinationSelectOptions } = props;
-
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState(dataCopy);
+    const [activePage, setPage] = useState(1)
 
 
 
@@ -61,25 +61,6 @@ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleSearchChange}
         />
       <Table 
-      sx={(theme: any) => ({
-        display: "block",
-        backgroundColor:
-          theme.colorScheme === "dark"
-            ? theme.colors.dark[6]
-            : "#fff",
-        color:
-          theme.colorScheme === "dark"
-            ? theme.colors.dark[4]
-            : theme.colors.dark[9],
-        textAlign: "left",
-        cursor: "default",
-        "&:hover": {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[5]
-              : theme.colors.gray[1],
-        },
-      })}
       highlightOnHover 
       withBorder 
       withColumnBorders>
@@ -107,6 +88,13 @@ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
        }} >{rows}</tbody>
         </ScrollArea>
       </Table>
+      <Group 
+      style={{margin:"5px"}} >
+        <Pagination 
+        total={10} 
+        color="gray"
+        />
+      </Group> 
       </Box>
     );
   };
