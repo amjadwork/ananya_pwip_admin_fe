@@ -8,7 +8,8 @@ import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import PageLabel from "../../components/PageLabel/PageLabel";
-import CardModal from "../../components/CardModal/CardModal";
+// import CardModal from "../../components/CardModal/CardModal";
+import DataTable from "../../components/DataTable/DataTable";
 
 import {getChaData,getDestinationData,getRegionSource,postChaData} from "../../services/export-costing/CHA";
 
@@ -259,6 +260,8 @@ function ManageChaContainer() {
     }
   };
 
+  console.log("destination", destinationSelectOptions);
+console.log("dataCopy",dataCopy);
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
@@ -317,7 +320,7 @@ function ManageChaContainer() {
       />
       <Space h="lg" />
 
-      <CardModal
+      <DataTable
       dataCopy={dataCopy}
       destinationSelectOptions={destinationSelectOptions}
       />
