@@ -12,17 +12,29 @@ const DataTable = (props: DataTableProps) => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState<any>([]);
-  const [activePage, setActivePage] = useState(1);
-  const dataPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [length, setLength] = useState(2);
+  const [recordsPerPage] = useState(10);
+  const nPages = Math.ceil(length / recordsPerPage);
 
   useEffect(() => {
-    const startIndex = (activePage - 1) * dataPerPage;
-    const endIndex = startIndex + dataPerPage;
-    setFilteredData([...dataCopy].slice(startIndex, endIndex));
-  }, [dataCopy, activePage]);
+    setFilteredData([...dataCopy]);
+  }, [dataCopy]);
+  useEffect(() => {
+    console.log(filteredData);
+    const getTotalLength = ()=>{
+      let totalNumberOfChaData = 0
+      filteredData.map((item: any) => {
+        console.log(item.list.length)
+        totalNumberOfChaData = totalNumberOfChaData + item.list.length
+      });
+      setLength(totalNumberOfChaData)
+    }
+    getTotalLength()
+  }, [filteredData]);
 
   const setPage = (page: number) => {
-    setActivePage(page);
+    setCurrentPage(page);
   };
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
@@ -33,31 +45,31 @@ const DataTable = (props: DataTableProps) => {
     setFilteredData(filtered);
   };
 
-  const rows = useMemo(()=>{
-  return filteredData.map((item: any) => (
-    <React.Fragment key={item.name}>
-      {item.list.map((listItem: any) => {
-        const destinationName = destinationSelectOptions.find(
-          (f: any) => f.value === listItem._destinationPortId
-        )?.label;
+  const rows = useMemo(() => {
+    return filteredData.map((item: any) => (
+      <React.Fragment key={item.name}>
+        {item.list.map((listItem: any) => {
+          const destinationName = destinationSelectOptions.find(
+            (f: any) => f.value === listItem._destinationPortId
+          )?.label;
 
-        return (
-          <tr key={`${item.name}-${listItem._destinationPortId}`}>
-            <td>{item.name}</td>
-            <td>{destinationName}</td>
-            <td>{listItem.chaCharge}</td>
-            <td>{listItem.silicaGel}</td>
-            <td>{listItem.craftPaper}</td>
-            <td>{listItem.transportCharge}</td>
-            <td>{listItem.customCharge}</td>
-            <td>{listItem.loadingCharge}</td>
-            <td>{listItem.coo}</td>
-          </tr>
-        );
-      })}
-    </React.Fragment>
-  ));
- }, [filteredData, destinationSelectOptions]); 
+          return (
+            <tr key={`${item.name}-${listItem._destinationPortId}`}>
+              <td>{item.name}</td>
+              <td>{destinationName}</td>
+              <td>{listItem.chaCharge}</td>
+              <td>{listItem.silicaGel}</td>
+              <td>{listItem.craftPaper}</td>
+              <td>{listItem.transportCharge}</td>
+              <td>{listItem.customCharge}</td>
+              <td>{listItem.loadingCharge}</td>
+              <td>{listItem.coo}</td>
+            </tr>
+          );
+        })}
+      </React.Fragment>
+    ));
+  }, [filteredData, destinationSelectOptions]);
 
   return (
     <Box>
@@ -68,10 +80,15 @@ const DataTable = (props: DataTableProps) => {
         value={searchQuery}
         onChange={handleSearchChange}
       />
-      <Table highlightOnHover withBorder withColumnBorders>
+      <Table
+        striped
+        highlightOnHover
+        withBorder
+        withColumnBorders
+        verticalSpacing="xl">
         <ScrollArea w={890} h={400}>
           <thead
-            style={{ position: "sticky", top: 0, backgroundColor: "#666666" }}>
+            style={{ position: "sticky", top: 0, backgroundColor: "white" }}>
             <tr>
               <th style={{ opacity: 1, color: "#fffff" }}>Origin</th>
               <th>Destination</th>
@@ -96,12 +113,9 @@ const DataTable = (props: DataTableProps) => {
         </ScrollArea>
       </Table>
       <Group style={{ margin: "5px" }}>
-        <Pagination
-        total={dataCopy.length}
-        // value={10}
-        page={activePage}
-        color="gray"
-        onChange={setPage} />
+        <Pagination 
+        total={nPages} 
+        value={currentPage} />
       </Group>
     </Box>
   );
