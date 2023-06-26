@@ -5,10 +5,11 @@ import { Input } from "../../components";
 interface DataTableProps {
   dataCopy: any[];
   destinationSelectOptions: any[];
+  columns: string[];
 }
 
 const DataTable = (props: DataTableProps) => {
-  const { dataCopy, destinationSelectOptions } = props;
+  const { dataCopy, destinationSelectOptions, columns } = props;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState<any>([]);
@@ -71,6 +72,12 @@ const DataTable = (props: DataTableProps) => {
     ));
   }, [filteredData, destinationSelectOptions]);
 
+  const tableHeader = useMemo(() => {
+    return columns.map((column: string) => (
+      <th key={column}>{column}</th>
+    ));
+  }, [columns]);
+
   return (
     <Box>
       <Input
@@ -90,15 +97,7 @@ const DataTable = (props: DataTableProps) => {
           <thead
             style={{ position: "sticky", top: 0, backgroundColor: "white" }}>
             <tr>
-              <th style={{ opacity: 1, color: "#fffff" }}>Origin</th>
-              <th>Destination</th>
-              <th>CHA</th>
-              <th>SilicaGel</th>
-              <th>CraftPaper</th>
-              <th>Transport</th>
-              <th>Custom</th>
-              <th>Loading</th>
-              <th>COO</th>
+              {tableHeader}
             </tr>
           </thead>
 

@@ -13,6 +13,19 @@ import DataTable from "../../components/DataTable/DataTable";
 
 import {getChaData,getDestinationData,getRegionSource,postChaData} from "../../services/export-costing/CHA";
 
+
+const columns = [
+    "Origin",
+    "Destination",
+    "CHA",
+    "SilicaGel",
+    "CraftPaper",
+    "Transport",
+    "Custom",
+    "Loading",
+    "COO",
+  ];
+
 const RenderPageHeader = (props: any) => {
   return <PageHeader title="Manage CHA Charges" />;
 };
@@ -323,6 +336,7 @@ console.log("dataCopy",dataCopy);
       <DataTable
       dataCopy={dataCopy}
       destinationSelectOptions={destinationSelectOptions}
+      columns={columns}
       />
     </PageWrapper>
   );
