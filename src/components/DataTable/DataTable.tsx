@@ -16,6 +16,7 @@ const DataTable = (props: DataTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [length, setLength] = useState(2);
   const [recordsPerPage] = useState(10);
+  
   const nPages = useMemo(() => Math.ceil(length / recordsPerPage), [length, recordsPerPage]);
 
   useEffect(() => {
@@ -39,6 +40,20 @@ const DataTable = (props: DataTableProps) => {
   const setPage = (page: number) => {
     setCurrentPage(page-1);
   };
+
+  const unwind = (key:any, data:any) => {
+    const unwoundData: any[]=[];
+    dataCopy.forEach((item:any)=> {
+      if (item[key]) {
+        item[key].forEach((value:any) => {
+          const unwoundItem = { ...item, [key]: value };
+          unwoundData.push(unwoundItem);
+        });
+      }
+    });
+    return unwoundData;
+  };
+  
   
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
@@ -69,6 +84,9 @@ const DataTable = (props: DataTableProps) => {
       </React.Fragment>
     ));
   }, [filteredData]);
+
+  console.log(unwind('list', { filteredData }));
+  
 
   const tableHeader = useMemo(() => {
     return columns.map((column: string) => (

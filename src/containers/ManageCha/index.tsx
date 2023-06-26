@@ -272,8 +272,7 @@ function ManageChaContainer() {
     }
   };
 
-console.log("dataCopy",dataCopy);
-console.log("dummmy",dummyCHA);
+
 
 
   React.useEffect(() => {
