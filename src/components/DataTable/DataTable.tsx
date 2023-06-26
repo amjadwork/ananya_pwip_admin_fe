@@ -22,15 +22,15 @@ const DataTable = (props: DataTableProps) => {
   }, [dataCopy]);
   useEffect(() => {
     console.log(filteredData);
-    const getTotalLength = ()=>{
-      let totalNumberOfChaData = 0
+    const getTotalLength = () => {
+      let totalNumberOfChaData = 0;
       filteredData.map((item: any) => {
-        console.log(item.list.length)
-        totalNumberOfChaData = totalNumberOfChaData + item.list.length
+        console.log(item.list.length);
+        totalNumberOfChaData = totalNumberOfChaData + item.list.length;
       });
-      setLength(totalNumberOfChaData)
-    }
-    getTotalLength()
+      setLength(totalNumberOfChaData);
+    };
+    getTotalLength();
   }, [filteredData]);
 
   const setPage = (page: number) => {
@@ -113,9 +113,7 @@ const DataTable = (props: DataTableProps) => {
         </ScrollArea>
       </Table>
       <Group style={{ margin: "5px" }}>
-        <Pagination 
-        total={nPages} 
-        value={currentPage} />
+        <Pagination total={nPages} value={currentPage} />
       </Group>
     </Box>
   );
