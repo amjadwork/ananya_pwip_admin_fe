@@ -10,6 +10,7 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import PageLabel from "../../components/PageLabel/PageLabel";
 // import CardModal from "../../components/CardModal/CardModal";
 import DataTable from "../../components/DataTable/DataTable";
+import { dummyCHA } from "../../constants/chaData.constants";
 
 import {getChaData,getDestinationData,getRegionSource,postChaData} from "../../services/export-costing/CHA";
 
@@ -23,7 +24,6 @@ const columns = [
     "Transport",
     "Custom",
     "Loading",
-    "COO",
   ];
 
 const RenderPageHeader = (props: any) => {
@@ -158,7 +158,6 @@ function ManageChaContainer() {
     const chaDataResponse: any = await getChaData(regionList);
     try {
       if (chaDataResponse) {
-        console.log(regionList);
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
@@ -273,8 +272,10 @@ function ManageChaContainer() {
     }
   };
 
-  console.log("destination", destinationSelectOptions);
 console.log("dataCopy",dataCopy);
+console.log("dummmy",dummyCHA);
+
+
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
@@ -334,8 +335,8 @@ console.log("dataCopy",dataCopy);
       <Space h="lg" />
 
       <DataTable
-      dataCopy={dataCopy}
-      destinationSelectOptions={destinationSelectOptions}
+      dataCopy={dummyCHA}
+      // destinationSelectOptions={destinationSelectOptions}
       columns={columns}
       />
     </PageWrapper>

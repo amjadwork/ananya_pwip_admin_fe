@@ -4,39 +4,42 @@ import { Input } from "../../components";
 
 interface DataTableProps {
   dataCopy: any[];
-  destinationSelectOptions: any[];
+  // destinationSelectOptions: any[];
   columns: string[];
 }
 
 const DataTable = (props: DataTableProps) => {
-  const { dataCopy, destinationSelectOptions, columns } = props;
+  const { dataCopy, columns } = props;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [length, setLength] = useState(2);
   const [recordsPerPage] = useState(10);
-  const nPages = Math.ceil(length / recordsPerPage);
+  const nPages = useMemo(() => Math.ceil(length / recordsPerPage), [length, recordsPerPage]);
 
   useEffect(() => {
     setFilteredData([...dataCopy]);
   }, [dataCopy]);
+
   useEffect(() => {
     console.log(filteredData);
     const getTotalLength = () => {
       let totalNumberOfChaData = 0;
-      filteredData.map((item: any) => {
-        console.log(item.list.length);
-        totalNumberOfChaData = totalNumberOfChaData + item.list.length;
-      });
+   filteredData.map((item: any) => {
+  if (item.list) {
+    totalNumberOfChaData += item.list.length;
+  }
+});
       setLength(totalNumberOfChaData);
     };
     getTotalLength();
-  }, [filteredData]);
+  }, [filteredData,setLength]);
 
   const setPage = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page-1);
   };
+  
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -50,27 +53,22 @@ const DataTable = (props: DataTableProps) => {
     return filteredData.map((item: any) => (
       <React.Fragment key={item.name}>
         {item.list.map((listItem: any) => {
-          const destinationName = destinationSelectOptions.find(
-            (f: any) => f.value === listItem._destinationPortId
-          )?.label;
-
           return (
-            <tr key={`${item.name}-${listItem._destinationPortId}`}>
+            <tr key={item.name} style={{ textAlign: "center" }}>
               <td>{item.name}</td>
-              <td>{destinationName}</td>
-              <td>{listItem.chaCharge}</td>
-              <td>{listItem.silicaGel}</td>
-              <td>{listItem.craftPaper}</td>
-              <td>{listItem.transportCharge}</td>
-              <td>{listItem.customCharge}</td>
-              <td>{listItem.loadingCharge}</td>
-              <td>{listItem.coo}</td>
+              <td>{listItem.destinationPort}</td>
+              <td>{listItem.chaCharges}</td>
+              <td>{listItem.silicaGelCharges}</td>
+              <td>{listItem.craftPaperCharges}</td>
+              <td>{listItem.transportCharges}</td>
+              <td>{listItem.customCharges}</td>
+              <td>{listItem.loadingCharges}</td>
             </tr>
           );
         })}
       </React.Fragment>
     ));
-  }, [filteredData, destinationSelectOptions]);
+  }, [filteredData]);
 
   const tableHeader = useMemo(() => {
     return columns.map((column: string) => (
