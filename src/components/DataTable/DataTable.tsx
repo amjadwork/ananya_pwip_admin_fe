@@ -62,10 +62,14 @@ const DataTable = (props: DataTableProps) => {
   const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setOriginSearchQuery(query);
+    if (query === '') {
+      setFilteredData([...dataCopy]);
+    } else {
     const filtered = filteredData.filter((item:any) =>
       item.name.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredData(filtered);
+    }
   };
 
   const handleDestinationSearch = (
@@ -73,6 +77,9 @@ const DataTable = (props: DataTableProps) => {
   ) => {
     const query = event.target.value.toLowerCase();
     setDestinationSearchQuery(query);
+    if (query === '') {
+      setFilteredData([...dataCopy]);
+    } else {
     const filtered = filteredData.map((item: any) => {
       const listArr = item.list.filter((listItem: any) =>
         listItem.destinationPort.toLowerCase().includes(query)
@@ -84,6 +91,7 @@ const DataTable = (props: DataTableProps) => {
       };
     });
     setFilteredData(filtered);
+  }
   };
 
   const rows = useMemo(() => {
