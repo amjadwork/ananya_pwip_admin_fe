@@ -23,15 +23,14 @@ const PageLabel: React.FC<Props> = ({ editModeActive, setModalOpen, title }) => 
             ? theme.colors.dark[4]
             : theme.colors.dark[7],
         textAlign: "center",
-        padding: theme.spacing.xl,
-        borderRadius: theme.radius.md,
+        padding: theme.spacing.sm,
+        borderRadius: theme.radius.sm,
         cursor: "default",
       })}
     >
       <Group position="apart">
         {title && <Title order={1}>{title}</Title>}
         <Group spacing="md">
-          <Input placeholder="Search" />
           {editModeActive && (
             <Button
               type="submit"
