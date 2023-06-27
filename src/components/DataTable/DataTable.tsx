@@ -11,13 +11,18 @@ interface DataTableProps {
 const DataTable = (props: DataTableProps) => {
   const { dataCopy, columns } = props;
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [originSearchQuery, setOriginSearchQuery] = useState("");
+  const [destinationSearchQuery, setDestinationSearchQuery] = useState("");
+
   const [filteredData, setFilteredData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [length, setLength] = useState(2);
   const [recordsPerPage] = useState(10);
-  
-  const nPages = useMemo(() => Math.ceil(length / recordsPerPage), [length, recordsPerPage]);
+
+  const nPages = useMemo(
+    () => Math.ceil(length / recordsPerPage),
+    [length, recordsPerPage]
+  );
 
   useEffect(() => {
     setFilteredData([...dataCopy]);
@@ -27,25 +32,25 @@ const DataTable = (props: DataTableProps) => {
     console.log(filteredData);
     const getTotalLength = () => {
       let totalNumberOfChaData = 0;
-   filteredData.map((item: any) => {
-  if (item.list) {
-    totalNumberOfChaData += item.list.length;
-  }
-});
+      filteredData.map((item: any) => {
+        if (item.list) {
+          totalNumberOfChaData += item.list.length;
+        }
+      });
       setLength(totalNumberOfChaData);
     };
     getTotalLength();
-  }, [filteredData,setLength]);
+  }, [filteredData, setLength]);
 
   const setPage = (page: number) => {
-    setCurrentPage(page-1);
+    setCurrentPage(page - 1);
   };
 
-  const unwind = (key:any, data:any) => {
-    const unwoundData: any[]=[];
-    dataCopy.forEach((item:any)=> {
+  const unwind = (key: any, data: any) => {
+    const unwoundData: any[] = [];
+    dataCopy.forEach((item: any) => {
       if (item[key]) {
-        item[key].forEach((value:any) => {
+        item[key].forEach((value: any) => {
           const unwoundItem = { ...item, [key]: value };
           unwoundData.push(unwoundItem);
         });
@@ -53,14 +58,31 @@ const DataTable = (props: DataTableProps) => {
     });
     return unwoundData;
   };
-  
-  
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    setSearchQuery(query);
-    const filtered = dataCopy.filter((item) =>
+    setOriginSearchQuery(query);
+    const filtered = filteredData.filter((item:any) =>
       item.name.toLowerCase().includes(query.toLowerCase())
     );
+    setFilteredData(filtered);
+  };
+
+  const handleDestinationSearch = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const query = event.target.value.toLowerCase();
+    setDestinationSearchQuery(query);
+    const filtered = filteredData.map((item: any) => {
+      const listArr = item.list.filter((listItem: any) =>
+        listItem.destinationPort.toLowerCase().includes(query)
+      );
+        return {
+        ...item,
+        list: [...listArr],
+       
+      };
+    });
     setFilteredData(filtered);
   };
 
@@ -85,24 +107,32 @@ const DataTable = (props: DataTableProps) => {
     ));
   }, [filteredData]);
 
-  console.log(unwind('list', { filteredData }));
-  
+  console.log(unwind("list", { filteredData }));
 
   const tableHeader = useMemo(() => {
-    return columns.map((column: string) => (
-      <th key={column}>{column}</th>
-    ));
+    return columns.map((column: string) => <th key={column}>{column}</th>);
   }, [columns]);
 
   return (
     <Box>
-      <Input
-        style={{ marginBottom: "8px" }}
-        type="text"
-        placeholder="Search by Origin Port"
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
+      <div style={{ display: "flex", width: "100%" }}>
+        <Input
+          style={{ marginBottom: "4px", width: "50%", marginRight: "10px" }}
+          type="text"
+          placeholder="Search by Origin Port"
+          value={originSearchQuery}
+          onChange={handleOriginSearch}
+        />
+
+        <Input
+          style={{ marginBottom: "8px", width: "50%", marginLeft: "4px" }}
+          type="text"
+          placeholder="Search by Destination Port/Source Location"
+          value={destinationSearchQuery}
+          onChange={handleDestinationSearch}
+        />
+      </div>
+
       <Table
         striped
         highlightOnHover
@@ -112,9 +142,7 @@ const DataTable = (props: DataTableProps) => {
         <ScrollArea w={890} h={400}>
           <thead
             style={{ position: "sticky", top: 0, backgroundColor: "white" }}>
-            <tr>
-              {tableHeader}
-            </tr>
+            <tr>{tableHeader}</tr>
           </thead>
 
           <tbody
