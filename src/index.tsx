@@ -25,11 +25,11 @@ root.render(
         authorizationParams={{
           redirect_uri: window?.location?.origin || "http://localhost:3000/",
           display: "popup",
+          audience: "http://localhost:8000",
         }}
       >
         <App />
       </Auth0Provider>
-      ,
     </NotificationsProvider>
   </MantineProvider>
 );
