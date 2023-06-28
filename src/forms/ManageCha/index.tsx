@@ -4,11 +4,13 @@ import {
   NumberInput,
   Space,
   Grid,
+  Box,
 } from "@mantine/core";
-import { Select,Button,ActionIcon } from "../../components/index";
-import { Minus } from "tabler-icons-react";
+import { Select,Button,ActionIcon, } from "../../components/index";
+import { Minus,Plus, Check } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 const initialFormValues = {
   "_originPortId_|": "",
@@ -20,6 +22,7 @@ const initialFormValues = {
   "loadingCharge_|": "",
   "customCharge_|": "",
   "pqc_|": "",
+  "coo_|":"",
 };
 
 function EditChaForm(props: any) {
@@ -67,16 +70,16 @@ function EditChaForm(props: any) {
       destinations: [...destinationsArr],
     };
 
-    setChaPayload(payloadObject);
-    setChaDestinationItemList(destinationsArr);
+  // Reset form values
+  form.reset();
+  // Reset destination fields
+  const formResetValues = { ...initialFormValues };
+  setChaFormValues(formResetValues);
+  // Update state with the payload and destination list
+  setChaPayload(payloadObject);
+  setChaDestinationItemList(destinationsArr);
 
-    // reset inital form value
-    let formResetValues: any = {};
-    Object.keys({ ...destinationObject }).map((key) => {
-      formResetValues[`${key}_|`] = "";
-    });
-    setChaFormValues(formResetValues);
-    // reset inital form value ends
+  
   };
 
   const handleDeleteItem = (index: number) => {
@@ -147,7 +150,7 @@ function EditChaForm(props: any) {
               })}
             >
               <Grid>
-                <Grid.Col span={10}>
+                <Grid.Col span={11}>
                   <Select
                     defaultValue={item["_destinationPortId"]}
                     required
@@ -159,7 +162,7 @@ function EditChaForm(props: any) {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={2}>
+                <Grid.Col span={1}>
                   <div
                     style={{
                       display: "inline-flex",
@@ -180,19 +183,19 @@ function EditChaForm(props: any) {
                   </div>
                 </Grid.Col>
 
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
                     hideControls
-                    label="Enter CHA Charges"
+                    label="CHA Charges"
                     placeholder="Eg. 26500"
                     defaultValue={item["chaCharge"]}
                     {...form.getInputProps("chaCharge_|" + i)}
                   />
                 </Grid.Col>
 
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -204,7 +207,7 @@ function EditChaForm(props: any) {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -216,7 +219,7 @@ function EditChaForm(props: any) {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -227,7 +230,7 @@ function EditChaForm(props: any) {
                     {...form.getInputProps("transportCharge_|" + i)}
                   />
                 </Grid.Col>
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -238,7 +241,7 @@ function EditChaForm(props: any) {
                     {...form.getInputProps("loadingCharge_|" + i)}
                   />
                 </Grid.Col>
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -249,7 +252,7 @@ function EditChaForm(props: any) {
                     {...form.getInputProps("customCharge_|" + i)}
                   />
                 </Grid.Col>
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -260,7 +263,7 @@ function EditChaForm(props: any) {
                     {...form.getInputProps("pqc_|" + i)}
                   />
                 </Grid.Col>
-                <Grid.Col span={2}>
+                <Grid.Col span={3}>
                   <NumberInput
                     required
                     precision={2}
@@ -288,7 +291,6 @@ function EditChaForm(props: any) {
         <Grid>
           <Grid.Col span={11}>
             <Select
-              required
               searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
@@ -307,24 +309,33 @@ function EditChaForm(props: any) {
                 justifyContent: "flex-end",
               }}
             >
-              <Button onClick={handleAddItem}>+</Button>
+                <Group spacing="md" position="right" margin-bottom="5px">
+                      <ActionIcon
+                        variant="filled"
+                        color="green"
+                        sx={{
+                          "&[data-disabled]": { opacity: 0.4 },
+                        }}
+                        onClick={handleAddItem}
+                      >
+                        <Plus size={20} />
+                      </ActionIcon>
+                    </Group>
             </div>
           </Grid.Col>
 
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
-              label="Enter CHA Charges"
+              label="CHA Charges"
               placeholder="Eg. 26500"
               {...form.getInputProps("chaCharge_|")}
             />
           </Grid.Col>
 
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="Silica Gel"
@@ -333,9 +344,8 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
 
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="Craft Paper"
@@ -343,9 +353,8 @@ function EditChaForm(props: any) {
               {...form.getInputProps("craftPaper_|")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="Transport Charges"
@@ -353,9 +362,8 @@ function EditChaForm(props: any) {
               {...form.getInputProps("transportCharge_|")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="Loading Charges"
@@ -363,9 +371,8 @@ function EditChaForm(props: any) {
               {...form.getInputProps("loadingCharge_|")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="Custom Charges"
@@ -373,9 +380,8 @@ function EditChaForm(props: any) {
               {...form.getInputProps("customCharge_|")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="PQC"
@@ -383,9 +389,8 @@ function EditChaForm(props: any) {
               {...form.getInputProps("pqc_|")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <NumberInput
-              required
               precision={2}
               hideControls
               label="COO"
@@ -394,12 +399,13 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
         </Grid>
+
       </Group>
 
       <Space h="lg" />
 
       <Group position="right" mt="md">
-        <Button type="submit">Save</Button>
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );
