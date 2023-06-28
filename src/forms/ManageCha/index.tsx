@@ -289,7 +289,7 @@ function EditChaForm(props: any) {
         })}
       >
         <Grid>
-          <Grid.Col span={11}>
+          <Grid.Col span={12}>
             <Select
               searchable
               label="Select Destination Port"
@@ -298,32 +298,6 @@ function EditChaForm(props: any) {
               {...form.getInputProps("_destinationPortId_|")}
             />
           </Grid.Col>
-
-          <Grid.Col span={1}>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "flex-end",
-                height: "100%",
-                width: "100%",
-                justifyContent: "flex-end",
-              }}
-            >
-                <Group spacing="md" position="right" margin-bottom="5px">
-                      <ActionIcon
-                        variant="filled"
-                        color="green"
-                        sx={{
-                          "&[data-disabled]": { opacity: 0.4 },
-                        }}
-                        onClick={handleAddItem}
-                      >
-                        <Plus size={20} />
-                      </ActionIcon>
-                    </Group>
-            </div>
-          </Grid.Col>
-
           <Grid.Col span={3}>
             <NumberInput
               precision={2}
@@ -399,6 +373,15 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
         </Grid>
+        <Box style={{ 
+          textAlign: 'right', 
+          width: '100%',
+          color:'blue',
+          }}>
+         <div onClick={handleAddItem}>
+          + Add More
+          </div>
+          </Box>
 
       </Group>
 
