@@ -13,6 +13,9 @@ const DataTable = (props: DataTableProps) => {
 
   const [originSearchQuery, setOriginSearchQuery] = useState("");
   const [destinationSearchQuery, setDestinationSearchQuery] = useState("");
+  const [debouncedOriginSearch, setDebouncedOriginSearch] = useState("");
+  const [debouncedDestinationSearch, setDebouncedDestinationSearch] = useState("");
+
 
   const [filteredData, setFilteredData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,17 +62,24 @@ const DataTable = (props: DataTableProps) => {
     return unwoundData;
   };
 
+  useEffect(() => {
+    const originTimer = setTimeout(() => {
+      setDebouncedOriginSearch(originSearchQuery);
+    }, 300);
+
+    return () => clearTimeout(originTimer);
+  }, [originSearchQuery]);
+
+  useEffect(() => {
+    const destinationTimer = setTimeout(() => {
+      setDebouncedDestinationSearch(destinationSearchQuery);
+    }, 300);
+    return () => clearTimeout(destinationTimer);
+  }, [destinationSearchQuery]);
+
   const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setOriginSearchQuery(query);
-    if (query === '') {
-      setFilteredData([...dataCopy]);
-    } else {
-    const filtered = filteredData.filter((item:any) =>
-      item.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
-    }
   };
 
   const handleDestinationSearch = (
@@ -77,22 +87,70 @@ const DataTable = (props: DataTableProps) => {
   ) => {
     const query = event.target.value.toLowerCase();
     setDestinationSearchQuery(query);
-    if (query === '') {
+  };
+
+  useEffect(() => {
+    if (debouncedOriginSearch === "") {
       setFilteredData([...dataCopy]);
     } else {
-    const filtered = filteredData.map((item: any) => {
-      const listArr = item.list.filter((listItem: any) =>
-        listItem.destinationPort.toLowerCase().includes(query)
+      const filtered = filteredData.filter((item: any) =>
+        item.name.toLowerCase().includes(debouncedOriginSearch.toLowerCase())
       );
+      setFilteredData(filtered);
+    }
+  }, [debouncedOriginSearch]);
+
+  useEffect(() => {
+    if (debouncedDestinationSearch === "") {
+      setFilteredData([...dataCopy]);
+    } else {
+      const filtered = filteredData.map((item: any) => {
+        const listArr = item.list.filter((listItem: any) =>
+          listItem.destinationPort.toLowerCase().includes(debouncedDestinationSearch)
+        );
         return {
-        ...item,
-        list: [...listArr],
+          ...item,
+          list: [...listArr],
+        };
+      });
+      setFilteredData(filtered);
+    }
+  }, [debouncedDestinationSearch]);
+
+  // const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const query = event.target.value;
+  //   setOriginSearchQuery(query);
+  //   if (query === '') {
+  //     setFilteredData([...dataCopy]);
+  //   } else {
+  //   const filtered = filteredData.filter((item:any) =>
+  //     item.name.toLowerCase().includes(query.toLowerCase())
+  //   );
+  //   setFilteredData(filtered);
+  //   }
+  // };
+
+  // const handleDestinationSearch = (
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const query = event.target.value.toLowerCase();
+  //   setDestinationSearchQuery(query);
+  //   if (query === '') {
+  //     setFilteredData([...dataCopy]);
+  //   } else {
+  //   const filtered = filteredData.map((item: any) => {
+  //     const listArr = item.list.filter((listItem: any) =>
+  //       listItem.destinationPort.toLowerCase().includes(query)
+  //     );
+  //       return {
+  //       ...item,
+  //       list: [...listArr],
        
-      };
-    });
-    setFilteredData(filtered);
-  }
-  };
+  //     };
+  //   });
+  //   setFilteredData(filtered);
+  // }
+  // };
 
   const rows = useMemo(() => {
     return filteredData.map((item: any) => (
@@ -130,6 +188,7 @@ const DataTable = (props: DataTableProps) => {
           placeholder="Search by Origin Port"
           value={originSearchQuery}
           onChange={handleOriginSearch}
+
         />
 
         <Input
@@ -138,6 +197,7 @@ const DataTable = (props: DataTableProps) => {
           placeholder="Search by Destination Port/Source Location"
           value={destinationSearchQuery}
           onChange={handleDestinationSearch}
+
         />
       </div>
 
