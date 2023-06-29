@@ -98,6 +98,7 @@ function EditChaForm(props: any) {
   const handleFormSubmit = (formValues: typeof form.values) => {
     let destinationObject: any = {};
     const object: any = { ...formValues };
+    const originPortId = object["_originPortId_|"];
     let destinationsArr: any = [...chaDestinationItemList];
 
     Object.keys(object)
@@ -118,7 +119,7 @@ function EditChaForm(props: any) {
     destinationsArr.push(destinationObject);
 
     const payloadObject: any = {
-      _originPortId: object._originPortId,
+      _originPortId: originPortId,
       destinations: [...destinationsArr],
     };
     setChaDestinationItemList(destinationsArr);
