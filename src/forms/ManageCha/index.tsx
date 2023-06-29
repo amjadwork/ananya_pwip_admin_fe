@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  Group,
-  NumberInput,
-  Space,
-  Grid,
-  Box,
-} from "@mantine/core";
-import { Select,Button,ActionIcon, } from "../../components/index";
-import { Minus,Plus, Check } from "tabler-icons-react";
+import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
+import { Select, Button, ActionIcon } from "../../components/index";
+import { Minus} from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 const initialFormValues = {
   "_originPortId_|": "",
@@ -22,7 +15,7 @@ const initialFormValues = {
   "loadingCharge_|": "",
   "customCharge_|": "",
   "pqc_|": "",
-  "coo_|":"",
+  "coo_|": "",
 };
 
 function EditChaForm(props: any) {
@@ -41,11 +34,70 @@ function EditChaForm(props: any) {
   });
 
   const handleAddItem: any = () => {
-    let arr: any = [];
-
-    arr.push("");
-    let destinationObject: any = {};
     const object: any = { ...form.values };
+    const originPortId = object["_originPortId_|"];
+
+
+    let destinationsArr: any = [...chaDestinationItemList];
+    let destinationObject: any = {};
+
+    Object.keys(object)
+      .filter((key) => {
+        const _key = key.split("_|")[0];
+        if (_key !== "_originPortId") {
+          return key;
+        }
+      })
+      .map((key) => {
+        const _key = key.split("_|")[0];
+        destinationObject[_key] = object[key];
+        return {
+          [_key]: object[key],
+        };
+      });
+    destinationsArr.push(destinationObject);
+
+    const payloadObject: any = {
+      _originPortId: originPortId,
+      destinations: [...destinationsArr],
+    };
+    setChaPayload(payloadObject);
+
+    const formResetValues = {
+      ...initialFormValues,
+      "_originPortId_|": originPortId, 
+    };
+    form.setValues({
+      ...formResetValues,
+    });
+
+    setChaFormValues(formResetValues);
+    // setChaPayload(payloadObject);
+    setChaDestinationItemList(destinationsArr);
+  };
+
+  const handleDeleteItem = (index: number) => {
+    let destinationsArr: any = [...chaDestinationItemList];
+    // logic to delete an item starts
+    if (index > -1) {
+      destinationsArr.splice(index, 1);
+    }
+    // logic to delete an item end
+    setChaDestinationItemList(destinationsArr);
+  };
+
+  // const handleUpdate = (index: number) => {
+  //   const arr: any = [...chaDestinationItemList];
+  //   arr[index] = catUpdateValue;
+
+  //   setChaDestinationItemList(arr);
+
+  //   console.log(arr);
+  // };
+
+  const handleFormSubmit = (formValues: typeof form.values) => {
+    let destinationObject: any = {};
+    const object: any = { ...formValues };
     let destinationsArr: any = [...chaDestinationItemList];
 
     Object.keys(object)
@@ -69,68 +121,20 @@ function EditChaForm(props: any) {
       _originPortId: object._originPortId,
       destinations: [...destinationsArr],
     };
-
-  // Reset form values
-  form.reset();
-  // Reset destination fields
-  const formResetValues = { ...initialFormValues };
-  setChaFormValues(formResetValues);
-  // Update state with the payload and destination list
-  setChaPayload(payloadObject);
-  setChaDestinationItemList(destinationsArr);
-
-  
-  };
-
-  const handleDeleteItem = (index: number) => {
-    let destinationsArr: any = [...chaDestinationItemList];
-
-    // logic to delete an item starts
-    if (index > -1) {
-      destinationsArr.splice(index, 1);
-    }
-
-    // logic to delete an item end
-
     setChaDestinationItemList(destinationsArr);
-  };
-
-  const handleError = (errors: typeof form.errors) => {
-    if (errors.name) {
-      showNotification({ message: "Please fill name field", color: "red" });
-    }
-  };
-  // const handleUpdate = (index: number) => {
-  //   const arr: any = [...chaDestinationItemList];
-  //   arr[index] = catUpdateValue;
-
-  //   setChaDestinationItemList(arr);
-
-  //   console.log(arr);
-  // };
-
-  const handleFormSubmit = (formValues: typeof form.values) => {
-    // update UI table
-    handleUpdateChaUIData(chaPayload);
-
+    handleUpdateChaUIData(payloadObject); //update table UI
     handleCloseModal(false);
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
-      {/* <TextInput
-        required
-        label="Enter Origin Port"
-        placeholder="Eg. chennai"
-        {...form.getInputProps("originPort")}
-      /> */}
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Select
         required
         searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
         data={regionSelectOptions}
-        {...form.getInputProps("_originPortId")}
+        {...form.getInputProps("_originPortId_|")}
         sx={() => ({
           marginBottom: 18,
         })}
@@ -147,8 +151,7 @@ function EditChaForm(props: any) {
                 borderRadius: 12,
                 padding: 12,
                 backgroundColor: theme.colors.gray[0],
-              })}
-            >
+              })}>
               <Grid>
                 <Grid.Col span={11}>
                   <Select
@@ -170,13 +173,11 @@ function EditChaForm(props: any) {
                       justifyContent: "flex-end",
                       width: "100%",
                       height: "100%",
-                    }}
-                  >
+                    }}>
                     <Group spacing="md" position="right" margin-bottom="5px">
                       <ActionIcon
                         variant="filled"
-                        onClick={() => handleDeleteItem(i)}
-                      >
+                        onClick={() => handleDeleteItem(i)}>
                         <Minus size={20} />
                       </ActionIcon>
                     </Group>
@@ -286,8 +287,7 @@ function EditChaForm(props: any) {
           border: `1px solid ${theme.colors.gray[2]}`,
           borderRadius: 12,
           padding: 12,
-        })}
-      >
+        })}>
         <Grid>
           <Grid.Col span={12}>
             <Select
@@ -373,16 +373,14 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
         </Grid>
-        <Box style={{ 
-          textAlign: 'right', 
-          width: '100%',
-          color:'blue',
+        <Box
+          style={{
+            textAlign: "right",
+            width: "100%",
+            color: "blue",
           }}>
-         <div onClick={handleAddItem}>
-          + Add More
-          </div>
-          </Box>
-
+          <div onClick={handleAddItem}>+ Add More</div>
+        </Box>
       </Group>
 
       <Space h="lg" />
