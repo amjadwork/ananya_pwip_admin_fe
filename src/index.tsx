@@ -20,22 +20,21 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <Provider store={store}>
-    <MantineProvider withNormalizeCSS withGlobalStyles>
-      <NotificationsProvider position="bottom-center">
-        <Auth0Provider
-          domain={REACT_APP_AUTH0_DOMAIN}
-          clientId={REACT_APP_AUTH0_CLIENT_ID}
-          authorizationParams={{
-            redirect_uri: window?.location?.origin || "http://localhost:3000/",
-            display: "popup",
-          }}
-        >
-          <App />
-        </Auth0Provider>
-      </NotificationsProvider>
-    </MantineProvider>
-  </Provider>
+  <MantineProvider withNormalizeCSS withGlobalStyles>
+    <NotificationsProvider position="bottom-center">
+      <Auth0Provider
+        domain={REACT_APP_AUTH0_DOMAIN}
+        clientId={REACT_APP_AUTH0_CLIENT_ID}
+        authorizationParams={{
+          redirect_uri: window?.location?.origin || "http://localhost:3000/",
+          display: "popup",
+          audience: "http://localhost:8000",
+        }}
+      >
+        <App />
+      </Auth0Provider>
+    </NotificationsProvider>
+  </MantineProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
