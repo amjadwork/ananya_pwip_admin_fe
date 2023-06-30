@@ -87,7 +87,7 @@ const ExportCostingLayout: React.FC<any> = () => {
       >
         <Container>
           <Tabs
-            defaultValue="products"
+            defaultValue="playground"
             variant="outline"
             classNames={{
               root: classes.tabs,
