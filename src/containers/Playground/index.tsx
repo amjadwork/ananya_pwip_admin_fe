@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
+// import { useDisclosure } from "@mantine/hooks";
+// import { Modal, Flex } from "@mantine/core";
+
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 import { useDisclosure } from "@mantine/hooks";
 import { Modal, Flex } from "@mantine/core";
 
@@ -21,7 +27,7 @@ const RenderPageHeader = (props: any) => {
   return <PageHeader />;
 };
 
-function PlaygroundContainer() {
+function PlaygroundContainer(props: any) {
   const [opened, { open, close }] = useDisclosure(false);
 
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
@@ -130,4 +136,24 @@ function PlaygroundContainer() {
   );
 }
 
-export default PlaygroundContainer;
+const mapStateToProps = (state: any) => {
+  return {
+    state: {
+      user: state.userData.user,
+    },
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  ...bindActionCreators(
+    {
+      // action will go here
+    },
+    dispatch
+  ),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PlaygroundContainer);

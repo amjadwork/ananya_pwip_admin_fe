@@ -5,7 +5,7 @@ const APIRequest = async (
   method: string,
   payload?: object
 ) => {
-  const url = `http://localhost:8000/api/`;
+  const url = `http://43.205.147.191:8000/api/`;
   try {
     let response: any = null;
     switch (method) {

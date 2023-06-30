@@ -1,13 +1,15 @@
 import React, { useState, useRef } from "react";
 import {
   Group,
+  Button,
   TextInput,
   NumberInput,
+  Select,
   Space,
+  ActionIcon,
   Flex,
 } from "@mantine/core";
 import { Minus, Check, Plus } from "tabler-icons-react";
-import { Button,Select,ActionIcon } from "../../components/index";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
@@ -76,10 +78,10 @@ function AddOrEditProductForm(props: any) {
       inputRef.current.value = "";
     }
 
-    // setNumberValue(0);
+    setNumberValue(0);
 
     if (inputRef) {
-      inputRef.current.value = " ";
+      inputRef.current.value = "";
     }
   };
 
@@ -101,7 +103,6 @@ function AddOrEditProductForm(props: any) {
 
   const handleSubmit = async (formValues: typeof form.values) => {
     let obj: any = { ...formValues };
-    handleSaveCallback();
     if (variantRegionCostingList.length) {
       obj.costing = variantRegionCostingList;
     }
@@ -112,8 +113,7 @@ function AddOrEditProductForm(props: any) {
 
     if (addVariantResponse) {
       handleCloseModal(false);
-      // handleSaveCallback();
-
+      handleSaveCallback();
     }
   };
 
@@ -151,21 +151,17 @@ function AddOrEditProductForm(props: any) {
           <Group spacing="md" key={i}>
             <Select
               required
-              searchable
               defaultValue={k.region}
-              label="Select Source"
-              placeholder="Eg. Punjab"
+              label="Select Region"
+              placeholder="Eg. Karnal"
               data={regionOptions}
             />
 
             <NumberInput
               required
-              precision={2}
-              hideControls
-              type="number"
               defaultValue={k.exMill}
               label="Ex-Mill"
-              placeholder="eg. 2650.00"
+              placeholder="Eg. 26500"
             />
 
             <Flex
@@ -194,7 +190,6 @@ function AddOrEditProductForm(props: any) {
       <Group spacing="md" grow>
         <Select
           required
-          searchable
           label="Select Region"
           placeholder="Eg. Karnal"
           data={regionOptions}
@@ -207,11 +202,8 @@ function AddOrEditProductForm(props: any) {
 
         <NumberInput
           required
-          precision={2}
-          hideControls
-          type="number"
           label="Ex-Mill"
-          placeholder="eg. 2650.00"
+          placeholder="Eg. 26500"
           value={numberValue}
           onChange={(val: number) => {
             setNumberValue(val);

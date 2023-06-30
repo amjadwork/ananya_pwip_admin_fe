@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actions as userActions } from "../../redux/ducks/user";
+
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Button,
@@ -47,15 +51,18 @@ const LogoutButton = () => {
   );
 };
 
-const LoginScreen = () => {
+const LoginScreen = (props: any) => {
   const router = useNavigate();
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    const { setUserData } = props;
+
+    if (isAuthenticated && user) {
+      setUserData({ ...user });
       router("/admin/dashboard");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   return (
     <Container>
@@ -80,4 +87,21 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+const mapStateToProps = (state: any) => {
+  return {
+    user: state.userData.user,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    ...bindActionCreators(
+      {
+        ...userActions,
+      },
+      dispatch
+    ),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

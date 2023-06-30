@@ -14,8 +14,8 @@ import { useForm } from "@mantine/form";
 import { eceForm } from "../../constants/eceForm.constants";
 
 import { showNotification } from "@mantine/notifications";
-
-import APIRequest from "../../helper/api";
+import { getLocationData } from "../../services/export-costing/Locations";
+import { getPackagingData, getProductData, getSpecificCategoryData, getSpecificVariantData } from "../../services/export-costing/Playground";
 
 const initialFormState: any = {
   clearInputErrorOnChange: true,
@@ -166,7 +166,7 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetProductData = async () => {
-    const productResponse: any = await APIRequest("product", "GET");
+    const productResponse: any = await getProductData()
 
     if (productResponse) {
       setProductList(productResponse);
@@ -182,10 +182,7 @@ const EceForm: any = (props: any) => {
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
 
-    const categoryDetailResponse: any = await APIRequest(
-      `category?_productId=${productId}`,
-      "GET"
-    );
+    const categoryDetailResponse: any = await getSpecificCategoryData(productId)
     if (categoryDetailResponse) {
       setCategoryList(categoryDetailResponse[0].category || []);
 
@@ -199,10 +196,8 @@ const EceForm: any = (props: any) => {
   const handleGetVariantData = async (ids: Array<[]>) => {
     const categoryIds = ids;
 
-    const variantResponse: any = await APIRequest(
-      `variant?_categoryId=${categoryIds}`,
-      "GET"
-    );
+    const variantResponse: any = await getSpecificVariantData(categoryIds)
+
     if (variantResponse) {
       setVariantsList(variantResponse);
 
@@ -211,7 +206,8 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetPackageData = async (dataType?: any) => {
-    const packagingResponse: any = await APIRequest(`packaging`, "GET");
+    const packagingResponse: any = await getPackagingData()
+    
     if (packagingResponse) {
       if (dataType === "weight") {
         handleSettingFormValues(packagingResponse, "bagWeight", "weight");
@@ -224,7 +220,7 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetLocationsData = async () => {
-    const locationResponse: any = await APIRequest(`location`, "GET");
+    const locationResponse: any = await getLocationData()
     if (locationResponse) {
       setLocationList(locationResponse);
 

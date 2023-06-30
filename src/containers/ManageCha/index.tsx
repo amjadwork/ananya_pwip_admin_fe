@@ -18,11 +18,35 @@ import {
   Text,
 } from "../../components/index";
 
+// import {Group,Popover,Space} from "@mantine/core";
+// import {Pencil,X,Check} from "tabler-icons-react";
+// import {Button,ActionIcon,Text} from "../../components/index";
+
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
+// import CardModal from "../../components/CardModal/CardModal";
+import DataTable from "../../components/DataTable/DataTable";
+import { dummyCHA } from "../../constants/chaData.constants";
 
-import APIRequest from "../../helper/api";
+import {
+  getChaData,
+  getDestinationData,
+  getRegionSource,
+  postChaData,
+} from "../../services/export-costing/CHA";
+
+const columns = [
+  "Origin",
+  "Destination",
+  "CHA",
+  "SilicaGel",
+  "CraftPaper",
+  "Transport",
+  "Custom",
+  "Loading",
+];
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader />;
@@ -138,11 +162,11 @@ function ManageChaContainer() {
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [chaData, setChaData] = React.useState<any>([]);
-  // const [tempChaArray, setTempChaArray] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
+  const [dataCopy, setDataCopy] = React.useState<any>([]);
 
   //What does this below function do? Is it necessary? #askSwain
   const handleRefetchChaList = (chaPostResponse: any) => {
@@ -153,15 +177,14 @@ function ManageChaContainer() {
   };
 
   const getCHAList = async (regionList: any) => {
-    const chaResponse: any = await APIRequest("cha", "GET");
+    const chaDataResponse: any = await getChaData(regionList);
     try {
-      if (chaResponse) {
-        console.log(regionList);
+      if (chaDataResponse) {
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
 
-          chaResponse.forEach((region: any) => {
+          chaDataResponse.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
@@ -177,6 +200,7 @@ function ManageChaContainer() {
         });
 
         setChaData(() => [...array]);
+        setDataCopy(() => [...array]);
       }
     } catch (error) {
       console.log(error);
@@ -194,10 +218,7 @@ function ManageChaContainer() {
   };
 
   const handleGetRegionSource = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
+    const regionResponse = await getRegionSource();
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -238,11 +259,12 @@ function ManageChaContainer() {
     });
 
     setChaData(() => [...chaArr]);
+    setDataCopy(() => [...chaArr]);
   };
 
   const handleSaveAction = async () => {
     if (chaAPIPayload) {
-      const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+      const chaResponse = await postChaData(chaAPIPayload);
 
       if (chaResponse) {
         handleGetRegionSource();
@@ -255,10 +277,7 @@ function ManageChaContainer() {
   };
 
   const handleGetDestination = async () => {
-    const destinationResponse = await APIRequest(
-      "location?filterType=destination",
-      "GET"
-    );
+    const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(
@@ -423,6 +442,18 @@ function ManageChaContainer() {
           );
         })}
       </SimpleGrid>
+      {/* <PageLabel
+        title="CHA Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      /> */}
+      {/* <Space h="lg" /> */}
+
+      {/* <DataTable
+      dataCopy={dummyCHA}
+      // destinationSelectOptions={destinationSelectOptions}
+      columns={columns}
+      /> */}
     </PageWrapper>
   );
 }
