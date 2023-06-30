@@ -11,6 +11,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
    
     {
@@ -21,6 +22,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -30,6 +32,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -39,6 +42,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -48,9 +52,9 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
 
-
     {
         "destinationPort":"Dijibouti",
         "chaCharges":"32.3",
@@ -59,6 +63,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -68,6 +73,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -77,6 +83,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
        
     },
 
@@ -88,6 +95,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
       
     },
     {
@@ -98,6 +106,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -107,6 +116,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -116,6 +126,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
 
     {
@@ -126,6 +137,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -135,6 +147,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
       
@@ -145,6 +158,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
    
@@ -155,6 +169,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
 
     {
@@ -166,6 +181,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -175,6 +191,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -184,6 +201,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -193,6 +211,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     ],
 },
@@ -208,6 +227,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
    
     {
@@ -218,6 +238,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -227,6 +248,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -236,6 +258,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -245,6 +268,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
    
@@ -255,6 +279,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -264,6 +289,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -273,6 +299,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -282,6 +309,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     ],
 },
@@ -297,6 +325,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
    
     {
@@ -307,6 +336,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
         "destinationPort":"Dijibouti",
@@ -316,6 +346,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     {
    
@@ -326,6 +357,7 @@ export const dummyCHA= [
         "transportCharges":"22.2",
         "customCharges":"9318.3",
         "loadingCharges":"8194.3",
+        "cooCharges": "23.33",
     },
     ],
 },

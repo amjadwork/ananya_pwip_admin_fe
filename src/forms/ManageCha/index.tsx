@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
 import { Select, Button, ActionIcon } from "../../components/index";
 import { Minus} from "tabler-icons-react";
@@ -32,7 +32,6 @@ function EditChaForm(props: any) {
     clearInputErrorOnChange: true,
     initialValues: chaFormValues,
   });
-
   const handleAddItem: any = () => {
     const object: any = { ...form.values };
     const originPortId = object["_originPortId_|"];
@@ -56,13 +55,15 @@ function EditChaForm(props: any) {
         };
       });
     destinationsArr.push(destinationObject);
+    console.log("dArr", destinationsArr)
 
     const payloadObject: any = {
       _originPortId: originPortId,
       destinations: [...destinationsArr],
     };
     setChaPayload(payloadObject);
-
+    console.log("payloadObject", payloadObject)
+  
     const formResetValues = {
       ...initialFormValues,
       "_originPortId_|": originPortId, 
@@ -70,6 +71,9 @@ function EditChaForm(props: any) {
     form.setValues({
       ...formResetValues,
     });
+    console.log("chapayload", chaPayload)
+    console.log("reset", formResetValues)
+
 
     setChaFormValues(formResetValues);
     // setChaPayload(payloadObject);

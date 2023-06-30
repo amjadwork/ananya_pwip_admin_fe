@@ -4,7 +4,6 @@ import { Input } from "../../components";
 
 interface DataTableProps {
   dataCopy: any[];
-  // destinationSelectOptions: any[];
   columns: string[];
 }
 
@@ -168,6 +167,7 @@ const DataTable = (props: DataTableProps) => {
               <td>{listItem.transportCharges}</td>
               <td>{listItem.customCharges}</td>
               <td>{listItem.loadingCharges}</td>
+              <td>{listItem.cooCharges}</td>
             </tr>
           );
         })}
