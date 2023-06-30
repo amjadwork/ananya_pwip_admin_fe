@@ -13,6 +13,7 @@ import {
   Heart,
   Dice,
   Star,
+  Dashboard,
 } from "tabler-icons-react";
 
 import { Text } from "../../components/index";
@@ -26,10 +27,10 @@ interface Props {
 const OptionIcons: any = (props: any) => {
   const { icon, color } = props;
 
-  if (icon === "home") {
+  if (icon === "dashboard") {
     return (
       <ThemeIcon variant="light" color={color || "dark"} size="lg">
-        <Home size={20} />
+        <Dashboard size={20} />
       </ThemeIcon>
     );
   }

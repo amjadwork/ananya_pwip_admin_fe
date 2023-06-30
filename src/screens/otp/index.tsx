@@ -5,7 +5,7 @@ import { Container } from "@mantine/core";
 import { TextInput, Grid, Box } from "@mantine/core";
 import { Button, SimpleGrid, Loader, Space, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import DashboardScreen from "../dashboard";
+import DashboardScreen from "../admin";
 
 import { showNotification } from "@mantine/notifications";
 import { Card } from "../../components/index";

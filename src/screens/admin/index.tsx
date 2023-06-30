@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 
-import AppLayout from "../../layouts/AppLayout";
+import AdminAppLayout from "../../layouts/AdminAppLayout";
 import withAuth from "../../hoc/withAuth";
-import { ErrorContext } from "./../../context/errorContext";
+import { ErrorContext } from "../../context/errorContext";
 
-function DashboardScreen() {
+function AdminScreen() {
   const [error, setError] = useState(false);
+
   return (
     <ErrorContext.Provider value={{ error, setError }}>
-      <AppLayout />;
+      <AdminAppLayout />;
     </ErrorContext.Provider>
   );
 }
 
-export default withAuth(DashboardScreen);
+export default withAuth(AdminScreen);

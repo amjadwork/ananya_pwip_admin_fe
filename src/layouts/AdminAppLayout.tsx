@@ -12,22 +12,12 @@ import {
   Text,
 } from "@mantine/core";
 
-import ProductsContainer from "../containers/Products";
-import ManageProductsContainer from "../containers/ManageProducts";
-import LocationsContainer from "../containers/Locations";
-import ManagePackageContainer from "../containers/ManagePackage";
-import PlaygroundContainer from "../containers/Playground";
-import ManageChaContainer from "../containers/ManageCha";
-import ManageShlContainer from "../containers/ManageShl";
-import ManageOfcContainer from "../containers/ManageOfc";
-import ManageTransportContainer from "../containers/ManageTransport";
-import ManagePwipServicesContainer from "../containers/ManagePwipService";
-import ManageOthersContainer from "../containers/ManageOthers";
+import ExportCostingLayout from "./ExportCostingLayout";
 
 import Header from "../components/common/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 
-const AppLayout: React.FC<any> = ({ children }) => {
+const AdminAppLayout: React.FC<any> = ({ children }) => {
   const [opened, setOpened] = useState(false);
 
   const navigate = useNavigate();
@@ -110,23 +100,8 @@ const AppLayout: React.FC<any> = ({ children }) => {
       >
         <Container>
           <Routes>
-            <Route path="/" element={<PlaygroundContainer />} />
-            <Route path="/products" element={<ProductsContainer />} />
-            <Route path="/products/:id" element={<ManageProductsContainer />} />
-            <Route path="/locations" element={<LocationsContainer />} />
-            <Route path="/cha" element={<ManageChaContainer />} />
-            <Route path="/Shl" element={<ManageShlContainer />} />
-            <Route
-              path="/managePackaging"
-              element={<ManagePackageContainer />}
-            />
-            <Route path="/Ofc" element={<ManageOfcContainer />} />
-            <Route path="/transport" element={<ManageTransportContainer />} />
-            <Route
-              path="/pwipServices"
-              element={<ManagePwipServicesContainer />}
-            />
-            <Route path="/others" element={<ManageOthersContainer />} />
+            <Route path="/" element={<div></div>} />
+            <Route path="/export-costing" element={<ExportCostingLayout />} />
           </Routes>
         </Container>
       </AppShell>
@@ -134,4 +109,4 @@ const AppLayout: React.FC<any> = ({ children }) => {
   );
 };
 
-export default AppLayout;
+export default AdminAppLayout;

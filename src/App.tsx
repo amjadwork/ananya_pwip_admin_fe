@@ -3,9 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "./App.css";
 
-import DashboardScreen from "./screens/dashboard";
+import AdminScreen from "./screens/admin";
 import LoginScreen from "./screens/login";
-import OTPScreen from "./screens/otp";
 
 import ProtectedRoute from "./auth/protected-route";
 import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
@@ -22,7 +21,7 @@ function App() {
           <Route path="/" element={<LoginScreen />} />
           <Route
             path={`${root}/*`}
-            element={<ProtectedRoute element={() => <DashboardScreen />} />}
+            element={<ProtectedRoute element={() => <AdminScreen />} />}
           />
         </Routes>
       </Auth0ProviderWithHistory>
