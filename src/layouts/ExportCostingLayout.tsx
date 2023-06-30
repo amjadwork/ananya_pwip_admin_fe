@@ -1,7 +1,13 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
-import { Container, MantineProvider } from "@mantine/core";
+import {
+  MantineProvider,
+  Container,
+  Box,
+  Tabs,
+  createStyles,
+} from "@mantine/core";
 
 import ProductsContainer from "../containers/Products";
 import ManageProductsContainer from "../containers/ManageProducts";
@@ -15,7 +21,49 @@ import ManageTransportContainer from "../containers/ManageTransport";
 import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
 
+const useStyles = createStyles((theme) => ({
+  tabs: {
+    [theme.fn.smallerThan("sm")]: {
+      display: "none",
+    },
+  },
+
+  tabsList: {
+    borderBottom: "0 !important",
+  },
+
+  tab: {
+    fontWeight: 600,
+    height: "38px",
+    backgroundColor: "transparent",
+
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[5]
+          : theme.colors.gray[1],
+    },
+
+    "&[data-active]": {
+      backgroundColor:
+        theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+      borderColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[7]
+          : theme.colors.gray[2],
+    },
+  },
+}));
+
 const ExportCostingLayout: React.FC<any> = () => {
+  const { classes } = useStyles();
+
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path, { replace: true });
+  };
+
   return (
     <MantineProvider
       withGlobalStyles
@@ -26,6 +74,56 @@ const ExportCostingLayout: React.FC<any> = () => {
         },
       }}
     >
+      <Box
+        component="div"
+        sx={(theme: any) => ({
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: theme.colors.gray[1],
+        })}
+      >
+        <Container>
+          <Tabs
+            defaultValue="products"
+            variant="outline"
+            classNames={{
+              root: classes.tabs,
+              tabsList: classes.tabsList,
+              tab: classes.tab,
+            }}
+          >
+            <Tabs.List>
+              {[
+                "playground",
+                "products",
+                "locations",
+                "cha",
+                "Shl",
+                "managePackaging",
+                "Ofc",
+                "transport",
+              ].map((list: any) => {
+                return (
+                  <Tabs.Tab
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(list === "playground" ? "" : list);
+                    }}
+                    value={list}
+                    sx={{
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {list}
+                  </Tabs.Tab>
+                );
+              })}
+            </Tabs.List>
+          </Tabs>
+        </Container>
+      </Box>
       <Container>
         <Routes>
           <Route path="/" element={<PlaygroundContainer />} />

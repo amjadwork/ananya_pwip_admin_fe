@@ -6,7 +6,7 @@ import APIRequest from "./../../helper/api";
 import { ErrorContext } from "./../../context/errorContext";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import {ProductCard as Card, ActionIcon, Alert}from "../../components/index";
+import { ProductCard as Card, ActionIcon, Alert } from "../../components/index";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 import AddProductForm from "../../forms/Products/index";
@@ -17,7 +17,6 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <PageHeader
-      title="Products"
       label="FILTER BY"
       radioOptions={[
         { label: "All", value: "all" },

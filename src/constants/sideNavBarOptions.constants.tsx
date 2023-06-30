@@ -1,5 +1,4 @@
 import {
-  Disc,
   PresentationAnalytics,
   Help,
   Apps,

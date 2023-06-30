@@ -1,12 +1,9 @@
 import React from "react";
 
-import {
-  Anchor,
-  useMantineTheme,
-} from "@mantine/core";
+import { Anchor, useMantineTheme } from "@mantine/core";
 
 import { useStyles } from "../../styles/components/pageHeader.style";
-import {Radio,Text} from "../../components";
+import { Radio, Text } from "../../components";
 interface Props {
   title?: string;
   label?: string;
@@ -34,10 +31,10 @@ const PageHeader: React.FC<Props> = ({
   ));
 
   return (
-    <div style={{ width: "50vw"}}>
-      <Text size="xl" weight="bold" color="gray">
+    <div style={{ width: "50vw", paddingTop: "62px" }}>
+      {/* <Text size="xl" weight="bold" color="gray">
         {title}
-      </Text>
+      </Text> */}
       {label && (
         <Text size="xs" weight="normal" color={theme.colors.gray[6]}>
           {label}
@@ -57,7 +54,7 @@ const PageHeader: React.FC<Props> = ({
                     label={opt.label}
                     size="xs"
                     color="blue"
-                    onChange={(value:any) => {
+                    onChange={(value: any) => {
                       handleRadioChange(value, index);
                     }}
                     style={{
@@ -69,7 +66,7 @@ const PageHeader: React.FC<Props> = ({
           </div>
         </div>
       )}
-{/* 
+      {/* 
       {breadcrumbs && (
         <div className={classes.breadcrumbWrapper}>
           <div style={{ display: "inline-flex", alignItems: "center" }}>

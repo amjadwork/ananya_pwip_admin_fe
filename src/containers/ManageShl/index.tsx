@@ -10,8 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import { Card as SectionCard, Input, Button,Text, ActionIcon} from "../../components/index";
-
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditShlForm from "../../forms/ManageShl/index";
 
@@ -26,11 +31,10 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <PageHeader
-      title="Manage Shipping Line Locals Charges"
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
+    // breadcrumbs={[
+    //   { title: "Products", href: "/admin/dashboard/products" },
+    //   { title: "Manage", href: "#" },
+    // ]}
     />
   );
 };
@@ -143,7 +147,7 @@ function ManageShlContainer() {
 
   const getSHLList = async (regionList: any) => {
     const shlResponse: any = await APIRequest("shl", "GET");
-console.log("abc",regionList);
+    console.log("abc", regionList);
     if (shlResponse) {
       let array: any = regionList.map((item: any) => {
         let destinationArr: any = [];
@@ -320,7 +324,7 @@ console.log("abc",regionList);
 
       <SimpleGrid cols={2}>
         {shlData.map((item: any, index: number) => {
-          console.log(item)
+          console.log(item);
           return (
             <SectionCard
               key={index}

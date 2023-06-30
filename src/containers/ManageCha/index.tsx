@@ -25,7 +25,7 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import APIRequest from "../../helper/api";
 
 const RenderPageHeader = (props: any) => {
-  return <PageHeader title="Manage CHA Charges" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {

@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 
 import {
-  Container,
+  Box,
   MantineProvider,
   AppShell,
-  Navbar,
   Header as HeaderWrapper,
   Footer,
   Text,
@@ -16,7 +15,7 @@ import ExportCostingLayout from "./ExportCostingLayout";
 import Header from "../components/common/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 
-const AdminAppLayout: React.FC<any> = ({ children }) => {
+const AdminAppLayout: React.FC<any> = () => {
   const [opened, setOpened] = useState(false);
 
   const navigate = useNavigate();
@@ -41,21 +40,7 @@ const AdminAppLayout: React.FC<any> = ({ children }) => {
         fixed
         padding="sm"
         zIndex={0}
-        navbar={
-          // <Navbar
-          //   width={{ base: 300 }}
-          //   p="md"
-          //   hiddenBreakpoint="md"
-          //   hidden={!opened}
-          //   fixed={true}
-          //   position={{
-          //     bottom: 0,
-          //   }}
-          // >
-          //   <SideNavBar action={handleNavigation} />
-          // </Navbar>
-          <SideNavBar opened={opened} action={handleNavigation} />
-        }
+        navbar={<SideNavBar opened={opened} action={handleNavigation} />}
         header={
           <HeaderWrapper height={70} p="md">
             <Header
@@ -95,15 +80,21 @@ const AdminAppLayout: React.FC<any> = ({ children }) => {
             [`@media (max-width: ${theme.breakpoints.md}px)`]: {
               paddingLeft: 12,
             },
+            paddingLeft: "calc(var(--mantine-navbar-width, 0px))",
           },
         })}
       >
-        <Container>
+        <Box
+          component="div"
+          sx={{
+            position: "relative",
+          }}
+        >
           <Routes>
             <Route path="/" element={<div></div>} />
-            <Route path="/export-costing" element={<ExportCostingLayout />} />
+            <Route path="/export-costing/*" element={<ExportCostingLayout />} />
           </Routes>
-        </Container>
+        </Box>
       </AppShell>
     </MantineProvider>
   );

@@ -9,7 +9,12 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Button, ActionIcon, Text} from "../../components/index";
+import {
+  Card as SectionCard,
+  Button,
+  ActionIcon,
+  Text,
+} from "../../components/index";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -18,7 +23,7 @@ import EditLocationFormContainer from "../../forms/Location/index";
 import APIRequest from "./../../helper/api";
 
 const RenderPageHeader = (props: any) => {
-  return <PageHeader title="Manage Locations" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -59,7 +64,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -203,34 +208,39 @@ function LocationsContainer() {
         <RenderModalContent
           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
           handleSettingLocationData={(data: any) => {
-            let payload = {...data};
+            let payload = { ...data };
 
             payload.destination = payload.destination.map((p: any) => {
               const linkedOrigin = [...p.linkedOrigin];
-              const newLinkedOrigin = locationData.origin.filter((o: any) => {
-                if(linkedOrigin.includes(o._id)) {
-                  return o
-                }
-              }).map((o: any) => {
-                return {
-                  originPortName: o.portName,
-                  _originId: o._id
-                }
-              })
+              const newLinkedOrigin = locationData.origin
+                .filter((o: any) => {
+                  if (linkedOrigin.includes(o._id)) {
+                    return o;
+                  }
+                })
+                .map((o: any) => {
+                  return {
+                    originPortName: o.portName,
+                    _originId: o._id,
+                  };
+                });
 
               return {
                 ...p,
-                linkedOrigin: [...newLinkedOrigin]
-              }
-            })
+                linkedOrigin: [...newLinkedOrigin],
+              };
+            });
             setLocationPayload(payload);
 
             const obj: any = {
               source: [...locationData.source, ...payload.source],
               origin: [...locationData.origin, ...payload.origin],
-              destination: [...locationData.destination, ...payload.destination],
+              destination: [
+                ...locationData.destination,
+                ...payload.destination,
+              ],
             };
-            
+
             setLocationData(obj);
           }}
           locationPayload={locationPayload}
@@ -277,7 +287,7 @@ function LocationsContainer() {
                     {locationData[locationType].map((d: any, i: number) => (
                       <Box
                         key={i}
-                        sx={(theme:any) => ({
+                        sx={(theme: any) => ({
                           display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
@@ -308,7 +318,7 @@ function LocationsContainer() {
                             : d.portName}
                           <Text
                             size="sm"
-                            sx={(theme:any) => ({
+                            sx={(theme: any) => ({
                               color: theme.colors.dark[1],
                             })}
                           >

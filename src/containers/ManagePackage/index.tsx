@@ -10,9 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import {Card as SectionCard, Button, Input, ActionIcon, Text} from "../../components/index"
-
-
+import {
+  Card as SectionCard,
+  Button,
+  Input,
+  ActionIcon,
+  Text,
+} from "../../components/index";
 
 import EditPackageContainer from "./EditPackage/EditPackage";
 
@@ -25,7 +29,7 @@ const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
 
-  return <PageHeader title="Manage Packaging" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -66,7 +70,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -211,7 +215,7 @@ function ManagePackageContainer() {
       )}
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -255,7 +259,7 @@ function ManagePackageContainer() {
                   {cat.list.map((d: any, i: number) => (
                     <Box
                       key={i}
-                      sx={(theme:any) => ({
+                      sx={(theme: any) => ({
                         display: "block",
                         backgroundColor:
                           theme.colorScheme === "dark"
@@ -284,7 +288,7 @@ function ManagePackageContainer() {
                           <Text
                             size="sm"
                             weight="normal"
-                            sx={(theme:any) => ({
+                            sx={(theme: any) => ({
                               color: theme.colors.dark[1],
                             })}
                           >

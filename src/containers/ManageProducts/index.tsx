@@ -11,7 +11,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import { Card as SectionCard, Button, Select, Text, ActionIcon} from "../../components/index";
+import {
+  Card as SectionCard,
+  Button,
+  Select,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts/index";
@@ -24,7 +30,6 @@ const RenderPageHeader = () => {
   return (
     <Group>
       <PageHeader
-        title="Manage Products"
         breadcrumbs={[
           { title: "Products", href: "/admin/dashboard/products" },
           { title: "Manage", href: "#" },
@@ -72,7 +77,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -124,7 +129,6 @@ const RenderPageAction = (props: any) => {
   );
 };
 
-
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const categoryData = props.categoryData;
@@ -148,22 +152,20 @@ const RenderModalContent = (props: any) => {
   );
 };
 
-function ManageProductsContainer(props:any) {
+function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [productData, setProductData] = useState<any>("");
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
-  const[ sourceList , setSourceList] = useState<any>([]);
+  const [sourceList, setSourceList] = useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
 
   const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
   const [status, setStatus] = React.useState<any>(productData.status || "");
   const [selectedVariantData, setSelectedVariantData] =
-  React.useState<any>(null);
-
-
+    React.useState<any>(null);
 
   useEffect(() => {
     handleGetProductData();
@@ -182,7 +184,6 @@ function ManageProductsContainer(props:any) {
       "PUT",
       payload
     );
-
 
     if (updateStatusResponse) {
       handleRefreshCalls();
@@ -237,8 +238,8 @@ function ManageProductsContainer(props:any) {
       "location?filterType=source",
       "GET"
     );
-    console.log("sourceResponse", sourceResponse[0])
-    setSourceList(sourceResponse[0].source)
+    console.log("sourceResponse", sourceResponse[0]);
+    setSourceList(sourceResponse[0].source);
 
     if (sourceResponse) {
       const sourceOptions = sourceResponse[0].source.map((d: any) => {
@@ -249,7 +250,7 @@ function ManageProductsContainer(props:any) {
       });
       setSourceSelectOptions(() => [...sourceOptions]);
     }
-  }; 
+  };
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -290,7 +291,6 @@ function ManageProductsContainer(props:any) {
           handleEditAction={handleSave}
           editModeActive={editModeActive}
           handleSaveAction={handleSave}
-
         />
       )}
       modalOpen={modalOpen || updateModalOpen}
@@ -325,7 +325,7 @@ function ManageProductsContainer(props:any) {
       modalSize="70%"
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -344,30 +344,32 @@ function ManageProductsContainer(props:any) {
         <Group position="apart">
           <Title order={1}>{productData?.name || ""}</Title>
           <Badge size="lg" color="green" variant="light">
-            {productData?.status || ""}</Badge>
-            {editModeActive && 
+            {productData?.status || ""}
+          </Badge>
+          {editModeActive && (
             <Group spacing="md">
-             <Select
-              placeholder="Status"
-              data={[
-                { value: "live", label: "Live" },
-                { value: "pending", label: "Pending" },
-                { value: "disabled", label: "Disabled" },
-                { value: "review", label: "Review" },
-              ]}
-              defaultValue={productData?.status || "Select status"}
-              onChange={(value: any) => {
-                setStatus(value);
-              }}
-            />
-           <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add Variant
-             </Button>
-            </Group>}
+              <Select
+                placeholder="Status"
+                data={[
+                  { value: "live", label: "Live" },
+                  { value: "pending", label: "Pending" },
+                  { value: "disabled", label: "Disabled" },
+                  { value: "review", label: "Review" },
+                ]}
+                defaultValue={productData?.status || "Select status"}
+                onChange={(value: any) => {
+                  setStatus(value);
+                }}
+              />
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add Variant
+              </Button>
+            </Group>
+          )}
         </Group>
       </Box>
 
@@ -395,7 +397,7 @@ function ManageProductsContainer(props:any) {
                       return (
                         <Box
                           key={i}
-                          sx={(theme:any) => ({
+                          sx={(theme: any) => ({
                             display: "block",
                             backgroundColor:
                               theme.colorScheme === "dark"
@@ -422,7 +424,7 @@ function ManageProductsContainer(props:any) {
                             {d.name}{" "}
                             <Text
                               size="sm"
-                              sx={(theme:any) => ({
+                              sx={(theme: any) => ({
                                 color: theme.colors.dark[1],
                               })}
                             >
