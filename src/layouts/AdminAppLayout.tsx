@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-// import {ErrorContext} from './../context/errorContext';
 
 import {
   Container,
@@ -43,18 +42,19 @@ const AdminAppLayout: React.FC<any> = ({ children }) => {
         padding="sm"
         zIndex={0}
         navbar={
-          <Navbar
-            width={{ base: 300 }}
-            p="md"
-            hiddenBreakpoint="md"
-            hidden={!opened}
-            fixed={true}
-            position={{
-              bottom: 0,
-            }}
-          >
-            <SideNavBar action={handleNavigation} />
-          </Navbar>
+          // <Navbar
+          //   width={{ base: 300 }}
+          //   p="md"
+          //   hiddenBreakpoint="md"
+          //   hidden={!opened}
+          //   fixed={true}
+          //   position={{
+          //     bottom: 0,
+          //   }}
+          // >
+          //   <SideNavBar action={handleNavigation} />
+          // </Navbar>
+          <SideNavBar opened={opened} action={handleNavigation} />
         }
         header={
           <HeaderWrapper height={70} p="md">

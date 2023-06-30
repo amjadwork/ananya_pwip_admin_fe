@@ -1,16 +1,7 @@
-import React, { useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
-// import {ErrorContext} from './../context/errorContext';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 
-import {
-  Container,
-  MantineProvider,
-  // AppShell,
-  // Navbar,
-  Header as HeaderWrapper,
-  // Footer,
-  // Text,
-} from "@mantine/core";
+import { Container, MantineProvider } from "@mantine/core";
 
 import ProductsContainer from "../containers/Products";
 import ManageProductsContainer from "../containers/ManageProducts";
@@ -24,18 +15,7 @@ import ManageTransportContainer from "../containers/ManageTransport";
 import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
 
-// import Header from "../components/common/Header";
-// import SideNavBar from "../components/SideNavBar/SideNavBar";
-
-const ExportCostingLayout: React.FC<any> = ({ children }) => {
-  // const [opened, setOpened] = useState(false);
-
-  // const navigate = useNavigate();
-
-  // const handleNavigation = (path: string) => {
-  //   navigate(path, { replace: true });
-  // };
-
+const ExportCostingLayout: React.FC<any> = () => {
   return (
     <MantineProvider
       withGlobalStyles
