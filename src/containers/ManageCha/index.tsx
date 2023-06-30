@@ -10,7 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Button, Input, ActionIcon,Text} from "../../components/index";
+import {
+  Card as SectionCard,
+  Button,
+  Input,
+  ActionIcon,
+  Text,
+} from "../../components/index";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
@@ -60,7 +66,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -126,7 +132,6 @@ const RenderModalContent = (props: any) => {
   );
 };
 
-
 function ManageChaContainer() {
   const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
@@ -139,7 +144,7 @@ function ManageChaContainer() {
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
 
-//What does this below function do? Is it necessary? #askSwain
+  //What does this below function do? Is it necessary? #askSwain
   const handleRefetchChaList = (chaPostResponse: any) => {
     if (chaPostResponse) {
       handleGetRegionSource();
@@ -151,18 +156,18 @@ function ManageChaContainer() {
     const chaResponse: any = await APIRequest("cha", "GET");
     try {
       if (chaResponse) {
-        console.log(regionList)
+        console.log(regionList);
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
-  
+
           chaResponse.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
             }
           });
-  
+
           return {
             ...item,
             list: originIdStringArr.includes(item._originPortId)
@@ -170,11 +175,11 @@ function ManageChaContainer() {
               : [],
           };
         });
-  
+
         setChaData(() => [...array]);
-      }  
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -236,13 +241,13 @@ function ManageChaContainer() {
   };
 
   const handleSaveAction = async () => {
-    if(chaAPIPayload){
-    const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
-    
-    if (chaResponse) {
-      handleGetRegionSource()
+    if (chaAPIPayload) {
+      const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+
+      if (chaResponse) {
+        handleGetRegionSource();
+      }
     }
-  }
   };
 
   const handleSave = (bool: boolean) => {
@@ -321,7 +326,7 @@ function ManageChaContainer() {
       modalSize="70%"
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -341,13 +346,15 @@ function ManageChaContainer() {
           <Title order={1}>CHA Charges</Title>
           <Group spacing="md">
             <Input placeholder="Search" />
-            {editModeActive && <Button
-              type="submit"
-              leftIcon={<Plus size={14} />}
-              onClick={() => setModalOpen(true)}
-            >
-              Add
-            </Button>}
+            {editModeActive && (
+              <Button
+                type="submit"
+                leftIcon={<Plus size={14} />}
+                onClick={() => setModalOpen(true)}
+              >
+                Add
+              </Button>
+            )}
           </Group>
         </Group>
       </Box>
@@ -378,7 +385,7 @@ function ManageChaContainer() {
                     return (
                       <Box
                         key={i}
-                        sx={(theme:any) => ({
+                        sx={(theme: any) => ({
                           display: "block",
                           backgroundColor:
                             theme.colorScheme === "dark"
@@ -417,7 +424,7 @@ function ManageChaContainer() {
         })}
       </SimpleGrid>
     </PageWrapper>
-  )
+  );
 }
 
 export default ManageChaContainer;
