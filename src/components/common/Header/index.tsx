@@ -4,9 +4,12 @@ import {
   MediaQuery,
   Burger,
   useMantineTheme,
+  ActionIcon,
 } from "@mantine/core";
+import { Logout } from "tabler-icons-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
-import {Button,Text} from "../../index";
+import { Button, Text } from "../../index";
 import { HeaderOptions } from "../../../constants/header.constants";
 import { useNavigate } from "react-router-dom";
 import { showNotification } from "@mantine/notifications";
@@ -23,6 +26,7 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
   const { classes } = useStyles();
   const theme = useMantineTheme();
   const Router = useNavigate();
+  const { logout } = useAuth0();
 
   return (
     <header className={classes.headerContainer}>
@@ -51,28 +55,21 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
           ))}
 
           <div className={classes.menuItemWrapper}>
-            <Button
-              onClick={action}
-              type="button"
-              variant="outline"
+            <ActionIcon
+              onClick={() => {
+                logout({ logoutParams: { returnTo: window.location.origin } });
+                // Router("/");
+                showNotification({
+                  title: "Logged out succesfully",
+                  message: "",
+                  autoClose: 1500,
+                });
+              }}
+              variant="light"
               color="blue"
             >
-              <Text
-                size="sm"
-                color="blue"
-                onClick={() => {
-                  localStorage.removeItem("access_token");
-                  Router("/");
-                  showNotification({
-                    title: "Logged out succesfully",
-                    message: "",
-                    autoClose: 1500,
-                  });
-                }}
-              >
-                Logout
-              </Text>
-            </Button>
+              <Logout size={16} />
+            </ActionIcon>
           </div>
         </div>
       </MediaQuery>

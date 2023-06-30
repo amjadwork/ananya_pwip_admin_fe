@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar, ScrollArea } from "@mantine/core";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { NavbarOptions } from "../../constants/sideNavBarOptions.constants";
 import { useStyles } from "../../styles/components/sideNavBar.style";
@@ -13,7 +14,10 @@ interface Props {
 }
 
 const SideNavBar: React.FC<Props> = ({ action, opened }) => {
+  const { user } = useAuth0();
   const { classes } = useStyles();
+
+  console.log(user);
 
   const links = NavbarOptions.map((item) => {
     return <LinksGroup {...item} key={item.label} action={action} />;
@@ -36,11 +40,13 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <UserButton
-          image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-          name="Ann Nullpointer"
-          email="anullpointer@yahoo.com"
-        />
+        {user && (
+          <UserButton
+            image={user.picture}
+            name={user.name || ""}
+            email={user.email || ""}
+          />
+        )}
       </Navbar.Section>
     </Navbar>
   );

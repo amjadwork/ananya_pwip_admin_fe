@@ -166,7 +166,7 @@ const OTPScreen = (props: any) => {
     <form
     // onSubmit={form.onSubmit(handleSubmit, handleError)}
     >
-      <>
+      {/* <>
         <AspectRatio ratio={290 / 182} sx={{ maxWidth: 300 }} mx="auto">
           <img src="https://admin-uat.pwip.co/assets/logo.png"></img>
         </AspectRatio>
@@ -222,7 +222,7 @@ const OTPScreen = (props: any) => {
             </Grid.Col>
           </Grid>
         </Card>
-      </>
+      </> */}
     </form>
   );
 };
