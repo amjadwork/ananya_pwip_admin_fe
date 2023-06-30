@@ -10,8 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Input, Button, Text, ActionIcon} from "../../../components/index";
-
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../../components/index";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
@@ -25,7 +30,7 @@ const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
 
-  return <PageHeader title="Manage Packaging" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -69,7 +74,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -192,7 +197,7 @@ function EditPackageContainer(props: any) {
       modalSize="70%"
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -245,7 +250,7 @@ function EditPackageContainer(props: any) {
                   {cat.list.map((d: any, i: number) => (
                     <Box
                       key={i}
-                      sx={(theme:any) => ({
+                      sx={(theme: any) => ({
                         display: "block",
                         backgroundColor:
                           theme.colorScheme === "dark"
@@ -275,7 +280,7 @@ function EditPackageContainer(props: any) {
                             <Text
                               size="sm"
                               weight="normal"
-                              sx={(theme:any) => ({
+                              sx={(theme: any) => ({
                                 color: theme.colors.dark[1],
                               })}
                             >

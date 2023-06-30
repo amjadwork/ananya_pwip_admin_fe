@@ -82,6 +82,7 @@ const ExportCostingLayout: React.FC<any> = () => {
           left: 0,
           width: "100%",
           backgroundColor: theme.colors.gray[1],
+          paddingTop: "16px",
         })}
       >
         <Container>

@@ -30,10 +30,10 @@ const RenderPageHeader = () => {
   return (
     <Group>
       <PageHeader
-        breadcrumbs={[
-          { title: "Products", href: "/admin/dashboard/products" },
-          { title: "Manage", href: "#" },
-        ]}
+      // breadcrumbs={[
+      //   { title: "Products", href: "/admin/dashboard/products" },
+      //   { title: "Manage", href: "#" },
+      // ]}
       />
     </Group>
   );

@@ -10,8 +10,12 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Button, Text, ActionIcon} from "../../../components/index";
-
+import {
+  Card as SectionCard,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../../components/index";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
@@ -24,7 +28,7 @@ const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
 
-  return <PageHeader title="Manage Others" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -121,8 +125,8 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  const handleCloseModal=props.handleCloseModal;
-  return <EditOthersForm handleCloseModal={handleCloseModal}/>;
+  const handleCloseModal = props.handleCloseModal;
+  return <EditOthersForm handleCloseModal={handleCloseModal} />;
 };
 
 function EditOthersContainer(props: any) {
@@ -156,22 +160,24 @@ function EditOthersContainer(props: any) {
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit"
-          ? "Add Others Charges"
-          : "Update Others Charges"
+        modalType === "edit" ? "Add Others Charges" : "Update Others Charges"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+            />
+          );
         }
 
         if (modalType === "update") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+            />
+          );
         }
       }}
       modalSize="70%"
@@ -255,7 +261,7 @@ function EditOthersContainer(props: any) {
                     >
                       <Group position="apart">
                         <List.Item>
-                          {d.name} {" "}
+                          {d.name}{" "}
                           <span style={{ fontWeight: "600" }}>{d.price}</span>
                         </List.Item>
 

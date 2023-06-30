@@ -22,7 +22,13 @@ const PageWrapper = (props: any) => {
     <Container>
       <Grid gutter="xl">
         <Grid.Col span={12} className={classes.grid}>
-          <Grid justify="space-between" align="flex-end">
+          <Grid
+            justify="space-between"
+            align="flex-end"
+            sx={{
+              marginTop: "42px",
+            }}
+          >
             <Grid.Col sm={12} md={12} lg={3}>
               <PageHeader />
             </Grid.Col>

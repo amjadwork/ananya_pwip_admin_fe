@@ -10,8 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Select, Button, Text, ActionIcon} from "../../../components/index";
-
+import {
+  Card as SectionCard,
+  Select,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../../components/index";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
@@ -22,11 +27,10 @@ import APIRequest from "./../../../helper/api";
 const RenderPageHeader = () => {
   return (
     <PageHeader
-      title="Manage Products"
-      breadcrumbs={[
-        { title: "Products", href: "/admin/dashboard/products" },
-        { title: "Manage", href: "#" },
-      ]}
+    // breadcrumbs={[
+    //   { title: "Products", href: "/admin/dashboard/products" },
+    //   { title: "Manage", href: "#" },
+    // ]}
     />
   );
 };

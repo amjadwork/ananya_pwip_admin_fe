@@ -10,8 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import { Card as SectionCard , Input, Button, Text, ActionIcon} from "../../components/index";
-
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditChaContainer from "./EditPwipService/EditPwipService";
 
@@ -26,11 +31,10 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <PageHeader
-      title="Manage PWIP Charges"
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
+    // breadcrumbs={[
+    //   { title: "Products", href: "/admin/dashboard/products" },
+    //   { title: "Manage", href: "#" },
+    // ]}
     />
   );
 };
@@ -188,8 +192,7 @@ function ManagePwipServiceContainer() {
       >
         <Group position="apart">
           <Title order={1}>PWIP Service Charges</Title>
-         <Input
-              placeholder="Search"/> 
+          <Input placeholder="Search" />
           {/* <Badge size="lg" color="green" variant="light">
             Live
           </Badge> */}
@@ -242,9 +245,9 @@ function ManagePwipServiceContainer() {
                       })}
                     >
                       <List.Item>
-                          {d.name}  - RS{" "}
-                          <span style={{ fontWeight: "800" }}>{d.price}</span>
-                        </List.Item>
+                        {d.name} - RS{" "}
+                        <span style={{ fontWeight: "800" }}>{d.price}</span>
+                      </List.Item>
                     </Box>
                   ))}
                 </List>

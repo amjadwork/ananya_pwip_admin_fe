@@ -10,8 +10,13 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Card as SectionCard, Input, Button, Text, ActionIcon} from "../../../components/index";
-
+import {
+  Card as SectionCard,
+  Input,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../../components/index";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
@@ -26,11 +31,10 @@ const RenderPageHeader = (props: any) => {
 
   return (
     <PageHeader
-      title="Manage PWIP Services"
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
+    // breadcrumbs={[
+    //   { title: "Products", href: "/admin/dashboard/products" },
+    //   { title: "Manage", href: "#" },
+    // ]}
     />
   );
 };
@@ -129,8 +133,8 @@ const RenderPageAction = (props: any) => {
 };
 
 const RenderModalContent = (props: any) => {
-  const handleCloseModal=props.handleCloseModal;
-  return <EditChaForm handleCloseModal={handleCloseModal}/>;
+  const handleCloseModal = props.handleCloseModal;
+  return <EditChaForm handleCloseModal={handleCloseModal} />;
 };
 
 function EditPwipServiceContainer(props: any) {
@@ -171,15 +175,19 @@ function EditPwipServiceContainer(props: any) {
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+            />
+          );
         }
 
         if (modalType === "update") {
-          return <RenderModalContent 
-          handleCloseModal={(bool:any)=>setModalOpen(bool)}
-          />;
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: any) => setModalOpen(bool)}
+            />
+          );
         }
       }}
       modalSize="70%"
@@ -204,9 +212,7 @@ function EditPwipServiceContainer(props: any) {
         <Group position="apart">
           <Title order={1}>PWIP Service Charges</Title>
           <Group spacing="md">
-            <Input
-              placeholder="Search"
-            />
+            <Input placeholder="Search" />
             <Button
               type="submit"
               leftIcon={<Plus size={14} />}
@@ -264,7 +270,7 @@ function EditPwipServiceContainer(props: any) {
                       })}
                     >
                       <Group position="apart">
-                      <List.Item>
+                        <List.Item>
                           {d.name} -RS{" "}
                           <span style={{ fontWeight: "600" }}>{d.price}</span>
                         </List.Item>

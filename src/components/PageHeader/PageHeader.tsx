@@ -5,36 +5,33 @@ import { Anchor, useMantineTheme } from "@mantine/core";
 import { useStyles } from "../../styles/components/pageHeader.style";
 import { Radio, Text } from "../../components";
 interface Props {
-  title?: string;
+  // title?: string;
   label?: string;
   radioOptions?: any;
   handleRadioChange?: any;
   activeFilter?: string | number;
-  breadcrumbs?: any;
+  // breadcrumbs?: any;
 }
 
 const PageHeader: React.FC<Props> = ({
-  title,
+  // title,
   label,
   radioOptions,
   handleRadioChange,
   activeFilter,
-  breadcrumbs = [],
+  // breadcrumbs = [],
 }) => {
   const { classes } = useStyles();
   const theme = useMantineTheme();
 
-  const itemsForBreadcrumbs = breadcrumbs.map((item: any, index: number) => (
-    <Anchor href={item.href} key={index}>
-      {item.title}
-    </Anchor>
-  ));
+  // const itemsForBreadcrumbs = breadcrumbs.map((item: any, index: number) => (
+  //   <Anchor href={item.href} key={index}>
+  //     {item.title}
+  //   </Anchor>
+  // ));
 
   return (
     <div style={{ width: "50vw", paddingTop: "62px" }}>
-      {/* <Text size="xl" weight="bold" color="gray">
-        {title}
-      </Text> */}
       {label && (
         <Text size="xs" weight="normal" color={theme.colors.gray[6]}>
           {label}

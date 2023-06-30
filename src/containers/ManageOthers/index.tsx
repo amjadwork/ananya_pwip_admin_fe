@@ -10,7 +10,12 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check } from "tabler-icons-react";
-import { Card as SectionCard, Button, Text, ActionIcon} from "../../components/index";
+import {
+  Card as SectionCard,
+  Button,
+  Text,
+  ActionIcon,
+} from "../../components/index";
 
 import EditOthersContainer from "./EditOthers/EditOthers";
 
@@ -22,7 +27,7 @@ const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
   const handleRadioChange = props.handleRadioChange;
 
-  return <PageHeader title="Manage Others" />;
+  return <PageHeader />;
 };
 
 const RenderPageAction = (props: any) => {
@@ -63,7 +68,7 @@ const RenderPageAction = (props: any) => {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown
-            sx={(theme:any) => ({
+            sx={(theme: any) => ({
               background:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
@@ -160,7 +165,7 @@ function ManageOthersContainer() {
       )}
     >
       <Box
-        sx={(theme:any) => ({
+        sx={(theme: any) => ({
           display: "block",
           backgroundColor:
             theme.colorScheme === "dark"
@@ -178,7 +183,6 @@ function ManageOthersContainer() {
       >
         <Group position="apart">
           <Title order={1}>Others Charges</Title>
-          
         </Group>
       </Box>
 
@@ -204,7 +208,7 @@ function ManageOthersContainer() {
                   {cat.list.map((d: any, i: number) => (
                     <Box
                       key={i}
-                      sx={(theme:any) => ({
+                      sx={(theme: any) => ({
                         display: "block",
                         backgroundColor:
                           theme.colorScheme === "dark"
@@ -228,7 +232,7 @@ function ManageOthersContainer() {
                       })}
                     >
                       <List.Item>
-                        {d.name} {" "}
+                        {d.name}{" "}
                         <span style={{ fontWeight: "800" }}>{d.price}</span>
                       </List.Item>
                     </Box>
