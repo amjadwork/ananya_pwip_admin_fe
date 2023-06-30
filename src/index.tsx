@@ -7,11 +7,6 @@ import reportWebVitals from "./reportWebVitals";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 
-const REACT_APP_AUTH0_DOMAIN: string = process.env
-  .REACT_APP_AUTH0_DOMAIN as string;
-const REACT_APP_AUTH0_CLIENT_ID: string = process.env
-  .REACT_APP_AUTH0_CLIENT_ID as string;
-
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -19,17 +14,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <MantineProvider withNormalizeCSS withGlobalStyles>
     <NotificationsProvider position="bottom-center">
-      <Auth0Provider
-        domain={REACT_APP_AUTH0_DOMAIN}
-        clientId={REACT_APP_AUTH0_CLIENT_ID}
-        authorizationParams={{
-          redirect_uri: window?.location?.origin || "http://localhost:3000/",
-          display: "popup",
-          audience: "http://localhost:8000",
-        }}
-      >
-        <App />
-      </Auth0Provider>
+      <App />
     </NotificationsProvider>
   </MantineProvider>
 );

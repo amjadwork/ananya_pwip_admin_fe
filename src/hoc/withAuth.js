@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const [authVerified, setAuthVerified] = useState(true);
+    const [authVerified, setAuthVerified] = useState(false);
+    const { isAuthenticated } = useAuth0();
+
+    console.log(isAuthenticated);
 
     useEffect(() => {
-      const accessToken = localStorage.getItem("access_token");
-      // console.log(accessToken);
-      // if no accessToken was found,then we redirect to "/" page.
-      // if (!accessToken) {
-      //   window.location.href = "/";
-      // } else {
-      //   setAuthVerified(true);
-      // }
+      // if not authenticated,then we redirect to "/" page.
+      if (!isAuthenticated) {
+        window.location.href = "/";
+      } else {
+        setAuthVerified(true);
+      }
     }, []);
 
     if (authVerified) {
