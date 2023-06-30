@@ -1,11 +1,11 @@
 import React from "react";
-import { Container, Modal, Grid, useMantineTheme } from "@mantine/core";
+import { Container, Modal, Grid } from "@mantine/core";
 import { useStyles } from "../../styles/components/pageWrapper.style";
 
 const PageWrapper = (props: any) => {
   const { classes } = useStyles();
 
-  const theme = useMantineTheme();
+  // const theme = useMantineTheme();
 
   const children = props.children;
 
@@ -41,9 +41,6 @@ const PageWrapper = (props: any) => {
               width: "100%",
             }}
           >
-            {/* <Grid.Col sm={12} md={12} lg={3}>
-              <PageHeader />
-            </Grid.Col> */}
             <Grid.Col
               sm={12}
               md={12}
