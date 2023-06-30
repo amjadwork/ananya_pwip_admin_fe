@@ -20,22 +20,34 @@ const PageWrapper = (props: any) => {
 
   return (
     <Container>
-      <Grid gutter="xl">
-        <Grid.Col span={12} className={classes.grid}>
+      <Grid
+        gutter="xl"
+        sx={{
+          width: "100%",
+        }}
+      >
+        <Grid.Col
+          span={12}
+          className={classes.grid}
+          sx={{
+            width: "100%",
+          }}
+        >
           <Grid
             justify="space-between"
             align="flex-end"
             sx={{
               marginTop: "42px",
+              width: "100%",
             }}
           >
-            <Grid.Col sm={12} md={12} lg={3}>
+            {/* <Grid.Col sm={12} md={12} lg={3}>
               <PageHeader />
-            </Grid.Col>
+            </Grid.Col> */}
             <Grid.Col
               sm={12}
               md={12}
-              lg={9}
+              lg={12}
               style={{
                 width: "100%",
                 justifyContent: "flex-end",
