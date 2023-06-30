@@ -3,12 +3,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
-    // const navigate = useNavigate();
-
     const [authVerified, setAuthVerified] = useState(false);
     const { isAuthenticated } = useAuth0();
-
-    console.log(isAuthenticated);
 
     useEffect(() => {
       // if not authenticated,then we redirect to "/" page.
@@ -26,35 +22,5 @@ const withAuth = (WrappedComponent) => {
     }
   };
 };
-
-//
-// const [authVerified, setAuthVerified] = useState(false);
-// console.log(authVerified)
-
-// // const PrivateRoute = ({ redirectTo, component , isAuth }) => {
-// //   return isAuth ?  component : <Navigate to={redirectTo} />;
-// // };
-// useEffect(() => {
-//   const accessToken = localStorage.getItem("access_token");
-//   // if no accessToken was found,then we redirect to "/" page.
-//   if (!accessToken) {
-//     navigate('/', { replace: true });
-
-//   } else {
-//     setAuthVerified(true);
-//     // navigate('/admin/dashboard', { replace: true });
-//   //  < Navigate to={<DashboardScreen/>}/>
-//   }
-// }, []);
-
-// return () => {
-
-// if (authVerified) {
-//   return <
-//       DashboardScreen
-//        />;
-// } else {
-//   return null;
-// }
 
 export default withAuth;
