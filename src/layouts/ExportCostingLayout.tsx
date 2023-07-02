@@ -46,11 +46,13 @@ const useStyles = createStyles((theme) => ({
 
     "&[data-active]": {
       backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[7]
+          : theme.colors.gray[0],
       borderColor:
         theme.colorScheme === "dark"
           ? theme.colors.dark[7]
-          : theme.colors.gray[2],
+          : theme.colors.gray[1],
     },
   },
 }));
@@ -60,9 +62,33 @@ const ExportCostingLayout: React.FC<any> = () => {
 
   const navigate = useNavigate();
 
+  const [activeTab, setActiveTab] = React.useState<any>("");
+
+  const tabRoutes = [
+    "playground",
+    "products",
+    "locations",
+    "cha",
+    "shl",
+    "manage-packaging",
+    "ofc",
+    "transport",
+  ];
+
   const handleNavigation = (path: string) => {
     navigate(path, { replace: true });
   };
+
+  React.useEffect(() => {
+    if (typeof window) {
+      const pathArrayFromLocation = window.location.pathname.split("/");
+      const tabRoute = pathArrayFromLocation[pathArrayFromLocation.length - 1];
+
+      if (tabRoutes.includes(tabRoute)) {
+        setActiveTab(tabRoute);
+      }
+    }
+  }, []);
 
   return (
     <MantineProvider
@@ -81,31 +107,25 @@ const ExportCostingLayout: React.FC<any> = () => {
           top: 0,
           left: 0,
           width: "100%",
-          backgroundColor: theme.colors.gray[1],
+          backgroundColor: theme.colors.white,
           paddingTop: "16px",
         })}
       >
         <Container size={1150}>
           <Tabs
-            defaultValue="playground"
+            value={activeTab}
             variant="outline"
             classNames={{
               root: classes.tabs,
               tabsList: classes.tabsList,
               tab: classes.tab,
             }}
+            onTabChange={(value: any) => {
+              setActiveTab(value);
+            }}
           >
             <Tabs.List>
-              {[
-                "playground",
-                "products",
-                "locations",
-                "cha",
-                "Shl",
-                "managePackaging",
-                "Ofc",
-                "transport",
-              ].map((list: any) => {
+              {tabRoutes.map((list: any) => {
                 return (
                   <Tabs.Tab
                     onClick={(e) => {
@@ -117,7 +137,7 @@ const ExportCostingLayout: React.FC<any> = () => {
                       textTransform: "uppercase",
                     }}
                   >
-                    {list}
+                    {list?.split("-")?.join(" ") || ""}
                   </Tabs.Tab>
                 );
               })}
@@ -132,9 +152,12 @@ const ExportCostingLayout: React.FC<any> = () => {
           <Route path="/products/:id" element={<ManageProductsContainer />} />
           <Route path="/locations" element={<LocationsContainer />} />
           <Route path="/cha" element={<ManageChaContainer />} />
-          <Route path="/Shl" element={<ManageShlContainer />} />
-          <Route path="/managePackaging" element={<ManagePackageContainer />} />
-          <Route path="/Ofc" element={<ManageOfcContainer />} />
+          <Route path="/shl" element={<ManageShlContainer />} />
+          <Route
+            path="/manage-packaging"
+            element={<ManagePackageContainer />}
+          />
+          <Route path="/ofc" element={<ManageOfcContainer />} />
           <Route path="/transport" element={<ManageTransportContainer />} />
           <Route
             path="/pwipServices"
