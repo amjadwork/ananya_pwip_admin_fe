@@ -85,7 +85,7 @@ const ExportCostingLayout: React.FC<any> = () => {
           paddingTop: "16px",
         })}
       >
-        <Container>
+        <Container size={1150}>
           <Tabs
             defaultValue="playground"
             variant="outline"
@@ -125,7 +125,7 @@ const ExportCostingLayout: React.FC<any> = () => {
           </Tabs>
         </Container>
       </Box>
-      <Container>
+      <Container size={1200}>
         <Routes>
           <Route path="/" element={<PlaygroundContainer />} />
           <Route path="/products" element={<ProductsContainer />} />

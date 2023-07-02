@@ -1,236 +1,247 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { ScrollArea, Table, Box, Pagination, Group } from "@mantine/core";
-import { Input } from "../../components";
+import React, { useEffect, useState, useCallback } from "react";
 
-interface DataTableProps {
-  dataCopy: any[];
-  columns: string[];
+import {
+  createStyles,
+  Table,
+  ScrollArea,
+  UnstyledButton,
+  Pagination,
+  Text,
+  Center,
+  TextInput,
+  Flex,
+  Space,
+  Button,
+} from "@mantine/core";
+import {
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  Selector,
+  Search,
+} from "tabler-icons-react";
+
+const useStyles = createStyles((theme) => ({
+  th: {
+    padding: "0 !important",
+  },
+
+  control: {
+    width: "100%",
+    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
+    },
+  },
+
+  icon: {
+    width: "21px",
+    height: "21px",
+    borderRadius: "21px",
+    marginLeft: "12px",
+  },
+}));
+
+interface RowData {
+  name: string;
+  email: string;
+  company: string;
 }
 
-const DataTable = (props: DataTableProps) => {
-  const { dataCopy, columns } = props;
+interface TableSortProps {
+  data: any;
+  columns: any;
+  actionItems?: any;
+  onClickAction?: any;
+}
 
-  const [originSearchQuery, setOriginSearchQuery] = useState("");
-  const [destinationSearchQuery, setDestinationSearchQuery] = useState("");
-  const [debouncedOriginSearch, setDebouncedOriginSearch] = useState("");
-  const [debouncedDestinationSearch, setDebouncedDestinationSearch] =
-    useState("");
+interface ThProps {
+  children: React.ReactNode;
+  reversed: boolean;
+  sorted: boolean;
+  onSort(): void;
+}
 
-  const [filteredData, setFilteredData] = useState<any>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [length, setLength] = useState(2);
-  const [recordsPerPage] = useState(10);
+function Th({ children, reversed, sorted, onSort }: ThProps) {
+  const { classes } = useStyles();
+  const Icon = sorted ? (reversed ? ChevronUp : ChevronDown) : Selector;
+  return (
+    <th className={classes.th}>
+      <UnstyledButton onClick={onSort} className={classes.control}>
+        <Flex display="inline-flex" align={"center"} justify="space-between">
+          <Text>{children}</Text>
 
-  const nPages = useMemo(
-    () => Math.ceil(length / recordsPerPage),
-    [length, recordsPerPage]
+          <Center className={classes.icon}>
+            <Icon size="16px" strokeWidth={1.5} color={"#adb5bd"} />
+          </Center>
+        </Flex>
+      </UnstyledButton>
+    </th>
   );
+}
 
-  useEffect(() => {
-    setFilteredData([...dataCopy]);
-  }, [dataCopy]);
+function sortData(data: any, payload: { sortBy: any; reversed: any }) {
+  const { sortBy } = payload;
 
-  useEffect(() => {
-    console.log(filteredData);
-    const getTotalLength = () => {
-      let totalNumberOfChaData = 0;
-      filteredData.map((item: any) => {
-        if (item.list) {
-          totalNumberOfChaData += item.list.length;
-        }
-      });
-      setLength(totalNumberOfChaData);
-    };
-    getTotalLength();
-  }, [filteredData, setLength]);
-
-  const setPage = (page: number) => {
-    setCurrentPage(page - 1);
-  };
-
-  const unwind = (key: any, data: any) => {
-    const unwoundData: any[] = [];
-    dataCopy.forEach((item: any) => {
-      if (item[key]) {
-        item[key].forEach((value: any) => {
-          const unwoundItem = { ...item, [key]: value };
-          unwoundData.push(unwoundItem);
-        });
-      }
-    });
-    return unwoundData;
-  };
-
-  useEffect(() => {
-    const originTimer = setTimeout(() => {
-      setDebouncedOriginSearch(originSearchQuery);
-    }, 300);
-
-    return () => clearTimeout(originTimer);
-  }, [originSearchQuery]);
-
-  useEffect(() => {
-    const destinationTimer = setTimeout(() => {
-      setDebouncedDestinationSearch(destinationSearchQuery);
-    }, 300);
-    return () => clearTimeout(destinationTimer);
-  }, [destinationSearchQuery]);
-
-  const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setOriginSearchQuery(query);
-  };
-
-  const handleDestinationSearch = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const query = event.target.value.toLowerCase();
-    setDestinationSearchQuery(query);
-  };
-
-  useEffect(() => {
-    if (debouncedOriginSearch === "") {
-      setFilteredData([...dataCopy]);
-    } else {
-      const filtered = filteredData.filter((item: any) =>
-        item.name.toLowerCase().includes(debouncedOriginSearch.toLowerCase())
-      );
-      setFilteredData(filtered);
+  return [...data].sort((a, b) => {
+    if (payload.reversed) {
+      return b[sortBy].toString().localeCompare(a[sortBy].toString());
     }
-  }, [debouncedOriginSearch]);
+
+    return a[sortBy].toString().localeCompare(b[sortBy].toString());
+  });
+}
+
+export function DataTable({
+  data,
+  columns,
+  actionItems,
+  onClickAction,
+}: TableSortProps) {
+  const [search, setSearch] = useState("");
+  const [sortedData, setSortedData] = useState<any>([]);
+  const [sortBy, setSortBy] = useState<any>(null);
+  const [reverseSortDirection, setReverseSortDirection] = useState(false);
+  const [activePage, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
 
   useEffect(() => {
-    if (debouncedDestinationSearch === "") {
-      setFilteredData([...dataCopy]);
-    } else {
-      const filtered = filteredData.map((item: any) => {
-        const listArr = item.list.filter((listItem: any) =>
-          listItem.destinationPort
-            .toLowerCase()
-            .includes(debouncedDestinationSearch)
+    setSortedData(data);
+  }, [data]);
+
+  const setSorting = (field: any) => {
+    const reversed = field === sortBy ? !reverseSortDirection : false;
+    setReverseSortDirection(reversed);
+    setSortBy(field);
+    setSortedData(sortData(data, { sortBy: field, reversed }));
+  };
+
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.currentTarget;
+      setSearch(value);
+
+      const filtered = [...data].filter((item: any) => {
+        return Object.keys(data[0]).some(
+          (key: any) =>
+            item[key] &&
+            item[key]
+              .toString()
+              .toLowerCase()
+              .includes(value.toString().toLowerCase())
         );
-        return {
-          ...item,
-          list: [...listArr],
-        };
       });
-      setFilteredData(filtered);
-    }
-  }, [debouncedDestinationSearch]);
 
-  // const handleOriginSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const query = event.target.value;
-  //   setOriginSearchQuery(query);
-  //   if (query === '') {
-  //     setFilteredData([...dataCopy]);
-  //   } else {
-  //   const filtered = filteredData.filter((item:any) =>
-  //     item.name.toLowerCase().includes(query.toLowerCase())
-  //   );
-  //   setFilteredData(filtered);
-  //   }
-  // };
+      if (value) {
+        setSortedData([...filtered]);
+      }
 
-  // const handleDestinationSearch = (
-  //   event: React.ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   const query = event.target.value.toLowerCase();
-  //   setDestinationSearchQuery(query);
-  //   if (query === '') {
-  //     setFilteredData([...dataCopy]);
-  //   } else {
-  //   const filtered = filteredData.map((item: any) => {
-  //     const listArr = item.list.filter((listItem: any) =>
-  //       listItem.destinationPort.toLowerCase().includes(query)
-  //     );
-  //       return {
-  //       ...item,
-  //       list: [...listArr],
-
-  //     };
-  //   });
-  //   setFilteredData(filtered);
-  // }
-  // };
-
-  const rows = useMemo(() => {
-    return filteredData.map((item: any) => (
-      <React.Fragment key={item.name}>
-        {item.list.map((listItem: any) => {
-          return (
-            <tr key={item.name} style={{ textAlign: "center" }}>
-              <td>{item.name}</td>
-              <td>{listItem.destinationPort}</td>
-              <td>{listItem.chaCharges}</td>
-              <td>{listItem.silicaGelCharges}</td>
-              <td>{listItem.craftPaperCharges}</td>
-              <td>{listItem.transportCharges}</td>
-              <td>{listItem.customCharges}</td>
-              <td>{listItem.loadingCharges}</td>
-              <td>{listItem.cooCharges}</td>
-            </tr>
-          );
-        })}
-      </React.Fragment>
-    ));
-  }, [filteredData]);
-
-  console.log(unwind("list", { filteredData }));
-
-  const tableHeader = useMemo(() => {
-    return columns.map((column: string) => <th key={column}>{column}</th>);
-  }, [columns]);
+      if (!value) {
+        setSortedData([...data]);
+      }
+    },
+    [data]
+  );
 
   return (
-    <Box>
-      <div style={{ display: "flex", width: "100%" }}>
-        <Input
-          style={{ marginBottom: "4px", width: "50%", marginRight: "10px" }}
-          type="text"
-          placeholder="Search by Origin Port"
-          value={originSearchQuery}
-          onChange={handleOriginSearch}
+    <ScrollArea>
+      <Flex align="center" justify="space-between">
+        <TextInput
+          placeholder="Search by any field"
+          mb="md"
+          icon={<Search size="14px" strokeWidth={1.5} color={"#adb5bd"} />}
+          value={search}
+          onChange={handleSearchChange}
         />
-
-        <Input
-          style={{ marginBottom: "8px", width: "50%", marginLeft: "4px" }}
-          type="text"
-          placeholder="Search by Destination Port/Source Location"
-          value={destinationSearchQuery}
-          onChange={handleDestinationSearch}
-        />
-      </div>
+        <Flex align="center" gap="md">
+          {actionItems.map((item: any, index: number) => {
+            return (
+              <Button
+                key={item.label + index}
+                type={item.type}
+                leftIcon={item.icon ? <item.icon size={14} /> : null}
+                onClick={item.onClickAction}
+                color={item.color || "gray"}
+              >
+                {item.label}
+              </Button>
+            );
+          })}
+        </Flex>
+      </Flex>
 
       <Table
-        striped
-        highlightOnHover
-        withBorder
-        withColumnBorders
-        verticalSpacing="xl"
+        horizontalSpacing="sm"
+        verticalSpacing="md"
+        fontSize="sm"
+        mih={320}
+        sx={{ tableLayout: "fixed" }}
       >
-        <ScrollArea w={890} h={400}>
-          <thead
-            style={{ position: "sticky", top: 0, backgroundColor: "white" }}
-          >
-            <tr>{tableHeader}</tr>
-          </thead>
+        <thead>
+          <tr>
+            {columns.map((col: any) => {
+              return (
+                <Th
+                  sorted={sortBy === col.key}
+                  reversed={reverseSortDirection}
+                  onSort={() => setSorting(col.key)}
+                >
+                  {col.label}
+                </Th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedData.length > 0 ? (
+            sortedData
+              .slice((activePage - 1) * pageSize, activePage * pageSize)
+              .map((row: any, index: number) => {
+                const columnKeys = [...columns].map((col: any) => col.key);
 
-          <tbody
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              tableLayout: "fixed",
-            }}
-          >
-            {rows}
-          </tbody>
-        </ScrollArea>
+                return (
+                  <tr key={row._destinationPortId + index}>
+                    {columnKeys.map((key: any, index: number) => {
+                      return (
+                        <td
+                          style={{
+                            overflow: "hidden",
+                            whiteSpace: "pre",
+                          }}
+                          key={key + index}
+                        >
+                          {row[key]}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
+          ) : (
+            <tr>
+              <td colSpan={columns.length}>
+                <Text weight={500} align="center">
+                  Nothing found
+                </Text>
+              </td>
+            </tr>
+          )}
+        </tbody>
       </Table>
-      <Group style={{ margin: "5px" }}>
-        {/* <Pagination total={nPages} value={currentPage} /> */}
-      </Group>
-    </Box>
+      <Space h={18} />
+      <Center>
+        <Pagination
+          total={Math.ceil(data.length / 5)}
+          page={activePage}
+          onChange={setPage}
+        />
+      </Center>
+    </ScrollArea>
   );
-};
+}
 
 export default DataTable;

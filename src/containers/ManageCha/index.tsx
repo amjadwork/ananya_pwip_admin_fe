@@ -1,14 +1,11 @@
 import React from "react";
-import {Group,Popover,Space} from "@mantine/core";
-import {Pencil,X,Check} from "tabler-icons-react";
-import {Button,ActionIcon,Text} from "../../components/index";
+import { Space } from "@mantine/core";
+import { Plus } from "tabler-icons-react";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import PageLabel from "../../components/PageLabel/PageLabel";
 import DataTable from "../../components/DataTable/DataTable";
-import { dummyCHA } from "../../constants/chaData.constants";
 
 import {
   getChaData,
@@ -18,107 +15,46 @@ import {
 } from "../../services/export-costing/CHA";
 
 const columns = [
-  "Origin",
-  "Destination",
-  "CHA",
-  "SilicaGel",
-  "CraftPaper",
-  "Transport",
-  "Custom",
-  "Loading",
-  "COO"
+  {
+    label: "Destination",
+    key: "_destinationPortId",
+  },
+  {
+    label: "Origin",
+    key: "originPort",
+  },
+  {
+    label: "CHA",
+    key: "chaCharge",
+  },
+  {
+    label: "SilicaGel",
+    key: "silicaGel",
+  },
+  {
+    label: "CraftPaper",
+    key: "craftPaper",
+  },
+  {
+    label: "Transport",
+    key: "transportCharge",
+  },
+  {
+    label: "Custom",
+    key: "customCharge",
+  },
+  {
+    label: "Loading",
+    key: "loadingCharge",
+  },
+  {
+    label: "COO",
+    key: "coo",
+  },
 ];
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader />;
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
 };
 
 const RenderModalContent = (props: any) => {
@@ -138,24 +74,14 @@ const RenderModalContent = (props: any) => {
 };
 
 function ManageChaContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
   const [chaData, setChaData] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
-  const [dataCopy, setDataCopy] = React.useState<any>([]);
-
-  //What does this below function do? Is it necessary? #askSwain
-  const handleRefetchChaList = (chaPostResponse: any) => {
-    if (chaPostResponse) {
-      handleGetRegionSource();
-      getCHAList(chaPostResponse);
-    }
-  };
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const getCHAList = async (regionList: any) => {
     const chaDataResponse: any = await getChaData(regionList);
@@ -181,21 +107,11 @@ function ManageChaContainer() {
         });
 
         setChaData(() => [...array]);
-        setDataCopy(() => [...array]);
+        // setDataCopy(() => [...array]);
       }
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
   };
 
   const handleGetRegionSource = async () => {
@@ -240,7 +156,6 @@ function ManageChaContainer() {
     });
 
     setChaData(() => [...chaArr]);
-    setDataCopy(() => [...chaArr]);
   };
 
   const handleSaveAction = async () => {
@@ -251,10 +166,6 @@ function ManageChaContainer() {
         handleGetRegionSource();
       }
     }
-  };
-
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
   };
 
   const handleGetDestination = async () => {
@@ -278,28 +189,34 @@ function ManageChaContainer() {
     handleGetRegionSource();
   }, []);
 
+  React.useEffect(() => {
+    if (chaData.length) {
+      let tableData: any = [];
+
+      [...chaData].forEach((d: any) => {
+        d.list.forEach((l: any) => {
+          const obj = {
+            ...l,
+            originPort: d.name,
+            _originPortId: d._originPortId,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [chaData]);
+
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          editModeActive={editModeActive}
-          handleEditAction={handleSave}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageHeader={() => null}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
         modalType === "edit" ? "Add CHA Charges" : "Update CHA Charges"
       }
+      modalSize="60%"
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
         if (modalType === "edit") {
@@ -323,19 +240,31 @@ function ManageChaContainer() {
           );
         }
       }}
-      modalSize="60%"
     >
-       <PageLabel
-        title="CHA Charges"
-        editModeActive={editModeActive}
-        setModalOpen={setModalOpen}
-      /> 
-
       <Space h="sm" />
 
       <DataTable
-      dataCopy={dummyCHA}
-      columns={columns}
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalOpen(true);
+            },
+          },
+          {
+            label: "Save",
+            type: "button",
+            color: "blue",
+            onClickAction: () => {
+              handleSaveAction();
+            },
+          },
+        ]}
       />
     </PageWrapper>
   );
