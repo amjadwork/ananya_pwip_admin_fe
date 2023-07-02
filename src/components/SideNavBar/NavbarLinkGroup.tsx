@@ -57,6 +57,17 @@ const useStyles = createStyles((theme) => ({
   chevron: {
     transition: "transform 200ms ease",
   },
+
+  active: {
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[7]
+        : theme.colors.gray[0],
+  },
+
+  inactive: {
+    backgroundColor: theme.colors.white,
+  },
 }));
 
 interface LinksGroupProps {
@@ -79,6 +90,7 @@ export function LinksGroup({
   const { classes, theme } = useStyles();
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
+  const [activeMenu, setActiveMenu] = useState<any>("");
   const ChevronIcon = theme.dir === "ltr" ? ChevronRight : ChevronLeft;
 
   const items = (hasLinks ? links : []).map((link) => (
@@ -89,6 +101,7 @@ export function LinksGroup({
       onClick={(event) => {
         event.preventDefault();
         action("/admin/dashboard" + link.link);
+        // setActiveMenu(link.link);
       }}
     >
       {link.label}
@@ -99,7 +112,7 @@ export function LinksGroup({
     <>
       <UnstyledButton
         onClick={() => setOpened((o) => !o)}
-        className={classes.control}
+        className={`${classes.control}`}
       >
         <Group
           position="apart"
@@ -107,6 +120,7 @@ export function LinksGroup({
           onClick={(event) => {
             event.preventDefault();
             if (link) {
+              setActiveMenu(link);
               action("/admin/dashboard" + link);
             }
           }}
