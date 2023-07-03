@@ -20,8 +20,12 @@ const Auth0ProviderWithHistory = ({ children }) => {
       redirectUri={window.location.origin}
       onRedirectCallback={onRedirectCallback}
       audience={audience}
-      scope={scope}
+      // scope={scope}
       useRefreshTokens={true}
+      authorizationParams={{
+        redirectUri: window.location.origin,
+        audience: audience,
+      }}
     >
       {children}
     </Auth0Provider>
