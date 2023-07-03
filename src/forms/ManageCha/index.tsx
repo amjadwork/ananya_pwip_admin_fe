@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
 import { Select, Button, ActionIcon } from "../../components/index";
-import { Minus, Trash } from "tabler-icons-react";
+import { Trash } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
 
@@ -28,11 +28,19 @@ function EditChaForm(props: any) {
   const destinationSelectOptions = props.destinationSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
   });
+
+  useEffect(() => {
+    if (updateFormData && modalType === "update") {
+      form.setValues(updateFormData);
+    }
+  }, [updateFormData, modalType]);
 
   const handleAddItem: any = () => {
     form.insertListItem("destinations", initialFormValues.destinations[0], {
@@ -43,6 +51,7 @@ function EditChaForm(props: any) {
   const handleFormSubmit = (formValues: typeof form.values) => {
     handleSaveAction(formValues); //update table UI
     handleCloseModal(false);
+    form.setValues(initialFormValues);
   };
 
   const fields = form.values.destinations.map((item: any, index: number) => (
@@ -59,7 +68,7 @@ function EditChaForm(props: any) {
         <Grid>
           <Grid.Col span={11}>
             <Select
-              defaultValue={item["_destinationPortId"]}
+              // defaultValue={item["_destinationPortId"]}
               required
               searchable
               label="Select Destination Port"
@@ -101,7 +110,7 @@ function EditChaForm(props: any) {
               hideControls
               label="CHA Charges"
               placeholder="Eg. 26500"
-              defaultValue={item["chaCharge"]}
+              // defaultValue={item["chaCharge"]}
               {...form.getInputProps(`destinations.${index}.chaCharge`)}
             />
           </Grid.Col>
@@ -113,7 +122,7 @@ function EditChaForm(props: any) {
               hideControls
               label="Silica Gel"
               placeholder="Eg. 26500"
-              defaultValue={item["silicaGel"]}
+              // defaultValue={item["silicaGel"]}
               {...form.getInputProps(`destinations.${index}.silicaGel`)}
             />
           </Grid.Col>
@@ -125,7 +134,7 @@ function EditChaForm(props: any) {
               hideControls
               label="Craft Paper"
               placeholder="Eg. 26500"
-              defaultValue={item["craftPaper"]}
+              // defaultValue={item["craftPaper"]}
               {...form.getInputProps(`destinations.${index}.craftPaper`)}
             />
           </Grid.Col>
@@ -137,7 +146,7 @@ function EditChaForm(props: any) {
               hideControls
               label="Transport Charge"
               placeholder="Eg. 26500"
-              defaultValue={item["transportCharge"]}
+              // defaultValue={item["transportCharge"]}
               {...form.getInputProps(`destinations.${index}.transportCharge`)}
             />
           </Grid.Col>
@@ -148,7 +157,7 @@ function EditChaForm(props: any) {
               hideControls
               label="Loading Charge"
               placeholder="Eg. 26500"
-              defaultValue={item["loadingCharge"]}
+              // defaultValue={item["loadingCharge"]}
               {...form.getInputProps(`destinations.${index}.loadingCharge`)}
             />
           </Grid.Col>
@@ -159,7 +168,7 @@ function EditChaForm(props: any) {
               hideControls
               label="Custom Charge"
               placeholder="Eg. 26500"
-              defaultValue={item["customCharge"]}
+              // defaultValue={item["customCharge"]}
               {...form.getInputProps(`destinations.${index}.customCharge`)}
             />
           </Grid.Col>
@@ -170,7 +179,7 @@ function EditChaForm(props: any) {
               hideControls
               label="PQC"
               placeholder="Eg. 26500"
-              defaultValue={item["pqc"]}
+              // defaultValue={item["pqc"]}
               {...form.getInputProps(`destinations.${index}.pqc`)}
             />
           </Grid.Col>
@@ -181,7 +190,7 @@ function EditChaForm(props: any) {
               hideControls
               label="COO"
               placeholder="Eg. 26500"
-              defaultValue={item["coo"]}
+              // defaultValue={item["coo"]}
               {...form.getInputProps(`destinations.${index}.coo`)}
             />
           </Grid.Col>

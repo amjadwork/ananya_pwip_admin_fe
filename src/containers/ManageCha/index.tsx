@@ -63,6 +63,8 @@ const RenderModalContent = (props: any) => {
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
   const handleSaveAction = props.handleSaveAction;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType;
 
   return (
     <EditChaForm
@@ -70,6 +72,8 @@ const RenderModalContent = (props: any) => {
       regionSelectOptions={regionSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
       handleSaveAction={handleSaveAction}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
@@ -82,6 +86,7 @@ function ManageChaContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [updateFormData, setUpdateFormData] = React.useState<any>(null);
 
   const getCHAList = async (regionList: any) => {
     const chaDataResponse: any = await getChaData(regionList);
@@ -139,8 +144,16 @@ function ManageChaContainer() {
   };
 
   const handleSaveAction = async (payload: any) => {
-    if (payload) {
+    if (payload && modalType === "add") {
       const chaResponse = await postChaData(payload);
+
+      if (chaResponse) {
+        handleGetRegionSource();
+      }
+    }
+
+    if (payload && modalType === "update") {
+      const chaResponse = null; //Call PUT request
 
       if (chaResponse) {
         handleGetRegionSource();
@@ -197,28 +210,21 @@ function ManageChaContainer() {
         modalType === "add" ? "Add CHA Charges" : "Update CHA Charges"
       }
       modalSize="60%"
-      onModalClose={() => setModalOpen(false)}
+      onModalClose={() => {
+        setModalOpen(false);
+        setUpdateFormData(null);
+      }}
       ModalContent={() => {
-        if (modalType === "add") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-              handleSaveAction={handleSaveAction}
-            />
-          );
-        }
-
-        if (modalType === "update") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-            />
-          );
-        }
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            regionSelectOptions={regionSelectOptions}
+            destinationSelectOptions={destinationSelectOptions}
+            handleSaveAction={handleSaveAction}
+            updateFormData={updateFormData}
+            modalType={modalType}
+          />
+        );
       }}
     >
       <Space h="sm" />
@@ -239,27 +245,19 @@ function ManageChaContainer() {
           },
         ]}
         handleRowEdit={(row: any, rowIndex: number) => {
-          const destinationListWithSameOrigin = [...tableRowData].filter(
-            (item: any) => {
-              if (item._originPortId === row._originPortId) {
-                let obj = { ...row };
-                delete obj["updatedAt"];
-                delete obj["_id"];
-                delete obj["_originPortId"];
-                delete obj["createdAt"];
-                delete obj["originPort"];
+          let obj = { ...row };
+          delete obj["updatedAt"];
+          delete obj["_id"];
+          delete obj["_originPortId"];
+          delete obj["createdAt"];
+          delete obj["originPort"];
 
-                return {
-                  ...obj,
-                };
-              }
-            }
-          );
           const formObj = {
             _originPortId: row._originPortId,
-            destinations: [...destinationListWithSameOrigin],
+            destinations: [obj],
           };
-          console.log(formObj);
+
+          setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}
