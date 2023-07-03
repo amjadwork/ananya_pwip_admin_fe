@@ -53,9 +53,9 @@ const columns = [
   },
 ];
 
-const RenderPageHeader = (props: any) => {
-  return <PageHeader />;
-};
+// const RenderPageHeader = (props: any) => {
+//   return <PageHeader />;
+// };
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -244,7 +244,7 @@ function ManageChaContainer() {
       <Space h="sm" />
 
       <DataTable
-        data={tableRowData}
+        data={tableRowData.reverse()}
         columns={columns}
         actionItems={[
           {
