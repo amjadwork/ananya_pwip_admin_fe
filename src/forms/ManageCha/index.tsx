@@ -35,17 +35,8 @@ function EditChaForm(props: any) {
   });
 
   const handleAddItem: any = () => {
-    form.insertListItem("destinations", {
-      _destinationPortId: "",
-      chaCharge: "",
-      silicaGel: "",
-      craftPaper: "",
-      transportCharge: "",
-      loadingCharge: "",
-      customCharge: "",
-      pqc: "",
-      coo: "",
-      key: randomId(),
+    form.insertListItem("destinations", initialFormValues.destinations[0], {
+      ...initialFormValues.destinations[0],
     });
   };
 
