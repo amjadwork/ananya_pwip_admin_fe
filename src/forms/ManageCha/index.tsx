@@ -236,7 +236,7 @@ function EditChaForm(props: any) {
       <Space h="lg" />
 
       <Group position="right" mt="md">
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Submit & Save</Button>
       </Group>
     </form>
   );
