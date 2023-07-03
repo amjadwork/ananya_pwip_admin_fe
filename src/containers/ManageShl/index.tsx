@@ -9,24 +9,18 @@ import {
   List,
   ScrollArea,
 } from "@mantine/core";
-import { Pencil, X, Check } from "tabler-icons-react";
+import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
-  Card as SectionCard,
-  Input,
   Button,
   Text,
   ActionIcon,
 } from "../../components/index";
 
-// import {Group,Popover,Space} from "@mantine/core";
-// import {Pencil,X,Check} from "tabler-icons-react";
-// import {Button,ActionIcon,Text} from "../../components/index";
-
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import PageLabel from "../../components/PageLabel/PageLabel";
-import CardModal from "../../components/CardModal/CardModal";
+import DataTable from "../../components/DataTable/DataTable";
 
 import {
   getShlData,
@@ -34,6 +28,46 @@ import {
   getRegionSource,
   postShlData,
 } from "../../services/export-costing/SHL";
+
+
+const columns = [
+  {
+    label: "Destination",
+    key: "_destinationPortId",
+  },
+  {
+    label: "Origin",
+    key: "originPort",
+  },
+  {
+    label: "SHL",
+    key: "shlCharge",
+  },
+  {
+    label: "THC",
+    key: "thc",
+  },
+  {
+    label: "B/LFee",
+    key: "blFee",
+  },
+  {
+    label: "Surrender",
+    key: "surrender",
+  },
+  {
+    label: "Convenience",
+    key: "convenienceFee",
+  },
+  {
+    label: "Seal",
+    key: "seal",
+  },
+  {
+    label: "COO",
+    key: "coo",
+  },
+];
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -157,7 +191,8 @@ function ManageShlContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [shlAPIPayload, setShlAPIPayload] = React.useState<any>(null);
-  const [dataCopy, setDataCopy] = React.useState<any>([]);
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
+ 
 
   //What does this below function do? Is it necessary? #askSwain
   const handleRefetchShlList = (shlPostResponse: any) => {
@@ -171,7 +206,6 @@ function ManageShlContainer() {
     const shlDataResponse: any = await getShlData(regionList);
     try {
       if (shlDataResponse) {
-        console.log(regionList);
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
@@ -192,7 +226,6 @@ function ManageShlContainer() {
         });
 
         setShlData(() => [...array]);
-        setDataCopy(() => [...array]);
       }
     } catch (error) {
       console.log(error);
@@ -251,7 +284,6 @@ function ManageShlContainer() {
     });
 
     setShlData(() => [...shlArr]);
-    setDataCopy(() => [...shlArr]);
   };
 
   const handleSaveAction = async () => {
@@ -288,6 +320,25 @@ function ManageShlContainer() {
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
+
+  React.useEffect(() => {
+    if (shlData.length) {
+      let tableData: any = [];
+
+      [...shlData].forEach((d: any) => {
+        d.list.forEach((l: any) => {
+          const obj = {
+            ...l,
+            originPort: d.name,
+            _originPortId: d._originPortId,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [shlData]);
 
   return (
     <PageWrapper
@@ -343,73 +394,31 @@ function ManageShlContainer() {
       />
       <Space h="lg" />
 
-      <SimpleGrid cols={2}>
-        {shlData.map((item: any, index: number) => {
-          console.log(item);
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}>{item?.name}</Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {item?.list?.map((d: any, i: number) => {
-                    const destinationName = destinationSelectOptions?.find(
-                      (f: any) => f.value === d._destinationPortId
-                    )?.label;
-                    return (
-                      <Box
-                        key={i}
-                        sx={(theme) => ({
-                          display: "block",
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[6]
-                              : "#fff",
-                          color:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[4]
-                              : theme.colors.dark[7],
-                          textAlign: "left",
-                          padding: theme.spacing.md,
-                          borderRadius: theme.radius.md,
-                          cursor: "default",
 
-                          "&:hover": {
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[5]
-                                : theme.colors.gray[1],
-                          },
-                        })}
-                      >
-                        <List.Item>
-                          {destinationName} -{" "}
-                          <span style={{ fontWeight: "800" }}>
-                            INR {d.shlCharge}
-                          </span>
-                        </List.Item>
-                      </Box>
-                    );
-                  })}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
-      {/* <CardModal
-     dataCopy={dataCopy}
-     destinationSelectOptions={destinationSelectOptions}
-      /> */}
+      <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalOpen(true);
+            },
+          },
+          {
+            label: "Save",
+            type: "button",
+            color: "blue",
+            onClickAction: () => {
+              handleSaveAction();
+            },
+          },
+        ]}
+      />
+    
     </PageWrapper>
   );
 }
