@@ -22,7 +22,13 @@ export default (state = initialState, action) => {
 
 export const actions = {
   setUserData: (data) => {
-    return { type: types.SET_USER_DATA_REQUEST, user: data };
+    return {
+      type: types.SET_USER_DATA_REQUEST,
+      user: data,
+    };
   },
-  resetUserData: () => ({ type: types.RESET_USER_DATA_REQUEST, user: null }),
+  resetUserData: () => ({
+    type: types.RESET_USER_DATA_REQUEST,
+    user: null,
+  }),
 };
