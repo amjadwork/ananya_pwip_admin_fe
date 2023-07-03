@@ -6,18 +6,24 @@ import { Check } from "tabler-icons-react";
 export const getChaData = async (regionList: any) => {
   const response: any = await APIRequest("cha", "GET");
   if (response) {
-    return response;
+    if (response) {
+      return response;
+    }
   }
 };
 
 export const getDestinationData = async () => {
   const response = await APIRequest("location?filterType=destination", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const getRegionSource = async () => {
   const response = await APIRequest("location?filterType=origin", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const postChaData = async (chaAPIPayload: any) => {
@@ -63,5 +69,7 @@ export const postChaData = async (chaAPIPayload: any) => {
     });
   }
 
-  return response;
+  if (response) {
+    return response;
+  }
 };

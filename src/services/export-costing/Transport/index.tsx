@@ -2,17 +2,23 @@ import APIRequest from "../../../helper/api";
 
 export const getTransportData = async () => {
   const response: any = await APIRequest("transportation", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const getSourceData = async () => {
   const response = await APIRequest("location?filterType=source", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const getOriginData = async () => {
   const response = await APIRequest("location?filterType=origin", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const postTransportData = async (transportAPIPayload: any) => {
@@ -21,5 +27,7 @@ export const postTransportData = async (transportAPIPayload: any) => {
     "POST",
     transportAPIPayload
   );
-  return response;
+  if (response) {
+    return response;
+  }
 };
