@@ -66,20 +66,23 @@ interface ThProps {
   reversed: boolean;
   sorted: boolean;
   onSort(): void;
+  sortable: boolean;
 }
 
-function Th({ children, reversed, sorted, onSort }: ThProps) {
+function Th({ children, reversed, sorted, onSort, sortable }: ThProps) {
   const { classes } = useStyles();
   const Icon = sorted ? (reversed ? ChevronUp : ChevronDown) : Selector;
   return (
     <th className={classes.th}>
       <UnstyledButton onClick={onSort} className={classes.control}>
         <Flex display="inline-flex" align={"center"} justify="space-between">
-          <Text>{children}</Text>
+          <Text weight="bold">{children}</Text>
 
-          <Center className={classes.icon}>
-            <Icon size="16px" strokeWidth={1.5} color={"#adb5bd"} />
-          </Center>
+          {sortable && (
+            <Center className={classes.icon}>
+              <Icon size="16px" strokeWidth={1.5} color={"#adb5bd"} />
+            </Center>
+          )}
         </Flex>
       </UnstyledButton>
     </th>
@@ -186,6 +189,7 @@ export function DataTable({ data, columns, actionItems }: TableSortProps) {
                   sorted={sortBy === col.key}
                   reversed={reverseSortDirection}
                   onSort={() => setSorting(col.key)}
+                  sortable={col.sortable || false}
                 >
                   {col.label}
                 </Th>

@@ -4,7 +4,6 @@ import { Plus } from "tabler-icons-react";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
 import DataTable from "../../components/DataTable/DataTable";
 
 import {
@@ -18,10 +17,12 @@ const columns = [
   {
     label: "Destination",
     key: "_destinationPortId",
+    sortable: true,
   },
   {
     label: "Origin",
     key: "originPort",
+    sortable: true,
   },
   {
     label: "CHA",
@@ -56,10 +57,6 @@ const columns = [
     key: "action",
   },
 ];
-
-// const RenderPageHeader = (props: any) => {
-//   return <PageHeader />;
-// };
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
