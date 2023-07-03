@@ -1,6 +1,7 @@
 import React from "react";
-import { Space } from "@mantine/core";
+import { Space, Text } from "@mantine/core";
 import { Plus } from "tabler-icons-react";
+import { openConfirmModal } from "@mantine/modals";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
@@ -178,6 +179,23 @@ function ManageChaContainer() {
     }
   };
 
+  const openDeleteModal = (data: any) =>
+    openConfirmModal({
+      title: "Delete CHA details",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the CHA record for{" "}
+          {data._originPortId} to {data._destinationPortId}? This action is
+          destructive and you will have to contact support to restore your data.
+        </Text>
+      ),
+      labels: { confirm: "Delete CHA", cancel: "No don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => console.log("Confirmed"),
+    });
+
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
@@ -262,9 +280,7 @@ function ManageChaContainer() {
           setModalOpen(true);
         }}
         handleRowDelete={(row: any, rowIndex: number) => {
-          console.log("delete", row, rowIndex);
-          setModalType("delete");
-          setModalOpen(true);
+          openDeleteModal(row);
         }}
       />
     </PageWrapper>

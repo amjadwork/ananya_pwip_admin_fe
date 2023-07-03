@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { ModalsProvider } from "@mantine/modals";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import "./index.css";
@@ -18,7 +18,9 @@ root.render(
   <Provider store={store}>
     <MantineProvider withNormalizeCSS withGlobalStyles>
       <NotificationsProvider position="bottom-center">
-        <App />
+        <ModalsProvider>
+          <App />
+        </ModalsProvider>
       </NotificationsProvider>
     </MantineProvider>
   </Provider>
