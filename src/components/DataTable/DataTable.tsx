@@ -235,7 +235,7 @@ export function DataTable({
       <Space h={18} />
       <Center>
         <Pagination
-          total={Math.ceil(data.length / 5)}
+          total={Math.ceil(data.length / pageSize)}
           page={activePage}
           onChange={setPage}
         />

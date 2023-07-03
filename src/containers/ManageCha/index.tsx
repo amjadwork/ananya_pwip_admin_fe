@@ -61,14 +61,14 @@ const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
-  const handleUpdateChaUIData = props.handleUpdateChaUIData;
+  const handleSaveAction = props.handleSaveAction;
 
   return (
     <EditChaForm
       handleCloseModal={handleCloseModal}
       regionSelectOptions={regionSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
-      handleUpdateChaUIData={handleUpdateChaUIData}
+      handleSaveAction={handleSaveAction}
     />
   );
 };
@@ -80,7 +80,6 @@ function ManageChaContainer() {
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
-  const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const getCHAList = async (regionList: any) => {
@@ -107,7 +106,6 @@ function ManageChaContainer() {
         });
 
         setChaData(() => [...array]);
-        // setDataCopy(() => [...array]);
       }
     } catch (error) {
       console.log(error);
@@ -139,28 +137,9 @@ function ManageChaContainer() {
     }
   };
 
-  const handleUpdateChaUIData = (formData: any) => {
-    setChaAPIPayload({ ...formData });
-    let chaArr: any = [...chaData];
-
-    chaArr = chaArr.map((d: any) => {
-      if (formData._originPortId === d._originId) {
-        return {
-          ...d,
-          list: [...d.list, ...formData.destinations],
-        };
-      }
-      return {
-        ...d,
-      };
-    });
-
-    setChaData(() => [...chaArr]);
-  };
-
-  const handleSaveAction = async () => {
-    if (chaAPIPayload) {
-      const chaResponse = await postChaData(chaAPIPayload);
+  const handleSaveAction = async (payload: any) => {
+    if (payload) {
+      const chaResponse = await postChaData(payload);
 
       if (chaResponse) {
         handleGetRegionSource();
@@ -225,7 +204,7 @@ function ManageChaContainer() {
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               regionSelectOptions={regionSelectOptions}
               destinationSelectOptions={destinationSelectOptions}
-              handleUpdateChaUIData={handleUpdateChaUIData}
+              handleSaveAction={handleSaveAction}
             />
           );
         }
@@ -244,7 +223,7 @@ function ManageChaContainer() {
       <Space h="sm" />
 
       <DataTable
-        data={tableRowData.reverse()}
+        data={tableRowData}
         columns={columns}
         actionItems={[
           {
@@ -254,14 +233,6 @@ function ManageChaContainer() {
             type: "button",
             onClickAction: () => {
               setModalOpen(true);
-            },
-          },
-          {
-            label: "Save",
-            type: "button",
-            color: "blue",
-            onClickAction: () => {
-              handleSaveAction();
             },
           },
         ]}
