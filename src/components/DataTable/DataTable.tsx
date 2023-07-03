@@ -59,6 +59,8 @@ interface TableSortProps {
   columns: any;
   actionItems?: any;
   onClickAction?: any;
+  handleRowEdit?: any;
+  handleRowDelete?: any;
 }
 
 interface ThProps {
@@ -101,7 +103,13 @@ function sortData(data: any, payload: { sortBy: any; reversed: any }) {
   });
 }
 
-export function DataTable({ data, columns, actionItems }: TableSortProps) {
+export function DataTable({
+  data,
+  columns,
+  actionItems,
+  handleRowEdit,
+  handleRowDelete,
+}: TableSortProps) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState<any>([]);
   const [sortBy, setSortBy] = useState<any>(null);
@@ -214,7 +222,7 @@ export function DataTable({ data, columns, actionItems }: TableSortProps) {
                               <ActionIcon
                                 variant="light"
                                 color="blue"
-                                onClick={() => console.log("edit")}
+                                onClick={() => handleRowEdit(row, index)}
                               >
                                 <Pencil size="1rem" />
                               </ActionIcon>
@@ -222,7 +230,7 @@ export function DataTable({ data, columns, actionItems }: TableSortProps) {
                               <ActionIcon
                                 variant="light"
                                 color="red"
-                                onClick={() => console.log("trash")}
+                                onClick={() => handleRowDelete(row, index)}
                               >
                                 <Trash size="1rem" />
                               </ActionIcon>

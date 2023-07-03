@@ -76,7 +76,7 @@ const RenderModalContent = (props: any) => {
 
 function ManageChaContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
+  const [modalType, setModalType] = React.useState<string>("add");
   const [chaData, setChaData] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
@@ -178,7 +178,7 @@ function ManageChaContainer() {
           const obj = {
             ...l,
             originPort: d.name,
-            _originPortId: d._originPortId,
+            _originPortId: d._originId,
           };
           tableData.push(obj);
         });
@@ -194,12 +194,12 @@ function ManageChaContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit" ? "Add CHA Charges" : "Update CHA Charges"
+        modalType === "add" ? "Add CHA Charges" : "Update CHA Charges"
       }
       modalSize="60%"
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
-        if (modalType === "edit") {
+        if (modalType === "add") {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
@@ -233,10 +233,41 @@ function ManageChaContainer() {
             color: "gray",
             type: "button",
             onClickAction: () => {
+              setModalType("add");
               setModalOpen(true);
             },
           },
         ]}
+        handleRowEdit={(row: any, rowIndex: number) => {
+          const destinationListWithSameOrigin = [...tableRowData].filter(
+            (item: any) => {
+              if (item._originPortId === row._originPortId) {
+                let obj = { ...row };
+                delete obj["updatedAt"];
+                delete obj["_id"];
+                delete obj["_originPortId"];
+                delete obj["createdAt"];
+                delete obj["originPort"];
+
+                return {
+                  ...obj,
+                };
+              }
+            }
+          );
+          const formObj = {
+            _originPortId: row._originPortId,
+            destinations: [...destinationListWithSameOrigin],
+          };
+          console.log(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any, rowIndex: number) => {
+          console.log("delete", row, rowIndex);
+          setModalType("delete");
+          setModalOpen(true);
+        }}
       />
     </PageWrapper>
   );
