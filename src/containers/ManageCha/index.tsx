@@ -51,6 +51,10 @@ const columns = [
     label: "COO",
     key: "coo",
   },
+  {
+    label: "Actions",
+    key: "action",
+  },
 ];
 
 // const RenderPageHeader = (props: any) => {

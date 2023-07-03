@@ -12,9 +12,11 @@ import {
   Flex,
   Space,
   Button,
+  ActionIcon,
 } from "@mantine/core";
 import {
-  Plus,
+  Pencil,
+  Trash,
   ChevronUp,
   ChevronDown,
   Selector,
@@ -96,18 +98,13 @@ function sortData(data: any, payload: { sortBy: any; reversed: any }) {
   });
 }
 
-export function DataTable({
-  data,
-  columns,
-  actionItems,
-  onClickAction,
-}: TableSortProps) {
+export function DataTable({ data, columns, actionItems }: TableSortProps) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState<any>([]);
   const [sortBy, setSortBy] = useState<any>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [activePage, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize, setPageSize] = useState(7);
 
   useEffect(() => {
     setSortedData(data);
@@ -206,6 +203,30 @@ export function DataTable({
                 return (
                   <tr key={row._destinationPortId + index}>
                     {columnKeys.map((key: any, index: number) => {
+                      if (key === "action") {
+                        return (
+                          <td key={key + index}>
+                            <Flex justify="flex-end" gap="sm" align="center">
+                              <ActionIcon
+                                variant="light"
+                                color="blue"
+                                onClick={() => console.log("edit")}
+                              >
+                                <Pencil size="1rem" />
+                              </ActionIcon>
+
+                              <ActionIcon
+                                variant="light"
+                                color="red"
+                                onClick={() => console.log("trash")}
+                              >
+                                <Trash size="1rem" />
+                              </ActionIcon>
+                            </Flex>
+                          </td>
+                        );
+                      }
+
                       return (
                         <td
                           style={{
