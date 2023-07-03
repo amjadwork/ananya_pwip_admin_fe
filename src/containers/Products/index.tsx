@@ -4,7 +4,7 @@ import { Plus } from "tabler-icons-react";
 import { useNavigate } from "react-router-dom";
 
 import { ErrorContext } from "./../../context/errorContext";
-import {getProductData} from "../../services/export-costing/Products"
+import { getProductData } from "../../services/export-costing/Products";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import { ProductCard as Card, ActionIcon, Alert } from "../../components/index";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -73,7 +73,7 @@ function ProductsContainer() {
   }, []);
 
   const handleGetData = async () => {
-    const productResponse: any = await getProductData()
+    const productResponse: any = await getProductData();
     if (productResponse) {
       setProductList(productResponse);
     }
@@ -109,7 +109,7 @@ function ProductsContainer() {
               title={k.name}
               status={k.status}
               onClickAction={() =>
-                navigate(`/admin/dashboard/products/${k._id}`)
+                navigate(`/admin/dashboard/export-costing/products/${k._id}`)
               }
             />
           );
