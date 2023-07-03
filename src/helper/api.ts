@@ -6,7 +6,9 @@ const APIRequest = async (
   method: string,
   payload?: object
 ) => {
-  const url = `http://43.205.147.191:8000/api/`;
+  // const url = `http://43.205.147.191:8000/api/`;
+  const url = `http://localhost:8000/api/`;
+
   try {
     let response: any = null;
     switch (method) {
@@ -31,13 +33,13 @@ const APIRequest = async (
 
     return response.data;
   } catch (error: any) {
-    if (error.response && error.response.status === 422) {
-      // Log the validation error message
+    if (error.response) {
       showNotification({
         id: "cha-post-data",
-        title: "Oops! Something went wrong.",
+        title: `${error.code}: ${error.name}`,
         message:
           error?.response?.data?.message ||
+          error?.message ||
           "Not sure what went wrong! Contact support",
         autoClose: 5000,
         disallowClose: false,
@@ -45,25 +47,14 @@ const APIRequest = async (
         styles: (theme) => ({
           root: {
             borderColor: theme.colors.red[6],
+
+            "&::before": { backgroundColor: theme.colors.red[6] },
           },
+
+          title: { color: theme.colors.red[8] },
         }),
       });
     }
-
-    showNotification({
-      id: "cha-post-data",
-      title: "API ERROR",
-      message: JSON.stringify(error),
-      autoClose: 5000,
-      disallowClose: false,
-      loading: false,
-      styles: (theme) => ({
-        root: {
-          borderColor: theme.colors.red[6],
-        },
-      }),
-    });
-    throw error;
   }
 };
 

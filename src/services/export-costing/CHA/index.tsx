@@ -5,7 +5,9 @@ import { Check } from "tabler-icons-react";
 
 export const getChaData = async (regionList: any) => {
   const response: any = await APIRequest("cha", "GET");
-  return response;
+  if (response) {
+    return response;
+  }
 };
 
 export const getDestinationData = async () => {
