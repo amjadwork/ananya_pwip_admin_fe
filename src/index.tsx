@@ -17,7 +17,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <MantineProvider withNormalizeCSS withGlobalStyles>
-      <NotificationsProvider position="bottom-center">
+      <NotificationsProvider position="top-right" zIndex={3000}>
         <ModalsProvider>
           <App />
         </ModalsProvider>
