@@ -81,14 +81,16 @@ function EditChaForm(props: any) {
                 height: "100%",
               }}
             >
-              <Group spacing="md" position="right" margin-bottom="5px">
-                <ActionIcon
-                  color="red"
-                  onClick={() => form.removeListItem("destinations", index)}
-                >
-                  <Trash size="1rem" />
-                </ActionIcon>
-              </Group>
+              {form.values.destinations.length > 1 ? (
+                <Group spacing="md" position="right" margin-bottom="5px">
+                  <ActionIcon
+                    color="red"
+                    onClick={() => form.removeListItem("destinations", index)}
+                  >
+                    <Trash size="1rem" />
+                  </ActionIcon>
+                </Group>
+              ) : null}
             </div>
           </Grid.Col>
 
