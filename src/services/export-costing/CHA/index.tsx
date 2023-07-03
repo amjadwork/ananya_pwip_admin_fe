@@ -1,5 +1,7 @@
-import { showNotification } from "@mantine/notifications";
+import React from "react";
+import { showNotification, updateNotification } from "@mantine/notifications";
 import APIRequest from "../../../helper/api";
+import { Check } from "tabler-icons-react";
 
 export const getChaData = async (regionList: any) => {
   const response: any = await APIRequest("cha", "GET");
@@ -17,28 +19,54 @@ export const getRegionSource = async () => {
 };
 
 export const postChaData = async (chaAPIPayload: any) => {
+  showNotification({
+    id: "cha-post-data",
+    title: "Adding requested CHA record.",
+    message: "We are adding the record with the requested data, please wait",
+    autoClose: 5000,
+    disallowClose: false,
+    loading: true,
+    styles: (theme) => ({
+      root: {
+        // backgroundColor: theme.colors.blue[6],
+        borderColor: theme.colors.blue[6],
+
+        // "&::before": { backgroundColor: theme.white },
+      },
+
+      // title: { color: theme.white },
+      // description: { color: theme.white },
+      // closeButton: {
+      //   color: theme.white,
+      //   "&:hover": { backgroundColor: theme.colors.blue[7] },
+      // },
+    }),
+  });
   const response = await APIRequest("cha", "POST", chaAPIPayload);
 
   if (response) {
-    showNotification({
+    updateNotification({
+      id: "cha-post-data",
+      icon: <Check size={16} />,
       title: "CHA record has been added.",
       message: "Hey there, your record has been added to the table",
       autoClose: 5000,
       disallowClose: false,
+      loading: false,
       styles: (theme) => ({
         root: {
-          backgroundColor: theme.colors.blue[6],
+          // backgroundColor: theme.colors.blue[6],
           borderColor: theme.colors.blue[6],
 
-          "&::before": { backgroundColor: theme.white },
+          // "&::before": { backgroundColor: theme.white },
         },
 
-        title: { color: theme.white },
-        description: { color: theme.white },
-        closeButton: {
-          color: theme.white,
-          "&:hover": { backgroundColor: theme.colors.blue[7] },
-        },
+        // title: { color: theme.white },
+        // description: { color: theme.white },
+        // closeButton: {
+        //   color: theme.white,
+        //   "&:hover": { backgroundColor: theme.colors.blue[7] },
+        // },
       }),
     });
   }
