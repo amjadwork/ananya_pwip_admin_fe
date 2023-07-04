@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  SimpleGrid,
-  Box,
   Group,
   Popover,
   Space,
-  Title,
-  Badge,
-  List,
-  ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
 import {
-  Card as SectionCard,
   Button,
-  Select,
   Text,
   ActionIcon,
 } from "../../components/index";
@@ -22,7 +14,31 @@ import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import DataTable from "../../components/DataTable/DataTable";
 
+
+
+const columns = [
+  {
+    label: "Variant",
+    key: "_destinationPortId",
+    sortable: true,
+  },
+  {
+    label: "Category",
+    key: "_categoryId",
+    sortable: true,
+  },
+  {
+    label: "Price",
+    key: "chaCharge",
+  },
+  {
+    label: "Action",
+    key: "action",
+  },
+  
+];
 const RenderPageHeader = (props: any) => {
   return (
     <Group>
@@ -113,14 +129,7 @@ const RenderPageAction = (props: any) => {
   }
 
   return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
+    <ActionIcon >
       <Pencil size={16} />
     </ActionIcon>
   );
@@ -159,6 +168,7 @@ function ManageProductsContainer(props: any) {
   const [variantsData, setVariantsData] = useState<any>([]);
   const [sourceList, setSourceList] = useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const [status, setStatus] = React.useState<any>(productData?.status || "");
   const [selectedVariantData, setSelectedVariantData] =
@@ -176,6 +186,7 @@ function ManageProductsContainer(props: any) {
       image: productData.image,
       // status: status,
     };
+    console.log("here",payload)
 
     const updateStatusResponse = await APIRequest(
       `product/${productData._id}`,
@@ -216,6 +227,7 @@ function ManageProductsContainer(props: any) {
       );
       handleGetVariantData(categoryIdArr);
     }
+
   };
 
   const handleGetVariantData = async (ids: Array<[]>) => {
@@ -245,28 +257,43 @@ function ManageProductsContainer(props: any) {
     handleGetProductData();
   };
 
+  console.log("category", categoryData)
+  console.log("variant", variantsData)
+
+  React.useEffect(() => {
+    if (variantsData.length) {
+      let tableData: any = [];
+
+      [...variantsData].map((d: any) => {
+        d.costing.forEach((l: any) => {
+          const obj = {
+            ...l,
+            originPort: d.name,
+            _originPortId: d._originId,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [variantsData]);
+
   return (
     <PageWrapper
-      PageHeader={() => <RenderPageHeader />}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
-          editModeActive={editModeActive}
-          handleSaveAction={handleSave}
-        />
-      )}
-      modalOpen={modalOpen || updateModalOpen}
+      PageHeader={() => null}
+      PageAction={() => null}
+      modalOpen={modalOpen}
       modalTitle={
-        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
+        modalType === "add" ? "Add Product" : "Update Product"
       }
+      modalSize="60%"
       onModalClose={() => {
         setModalOpen(false);
         setUpdateModalOpen(false);
         setSelectedVariantData(null);
       }}
       ModalContent={() => {
-        if (modalType === "edit" && !updateModalOpen) {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
@@ -274,142 +301,46 @@ function ManageProductsContainer(props: any) {
               handleSaveCallback={handleSaveCallback}
             />
           );
-        }
+        }}>
+      <Space h="sm" />     
+      <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("add");
+              setModalOpen(true);
+            },
+          },
+        ]}
+        // handleRowEdit={(row: any, rowIndex: number) => {
+        //   let obj = { ...row };
+        //   delete obj["updatedAt"];
+        //   delete obj["_id"];
+        //   delete obj["_originPortId"];
+        //   delete obj["createdAt"];
+        //   delete obj["originPort"];
 
-        if (updateModalOpen && selectedVariantData) {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
-              categoryData={categoryData}
-              handleSaveCallback={handleSaveCallback}
-              variantsData={selectedVariantData}
-            />
-          );
-        }
-      }}
-      modalSize="70%"
-    >
-      <Box
-        sx={(theme: any) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>{productData?.name || ""}</Title>
+        //   const formObj = {
+        //     _originPortId: row._originPortId,
+        //     destinations: [obj],
+        //   };
 
-          {/* <Badge size="lg" color="green" variant="light">
-            {productData?.status || ""}
-          </Badge> */}
+        //   setUpdateFormData(formObj);
+        //   setModalType("update");
+        //   setModalOpen(true);
+        // }}
+        // handleRowDelete={(row: any, rowIndex: number) => {
+        //   openDeleteModal(row);
+        // }}
+      />
 
-          <Group spacing="md">
-            {editModeActive && (
-              <Group spacing="md">
-                <Select
-                  placeholder="Status"
-                  data={[
-                    { value: "live", label: "Live" },
-                    { value: "pending", label: "Pending" },
-                    { value: "disabled", label: "Disabled" },
-                    { value: "review", label: "Review" },
-                  ]}
-                  defaultValue={productData?.status || "Select status"}
-                  // onChange={(value: any) => {
-                  //   setStatus(value);
-                  // }}
-                />
-                <Button
-                  type="submit"
-                  leftIcon={<Plus size={14} />}
-                  onClick={() => setModalOpen(true)}
-                >
-                  Add Variant
-                </Button>
-              </Group>
-            )}
-          </Group>
-        </Group>
-      </Box>
 
-      <Space h="lg" />
-
-      <SimpleGrid cols={2}>
-        {categoryData?.map((cat: any, index: number) => {
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}>{cat.name}</Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {variantsData.map((d: any, i: number) => {
-                    if (d._categoryId === cat._id) {
-                      return (
-                        <Box
-                          key={i}
-                          sx={(theme: any) => ({
-                            display: "block",
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[6]
-                                : "#fff",
-                            color:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[4]
-                                : theme.colors.dark[7],
-                            textAlign: "left",
-                            padding: theme.spacing.md,
-                            borderRadius: theme.radius.md,
-                            cursor: "default",
-
-                            "&:hover": {
-                              backgroundColor:
-                                theme.colorScheme === "dark"
-                                  ? theme.colors.dark[5]
-                                  : theme.colors.gray[1],
-                            },
-                          })}
-                        >
-                          <List.Item>
-                            {d.name}{" "}
-                            <Text
-                              size="sm"
-                              sx={(theme: any) => ({
-                                color: theme.colors.dark[1],
-                              })}
-                            >
-                              available at {d.costing.length} region
-                            </Text>
-                          </List.Item>
-                        </Box>
-                      );
-                    }
-                  })}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
     </PageWrapper>
   );
 }
