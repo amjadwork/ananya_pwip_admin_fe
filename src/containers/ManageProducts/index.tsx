@@ -34,6 +34,8 @@ const RenderModalContent = (props: any) => {
   const categoryData = props.categoryData;
   const handleSaveCallback = props.handleSaveCallback;
   const variantsData = props.variantsData;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType;
 
   let regionCostingList: any = [];
 
@@ -48,6 +50,8 @@ const RenderModalContent = (props: any) => {
       handleSaveCallback={handleSaveCallback}
       regionCostingList={regionCostingList}
       variantsData={variantsData}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
@@ -60,6 +64,7 @@ function ManageProductsContainer(props: any) {
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [updateFormData, setUpdateFormData] = React.useState<any>(null);
 
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
@@ -184,6 +189,7 @@ function ManageProductsContainer(props: any) {
         setModalOpen(false);
         setUpdateModalOpen(false);
         setSelectedVariantData(null);
+        setUpdateFormData(null);
       }}
       ModalContent={() => {
         return (
@@ -192,6 +198,8 @@ function ManageProductsContainer(props: any) {
             categoryData={categoryData}
             handleSaveCallback={handleSaveCallback}
             variantsData={selectedVariantData}
+            updateFormData={updateFormData}
+            modalType={modalType}
           />
         );
       }}
@@ -214,6 +222,17 @@ function ManageProductsContainer(props: any) {
           },
         ]}
         handleRowEdit={(row: any, rowIndex: number) => {
+          let obj = { ...row };
+
+          const formObj = {
+            _categoryId: obj._categoryId,
+            name: obj.variantName,
+            region: [obj],
+          };
+
+          console.log(formObj);
+
+          setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}

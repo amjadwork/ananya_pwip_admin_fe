@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Group,
   Button,
@@ -9,10 +9,24 @@ import {
   ActionIcon,
   Flex,
 } from "@mantine/core";
-import { Minus, Check, Plus } from "tabler-icons-react";
+import { Minus, Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
+
+import { randomId } from "@mantine/hooks";
+
+const initialFormValues: any = {
+  _categoryId: "",
+  name: "",
+  region: [
+    {
+      region: "",
+      exMill: "",
+      key: randomId(),
+    },
+  ],
+};
 
 function AddOrEditProductForm(props: any) {
   const inputRef: any = useRef(null);
@@ -21,6 +35,8 @@ function AddOrEditProductForm(props: any) {
   const categoryData = props.categoryData || [];
   const handleSaveCallback = props.handleSaveCallback;
   const variantsData = props.variantsData;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
 
   const [variantRegionCostingList, setVariantRegionCostingList] = useState<any>(
     variantsData?.costing || []
@@ -31,16 +47,20 @@ function AddOrEditProductForm(props: any) {
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      name: variantsData?.name || "",
-      _categoryId: variantsData?._categoryId || "",
-    },
+    initialValues: { ...initialFormValues },
 
     validate: {
       name: (value) =>
         value.length < 2 ? "Name must have at least 2 letters" : null,
     },
   });
+
+  useEffect(() => {
+    if (updateFormData && modalType === "update") {
+      console.log(updateFormData);
+      form.setValues(updateFormData);
+    }
+  }, [updateFormData, modalType]);
 
   const handleGetRegions: any = async () => {
     const regionResponse = await APIRequest(
@@ -58,41 +78,13 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleAddRegionCost: any = () => {
-    let arr: any = [...variantRegionCostingList];
-    const regionName = regionOptions.filter((d: any) => {
-      if(d.value === regionValue) {
-        return d
-      }
-    })[0].label
-    const categoryObj = {
-      regionName: regionName,
-      region: regionValue,
-      exMill: numberValue,
-    };
-    arr.push(categoryObj);
-    setVariantRegionCostingList(arr);
-
-    setRegionValue("");
-
-    if (inputRef) {
-      inputRef.current.value = "";
-    }
-
-    setNumberValue(0);
-
-    if (inputRef) {
-      inputRef.current.value = "";
-    }
+    form.insertListItem("region", initialFormValues.region[0], {
+      ...initialFormValues.region[0],
+    });
   };
 
   const handleRemoveRegionCost = (index: number) => {
-    const arr: any = [...variantRegionCostingList];
-
-    if (index > -1) {
-      arr.splice(index, 1);
-    }
-
-    setVariantRegionCostingList(arr);
+    form.removeListItem("region", index);
   };
 
   const handleError = (errors: typeof form.errors) => {
@@ -126,6 +118,59 @@ function AddOrEditProductForm(props: any) {
     handleGetRegions();
   }, []);
 
+  const fields = form.values.region.map((item: any, index: number) => (
+    <React.Fragment key={item.key + index}>
+      <Group spacing="md">
+        <Select
+          required
+          label="Select Region"
+          placeholder="Eg. Karnal"
+          data={regionOptions}
+          {...form.getInputProps(`region.${index}.region`)}
+        />
+
+        <NumberInput
+          required
+          label="Ex-Mill"
+          placeholder="Eg. 26500"
+          {...form.getInputProps(`region.${index}.exMill`)}
+        />
+
+        <Flex
+          justify="space-between"
+          align="flex-end"
+          direction="row"
+          sx={() => ({
+            marginTop: `3%`,
+          })}
+        >
+          <Group spacing="md" position="right" margin-bottom="5px">
+            {form.values.region.length > 1 && modalType !== "update" ? (
+              <ActionIcon
+                variant="light"
+                color="red"
+                onClick={() => handleRemoveRegionCost(index)}
+              >
+                <Trash size="1rem" />
+              </ActionIcon>
+            ) : null}
+            {index === form.values.region.length - 1 &&
+            modalType !== "update" ? (
+              <ActionIcon
+                variant="light"
+                color="blue"
+                onClick={() => handleAddRegionCost(index)}
+              >
+                <Plus size="1rem" />
+              </ActionIcon>
+            ) : null}
+          </Group>
+        </Flex>
+      </Group>
+      <Space h="md" />
+    </React.Fragment>
+  ));
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Select
@@ -146,91 +191,8 @@ function AddOrEditProductForm(props: any) {
       />
 
       <Space h="md" />
-      {variantRegionCostingList.map((k: any, i: number) => {
-        return (
-          <Group spacing="md" key={i}>
-            <Select
-              required
-              defaultValue={k.region}
-              label="Select Region"
-              placeholder="Eg. Karnal"
-              data={regionOptions}
-            />
 
-            <NumberInput
-              required
-              defaultValue={k.exMill}
-              label="Ex-Mill"
-              placeholder="Eg. 26500"
-            />
-
-            <Flex
-              justify="space-between"
-              align="flex-end"
-              direction="row"
-              sx={() => ({
-                marginTop: `3%`,
-              })}
-            >
-              <Group spacing="md" position="right" margin-bottom="10px">
-                <ActionIcon
-                  variant="filled"
-                  onClick={() => handleRemoveRegionCost(i)}
-                >
-                  <Minus size={20} />
-                </ActionIcon>
-              </Group>
-            </Flex>
-          </Group>
-        );
-      })}
-
-      <Space h="md" />
-
-      <Group spacing="md" grow>
-        <Select
-          required
-          label="Select Region"
-          placeholder="Eg. Karnal"
-          data={regionOptions}
-          value={regionValue}
-          onChange={(event: any) => {
-            setRegionValue(event);
-          }}
-          ref={inputRef}
-        />
-
-        <NumberInput
-          required
-          label="Ex-Mill"
-          placeholder="Eg. 26500"
-          value={numberValue}
-          onChange={(val: number) => {
-            setNumberValue(val);
-          }}
-          ref={inputRef}
-        />
-
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "bottom",
-            width: "100%",
-            marginTop: `3%`,
-          }}
-        >
-          <ActionIcon
-            onClick={handleAddRegionCost}
-            color="teal"
-            variant="filled"
-            disabled={!regionValue || !numberValue}
-          >
-            {regionValue ? <Check size={20} /> : <Plus size={20} />}
-          </ActionIcon>
-        </div>
-      </Group>
-
-      <Space h="lg" />
+      {fields}
 
       <Group position="right" mt="md">
         <Button type="submit">Save</Button>

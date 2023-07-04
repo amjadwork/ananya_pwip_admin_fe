@@ -93,6 +93,7 @@ function EditChaForm(props: any) {
               {form.values.destinations.length > 1 ? (
                 <Group spacing="md" position="right" margin-bottom="5px">
                   <ActionIcon
+                    variant="light"
                     color="red"
                     onClick={() => form.removeListItem("destinations", index)}
                   >
