@@ -64,7 +64,7 @@ interface TableSortProps {
 }
 
 interface ThProps {
-  children: React.ReactNode;
+  children: any;
   reversed: boolean;
   sorted: boolean;
   onSort(): void;
@@ -77,7 +77,13 @@ function Th({ children, reversed, sorted, onSort, sortable }: ThProps) {
   return (
     <th className={classes.th}>
       <UnstyledButton onClick={onSort} className={classes.control}>
-        <Flex display="inline-flex" align={"center"} justify="space-between">
+        <Flex
+          display="inline-flex"
+          align={"center"}
+          justify={
+            children?.toLowerCase() !== "action" ? "space-between" : "flex-end"
+          }
+        >
           <Text weight="bold">{children}</Text>
 
           {sortable && (
@@ -191,9 +197,10 @@ export function DataTable({
       >
         <thead>
           <tr>
-            {columns.map((col: any) => {
+            {columns.map((col: any, index: number) => {
               return (
                 <Th
+                  key={col.key + index * 100}
                   sorted={sortBy === col.key}
                   reversed={reverseSortDirection}
                   onSort={() => setSorting(col.key)}

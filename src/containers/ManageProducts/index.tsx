@@ -1,27 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  Group,
-  Popover,
-  Space,
-} from "@mantine/core";
+import { Group, Popover, Space } from "@mantine/core";
 import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import {
-  Button,
-  Text,
-  ActionIcon,
-} from "../../components/index";
+import { Button, Text, ActionIcon } from "../../components/index";
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import DataTable from "../../components/DataTable/DataTable";
 
-
-
 const columns = [
   {
     label: "Variant",
-    key: "_destinationPortId",
+    key: "variantName",
     sortable: true,
   },
   {
@@ -31,13 +21,12 @@ const columns = [
   },
   {
     label: "Price",
-    key: "chaCharge",
+    key: "exMill",
   },
   {
     label: "Action",
     key: "action",
   },
-  
 ];
 const RenderPageHeader = (props: any) => {
   return (
@@ -129,7 +118,7 @@ const RenderPageAction = (props: any) => {
   }
 
   return (
-    <ActionIcon >
+    <ActionIcon>
       <Pencil size={16} />
     </ActionIcon>
   );
@@ -170,11 +159,12 @@ function ManageProductsContainer(props: any) {
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
 
-  const [status, setStatus] = React.useState<any>(productData?.status || "");
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
-  const handleSaveCallback = props.handleSaveCallback;
+  const handleSaveCallback = () => {
+    setModalOpen(false);
+  };
 
   useEffect(() => {
     handleGetProductData();
@@ -186,7 +176,7 @@ function ManageProductsContainer(props: any) {
       image: productData.image,
       // status: status,
     };
-    console.log("here",payload)
+    console.log("here", payload);
 
     const updateStatusResponse = await APIRequest(
       `product/${productData._id}`,
@@ -227,7 +217,6 @@ function ManageProductsContainer(props: any) {
       );
       handleGetVariantData(categoryIdArr);
     }
-
   };
 
   const handleGetVariantData = async (ids: Array<[]>) => {
@@ -257,9 +246,6 @@ function ManageProductsContainer(props: any) {
     handleGetProductData();
   };
 
-  console.log("category", categoryData)
-  console.log("variant", variantsData)
-
   React.useEffect(() => {
     if (variantsData.length) {
       let tableData: any = [];
@@ -268,8 +254,8 @@ function ManageProductsContainer(props: any) {
         d.costing.forEach((l: any) => {
           const obj = {
             ...l,
-            originPort: d.name,
-            _originPortId: d._originId,
+            variantName: d.name,
+            _categoryId: d._categoryId,
           };
           tableData.push(obj);
         });
@@ -280,61 +266,19 @@ function ManageProductsContainer(props: any) {
   }, [variantsData]);
 
   return (
-    // <PageWrapper
-    //   PageHeader={() => null}
-    //   PageAction={() => null}
-    //   modalOpen={modalOpen}
-    //   modalTitle={
-    //     modalType === "add" ? "Add Product" : "Update Product"
-    //   }
-    //   modalSize="60%"
-    //   onModalClose={() => {
-    //     setModalOpen(false);
-    //     setUpdateModalOpen(false);
-    //     setSelectedVariantData(null);
-    //   }}
-    //   ModalContent={() => {
-    //       return (
-    //         <RenderModalContent
-    //           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-    //           categoryData={categoryData}
-    //           handleSaveCallback={handleSaveCallback}
-    //         />
-    //       );
-    //     }}
-    //     >
     <PageWrapper
-    PageHeader={() => null}
-    PageAction={() => (
-      <RenderPageAction
-        handleActionClick={() => setModalOpen(true)}
-        handleEditAction={handleEditAction}
-        editModeActive={editModeActive}
-        handleSaveAction={handleSave}
-      />
-    )}
-
-    modalOpen={modalOpen}
-    modalTitle={
-      !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
-    }
-    onModalClose={() => {
-      setModalOpen(false);
-      setUpdateModalOpen(false);
-      setSelectedVariantData(null);
-    }}
-    ModalContent={() => {
-      if (modalType === "edit" && !updateModalOpen) {
-        return (
-          <RenderModalContent
-            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-            categoryData={categoryData}
-            handleSaveCallback={handleSaveCallback}
-          />
-        );
+      PageHeader={() => null}
+      PageAction={() => null}
+      modalOpen={modalOpen}
+      modalTitle={
+        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
       }
-
-      if (updateModalOpen && selectedVariantData) {
+      onModalClose={() => {
+        setModalOpen(false);
+        setUpdateModalOpen(false);
+        setSelectedVariantData(null);
+      }}
+      ModalContent={() => {
         return (
           <RenderModalContent
             handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
@@ -343,12 +287,10 @@ function ManageProductsContainer(props: any) {
             variantsData={selectedVariantData}
           />
         );
-      }
-    }}
-    modalSize="70%"
-  >
-
-      <Space h="sm" />     
+      }}
+      modalSize="70%"
+    >
+      <Space h="sm" />
       <DataTable
         data={tableRowData}
         columns={columns}
@@ -385,8 +327,6 @@ function ManageProductsContainer(props: any) {
         //   openDeleteModal(row);
         // }}
       />
-
-
     </PageWrapper>
   );
 }
