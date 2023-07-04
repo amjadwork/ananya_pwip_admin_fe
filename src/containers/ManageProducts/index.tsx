@@ -305,7 +305,15 @@ function ManageProductsContainer(props: any) {
     //     >
     <PageWrapper
     PageHeader={() => null}
-    PageAction={() => null}
+    PageAction={() => (
+      <RenderPageAction
+        handleActionClick={() => setModalOpen(true)}
+        handleEditAction={handleEditAction}
+        editModeActive={editModeActive}
+        handleSaveAction={handleSave}
+      />
+    )}
+
     modalOpen={modalOpen}
     modalTitle={
       !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
