@@ -280,28 +280,66 @@ function ManageProductsContainer(props: any) {
   }, [variantsData]);
 
   return (
+    // <PageWrapper
+    //   PageHeader={() => null}
+    //   PageAction={() => null}
+    //   modalOpen={modalOpen}
+    //   modalTitle={
+    //     modalType === "add" ? "Add Product" : "Update Product"
+    //   }
+    //   modalSize="60%"
+    //   onModalClose={() => {
+    //     setModalOpen(false);
+    //     setUpdateModalOpen(false);
+    //     setSelectedVariantData(null);
+    //   }}
+    //   ModalContent={() => {
+    //       return (
+    //         <RenderModalContent
+    //           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+    //           categoryData={categoryData}
+    //           handleSaveCallback={handleSaveCallback}
+    //         />
+    //       );
+    //     }}
+    //     >
     <PageWrapper
-      PageHeader={() => null}
-      PageAction={() => null}
-      modalOpen={modalOpen}
-      modalTitle={
-        modalType === "add" ? "Add Product" : "Update Product"
+    PageHeader={() => null}
+    PageAction={() => null}
+    modalOpen={modalOpen}
+    modalTitle={
+      !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
+    }
+    onModalClose={() => {
+      setModalOpen(false);
+      setUpdateModalOpen(false);
+      setSelectedVariantData(null);
+    }}
+    ModalContent={() => {
+      if (modalType === "edit" && !updateModalOpen) {
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            categoryData={categoryData}
+            handleSaveCallback={handleSaveCallback}
+          />
+        );
       }
-      modalSize="60%"
-      onModalClose={() => {
-        setModalOpen(false);
-        setUpdateModalOpen(false);
-        setSelectedVariantData(null);
-      }}
-      ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              categoryData={categoryData}
-              handleSaveCallback={handleSaveCallback}
-            />
-          );
-        }}>
+
+      if (updateModalOpen && selectedVariantData) {
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
+            categoryData={categoryData}
+            handleSaveCallback={handleSaveCallback}
+            variantsData={selectedVariantData}
+          />
+        );
+      }
+    }}
+    modalSize="70%"
+  >
+
       <Space h="sm" />     
       <DataTable
         data={tableRowData}
