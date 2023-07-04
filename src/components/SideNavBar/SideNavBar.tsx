@@ -17,8 +17,6 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
   const { user } = useAuth0();
   const { classes } = useStyles();
 
-  console.log(user);
-
   const links = NavbarOptions.map((item) => {
     return <LinksGroup {...item} key={item.label} action={action} />;
   });
@@ -39,15 +37,15 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
         <div className={classes.linksInner}>{links}</div>
       </Navbar.Section>
 
-      <Navbar.Section className={classes.footer}>
-        {user && (
+      {user && (
+        <Navbar.Section className={classes.footer}>
           <UserButton
             image={user.picture}
             name={user.name || ""}
             email={user.email || ""}
           />
-        )}
-      </Navbar.Section>
+        </Navbar.Section>
+      )}
     </Navbar>
   );
 };

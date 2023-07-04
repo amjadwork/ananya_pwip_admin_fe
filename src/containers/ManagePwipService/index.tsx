@@ -17,11 +17,11 @@ import {
   Text,
   ActionIcon,
 } from "../../components/index";
-
 import EditChaContainer from "./EditPwipService/EditPwipService";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
 import { managePwipService } from "../../constants/var.constants";
 
@@ -173,7 +173,7 @@ function ManagePwipServiceContainer() {
         />
       )}
     >
-      <Box
+      {/* <Box
         sx={(theme) => ({
           display: "block",
           backgroundColor:
@@ -193,11 +193,17 @@ function ManagePwipServiceContainer() {
         <Group position="apart">
           <Title order={1}>PWIP Service Charges</Title>
           <Input placeholder="Search" />
-          {/* <Badge size="lg" color="green" variant="light">
+          <Badge size="lg" color="green" variant="light">
             Live
-          </Badge> */}
+          </Badge>
         </Group>
-      </Box>
+      </Box> */}
+
+      <PageLabel
+        title="PWIP Service Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
 
       <Space h="lg" />
 

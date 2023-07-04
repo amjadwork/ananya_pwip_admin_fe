@@ -21,8 +21,14 @@ import {
 import EditTransportForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
-import APIRequest from "../../helper/api";
+import {
+  getOriginData,
+  getSourceData,
+  getTransportData,
+  postTransportData,
+} from "../../services/export-costing/Transport";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;
@@ -159,12 +165,11 @@ function ManageTransportContainer() {
     if (transportPostResponse) {
       handleGetSource();
       handleGetOrigin();
-      getTransportList();
     }
   };
 
   const getTransportList = async () => {
-    const transportResponse: any = await APIRequest("transportation", "GET");
+    const transportResponse: any = await getTransportData();
     if (transportResponse) {
       setTransportData(() => [...transportResponse]);
     }
@@ -181,10 +186,8 @@ function ManageTransportContainer() {
   };
 
   const handleGetSource = async () => {
-    const sourceResponse = await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
+    const sourceResponse = await getSourceData();
+
     console.log("sourceResponse", sourceResponse[0]);
     setSourceList(sourceResponse[0].source);
 
@@ -203,10 +206,8 @@ function ManageTransportContainer() {
   console.log("sourceSelectOption", sourceSelectOptions);
 
   const handleGetOrigin = async () => {
-    const originResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
+    const originResponse = await getOriginData();
+
     console.log("originResponse", originResponse[0]);
     setOriginList(originResponse[0].origin);
     if (originResponse) {
@@ -218,14 +219,9 @@ function ManageTransportContainer() {
       });
 
       setOriginSelectOptions(() => [...regionOptions]);
-      getTransportList();
+      // getTransportList();
     }
   };
-  // console.log("originSelectOption",originSelectOptions);
-  // console.log("transportData", transportData)
-
-  // console.log('here ', transportData)
-
   const handleUpdateTransportUIData = (formData: any) => {
     // console.log(formData)
     setTransportAPIPayload({ ...formData });
@@ -253,11 +249,8 @@ function ManageTransportContainer() {
 
   const handleSaveAction = async () => {
     if (transportAPIPayload) {
-      const transportResponse = await APIRequest(
-        "transportation",
-        "POST",
-        transportAPIPayload
-      );
+      const transportResponse = await postTransportData(transportAPIPayload);
+      console.log("transportAPIload", transportAPIPayload);
       if (transportResponse) {
         handleGetSource();
         handleGetOrigin();
@@ -357,8 +350,14 @@ function ManageTransportContainer() {
           </Group>
         </Group>
       </Box>
+      {/* <PageLabel
+        title="Transportation Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
+      
 
-      <Space h="lg" />
+      <Space h="lg" /> */}
 
       <SimpleGrid cols={2}>
         {originList.map((list: any, index: number) => {

@@ -9,10 +9,11 @@ import {
 import { Logout } from "tabler-icons-react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { Button, Text } from "../../index";
+import { Text } from "../../index";
 import { HeaderOptions } from "../../../constants/header.constants";
 import { useNavigate } from "react-router-dom";
 import { showNotification } from "@mantine/notifications";
+import { deleteCookie } from "../../../helper/helper";
 
 import { useStyles } from "../../../styles/components/header.style";
 
@@ -58,6 +59,7 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
             <ActionIcon
               onClick={() => {
                 logout({ logoutParams: { returnTo: window.location.origin } });
+                deleteCookie("access_token");
                 // Router("/");
                 showNotification({
                   title: "Logged out succesfully",
