@@ -17,14 +17,9 @@ import {
   Text,
   ActionIcon,
 } from "../../../components/index";
-
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-
-import EditPackageForm from "./EditPackageForm";
-
-// import { managePackaging } from "../../../constants/var.constants";
-// import APIRequest from "../../../helper/api";
+import EditPackageForm from "../../../forms/ManagePackage";
 
 const RenderPageHeader = (props: any) => {
   const activeFilter = props.activeFilter;

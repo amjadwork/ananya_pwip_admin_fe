@@ -18,15 +18,15 @@ import {
   Text,
   ActionIcon,
 } from "../../components/index";
+// import { Pencil, X, Check, Plus } from "tabler-icons-react";
+// import { Text,Card as SectionCard, Button, ActionIcon, Input, Select} from "../../components/index";
 
 import APIRequest from "./../../helper/api";
-import AddOrEditProductForm from "../../forms/ManageProducts/index";
-// import EditProductsContainer from "./EditProducts/EditProducts";
-
+import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
-const RenderPageHeader = () => {
+const RenderPageHeader = (props: any) => {
   return (
     <Group>
       <PageHeader
@@ -156,27 +156,32 @@ function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
-  const [productData, setProductData] = useState<any>("");
+  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
+  const [productData, setProductData] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [sourceList, setSourceList] = useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
 
-  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
+  // const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
   const [status, setStatus] = React.useState<any>(productData.status || "");
+  // const [selectedVariantData, setSelectedVariantData] =
+  //   React.useState<any>(null);
+  // const [status, setStatus] = React.useState<any>(productData.status || "");
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
+  const handleSaveCallback = props.handleSaveCallback;
+
   useEffect(() => {
     handleGetProductData();
-    handleGetSource();
   }, []);
 
   const handleSave = async (bool: boolean) => {
     const payload = {
       name: productData.name,
       image: productData.image,
-      status: status,
+      // status: status,
     };
 
     const updateStatusResponse = await APIRequest(
@@ -233,24 +238,6 @@ function ManageProductsContainer(props: any) {
     }
   };
 
-  const handleGetSource = async () => {
-    const sourceResponse = await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
-    console.log("sourceResponse", sourceResponse[0]);
-    setSourceList(sourceResponse[0].source);
-
-    if (sourceResponse) {
-      const sourceOptions = sourceResponse[0].source.map((d: any) => {
-        return {
-          label: d.region,
-          value: d._id,
-        };
-      });
-      setSourceSelectOptions(() => [...sourceOptions]);
-    }
-  };
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -265,30 +252,13 @@ function ManageProductsContainer(props: any) {
     handleGetProductData();
   };
 
-  if (editModeActive) {
-    return (
-      <AddOrEditProductForm
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => setEditModeActive(() => bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        productData={productData || null}
-        categoryData={categoryData}
-        handleRefreshCalls={handleRefreshCalls}
-        handleSaveCallback={handleGetProductData}
-        variantsData={variantsData}
-      />
-    );
-  }
-
   return (
     <PageWrapper
       PageHeader={() => <RenderPageHeader />}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleSave}
+          handleEditAction={handleEditAction}
           editModeActive={editModeActive}
           handleSaveAction={handleSave}
         />
@@ -308,6 +278,7 @@ function ManageProductsContainer(props: any) {
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               categoryData={categoryData}
+              handleSaveCallback={handleSaveCallback}
             />
           );
         }
@@ -317,6 +288,7 @@ function ManageProductsContainer(props: any) {
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
               categoryData={categoryData}
+              handleSaveCallback={handleSaveCallback}
               variantsData={selectedVariantData}
             />
           );
@@ -343,33 +315,37 @@ function ManageProductsContainer(props: any) {
       >
         <Group position="apart">
           <Title order={1}>{productData?.name || ""}</Title>
-          <Badge size="lg" color="green" variant="light">
+
+          {/* <Badge size="lg" color="green" variant="light">
             {productData?.status || ""}
-          </Badge>
-          {editModeActive && (
-            <Group spacing="md">
-              <Select
-                placeholder="Status"
-                data={[
-                  { value: "live", label: "Live" },
-                  { value: "pending", label: "Pending" },
-                  { value: "disabled", label: "Disabled" },
-                  { value: "review", label: "Review" },
-                ]}
-                defaultValue={productData?.status || "Select status"}
-                onChange={(value: any) => {
-                  setStatus(value);
-                }}
-              />
-              <Button
-                type="submit"
-                leftIcon={<Plus size={14} />}
-                onClick={() => setModalOpen(true)}
-              >
-                Add Variant
-              </Button>
-            </Group>
-          )}
+          </Badge> */}
+
+          <Group spacing="md">
+            {editModeActive && (
+              <Group spacing="md">
+                <Select
+                  placeholder="Status"
+                  data={[
+                    { value: "live", label: "Live" },
+                    { value: "pending", label: "Pending" },
+                    { value: "disabled", label: "Disabled" },
+                    { value: "review", label: "Review" },
+                  ]}
+                  defaultValue={productData?.status || "Select status"}
+                  // onChange={(value: any) => {
+                  //   setStatus(value);
+                  // }}
+                />
+                <Button
+                  type="submit"
+                  leftIcon={<Plus size={14} />}
+                  onClick={() => setModalOpen(true)}
+                >
+                  Add Variant
+                </Button>
+              </Group>
+            )}
+          </Group>
         </Group>
       </Box>
 

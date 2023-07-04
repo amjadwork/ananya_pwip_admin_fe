@@ -1,60 +1,39 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { setCookie, deleteCookie } from "../helper/helper";
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
-    // const navigate = useNavigate();
+    const [token, setToken] = useState("");
+    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-    const [authVerified, setAuthVerified] = useState(false);
-    const { isAuthenticated } = useAuth0();
-
-    console.log(isAuthenticated);
+    const fetchToken = async () => {
+      const _tok = await getAccessTokenSilently();
+      setToken(_tok);
+    };
 
     useEffect(() => {
       // if not authenticated,then we redirect to "/" page.
       if (!isAuthenticated) {
         window.location.href = "/";
+        deleteCookie("access_token");
       } else {
-        setAuthVerified(true);
+        fetchToken();
       }
     }, []);
 
-    if (authVerified) {
+    useEffect(() => {
+      if (token) {
+        setCookie("access_token", token);
+      }
+    }, [token]);
+
+    if (isAuthenticated && token) {
       return <WrappedComponent {...props} />;
     } else {
       return null;
     }
   };
 };
-
-//
-// const [authVerified, setAuthVerified] = useState(false);
-// console.log(authVerified)
-
-// // const PrivateRoute = ({ redirectTo, component , isAuth }) => {
-// //   return isAuth ?  component : <Navigate to={redirectTo} />;
-// // };
-// useEffect(() => {
-//   const accessToken = localStorage.getItem("access_token");
-//   // if no accessToken was found,then we redirect to "/" page.
-//   if (!accessToken) {
-//     navigate('/', { replace: true });
-
-//   } else {
-//     setAuthVerified(true);
-//     // navigate('/admin/dashboard', { replace: true });
-//   //  < Navigate to={<DashboardScreen/>}/>
-//   }
-// }, []);
-
-// return () => {
-
-// if (authVerified) {
-//   return <
-//       DashboardScreen
-//        />;
-// } else {
-//   return null;
-// }
 
 export default withAuth;

@@ -22,6 +22,7 @@ import EditPackageContainer from "./EditPackage/EditPackage";
 
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
 import APIRequest from "../../helper/api";
 
@@ -237,7 +238,14 @@ function ManagePackageContainer() {
         </Group>
       </Box>
 
-      <Space h="lg" />
+      {/* <PageLabel
+        title="Packaging Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
+      
+
+      <Space h="lg" /> */}
 
       <SimpleGrid cols={2}>
         {packagingList.map((cat: any, index: number) => {

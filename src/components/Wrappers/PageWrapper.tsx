@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Modal, Grid } from "@mantine/core";
+import { Container, Modal, Grid, Box } from "@mantine/core";
 import { useStyles } from "../../styles/components/pageWrapper.style";
 
 const PageWrapper = (props: any) => {
@@ -19,7 +19,12 @@ const PageWrapper = (props: any) => {
   const modalSize = props.modalSize || "sm";
 
   return (
-    <Container>
+    <Box
+      component="div"
+      sx={(theme: any) => ({
+        padding: "0px 32px",
+      })}
+    >
       <Grid
         gutter="xl"
         sx={{
@@ -69,7 +74,7 @@ const PageWrapper = (props: any) => {
           <ModalContent />
         </Modal>
       )}
-    </Container>
+    </Box>
   );
 };
 

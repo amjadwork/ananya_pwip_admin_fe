@@ -2,31 +2,30 @@ import React from "react";
 import {
   SimpleGrid,
   Box,
+  ActionIcon,
   Group,
   Popover,
+  Text,
+  Button,
+  Select,
   Space,
   Title,
+  Card as SectionCard,
   List,
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Card as SectionCard,
-  Select,
-  Button,
-  Text,
-  ActionIcon,
-} from "../../../components/index";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
-import AddOrEditProductForm from "./AddOrEditProductForm";
+import AddOrEditProductForm from "../../../forms/ManageProducts";
 import APIRequest from "./../../../helper/api";
 
 const RenderPageHeader = () => {
   return (
     <PageHeader
+    // title="Manage Product"
     // breadcrumbs={[
     //   { title: "Products", href: "/admin/dashboard/products" },
     //   { title: "Manage", href: "#" },
@@ -82,7 +81,7 @@ const RenderPageAction = (props: any) => {
                   : theme.white,
             })}
           >
-            <Text size="sm">Are you sure you want to save the changes</Text>
+            <Text size="sm">Are you sure you want to save the changes?</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
               <Button

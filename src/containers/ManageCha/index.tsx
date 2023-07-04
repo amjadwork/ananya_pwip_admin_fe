@@ -1,167 +1,103 @@
 import React from "react";
-import {
-  SimpleGrid,
-  Box,
-  Group,
-  Popover,
-  Space,
-  Title,
-  List,
-  ScrollArea,
-} from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Card as SectionCard,
-  Button,
-  Input,
-  ActionIcon,
-  Text,
-} from "../../components/index";
+import { Space, Text } from "@mantine/core";
+import { Plus } from "tabler-icons-react";
+import { openConfirmModal } from "@mantine/modals";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
+import DataTable from "../../components/DataTable/DataTable";
 
-import APIRequest from "../../helper/api";
+import {
+  getChaData,
+  getDestinationData,
+  getRegionSource,
+  postChaData,
+} from "../../services/export-costing/CHA";
 
-const RenderPageHeader = (props: any) => {
-  return <PageHeader />;
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
+const columns = [
+  {
+    label: "Destination",
+    key: "_destinationPortId",
+    sortable: true,
+  },
+  {
+    label: "Origin",
+    key: "originPort",
+    sortable: true,
+  },
+  {
+    label: "CHA",
+    key: "chaCharge",
+  },
+  {
+    label: "SilicaGel",
+    key: "silicaGel",
+  },
+  {
+    label: "CraftPaper",
+    key: "craftPaper",
+  },
+  {
+    label: "Transport",
+    key: "transportCharge",
+  },
+  {
+    label: "Custom",
+    key: "customCharge",
+  },
+  {
+    label: "Loading",
+    key: "loadingCharge",
+  },
+  {
+    label: "COO",
+    key: "coo",
+  },
+  {
+    label: "Actions",
+    key: "action",
+  },
+];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
-  const handleUpdateChaUIData = props.handleUpdateChaUIData;
+  const handleSaveAction = props.handleSaveAction;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType;
 
   return (
     <EditChaForm
       handleCloseModal={handleCloseModal}
       regionSelectOptions={regionSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
-      handleUpdateChaUIData={handleUpdateChaUIData}
+      handleSaveAction={handleSaveAction}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
 
 function ManageChaContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
+  const [modalType, setModalType] = React.useState<string>("add");
   const [chaData, setChaData] = React.useState<any>([]);
-  // const [tempChaArray, setTempChaArray] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
-  const [chaAPIPayload, setChaAPIPayload] = React.useState<any>(null);
-
-  //What does this below function do? Is it necessary? #askSwain
-  const handleRefetchChaList = (chaPostResponse: any) => {
-    if (chaPostResponse) {
-      handleGetRegionSource();
-      getCHAList(chaPostResponse);
-    }
-  };
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [updateFormData, setUpdateFormData] = React.useState<any>(null);
 
   const getCHAList = async (regionList: any) => {
-    const chaResponse: any = await APIRequest("cha", "GET");
+    const chaDataResponse: any = await getChaData(regionList);
     try {
-      if (chaResponse) {
-        console.log(regionList);
+      if (chaDataResponse) {
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
 
-          chaResponse.forEach((region: any) => {
+          chaDataResponse.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
@@ -183,21 +119,8 @@ function ManageChaContainer() {
     }
   };
 
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
-  };
-
   const handleGetRegionSource = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=origin",
-      "GET"
-    );
+    const regionResponse = await getRegionSource();
     if (regionResponse) {
       const formattedRegion = regionResponse[0].origin.map((d: any) => {
         return {
@@ -221,28 +144,17 @@ function ManageChaContainer() {
     }
   };
 
-  const handleUpdateChaUIData = (formData: any) => {
-    setChaAPIPayload({ ...formData });
-    let chaArr: any = [...chaData];
+  const handleSaveAction = async (payload: any) => {
+    if (payload && modalType === "add") {
+      const chaResponse = await postChaData(payload);
 
-    chaArr = chaArr.map((d: any) => {
-      if (formData._originPortId === d._originId) {
-        return {
-          ...d,
-          list: [...d.list, ...formData.destinations],
-        };
+      if (chaResponse) {
+        handleGetRegionSource();
       }
-      return {
-        ...d,
-      };
-    });
+    }
 
-    setChaData(() => [...chaArr]);
-  };
-
-  const handleSaveAction = async () => {
-    if (chaAPIPayload) {
-      const chaResponse = await APIRequest("cha", "POST", chaAPIPayload);
+    if (payload && modalType === "update") {
+      const chaResponse = null; //Call PUT request
 
       if (chaResponse) {
         handleGetRegionSource();
@@ -250,15 +162,8 @@ function ManageChaContainer() {
     }
   };
 
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
-  };
-
   const handleGetDestination = async () => {
-    const destinationResponse = await APIRequest(
-      "location?filterType=destination",
-      "GET"
-    );
+    const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
       const destinationOptions = destinationResponse[0].destination.map(
@@ -274,155 +179,110 @@ function ManageChaContainer() {
     }
   };
 
+  const openDeleteModal = (data: any) =>
+    openConfirmModal({
+      title: "Delete CHA details",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the CHA record for{" "}
+          {data._originPortId} to {data._destinationPortId}? This action is
+          destructive and you will have to contact support to restore your data.
+        </Text>
+      ),
+      labels: { confirm: "Delete CHA", cancel: "No don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => console.log("Confirmed"),
+    });
+
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
 
+  React.useEffect(() => {
+    if (chaData.length) {
+      let tableData: any = [];
+
+      [...chaData].forEach((d: any) => {
+        d.list.forEach((l: any) => {
+          const obj = {
+            ...l,
+            originPort: d.name,
+            _originPortId: d._originId,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [chaData]);
+
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          editModeActive={editModeActive}
-          handleEditAction={handleSave}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageHeader={() => null}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit" ? "Add CHA Charges" : "Update CHA Charges"
+        modalType === "add" ? "Add CHA Charges" : "Update CHA Charges"
       }
-      onModalClose={() => setModalOpen(false)}
-      ModalContent={() => {
-        if (modalType === "edit") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-              handleUpdateChaUIData={handleUpdateChaUIData}
-            />
-          );
-        }
-
-        if (modalType === "update") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-            />
-          );
-        }
+      modalSize="60%"
+      onModalClose={() => {
+        setModalOpen(false);
+        setUpdateFormData(null);
       }}
-      modalSize="70%"
+      ModalContent={() => {
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            regionSelectOptions={regionSelectOptions}
+            destinationSelectOptions={destinationSelectOptions}
+            handleSaveAction={handleSaveAction}
+            updateFormData={updateFormData}
+            modalType={modalType}
+          />
+        );
+      }}
     >
-      <Box
-        sx={(theme: any) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>CHA Charges</Title>
-          <Group spacing="md">
-            <Input placeholder="Search" />
-            {editModeActive && (
-              <Button
-                type="submit"
-                leftIcon={<Plus size={14} />}
-                onClick={() => setModalOpen(true)}
-              >
-                Add
-              </Button>
-            )}
-          </Group>
-        </Group>
-      </Box>
+      <Space h="sm" />
 
-      <Space h="lg" />
+      <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("add");
+              setModalOpen(true);
+            },
+          },
+        ]}
+        handleRowEdit={(row: any, rowIndex: number) => {
+          let obj = { ...row };
+          delete obj["updatedAt"];
+          delete obj["_id"];
+          delete obj["_originPortId"];
+          delete obj["createdAt"];
+          delete obj["originPort"];
 
-      <SimpleGrid cols={2}>
-        {chaData.map((item: any, index: number) => {
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}>{item?.name}</Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {item?.list?.map((d: any, i: number) => {
-                    const destinationName = destinationSelectOptions.find(
-                      (f: any) => f.value === d._destinationPortId
-                    )?.label;
-                    return (
-                      <Box
-                        key={i}
-                        sx={(theme: any) => ({
-                          display: "block",
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[6]
-                              : "#fff",
-                          color:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[4]
-                              : theme.colors.dark[7],
-                          textAlign: "left",
-                          padding: theme.spacing.md,
-                          borderRadius: theme.radius.md,
-                          cursor: "default",
+          const formObj = {
+            _originPortId: row._originPortId,
+            destinations: [obj],
+          };
 
-                          "&:hover": {
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[5]
-                                : theme.colors.gray[1],
-                          },
-                        })}
-                      >
-                        <List.Item>
-                          {destinationName} -{" "}
-                          <span style={{ fontWeight: "800" }}>
-                            INR {d.chaCharge}
-                          </span>
-                        </List.Item>
-                      </Box>
-                    );
-                  })}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any, rowIndex: number) => {
+          openDeleteModal(row);
+        }}
+      />
     </PageWrapper>
   );
 }

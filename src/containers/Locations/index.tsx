@@ -19,8 +19,13 @@ import {
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import EditLocationFormContainer from "../../forms/Location/index";
+import PageLabel from "../../components/PageLabel/PageLabel";
 
-import APIRequest from "./../../helper/api";
+import {
+  getLocationData,
+  submitLocationData,
+} from "../../services/export-costing/Locations";
+import { upperFirst } from "@mantine/hooks";
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader />;
@@ -163,11 +168,7 @@ function LocationsContainer() {
   };
 
   const submitLocation = async (payload: any) => {
-    const addLocationResponse: any = await APIRequest(
-      "location",
-      "POST",
-      payload
-    );
+    const addLocationResponse = await submitLocationData(payload);
 
     if (addLocationResponse) {
       getLocations();
@@ -175,8 +176,7 @@ function LocationsContainer() {
   };
 
   const getLocations = async () => {
-    const locationResponse: any = await APIRequest("location", "GET");
-
+    const locationResponse = await getLocationData();
     if (locationResponse) {
       setLocationData({
         source: locationResponse[0].source || [],
@@ -249,6 +249,13 @@ function LocationsContainer() {
       )}
       modalSize="40%"
     >
+      <PageLabel
+        title="Location Charges"
+        editModeActive={editModeActive}
+        setModalOpen={setModalOpen}
+      />
+      <Space h="lg" />
+
       <div style={{ width: "100%", height: "auto" }}>
         <Group spacing="md" grow>
           {Object.keys(locationData).map((locationType: any, index: number) => {
@@ -261,22 +268,9 @@ function LocationsContainer() {
                 component="a"
               >
                 <Group position="apart">
-                  <Title order={3}>{locationType}</Title>
-
-                  {editModeActive && (
-                    <ActionIcon
-                      variant="light"
-                      color="blue"
-                      sx={{
-                        "&[data-disabled]": { opacity: 0.4 },
-                      }}
-                      onClick={() => {
-                        setModalOpen(true);
-                      }}
-                    >
-                      <Plus size={14} />
-                    </ActionIcon>
-                  )}
+                  <Title order={3} transform="capitalize">
+                    {locationType}
+                  </Title>
                 </Group>
                 <Space h="xl" />
                 <ScrollArea
