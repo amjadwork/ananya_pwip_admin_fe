@@ -18,9 +18,6 @@ import {
   Text,
   ActionIcon,
 } from "../../components/index";
-// import { Pencil, X, Check, Plus } from "tabler-icons-react";
-// import { Text,Card as SectionCard, Button, ActionIcon, Input, Select} from "../../components/index";
-
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
@@ -163,11 +160,7 @@ function ManageProductsContainer(props: any) {
   const [sourceList, setSourceList] = useState<any>([]);
   const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
 
-  // const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<any>(productData.status || "");
-  // const [selectedVariantData, setSelectedVariantData] =
-  //   React.useState<any>(null);
-  // const [status, setStatus] = React.useState<any>(productData.status || "");
+  const [status, setStatus] = React.useState<any>(productData?.status || "");
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
