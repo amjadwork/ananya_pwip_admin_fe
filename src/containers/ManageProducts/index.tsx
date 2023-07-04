@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Group, Popover, Space } from "@mantine/core";
-import { Pencil, X, Plus, Check } from "tabler-icons-react";
-import { Button, Text, ActionIcon } from "../../components/index";
+import { Space, Text } from "@mantine/core";
+import { Plus, Trash } from "tabler-icons-react";
+import { openConfirmModal } from "@mantine/modals";
+
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
 import DataTable from "../../components/DataTable/DataTable";
 
 const columns = [
@@ -28,101 +28,6 @@ const columns = [
     key: "action",
   },
 ];
-const RenderPageHeader = (props: any) => {
-  return (
-    <Group>
-      <PageHeader
-      // breadcrumbs={[
-      //   { title: "Products", href: "/admin/dashboard/products" },
-      //   { title: "Manage", href: "#" },
-      // ]}
-      />
-    </Group>
-  );
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => {
-                  handleEditAction(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon>
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -149,14 +54,11 @@ const RenderModalContent = (props: any) => {
 
 function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
+  const [modalType, setModalType] = React.useState<string>("add"); //add or update
   const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
   const [productData, setProductData] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
-  const [sourceList, setSourceList] = useState<any>([]);
-  const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const [selectedVariantData, setSelectedVariantData] =
@@ -176,7 +78,6 @@ function ManageProductsContainer(props: any) {
       image: productData.image,
       // status: status,
     };
-    console.log("here", payload);
 
     const updateStatusResponse = await APIRequest(
       `product/${productData._id}`,
@@ -186,7 +87,6 @@ function ManageProductsContainer(props: any) {
 
     if (updateStatusResponse) {
       handleRefreshCalls();
-      handleEditAction(bool);
     }
   };
 
@@ -228,23 +128,30 @@ function ManageProductsContainer(props: any) {
     );
     if (variantResponse) {
       setVariantsData(variantResponse);
-      handleEditAction(false);
     }
-  };
-
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
   };
 
   const handleRefreshCalls = () => {
     handleGetProductData();
   };
+
+  const openDeleteModal = (data: any) =>
+    openConfirmModal({
+      title: "Delete the variant",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the variant record for{" "}
+          {data._originPortId || null} to {data._destinationPortId || null}?
+          This action is destructive and you will have to contact support to
+          restore your data.
+        </Text>
+      ),
+      labels: { confirm: "Delete variant", cancel: "No don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => console.log("Confirmed"),
+    });
 
   React.useEffect(() => {
     if (variantsData.length) {
@@ -306,26 +213,13 @@ function ManageProductsContainer(props: any) {
             },
           },
         ]}
-        // handleRowEdit={(row: any, rowIndex: number) => {
-        //   let obj = { ...row };
-        //   delete obj["updatedAt"];
-        //   delete obj["_id"];
-        //   delete obj["_originPortId"];
-        //   delete obj["createdAt"];
-        //   delete obj["originPort"];
-
-        //   const formObj = {
-        //     _originPortId: row._originPortId,
-        //     destinations: [obj],
-        //   };
-
-        //   setUpdateFormData(formObj);
-        //   setModalType("update");
-        //   setModalOpen(true);
-        // }}
-        // handleRowDelete={(row: any, rowIndex: number) => {
-        //   openDeleteModal(row);
-        // }}
+        handleRowEdit={(row: any, rowIndex: number) => {
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any, rowIndex: number) => {
+          openDeleteModal(row);
+        }}
       />
     </PageWrapper>
   );
