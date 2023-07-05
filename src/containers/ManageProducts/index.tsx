@@ -3,10 +3,15 @@ import { Space, Text } from "@mantine/core";
 import { Plus, Trash } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
-import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import {
+  getSpecificProductData,
+  getSpecificCategoryData,
+  getSpecificVariantData,
+  putProductData,
+} from "../../services/export-costing/Products"
 
 const columns = [
   {
@@ -69,7 +74,7 @@ function ManageProductsContainer(props: any) {
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
-  const handleSaveCallback = () => {
+  const handleSaveCallback = async (bool: boolean) => {
     setModalOpen(false);
   };
 
@@ -83,12 +88,7 @@ function ManageProductsContainer(props: any) {
       image: productData.image,
       // status: status,
     };
-
-    const updateStatusResponse = await APIRequest(
-      `product/${productData._id}`,
-      "PUT",
-      payload
-    );
+    const updateStatusResponse = await putProductData(payload, productData);
 
     if (updateStatusResponse) {
       handleRefreshCalls();
@@ -97,42 +97,33 @@ function ManageProductsContainer(props: any) {
 
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
+    const response: any = await getSpecificProductData(productId);
 
-    const productDetailResponse: any = await APIRequest(
-      `product/${productId}`,
-      "GET"
-    );
-    if (productDetailResponse) {
-      setProductData(productDetailResponse);
-      handleGetCategoryData(productDetailResponse._id);
+    if (response) {
+      setProductData(response);
+      handleGetCategoryData(response._id);
     }
   };
 
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
+    const response: any = await getSpecificCategoryData(productId);
 
-    const categoryDetailResponse: any = await APIRequest(
-      `category?_productId=${productId}`,
-      "GET"
-    );
-    if (categoryDetailResponse) {
-      setCategoryData(categoryDetailResponse[0].category || []);
-      const categoryIdArr = categoryDetailResponse[0].category.map(
+    if (response) {
+      setCategoryData(response[0].category || []);
+      const categoryIdArr = response[0].category.map(
         (cat: any) => cat._id
       );
       handleGetVariantData(categoryIdArr);
     }
   };
 
-  const handleGetVariantData = async (ids: Array<[]>) => {
-    const categoryIds = ids;
+  const handleGetVariantData = async (id: Array<[]>) => {
+    const categoryIds = id;
+    const response: any = await getSpecificVariantData(categoryIds);
 
-    const variantResponse: any = await APIRequest(
-      `variant?_categoryId=${categoryIds}`,
-      "GET"
-    );
-    if (variantResponse) {
-      setVariantsData(variantResponse);
+    if (response) {
+      setVariantsData(response);
     }
   };
 
