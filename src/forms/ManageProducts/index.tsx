@@ -107,6 +107,10 @@ function AddOrEditProductForm(props: any) {
       handleCloseModal(false);
       handleSaveCallback();
     }
+    showNotification({
+      message: "Successfully added variant",
+      color: "green",
+    });
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
@@ -195,7 +199,7 @@ function AddOrEditProductForm(props: any) {
       {fields}
 
       <Group position="right" mt="md">
-        <Button type="submit">Save</Button>
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );
