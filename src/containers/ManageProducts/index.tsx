@@ -90,6 +90,17 @@ function ManageProductsContainer(props: any) {
     }
   };
 
+  const handleDeleteVariant = async (data: any) => {
+    const deleteVariantResponse = await APIRequest(
+      "variant" + "/" + data._id,
+      "DELETE"
+    );
+
+    if (deleteVariantResponse) {
+      handleRefreshCalls();
+    }
+  };
+
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
 
@@ -149,7 +160,7 @@ function ManageProductsContainer(props: any) {
       labels: { confirm: "Delete variant", cancel: "No don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onConfirm: () => handleDeleteVariant(data),
     });
 
   React.useEffect(() => {
