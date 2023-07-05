@@ -59,8 +59,6 @@ const RenderModalContent = (props: any) => {
 function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [modalType, setModalType] = React.useState<string>("add"); //add or update
-  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
-  const [productData, setProductData] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
@@ -69,28 +67,25 @@ function ManageProductsContainer(props: any) {
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
-  const handleSaveCallback = () => {
+  const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
+    handleSave(payload);
   };
 
   useEffect(() => {
     handleGetProductData();
   }, []);
 
-  const handleSave = async (bool: boolean) => {
-    const payload = {
-      name: productData.name,
-      image: productData.image,
-      // status: status,
-    };
+  const handleSave = async (payload: any) => {
+    let variantPayload = { ...payload };
 
-    const updateStatusResponse = await APIRequest(
-      `product/${productData._id}`,
-      "PUT",
-      payload
+    const addVariantResponse = await APIRequest(
+      "variant",
+      modalType === "add" ? "POST" : "PATCH",
+      variantPayload
     );
 
-    if (updateStatusResponse) {
+    if (addVariantResponse) {
       handleRefreshCalls();
     }
   };
@@ -103,7 +98,6 @@ function ManageProductsContainer(props: any) {
       "GET"
     );
     if (productDetailResponse) {
-      setProductData(productDetailResponse);
       handleGetCategoryData(productDetailResponse._id);
     }
   };
@@ -183,18 +177,17 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
+        modalType === "add" ? "Add Product Variant" : "Update Product Variant"
       }
       onModalClose={() => {
         setModalOpen(false);
-        setUpdateModalOpen(false);
         setSelectedVariantData(null);
         setUpdateFormData(null);
       }}
       ModalContent={() => {
         return (
           <RenderModalContent
-            handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
             categoryData={categoryData}
             handleSaveCallback={handleSaveCallback}
             variantsData={selectedVariantData}
@@ -229,8 +222,6 @@ function ManageProductsContainer(props: any) {
             name: obj.variantName,
             region: [obj],
           };
-
-          console.log(formObj);
 
           setUpdateFormData(formObj);
           setModalType("update");
