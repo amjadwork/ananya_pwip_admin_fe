@@ -10,29 +10,61 @@ import {
   getSpecificProductData,
   getSpecificCategoryData,
   getSpecificVariantData,
-  putProductData,
+  deleteSpecificVariantData,
 } from "../../services/export-costing/Products"
+import APIRequest from "../../helper/api";
+import { riceData } from "../../constants/riceData.constants";
+
+
+// const columns = [
+//   {
+//     label: "Variant",
+//     key: "variantName",
+//     sortable: true,
+//   },
+//   {
+//     label: "Category",
+//     key: "_categoryId",
+//     sortable: true,
+//   },
+//   {
+//     label: "Price",
+//     key: "exMill",
+//   },
+//   {
+//     label: "Action",
+//     key: "action",
+//   },
+// ];
 
 const columns = [
-  {
-    label: "Variant",
-    key: "variantName",
-    sortable: true,
-  },
-  {
-    label: "Category",
-    key: "_categoryId",
-    sortable: true,
-  },
-  {
-    label: "Price",
-    key: "exMill",
-  },
-  {
-    label: "Action",
-    key: "action",
-  },
-];
+    {
+      label: "Variant",
+      key: "variantName",
+      sortable: true,
+    },
+    {
+      label: "Category",
+      key: "_categoryId",
+      sortable: true,
+    },
+    {
+      label:"Source",
+      key:"sourceName"
+ 
+     },
+    {
+      label: "Price",
+      key: "price",
+    },
+    {
+      label: "Action",
+      key: "action",
+    },
+  ];
+
+  console.log("riceDataDummy", riceData);
+ 
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -76,11 +108,6 @@ function ManageProductsContainer(props: any) {
     setModalOpen(false);
     handleSave(payload);
   };
-
-  useEffect(() => {
-    handleGetProductData();
-  }, []);
-
   const handleSave = async (payload: any) => {
     let variantPayload = { ...payload };
 
@@ -95,15 +122,19 @@ function ManageProductsContainer(props: any) {
     }
   };
 
-  const handleDeleteVariant = async (data: any) => {
-    const deleteVariantResponse = await APIRequest(
-      "variant" + "/" + data._id,
-      "DELETE"
-    );
+  // const handleDeleteVariant = async (data: any) => {
+  //   const deleteVariantResponse = await APIRequest(
+  //     "variant" + "/" + data._id,
+  //     "DELETE"
+  //   );
 
-    if (deleteVariantResponse) {
-      handleRefreshCalls();
-    }
+  const handleDeleteVariant = async (data: any) => {
+    // const response = await deleteSpecificVariantData(data);
+    console.log(data)
+
+    // if (response) {
+    //   handleRefreshCalls();
+    // }
   };
 
   const handleGetProductData = async () => {
@@ -164,14 +195,14 @@ function ManageProductsContainer(props: any) {
     });
 
   React.useEffect(() => {
-    if (variantsData.length) {
+    if (riceData.length) {
       let tableData: any = [];
 
-      [...variantsData].map((d: any) => {
-        d.costing.forEach((l: any) => {
+      [...riceData].map((d: any) => {
+        d.sourceRates.forEach((l: any) => {
           const obj = {
             ...l,
-            variantName: d.name,
+            variantName: d.variantName,
             _categoryId: d._categoryId,
           };
           tableData.push(obj);
@@ -180,8 +211,34 @@ function ManageProductsContainer(props: any) {
 
       setTableRowData(tableData);
     }
-  }, [variantsData]);
+  }, [riceData]);
 
+  // React.useEffect(() => {
+  //   if (riceData.length && categoryData.length) {
+  //     let tableData: any = [];
+  
+  //     riceData.forEach((d: any) => {
+  //       d.sourceRates.forEach((l: any) => {
+  //         const category = categoryData.find(
+  //           (category:any) => category._id === d._categoryId
+  //         );
+  //         const categoryName = category ? category.name : "";
+  
+  //         const obj = {
+  //           ...l,
+  //           variantName: d.variantName,
+  //           categoryName: categoryName,
+  //         };
+  //         tableData.push(obj);
+  //       });
+  //     });
+  
+  //     setTableRowData(tableData);
+  //   }
+  // }, [riceData, categoryData]);
+  
+  console.log("categoryData", categoryData)
+  console.log("table", tableRowData)
   return (
     <PageWrapper
       PageHeader={() => null}
