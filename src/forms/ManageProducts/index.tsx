@@ -18,11 +18,12 @@ import { randomId } from "@mantine/hooks";
 
 const initialFormValues: any = {
   _categoryId: "",
-  name: "",
-  region: [
+  variantName: "",
+  sourceRates: [
     {
-      region: "",
-      exMill: "",
+      _sourceId: "",
+      price:"",
+      unit: "kg",
       key: randomId(),
     },
   ],
@@ -37,6 +38,7 @@ function AddOrEditProductForm(props: any) {
   const variantsData = props.variantsData;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
+  // const handleDeleteVariant=props.handleDeleteVariant;
 
   const [variantRegionCostingList, setVariantRegionCostingList] = useState<any>(
     variantsData?.costing || []
@@ -44,7 +46,6 @@ function AddOrEditProductForm(props: any) {
   const [numberValue, setNumberValue] = useState(0);
   const [regionValue, setRegionValue] = useState("");
   const [regionOptions, setRegionOptions] = useState<any>([]);
-
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -62,14 +63,14 @@ function AddOrEditProductForm(props: any) {
     }
   }, [updateFormData, modalType]);
 
-  const handleGetRegions: any = async () => {
-    const regionResponse = await APIRequest(
+  const handleGetSource: any = async () => {
+    const response= await APIRequest(
       "location?filterType=source",
       "GET"
     );
 
-    if (regionResponse) {
-      const options: any = regionResponse[0].source.map((d: any) => ({
+    if (response) {
+      const options: any = response[0].source.map((d: any) => ({
         label: d.region,
         value: d._id,
       }));
@@ -77,14 +78,14 @@ function AddOrEditProductForm(props: any) {
     }
   };
 
-  const handleAddRegionCost: any = () => {
-    form.insertListItem("region", initialFormValues.region[0], {
-      ...initialFormValues.region[0],
+  const handleAddSourceRates: any = () => {
+    form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
+      ...initialFormValues.sourceRates[0],
     });
   };
 
-  const handleRemoveRegionCost = (index: number) => {
-    form.removeListItem("region", index);
+  const handleTrashSourceRates = (index: number) => {
+    form.removeListItem("sourceRates", index);
   };
 
   const handleError = (errors: typeof form.errors) => {
@@ -92,50 +93,54 @@ function AddOrEditProductForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-
+console.log(form.values, "form")
   const handleSubmit = async (formValues: typeof form.values) => {
     handleCloseModal(false);
     handleSaveCallback(formValues);
-    // let obj: any = { ...formValues };
-    // if (variantRegionCostingList.length) {
-    //   obj.costing = variantRegionCostingList;
-    // }
+    let obj: any = { ...formValues };
+    if (variantRegionCostingList.length) {
+      obj.costing = variantRegionCostingList;
+    }
+  console.log("formValues",variantRegionCostingList)
+    const payload = { ...obj };
 
-    // const payload = { ...obj };
+    const response = await APIRequest("variant", "POST", payload);
+    if(response){
+      showNotification({
+        message: "Successfully added variant",
+        color: "green",
+      });
 
-    // const addVariantResponse = await APIRequest("variant", "POST", payload);
-    
-    showNotification({
-      message: "Successfully added variant",
-      color: "green",
-    });
+    }
+  
   };
 
-  const categoryOptions = categoryData.map((cat: any) => ({
+  const selectCategory = categoryData.map((cat: any) => ({
     value: cat._id,
     label: cat.name,
   }));
 
   React.useEffect(() => {
-    handleGetRegions();
+    handleGetSource();
   }, []);
 
-  const fields = form.values.region.map((item: any, index: number) => (
+  const fields = Array.isArray(form.values.sourceRates) && form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item.key + index}>
       <Group spacing="md">
         <Select
           required
-          label="Select Region"
-          placeholder="Eg. Karnal"
+          searchable
+          label="Select Source"
+          placeholder="eg. Karnal"
           data={regionOptions}
-          {...form.getInputProps(`region.${index}.region`)}
+          {...form.getInputProps(`sourceRates.${index}._sourceId`)}
         />
 
         <NumberInput
           required
-          label="Ex-Mill"
-          placeholder="Eg. 26500"
-          {...form.getInputProps(`region.${index}.exMill`)}
+          label="Rate/kg"
+          placeholder="eg. 26.4"
+          {...form.getInputProps(`sourceRates.${index}.price`)}
         />
 
         <Flex
@@ -147,21 +152,21 @@ function AddOrEditProductForm(props: any) {
           })}
         >
           <Group spacing="md" position="right" margin-bottom="5px">
-            {form.values.region.length > 1 && modalType !== "update" ? (
+            {form.values.sourceRates.length > 1 && modalType !== "update" ? (
               <ActionIcon
                 variant="light"
                 color="red"
-                onClick={() => handleRemoveRegionCost(index)}
+                onClick={() => handleTrashSourceRates(index)}
               >
                 <Trash size="1rem" />
               </ActionIcon>
             ) : null}
-            {index === form.values.region.length - 1 &&
+            {index === form.values.sourceRates.length - 1 &&
             modalType !== "update" ? (
               <ActionIcon
                 variant="light"
                 color="blue"
-                onClick={() => handleAddRegionCost(index)}
+                onClick={() => handleAddSourceRates(index)}
               >
                 <Plus size="1rem" />
               </ActionIcon>
@@ -179,7 +184,7 @@ function AddOrEditProductForm(props: any) {
         required
         label="Select Category"
         placeholder="Eg. Non-Basmati"
-        data={categoryOptions}
+        data={selectCategory}
         {...form.getInputProps("_categoryId")}
       />
 
@@ -187,9 +192,9 @@ function AddOrEditProductForm(props: any) {
 
       <TextInput
         required
-        label="Variant name"
+        label="Enter Variant"
         placeholder="eg. 1509 Sella"
-        {...form.getInputProps("name")}
+        {...form.getInputProps("variantName")}
       />
 
       <Space h="md" />
