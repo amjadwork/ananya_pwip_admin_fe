@@ -109,11 +109,11 @@ function ManageProductsContainer(props: any) {
   //   );
 
   const handleDeleteVariant = async (data: any) => {
-    // const response = await deleteSpecificVariantData(data);
+    const response = await deleteSpecificVariantData(data);
 
-    // if (response) {
-    //   handleRefreshCalls();
-    // }
+    if (response) {
+      handleRefreshCalls();
+    }
   };
 
   const handleGetProductData = async () => {
@@ -135,6 +135,7 @@ function ManageProductsContainer(props: any) {
       handleGetVariantData(categoryIdArr);
     }
   };
+  console.log("variantData")
 
   const handleGetVariantData = async (id: Array<[]>) => {
     const categoryIds = id;
@@ -182,6 +183,7 @@ function ManageProductsContainer(props: any) {
             ...l,
             variantName: d.variantName,
             categoryName: categoryName,
+            _variantId: d._id
           };
           tableData.push(obj);
         });
@@ -237,7 +239,7 @@ function ManageProductsContainer(props: any) {
         ]}
         handleRowEdit={(row: any, rowIndex: number) => {
           let obj = { ...row };
-
+          console.log(tableRowData)
           const formObj = {
             _categoryId: obj._categoryId,
             name: obj.variantName,

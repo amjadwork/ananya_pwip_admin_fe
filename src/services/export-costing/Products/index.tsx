@@ -1,3 +1,4 @@
+import { type } from "os";
 import APIRequest from "../../../helper/api";
 
 //Products Module
@@ -50,3 +51,21 @@ export const getSpecificVariantData = async (categoryIds: any) => {
   );
   return response;
 };
+
+export const deleteSpecificVariantData = async (data: any) => {
+
+  console.log("data",data);
+  const response = await APIRequest(
+    "variant" + "/" + data._variantId + "/" + data._id,
+    "DELETE"
+  );
+  return response;
+};
+
+// export const addVariantData = async(payload:any) =>{ const response= await APIRequest(
+//   "variant",
+//   modalType === "add" ? "POST" : "PATCH",
+//   payload
+// );
+//  return response;
+// };
