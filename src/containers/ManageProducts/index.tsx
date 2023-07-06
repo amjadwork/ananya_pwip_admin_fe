@@ -51,9 +51,9 @@ const RenderModalContent = (props: any) => {
   let regionCostingList: any = [];
 
   if (variantsData) {
-    regionCostingList = [...variantsData.costing];
+    regionCostingList = [...variantsData.sourceRates];
   }
-
+console.log("localV", variantsData);
   return (
     <AddOrEditProductForm
       handleCloseModal={handleCloseModal}
@@ -82,6 +82,8 @@ function ManageProductsContainer(props: any) {
     setModalOpen(false);
     handleSave(payload);
   };
+
+
   const handleSave = async (payload: any) => {
     let variantPayload = { ...payload };
 
@@ -90,12 +92,12 @@ function ManageProductsContainer(props: any) {
       modalType === "add" ? "POST" : "PATCH",
       variantPayload
     );
-
     if (addVariantResponse) {
       handleRefreshCalls();
     }
   };
-
+  console.log("functionV", variantsData);
+ 
   useEffect(()=>{
     const productId = window.location.pathname.split("products/")[1];
     handleGetCategoryData(productId)
@@ -164,7 +166,6 @@ function ManageProductsContainer(props: any) {
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteVariant(data),
     });
-
   React.useEffect(() => {
     if (variantsData && categoryData && variantsData.length && categoryData.length) {
       let tableData: any = [];
@@ -190,7 +191,6 @@ function ManageProductsContainer(props: any) {
       setTableRowData(tableData);
     }
   }, [variantsData, categoryData]);
-
 
   return (
     <PageWrapper

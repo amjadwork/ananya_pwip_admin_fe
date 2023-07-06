@@ -9,12 +9,12 @@ import {
   ActionIcon,
   Flex,
 } from "@mantine/core";
-import { Minus, Trash, Plus } from "tabler-icons-react";
+import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
-
 import { randomId } from "@mantine/hooks";
+import { Console } from "console";
 
 const initialFormValues: any = {
   _categoryId: "",
@@ -22,7 +22,7 @@ const initialFormValues: any = {
   sourceRates: [
     {
       _sourceId: "",
-      price:"",
+      price: "",
       unit: "kg",
       key: randomId(),
     },
@@ -39,9 +39,8 @@ function AddOrEditProductForm(props: any) {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
   // const handleDeleteVariant=props.handleDeleteVariant;
-
-  const [variantRegionCostingList, setVariantRegionCostingList] = useState<any>(
-    variantsData?.costing || []
+  const [sourceRatesList, setSourceRatesList] = useState<any>(
+    variantsData?.sourceRates || []
   );
   const [numberValue, setNumberValue] = useState(0);
   const [regionValue, setRegionValue] = useState("");
@@ -51,23 +50,19 @@ function AddOrEditProductForm(props: any) {
     initialValues: { ...initialFormValues },
 
     validate: {
-      name: (value) =>
+      variantName: (value: any) =>
         value.length < 2 ? "Name must have at least 2 letters" : null,
     },
   });
 
   useEffect(() => {
     if (updateFormData && modalType === "update") {
-      console.log(updateFormData);
       form.setValues(updateFormData);
     }
   }, [updateFormData, modalType]);
 
   const handleGetSource: any = async () => {
-    const response= await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
+    const response = await APIRequest("location?filterType=source", "GET");
 
     if (response) {
       const options: any = response[0].source.map((d: any) => ({
@@ -83,7 +78,6 @@ function AddOrEditProductForm(props: any) {
       ...initialFormValues.sourceRates[0],
     });
   };
-
   const handleTrashSourceRates = (index: number) => {
     form.removeListItem("sourceRates", index);
   };
@@ -93,28 +87,22 @@ function AddOrEditProductForm(props: any) {
       showNotification({ message: "Please fill name field", color: "red" });
     }
   };
-console.log(form.values, "form")
-  const handleSubmit = async (formValues: typeof form.values) => {
-    handleCloseModal(false);
-    handleSaveCallback(formValues);
-    let obj: any = { ...formValues };
-    if (variantRegionCostingList.length) {
-      obj.costing = variantRegionCostingList;
-    }
-  console.log("formValues",variantRegionCostingList)
-    const payload = { ...obj };
 
+  const handleSubmit = async (formValues: typeof form.values) => {
+    const productId = window.location.pathname.split("products/")[1];
+    handleCloseModal(false);
+    let payload: any = { ...formValues.values, _productId: productId };
+    console.log(payload);
     const response = await APIRequest("variant", "POST", payload);
-    if(response){
+    if (response) {
       showNotification({
         message: "Successfully added variant",
         color: "green",
       });
-
     }
-  
-  };
+    // handleSaveCallback(payload);
 
+  };
   const selectCategory = categoryData.map((cat: any) => ({
     value: cat._id,
     label: cat.name,
@@ -124,62 +112,64 @@ console.log(form.values, "form")
     handleGetSource();
   }, []);
 
-  const fields = Array.isArray(form.values.sourceRates) && form.values.sourceRates.map((item: any, index: number) => (
-    <React.Fragment key={item.key + index}>
-      <Group spacing="md">
-        <Select
-          required
-          searchable
-          label="Select Source"
-          placeholder="eg. Karnal"
-          data={regionOptions}
-          {...form.getInputProps(`sourceRates.${index}._sourceId`)}
-        />
+  const fields =
+    Array.isArray(form.values.sourceRates) &&
+    form.values.sourceRates.map((item: any, index: number) => (
+      <React.Fragment key={item.key + index}>
+        <Group spacing="md">
+          <Select
+            required
+            searchable
+            label="Select Source"
+            placeholder="eg. Karnal"
+            data={regionOptions}
+            {...form.getInputProps(`sourceRates.${index}._sourceId`)}
+          />
 
-        <NumberInput
-          required
-          label="Rate/kg"
-          placeholder="eg. 26.4"
-          {...form.getInputProps(`sourceRates.${index}.price`)}
-        />
+          <NumberInput
+            required
+            label="Rate/kg"
+            placeholder="eg. 26.4"
+            {...form.getInputProps(`sourceRates.${index}.price`)}
+          />
 
-        <Flex
-          justify="space-between"
-          align="flex-end"
-          direction="row"
-          sx={() => ({
-            marginTop: `3%`,
-          })}
-        >
-          <Group spacing="md" position="right" margin-bottom="5px">
-            {form.values.sourceRates.length > 1 && modalType !== "update" ? (
-              <ActionIcon
-                variant="light"
-                color="red"
-                onClick={() => handleTrashSourceRates(index)}
-              >
-                <Trash size="1rem" />
-              </ActionIcon>
-            ) : null}
-            {index === form.values.sourceRates.length - 1 &&
-            modalType !== "update" ? (
-              <ActionIcon
-                variant="light"
-                color="blue"
-                onClick={() => handleAddSourceRates(index)}
-              >
-                <Plus size="1rem" />
-              </ActionIcon>
-            ) : null}
-          </Group>
-        </Flex>
-      </Group>
-      <Space h="md" />
-    </React.Fragment>
-  ));
+          <Flex
+            justify="space-between"
+            align="flex-end"
+            direction="row"
+            sx={() => ({
+              marginTop: `3%`,
+            })}>
+            <Group spacing="md" position="right" margin-bottom="5px">
+              {form.values.sourceRates.length > 1 && modalType !== "update" ? (
+                <ActionIcon
+                  variant="light"
+                  color="red"
+                  onClick={() => handleTrashSourceRates(index)}>
+                  <Trash size="1rem" />
+                </ActionIcon>
+              ) : null}
+              {index === form.values.sourceRates.length - 1 &&
+              modalType !== "update" ? (
+                <ActionIcon
+                  variant="light"
+                  color="blue"
+                  onClick={() => handleAddSourceRates(index)}>
+                  <Plus size="1rem" />
+                </ActionIcon>
+              ) : null}
+            </Group>
+          </Flex>
+        </Group>
+        <Space h="md" />
+      </React.Fragment>
+    ));
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
+    <form
+      onSubmit={form.onSubmit(() => {
+        handleSubmit(form);
+      }, handleError)}>
       <Select
         required
         label="Select Category"
