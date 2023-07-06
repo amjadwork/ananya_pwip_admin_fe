@@ -13,29 +13,6 @@ import {
   deleteSpecificVariantData,
 } from "../../services/export-costing/Products"
 import APIRequest from "../../helper/api";
-import { riceData } from "../../constants/riceData.constants";
-
-
-// const columns = [
-//   {
-//     label: "Variant",
-//     key: "variantName",
-//     sortable: true,
-//   },
-//   {
-//     label: "Category",
-//     key: "_categoryId",
-//     sortable: true,
-//   },
-//   {
-//     label: "Price",
-//     key: "exMill",
-//   },
-//   {
-//     label: "Action",
-//     key: "action",
-//   },
-// ];
 
 const columns = [
     {
@@ -131,7 +108,6 @@ function ManageProductsContainer(props: any) {
 
   const handleDeleteVariant = async (data: any) => {
     // const response = await deleteSpecificVariantData(data);
-    console.log(data)
 
     // if (response) {
     //   handleRefreshCalls();
@@ -144,13 +120,11 @@ function ManageProductsContainer(props: any) {
     if (response) {
       handleGetCategoryData(response._id);
     }
-    console.log("here", response)
   };
 
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
     const response: any = await getSpecificCategoryData(productId);
-    console.log("categoryResponse", response)
     if (response) {
       setCategoryData(response[0].category || []);
       const categoryIdArr = response[0].category.map(
@@ -172,7 +146,7 @@ function ManageProductsContainer(props: any) {
   const handleRefreshCalls = () => {
     handleGetProductData();
   };
-  
+
   const openDeleteModal = (data: any) =>
     openConfirmModal({
       title: "Delete the variant",
@@ -192,10 +166,11 @@ function ManageProductsContainer(props: any) {
     });
 
   React.useEffect(() => {
-    if (riceData.length && categoryData.length) {
+    if (variantsData && categoryData && variantsData.length && categoryData.length) {
       let tableData: any = [];
   
-      riceData.forEach((d: any) => {
+      variantsData.forEach((d: any) => {
+        if (d.sourceRates) {
         d.sourceRates.forEach((l: any) => {
           const category = categoryData.find(
             (category:any) => category._id === d._categoryId
@@ -209,11 +184,12 @@ function ManageProductsContainer(props: any) {
           };
           tableData.push(obj);
         });
+      }
       });
   
       setTableRowData(tableData);
     }
-  }, [riceData, categoryData]);
+  }, [variantsData, categoryData]);
 
 
   return (
