@@ -77,7 +77,6 @@ function ProductsContainer() {
     if (productResponse) {
       setProductList(productResponse);
     }
-    console.log("pro", productResponse)
   };
 
   return (

@@ -94,19 +94,17 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    let obj: any = { ...formValues };
-    if (variantRegionCostingList.length) {
-      obj.costing = variantRegionCostingList;
-    }
+    handleCloseModal(false);
+    handleSaveCallback(formValues);
+    // let obj: any = { ...formValues };
+    // if (variantRegionCostingList.length) {
+    //   obj.costing = variantRegionCostingList;
+    // }
 
-    const payload = { ...obj };
+    // const payload = { ...obj };
 
-    const addVariantResponse = await APIRequest("variant", "POST", payload);
-
-    if (addVariantResponse) {
-      handleCloseModal(false);
-      handleSaveCallback();
-    }
+    // const addVariantResponse = await APIRequest("variant", "POST", payload);
+    
     showNotification({
       message: "Successfully added variant",
       color: "green",

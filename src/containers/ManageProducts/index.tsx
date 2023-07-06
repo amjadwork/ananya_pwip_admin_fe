@@ -64,8 +64,6 @@ const RenderModalContent = (props: any) => {
 function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [modalType, setModalType] = React.useState<string>("add"); //add or update
-  const [updateModalOpen, setUpdateModalOpen] = React.useState<boolean>(false);
-  const [productData, setProductData] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
@@ -74,23 +72,36 @@ function ManageProductsContainer(props: any) {
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
-  const handleSaveCallback = async (bool: boolean) => {
+  const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
+    handleSave(payload);
   };
 
   useEffect(() => {
     handleGetProductData();
   }, []);
 
-  const handleSave = async (bool: boolean) => {
-    const payload = {
-      name: productData.name,
-      image: productData.image,
-      // status: status,
-    };
-    const updateStatusResponse = await putProductData(payload, productData);
+  const handleSave = async (payload: any) => {
+    let variantPayload = { ...payload };
 
-    if (updateStatusResponse) {
+    const addVariantResponse = await APIRequest(
+      "variant",
+      modalType === "add" ? "POST" : "PATCH",
+      variantPayload
+    );
+
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
+  };
+
+  const handleDeleteVariant = async (data: any) => {
+    const deleteVariantResponse = await APIRequest(
+      "variant" + "/" + data._id,
+      "DELETE"
+    );
+
+    if (deleteVariantResponse) {
       handleRefreshCalls();
     }
   };
@@ -99,9 +110,12 @@ function ManageProductsContainer(props: any) {
     const productId = window.location.pathname.split("products/")[1];
     const response: any = await getSpecificProductData(productId);
 
-    if (response) {
-      setProductData(response);
-      handleGetCategoryData(response._id);
+    const productDetailResponse: any = await APIRequest(
+      `product/${productId}`,
+      "GET"
+    );
+    if (productDetailResponse) {
+      handleGetCategoryData(productDetailResponse._id);
     }
   };
 
@@ -146,7 +160,7 @@ function ManageProductsContainer(props: any) {
       labels: { confirm: "Delete variant", cancel: "No don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onConfirm: () => handleDeleteVariant(data),
     });
 
   React.useEffect(() => {
@@ -174,18 +188,17 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        !updateModalOpen ? "Add Product Variant" : "Update Product Variant"
+        modalType === "add" ? "Add Product Variant" : "Update Product Variant"
       }
       onModalClose={() => {
         setModalOpen(false);
-        setUpdateModalOpen(false);
         setSelectedVariantData(null);
         setUpdateFormData(null);
       }}
       ModalContent={() => {
         return (
           <RenderModalContent
-            handleCloseModal={(bool: boolean) => setUpdateModalOpen(bool)}
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
             categoryData={categoryData}
             handleSaveCallback={handleSaveCallback}
             variantsData={selectedVariantData}
@@ -220,8 +233,6 @@ function ManageProductsContainer(props: any) {
             name: obj.variantName,
             region: [obj],
           };
-
-          console.log(formObj);
 
           setUpdateFormData(formObj);
           setModalType("update");
