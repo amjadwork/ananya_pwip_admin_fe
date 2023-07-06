@@ -45,7 +45,7 @@ const columns = [
     },
     {
       label: "Category",
-      key: "_categoryId",
+      key: "categoryName",
       sortable: true,
     },
     {
@@ -62,9 +62,6 @@ const columns = [
       key: "action",
     },
   ];
-
-  console.log("riceDataDummy", riceData);
- 
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -122,6 +119,10 @@ function ManageProductsContainer(props: any) {
     }
   };
 
+  useEffect(()=>{
+    const productId = window.location.pathname.split("products/")[1];
+    handleGetCategoryData(productId)
+  },[])
   // const handleDeleteVariant = async (data: any) => {
   //   const deleteVariantResponse = await APIRequest(
   //     "variant" + "/" + data._id,
@@ -140,20 +141,16 @@ function ManageProductsContainer(props: any) {
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
     const response: any = await getSpecificProductData(productId);
-
-    const productDetailResponse: any = await APIRequest(
-      `product/${productId}`,
-      "GET"
-    );
-    if (productDetailResponse) {
-      handleGetCategoryData(productDetailResponse._id);
+    if (response) {
+      handleGetCategoryData(response._id);
     }
+    console.log("here", response)
   };
 
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
     const response: any = await getSpecificCategoryData(productId);
-
+    console.log("categoryResponse", response)
     if (response) {
       setCategoryData(response[0].category || []);
       const categoryIdArr = response[0].category.map(
@@ -175,7 +172,7 @@ function ManageProductsContainer(props: any) {
   const handleRefreshCalls = () => {
     handleGetProductData();
   };
-
+  
   const openDeleteModal = (data: any) =>
     openConfirmModal({
       title: "Delete the variant",
@@ -195,50 +192,30 @@ function ManageProductsContainer(props: any) {
     });
 
   React.useEffect(() => {
-    if (riceData.length) {
+    if (riceData.length && categoryData.length) {
       let tableData: any = [];
-
-      [...riceData].map((d: any) => {
+  
+      riceData.forEach((d: any) => {
         d.sourceRates.forEach((l: any) => {
+          const category = categoryData.find(
+            (category:any) => category._id === d._categoryId
+          );
+          const categoryName = category ? category.name : "";
+  
           const obj = {
             ...l,
             variantName: d.variantName,
-            _categoryId: d._categoryId,
+            categoryName: categoryName,
           };
           tableData.push(obj);
         });
       });
-
+  
       setTableRowData(tableData);
     }
-  }, [riceData]);
+  }, [riceData, categoryData]);
 
-  // React.useEffect(() => {
-  //   if (riceData.length && categoryData.length) {
-  //     let tableData: any = [];
-  
-  //     riceData.forEach((d: any) => {
-  //       d.sourceRates.forEach((l: any) => {
-  //         const category = categoryData.find(
-  //           (category:any) => category._id === d._categoryId
-  //         );
-  //         const categoryName = category ? category.name : "";
-  
-  //         const obj = {
-  //           ...l,
-  //           variantName: d.variantName,
-  //           categoryName: categoryName,
-  //         };
-  //         tableData.push(obj);
-  //       });
-  //     });
-  
-  //     setTableRowData(tableData);
-  //   }
-  // }, [riceData, categoryData]);
-  
-  console.log("categoryData", categoryData)
-  console.log("table", tableRowData)
+
   return (
     <PageWrapper
       PageHeader={() => null}
