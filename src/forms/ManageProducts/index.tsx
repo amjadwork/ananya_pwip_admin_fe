@@ -23,7 +23,7 @@ const initialFormValues: any = {
     {
       _sourceId: "",
       price: "",
-      unit: "kg",
+      unit:"kg",
       key: randomId(),
     },
   ],

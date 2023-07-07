@@ -11,34 +11,33 @@ import {
   getSpecificCategoryData,
   getSpecificVariantData,
   deleteSpecificVariantData,
-} from "../../services/export-costing/Products"
-import APIRequest from "../../helper/api";
+  patchSpecificVariantData,
+} from "../../services/export-costing/Products";
 
 const columns = [
-    {
-      label: "Variant",
-      key: "variantName",
-      sortable: true,
-    },
-    {
-      label: "Category",
-      key: "categoryName",
-      sortable: true,
-    },
-    {
-      label:"Source",
-      key:"sourceName"
- 
-     },
-    {
-      label: "Price",
-      key: "price",
-    },
-    {
-      label: "Action",
-      key: "action",
-    },
-  ];
+  {
+    label: "Variant",
+    key: "variantName",
+    sortable: true,
+  },
+  {
+    label: "Category",
+    key: "categoryName",
+    sortable: true,
+  },
+  {
+    label: "Source",
+    key: "sourceName",
+  },
+  {
+    label: "Price",
+    key: "price",
+  },
+  {
+    label: "Action",
+    key: "action",
+  },
+];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -53,7 +52,7 @@ const RenderModalContent = (props: any) => {
   if (variantsData) {
     regionCostingList = [...variantsData.sourceRates];
   }
-console.log("localV", variantsData);
+
   return (
     <AddOrEditProductForm
       handleCloseModal={handleCloseModal}
@@ -69,7 +68,7 @@ console.log("localV", variantsData);
 
 function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [modalType, setModalType] = React.useState<string>("add"); //add or update
+  const [modalType, setModalType] = React.useState<string>("add");
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
@@ -80,33 +79,22 @@ function ManageProductsContainer(props: any) {
 
   const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
-    handleSave(payload);
+    handlePatchVariant(payload);
   };
 
-
-  const handleSave = async (payload: any) => {
-    let variantPayload = { ...payload };
-
-    const addVariantResponse = await APIRequest(
-      "variant",
-      modalType === "add" ? "POST" : "PATCH",
-      variantPayload
-    );
-    if (addVariantResponse) {
+  const handlePatchVariant = async (payload: any) => {
+    let data = { ...payload };
+    console.log("variant", data);
+    const response = await patchSpecificVariantData(data);
+    if (response) {
       handleRefreshCalls();
     }
   };
-  console.log("functionV", variantsData);
- 
-  useEffect(()=>{
+
+  useEffect(() => {
     const productId = window.location.pathname.split("products/")[1];
-    handleGetCategoryData(productId)
-  },[])
-  // const handleDeleteVariant = async (data: any) => {
-  //   const deleteVariantResponse = await APIRequest(
-  //     "variant" + "/" + data._id,
-  //     "DELETE"
-  //   );
+    handleGetCategoryData(productId);
+  }, []);
 
   const handleDeleteVariant = async (data: any) => {
     const response = await deleteSpecificVariantData(data);
@@ -129,13 +117,11 @@ function ManageProductsContainer(props: any) {
     const response: any = await getSpecificCategoryData(productId);
     if (response) {
       setCategoryData(response[0].category || []);
-      const categoryIdArr = response[0].category.map(
-        (cat: any) => cat._id
-      );
+      const categoryIdArr = response[0].category.map((cat: any) => cat._id);
       handleGetVariantData(categoryIdArr);
     }
   };
-  console.log("variantData")
+  console.log("variantData");
 
   const handleGetVariantData = async (id: Array<[]>) => {
     const categoryIds = id;
@@ -168,28 +154,34 @@ function ManageProductsContainer(props: any) {
       onConfirm: () => handleDeleteVariant(data),
     });
   React.useEffect(() => {
-    if (variantsData && categoryData && variantsData.length && categoryData.length) {
+    if (
+      variantsData &&
+      categoryData &&
+      variantsData.length &&
+      categoryData.length
+    ) {
       let tableData: any = [];
-  
+
       variantsData.forEach((d: any) => {
         if (d.sourceRates) {
-        d.sourceRates.forEach((l: any) => {
-          const category = categoryData.find(
-            (category:any) => category._id === d._categoryId
-          );
-          const categoryName = category ? category.name : "";
-  
-          const obj = {
-            ...l,
-            variantName: d.variantName,
-            categoryName: categoryName,
-            _variantId: d._id
-          };
-          tableData.push(obj);
-        });
-      }
+          d.sourceRates.forEach((l: any) => {
+            const category = categoryData.find(
+              (category: any) => category._id === d._categoryId
+            );
+            const categoryName = category ? category.name : "";
+
+            const obj = {
+              ...l,
+              _sourceRatesId: l._id,
+              variantName: d.variantName,
+              categoryName: categoryName,
+              _variantId: d._id,
+            };
+            tableData.push(obj);
+          });
+        }
       });
-  
+
       setTableRowData(tableData);
     }
   }, [variantsData, categoryData]);
@@ -216,11 +208,11 @@ function ManageProductsContainer(props: any) {
             variantsData={selectedVariantData}
             updateFormData={updateFormData}
             modalType={modalType}
+            handleRefreshCalls={handleRefreshCalls}
           />
         );
       }}
-      modalSize="70%"
-    >
+      modalSize="70%">
       <Space h="sm" />
       <DataTable
         data={tableRowData}
@@ -239,13 +231,15 @@ function ManageProductsContainer(props: any) {
         ]}
         handleRowEdit={(row: any, rowIndex: number) => {
           let obj = { ...row };
-          console.log(tableRowData)
+          
           const formObj = {
-            _categoryId: obj._categoryId,
-            name: obj.variantName,
-            region: [obj],
-          };
-
+              _categoryId: obj.categoryName,
+              variantName: obj.variantName,
+              sourceRates: [obj],
+            };
+           
+          console.log("formObj",formObj);
+          console.log(obj);
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
