@@ -43,7 +43,13 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "react-scripts build && sudo scp -i '/Users/sudhansuswain/Documents/pwip-ec-uat-pem.pem' -r /Users/sudhansuswain/Desktop/Projects/pwip/export-costing-fe/build ubuntu@43.205.147.191:/home/ubuntu/export-costing-fe"
+    "deploy": "react-scripts build && sudo scp -i '/Users/sudhansuswain/Documents/pwip-ec-uat-pem.pem' -r /Users/sudhansuswain/Desktop/Projects/pwip/export-costing-fe/build ubuntu@43.205.147.191:/home/ubuntu/export-costing-fe",
+    "format": "prettier --write 'src/**/*.js'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -62,5 +68,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "prettier": "^3.0.0"
   }
 }
