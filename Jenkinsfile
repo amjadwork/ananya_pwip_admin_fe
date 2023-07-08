@@ -1,22 +1,19 @@
 pipeline {
   agent {
-    label 'export-costing-fe-node-agent'
+    label 'export-costing-be-node-agent'
   }
 
-  stages {
+  stages {  
     stage('Take a pull from git') {
       steps {
         ws('/home/ubuntu/export-costing-fe') {
-          dir('.') {
-            checkout([
-              $class: 'GitSCM',
-              branches: [[name: 'main']],
-              userRemoteConfigs: [[
-                credentialsId: 'export-costing-admin-fe',
-                url: 'https://skswain_pwip:glpat-qd5RFTnbjvLYsmRbND-o@gitlab.com/techpwip/export-costing-fe.git'
-              ]]
-            ])
-          }
+            checkout([$class: 'GitSCM',
+            branches: [[name: 'main']],
+            doGenerateSubmoduleConfigurations: false,
+            extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false]],
+            submoduleCfg: [],
+            userRemoteConfigs: [[credentialsId: 'export-costing-admin-fe', url: 'https://skswain_pwip:glpat-qd5RFTnbjvLYsmRbND-o@gitlab.com/techpwip/export-costing-fe.git']]
+          ])
         }
       }
     }
@@ -24,9 +21,7 @@ pipeline {
     stage('install dependencies') {
       steps {
         ws('/home/ubuntu/export-costing-fe') {
-          dir('.') {
             sh 'npm install'
-          }
         }
       }
     }
@@ -34,19 +29,15 @@ pipeline {
     stage('build the project') {
       steps {
         ws('/home/ubuntu/export-costing-fe') {
-          dir('.') {
             sh 'npm run build'
-          }
         }
       }
     }
 
-    stage('Deploy to S3') {
+    stage('Deploy to s3') {
       steps {
         ws('/home/ubuntu/export-costing-fe') {
-          dir('.') {
-            sh 'aws s3 sync build/ s3://pwip-admin-react-app/'
-          }
+            sh 'aws s3 sync /home/ubuntu/export-costing-fe/build s3://pwip-admin-react-app/'
         }
       }
     }
