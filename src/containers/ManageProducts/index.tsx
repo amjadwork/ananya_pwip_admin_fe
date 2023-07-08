@@ -3,16 +3,10 @@ import { Space, Text } from "@mantine/core";
 import { Plus, Trash } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
+import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
-import {
-  getSpecificProductData,
-  getSpecificCategoryData,
-  getSpecificVariantData,
-  deleteSpecificVariantData,
-  patchSpecificVariantData,
-} from "../../services/export-costing/Products";
 
 const columns = [
   {
@@ -22,12 +16,8 @@ const columns = [
   },
   {
     label: "Category",
-    key: "categoryName",
+    key: "_categoryId",
     sortable: true,
-  },
-  {
-    label: "Source",
-    key: "sourceName",
   },
   {
     label: "Price",
@@ -50,7 +40,7 @@ const RenderModalContent = (props: any) => {
   let regionCostingList: any = [];
 
   if (variantsData) {
-    regionCostingList = [...variantsData.sourceRates];
+    regionCostingList = [...variantsData.costing];
   }
 
   return (
@@ -68,7 +58,7 @@ const RenderModalContent = (props: any) => {
 
 function ManageProductsContainer(props: any) {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [modalType, setModalType] = React.useState<string>("add");
+  const [modalType, setModalType] = React.useState<string>("add"); //add or update
   const [categoryData, setCategoryData] = useState<any>([]);
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
@@ -79,56 +69,77 @@ function ManageProductsContainer(props: any) {
 
   const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
-    handlePatchVariant(payload);
+    handleSave(payload);
   };
 
-  const handlePatchVariant = async (payload: any) => {
-    let data = { ...payload };
-    console.log("variant", data);
-    const response = await patchSpecificVariantData(data);
-    if (response) {
+  useEffect(() => {
+    handleGetProductData();
+  }, []);
+
+  const handleSave = async (payload: any) => {
+    let variantPayload = { ...payload };
+
+    console.log(variantPayload);
+
+    const addVariantResponse = await APIRequest(
+      "variant",
+      modalType === "add" ? "POST" : "PATCH",
+      variantPayload
+    );
+
+    if (addVariantResponse) {
       handleRefreshCalls();
     }
   };
 
-  useEffect(() => {
-    const productId = window.location.pathname.split("products/")[1];
-    handleGetCategoryData(productId);
-  }, []);
-
   const handleDeleteVariant = async (data: any) => {
-    const response = await deleteSpecificVariantData(data);
+    const deleteVariantResponse = await APIRequest(
+      "variant" + "/" + data._id,
+      "DELETE"
+    );
 
-    if (response) {
+    if (deleteVariantResponse) {
       handleRefreshCalls();
     }
   };
 
   const handleGetProductData = async () => {
     const productId = window.location.pathname.split("products/")[1];
-    const response: any = await getSpecificProductData(productId);
-    if (response) {
-      handleGetCategoryData(response._id);
+
+    const productDetailResponse: any = await APIRequest(
+      `product/${productId}`,
+      "GET"
+    );
+    if (productDetailResponse) {
+      handleGetCategoryData(productDetailResponse._id);
     }
   };
 
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
-    const response: any = await getSpecificCategoryData(productId);
-    if (response) {
-      setCategoryData(response[0].category || []);
-      const categoryIdArr = response[0].category.map((cat: any) => cat._id);
+
+    const categoryDetailResponse: any = await APIRequest(
+      `category?_productId=${productId}`,
+      "GET"
+    );
+    if (categoryDetailResponse) {
+      setCategoryData(categoryDetailResponse[0].category || []);
+      const categoryIdArr = categoryDetailResponse[0].category.map(
+        (cat: any) => cat._id
+      );
       handleGetVariantData(categoryIdArr);
     }
   };
-  console.log("variantData");
 
-  const handleGetVariantData = async (id: Array<[]>) => {
-    const categoryIds = id;
-    const response: any = await getSpecificVariantData(categoryIds);
+  const handleGetVariantData = async (ids: Array<[]>) => {
+    const categoryIds = ids;
 
-    if (response) {
-      setVariantsData(response);
+    const variantResponse: any = await APIRequest(
+      `variant?_categoryId=${categoryIds}`,
+      "GET"
+    );
+    if (variantResponse) {
+      setVariantsData(variantResponse);
     }
   };
 
@@ -136,55 +147,43 @@ function ManageProductsContainer(props: any) {
     handleGetProductData();
   };
 
-  const openDeleteModal = (data: any) =>
+  const openDeleteModal = (rowData: any) =>
     openConfirmModal({
       title: "Delete the variant",
       centered: true,
       children: (
         <Text size="sm">
           Are you sure you want to delete the variant record for{" "}
-          {data._originPortId || null} to {data._destinationPortId || null}?
-          This action is destructive and you will have to contact support to
-          restore your data.
+          {rowData.variantName || null} from {rowData._sourceId || null}? This
+          action is destructive and you will have to contact support to restore
+          your data.
         </Text>
       ),
       labels: { confirm: "Delete variant", cancel: "No don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => handleDeleteVariant(data),
+      onConfirm: () => handleDeleteVariant(rowData),
     });
+
   React.useEffect(() => {
-    if (
-      variantsData &&
-      categoryData &&
-      variantsData.length &&
-      categoryData.length
-    ) {
+    if (variantsData.length) {
       let tableData: any = [];
 
-      variantsData.forEach((d: any) => {
-        if (d.sourceRates) {
-          d.sourceRates.forEach((l: any) => {
-            const category = categoryData.find(
-              (category: any) => category._id === d._categoryId
-            );
-            const categoryName = category ? category.name : "";
-
-            const obj = {
-              ...l,
-              _sourceRatesId: l._id,
-              variantName: d.variantName,
-              categoryName: categoryName,
-              _variantId: d._id,
-            };
-            tableData.push(obj);
-          });
-        }
+      [...variantsData].forEach((d: any) => {
+        d?.sourceRates?.forEach((l: any) => {
+          const obj = {
+            ...l,
+            priceWithUnit: `${l.price} per ${l.unit || "Kgs"}`,
+            variantName: d.variantName,
+            _categoryId: d._categoryId,
+          };
+          tableData.push(obj);
+        });
       });
 
       setTableRowData(tableData);
     }
-  }, [variantsData, categoryData]);
+  }, [variantsData]);
 
   return (
     <PageWrapper
@@ -208,11 +207,11 @@ function ManageProductsContainer(props: any) {
             variantsData={selectedVariantData}
             updateFormData={updateFormData}
             modalType={modalType}
-            handleRefreshCalls={handleRefreshCalls}
           />
         );
       }}
-      modalSize="70%">
+      modalSize="70%"
+    >
       <Space h="sm" />
       <DataTable
         data={tableRowData}
@@ -229,22 +228,20 @@ function ManageProductsContainer(props: any) {
             },
           },
         ]}
-        handleRowEdit={(row: any, rowIndex: number) => {
+        handleRowEdit={(row: any) => {
           let obj = { ...row };
-          
+
           const formObj = {
-              _categoryId: obj.categoryName,
-              variantName: obj.variantName,
-              sourceRates: [obj],
-            };
-           
-          console.log("formObj",formObj);
-          console.log(obj);
+            _categoryId: obj._categoryId,
+            variantName: obj.variantName,
+            sourceRates: [{ ...obj }],
+          };
+
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any, rowIndex: number) => {
+        handleRowDelete={(row: any) => {
           openDeleteModal(row);
         }}
       />
