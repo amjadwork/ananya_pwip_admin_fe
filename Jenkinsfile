@@ -6,7 +6,7 @@ pipeline {
   stages {
     stage('Take a pull from git') {
       steps {
-        ws('/custom/workspace/path/export-costing-fe') {
+        ws('/home/ubuntu/export-costing-fe') {
           dir('.') {
             checkout([
               $class: 'GitSCM',
@@ -23,7 +23,7 @@ pipeline {
 
     stage('install dependencies') {
       steps {
-        ws('/custom/workspace/path/export-costing-fe') {
+        ws('/home/ubuntu/export-costing-fe') {
           dir('.') {
             sh 'npm install'
           }
@@ -33,7 +33,7 @@ pipeline {
 
     stage('build the project') {
       steps {
-        ws('/custom/workspace/path/export-costing-fe') {
+        ws('/home/ubuntu/export-costing-fe') {
           dir('.') {
             sh 'npm run build'
           }
@@ -43,7 +43,7 @@ pipeline {
 
     stage('Deploy to S3') {
       steps {
-        ws('/custom/workspace/path/export-costing-fe') {
+        ws('/home/ubuntu/export-costing-fe') {
           dir('.') {
             sh 'aws s3 sync build/ s3://pwip-admin-react-app/'
           }
