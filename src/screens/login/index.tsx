@@ -2,31 +2,43 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actions as userActions } from "../../redux/ducks/user";
+import APIRequest from "../../helper/api";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Button,
   Container,
-  Grid,
+  Flex,
+  Box,
   Space,
   Text,
   AspectRatio,
+  Image,
 } from "@mantine/core";
 
 import { Card } from "../../components";
 
 import { useNavigate } from "react-router-dom";
 
-const LoginButton = () => {
+const LoginButton = ({ clickHandler }: any) => {
   const { loginWithRedirect } = useAuth0();
 
   return (
     <Button
-      radius="xl"
-      size="xs"
+      radius="sm"
+      size="lg"
       type="submit"
-      variant="outline"
-      onClick={() => loginWithRedirect()}
+      variant="filled"
+      bg="#003559"
+      onClick={() => {
+        clickHandler();
+        loginWithRedirect();
+      }}
+      sx={{
+        ":hover": {
+          backgroundColor: "#005F81",
+        },
+      }}
     >
       Login
     </Button>
@@ -55,33 +67,90 @@ const LoginScreen = (props: any) => {
   const router = useNavigate();
   const { isAuthenticated, user } = useAuth0();
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loginUser = async (payload: any) => {
+    setIsLoading(true);
+    const loginResponse = await APIRequest("login", "POST", payload);
+
+    if (loginResponse) {
+      setIsLoading(false);
+      router("/admin/dashboard");
+    }
+  };
+
   useEffect(() => {
     const { setUserData } = props;
 
     if (isAuthenticated && user) {
       setUserData({ ...user });
-      router("/admin/dashboard");
+      loginUser({ ...user });
     }
   }, [isAuthenticated, user]);
 
+  if (isLoading) {
+    return (
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+          backgroundColor: "#003559",
+          maxWidth: "100% !important",
+        }}
+      >
+        <Text color="white">Loading...</Text>
+      </Container>
+    );
+  }
+
   return (
-    <Container>
-      <AspectRatio ratio={290 / 182} sx={{ maxWidth: 300 }} mx="auto">
-        <img src="https://admin-uat.pwip.co/assets/logo.png"></img>
-      </AspectRatio>
-      <Space h={80} />
+    <Container
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#003559",
+        maxWidth: "100% !important",
+      }}
+    >
+      <Card
+        p="xl"
+        component="div"
+        radius="md"
+        withBorder
+        sx={{
+          minWidth: "420px",
+          backgroundColor: "#fff",
+        }}
+      >
+        <Flex justify="center" align="center" direction="column">
+          <Image
+            maw={120}
+            mx="auto"
+            radius="md"
+            src="https://pwip.co/assets/web/img/web/logo.png"
+            alt="pwip logo"
+          />
 
-      <Card p="lg" component="div" radius="md" withBorder>
-        <Grid>
-          <Grid.Col span={6} offset={5}>
-            <Text>Login on EC Admin</Text>
-          </Grid.Col>
-          <Space h={80} />
+          <Space h={52} />
 
-          <Grid.Col span={6} offset={5}>
-            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
-          </Grid.Col>
-        </Grid>
+          <Box>
+            {isAuthenticated ? (
+              <LogoutButton />
+            ) : (
+              <LoginButton
+                clickHandler={() => {
+                  setIsLoading(true);
+                }}
+              />
+            )}
+          </Box>
+        </Flex>
       </Card>
     </Container>
   );
