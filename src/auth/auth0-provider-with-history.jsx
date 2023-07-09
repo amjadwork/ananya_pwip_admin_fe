@@ -24,6 +24,7 @@ const Auth0ProviderWithHistory = ({ children }) => {
       useRefreshTokens={true}
       authorizationParams={{
         redirectUri: window.location.origin,
+        redirect_uri: window.location.origin,
         audience: audience,
       }}
     >
