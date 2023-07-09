@@ -6,6 +6,61 @@ pipeline {
     }
   }
 
+  post {
+    success {
+      slackSend(
+        color: 'good',
+        message: 'Admin panel FE Pipeline succeeded!',
+        tokenCredentialId: 'slack-ec-stage-channel-notification',
+        channel: '#ec-ci-cd-stage-notification',
+        attachments: [
+          [
+            title: 'Pipeline Details',
+            color: 'good',
+            fields: [
+              [
+                title: 'Commit',
+                value: "Branch: ${env.GIT_BRANCH}, Commit: ${env.GIT_COMMIT}",
+                short: false
+              ],
+              [
+                title: 'Pipeline',
+                value: "${env.BUILD_URL}",
+                short: false
+              ]
+            ]
+          ]
+        ]
+      )
+    }
+    failure {
+      slackSend(
+        color: 'danger',
+        message: 'Admin panel FE Pipeline failed!',
+        tokenCredentialId: 'slack-ec-stage-channel-notification',
+        channel: '#ec-ci-cd-stage-notification',
+        attachments: [
+          [
+            title: 'Pipeline Details',
+            color: 'danger',
+            fields: [
+              [
+                title: 'Commit',
+                value: "Branch: ${env.GIT_BRANCH}, Commit: ${env.GIT_COMMIT}",
+                short: false
+              ],
+              [
+                title: 'Pipeline',
+                value: "${env.BUILD_URL}",
+                short: false
+              ]
+            ]
+          ]
+        ]
+      )
+    }
+  }
+
   stages {
     stage('Take a pull from git') {
       steps {
