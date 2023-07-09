@@ -37,5 +37,23 @@ pipeline {
         sh 'aws s3 sync build/ s3://pwip-admin-react-app/'
       }
     }
+
+    stage('Copy build/* to /var/www/html') {
+      steps {
+        sh 'sudo cp -R /home/ubuntu/export-costing-fe/build/* /var/www/html/'
+      }
+    }
+
+    stage('Remove build folder') {
+      steps {
+        sh 'sudo rm -rf /home/ubuntu/export-costing-fe/build'
+      }
+    }
+
+    stage('Remove node_modules folder') {
+      steps {
+        sh 'sudo rm -rf /home/ubuntu/export-costing-fe/node_modules'
+      }
+    }
   }
 }
