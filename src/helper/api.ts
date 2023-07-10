@@ -10,6 +10,7 @@ const APIRequest = async (
 ) => {
   const url = `https://api-stage.pwip.co/api/`;
   // const url = `http://localhost:8000/api/`;
+
   const accessToken = getCookie("access_token");
 
   try {

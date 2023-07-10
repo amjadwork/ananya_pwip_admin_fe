@@ -13,7 +13,6 @@ import {
   Box,
   Space,
   Text,
-  AspectRatio,
   Image,
 } from "@mantine/core";
 
@@ -70,28 +69,35 @@ const LoginScreen = (props: any) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchToken = async () => {
+  const fetchTokenAndLogin = async (loginPayload: any) => {
+    const { setUserData } = props;
+    setUserData({ ...loginPayload });
+
     const _tok = await getAccessTokenSilently();
-    setCookie("access_token", _tok);
+
+    if (_tok) {
+      setCookie("access_token", _tok);
+      await loginUser({ ...loginPayload });
+    }
   };
 
   const loginUser = async (payload: any) => {
     setIsLoading(true);
     const loginResponse = await APIRequest("login", "POST", payload);
 
-    if (loginResponse) {
+    console.log(loginResponse);
+
+    if (loginResponse && loginResponse.message === "success") {
+      setCookie("userData", JSON.stringify(loginResponse?.data));
+
       setIsLoading(false);
       router("/admin/dashboard");
     }
   };
 
   useEffect(() => {
-    const { setUserData } = props;
-
     if (isAuthenticated && user) {
-      fetchToken();
-      setUserData({ ...user });
-      loginUser({ ...user });
+      fetchTokenAndLogin({ ...user });
     }
   }, [isAuthenticated, user]);
 
