@@ -8,8 +8,8 @@ const APIRequest = async (
   payload?: object,
   headers?: object
 ) => {
-  // const url = `https://api-stage.pwip.co/api/`;
-  const url = `http://localhost:8000/admin/api/`;
+  const url = `https://api-stage.pwip.co/admin/api/`;
+  // const url = `http://localhost:8000/admin/api/`;
 
   const accessToken = getCookie("access_token");
 
