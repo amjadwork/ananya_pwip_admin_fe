@@ -8,8 +8,8 @@ const APIRequest = async (
   payload?: object,
   headers?: object
 ) => {
-  const url = `https://api-stage.pwip.co/api/`;
-  // const url = `http://localhost:8000/api/`;
+  const url = `https://api-stage.pwip.co/admin/api/`;
+  // const url = `http://localhost:8000/admin/api/`;
 
   const accessToken = getCookie("access_token");
 
@@ -56,6 +56,8 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+          withCredentials:true
+
         });
         break;
       case "POST":
@@ -63,6 +65,7 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+          withCredentials:true
         });
         break;
       case "PUT":
@@ -70,6 +73,8 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+          withCredentials:true
+
         });
         break;
       case "PATCH":
@@ -77,6 +82,8 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+          withCredentials:true
+
         });
         break;
       case "DELETE":
@@ -84,6 +91,8 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+          withCredentials:true
+
         });
         break;
       default:
