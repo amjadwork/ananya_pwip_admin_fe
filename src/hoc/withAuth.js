@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { setCookie, deleteCookie } from "../helper/helper";
+import { setCookie, deleteCookie, getCookie } from "../helper/helper";
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
@@ -23,7 +23,9 @@ const withAuth = (WrappedComponent) => {
     }, []);
 
     useEffect(() => {
-      if (token) {
+      const cookieToken = getCookie("access_token");
+
+      if (token && !cookieToken) {
         setCookie("access_token", token);
       }
     }, [token]);

@@ -85,8 +85,6 @@ const LoginScreen = (props: any) => {
     setIsLoading(true);
     const loginResponse = await APIRequest("login", "POST", payload);
 
-    console.log(loginResponse);
-
     if (loginResponse && loginResponse.message === "success") {
       setCookie("userData", JSON.stringify(loginResponse?.data));
 
