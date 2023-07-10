@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actions as userActions } from "../../redux/ducks/user";
 import APIRequest from "../../helper/api";
+import { setCookie } from "../../helper/helper";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import {
@@ -65,9 +66,14 @@ const LogoutButton = () => {
 
 const LoginScreen = (props: any) => {
   const router = useNavigate();
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const fetchToken = async () => {
+    const _tok = await getAccessTokenSilently();
+    setCookie("access_token", _tok);
+  };
 
   const loginUser = async (payload: any) => {
     setIsLoading(true);
@@ -83,6 +89,7 @@ const LoginScreen = (props: any) => {
     const { setUserData } = props;
 
     if (isAuthenticated && user) {
+      fetchToken();
       setUserData({ ...user });
       loginUser({ ...user });
     }
