@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  SimpleGrid,
-  Box,
   Group,
   Popover,
   Space,
-  Title,
-  List,
-  ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
-  Card as SectionCard,
-  Input,
   Button,
   Text,
   ActionIcon,
@@ -20,8 +13,7 @@ import {
 
 import EditTransportForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
-import PageLabel from "../../components/PageLabel/PageLabel";
+import DataTable from "../../components/DataTable/DataTable";
 
 import {
   getOriginData,
@@ -30,19 +22,30 @@ import {
   postTransportData,
 } from "../../services/export-costing/Transport";
 
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
-  return (
-    <PageHeader
-    // breadcrumbs={[
-    //   { title: "Products", href: "/admin/dashboard/products" },
-    //   { title: "Manage", href: "#" },
-    // ]}
-    />
-  );
-};
+const columns = [
+  {
+    label: "Origin",
+    key: "originPort",
+    sortable:true,
+  },
+  {
+    label: "Source",
+    key: "source",
+    sortable:true,
+  },
+  {
+    label: "State",
+    key: "state",
+  },
+  {
+    label: "Charges",
+    key: "transportationCharge",
+  },
+  {
+    label: "Action",
+    key: "action",
+  },
+];
 
 const RenderPageAction = (props: any) => {
   const handleSaveAction = props.handleSaveAction;
@@ -149,7 +152,6 @@ const RenderModalContent = (props: any) => {
 };
 
 function ManageTransportContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
@@ -160,6 +162,7 @@ function ManageTransportContainer() {
     React.useState<any>(null);
   const [originList, setOriginList] = useState<any>([]);
   const [sourceList, setSourceList] = useState<any>([]);
+    const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const handleRefetchTransportList = (transportPostResponse: any) => {
     if (transportPostResponse) {
@@ -174,7 +177,6 @@ function ManageTransportContainer() {
       setTransportData(() => [...transportResponse]);
     }
   };
-
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
     setModalType("edit");
@@ -187,8 +189,6 @@ function ManageTransportContainer() {
 
   const handleGetSource = async () => {
     const sourceResponse = await getSourceData();
-
-    console.log("sourceResponse", sourceResponse[0]);
     setSourceList(sourceResponse[0].source);
 
     if (sourceResponse) {
@@ -202,13 +202,9 @@ function ManageTransportContainer() {
       getTransportList();
     }
   };
-  console.log("sourceList", sourceList);
-  console.log("sourceSelectOption", sourceSelectOptions);
-
+ 
   const handleGetOrigin = async () => {
     const originResponse = await getOriginData();
-
-    console.log("originResponse", originResponse[0]);
     setOriginList(originResponse[0].origin);
     if (originResponse) {
       const regionOptions = originResponse[0].origin.map((d: any) => {
@@ -223,7 +219,6 @@ function ManageTransportContainer() {
     }
   };
   const handleUpdateTransportUIData = (formData: any) => {
-    // console.log(formData)
     setTransportAPIPayload({ ...formData });
 
     let transportArr: any = [...transportData];
@@ -250,7 +245,6 @@ function ManageTransportContainer() {
   const handleSaveAction = async () => {
     if (transportAPIPayload) {
       const transportResponse = await postTransportData(transportAPIPayload);
-      console.log("transportAPIload", transportAPIPayload);
       if (transportResponse) {
         handleGetSource();
         handleGetOrigin();
@@ -258,7 +252,6 @@ function ManageTransportContainer() {
     }
   };
   useEffect(() => {
-    console.log("sourceList", sourceList);
   }, [sourceList]);
 
   React.useEffect(() => {
@@ -266,18 +259,37 @@ function ManageTransportContainer() {
     handleGetOrigin();
   }, []);
 
-  const compareArr = transportData.map((d: any) => d._originPortId);
+  React.useEffect(() => {
+    if (transportData.length) {
+      let tableData: any = [];
 
+      [...transportData].forEach(({ _originPortId, sourceLocations }: { _originPortId: string, sourceLocations: { transportationCharge: string, _sourcePortId: string }[] }) => {
+        const originData = originList.find(({ _id }: { _id: string }) => _id === _originPortId);
+        const originPort = originData ? originData.portName : '';
+        sourceLocations.forEach(({ transportationCharge, _sourcePortId }) => {
+          const sourceData = sourceList.find(({ _id }: { _id: string }) => _id === _sourcePortId);
+          const source = sourceData ? sourceData.region : '';
+          const state = sourceData ? sourceData.state : '';
+  
+          const obj = {
+            transportationCharge,
+            _sourcePortId,
+            source,
+            state,
+            originPort,
+            _originPortId,
+          };
+          tableData.push(obj);
+        });
+      });
+      setTableRowData(tableData);
+    }
+  }, [transportData, originList, sourceList]);
+
+  
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => null}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
@@ -317,117 +329,43 @@ function ManageTransportContainer() {
       }}
       modalSize="70%"
     >
-      <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>Transportation Charges</Title>
-          <Group spacing="md">
-            <Input placeholder="Search" />
-            {editModeActive && (
-              <Button
-                type="submit"
-                leftIcon={<Plus size={14} />}
-                onClick={() => setModalOpen(true)}
-              >
-                Add
-              </Button>
-            )}
-          </Group>
-        </Group>
-      </Box>
-      {/* <PageLabel
-        title="Transportation Charges"
-        editModeActive={editModeActive}
-        setModalOpen={setModalOpen}
+      <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("add");
+              setModalOpen(true);
+            },
+          },
+        ]}
+        // handleRowEdit={(row: any, rowIndex: number) => {
+        //   let obj = { ...row };
+        //   delete obj["updatedAt"];
+        //   delete obj["_id"];
+        //   delete obj["_originPortId"];
+        //   delete obj["createdAt"];
+        //   delete obj["originPort"];
+
+        //   const formObj = {
+        //     _originPortId: row._originPortId,
+        //     destinations: [obj],
+        //   };
+
+        //   setUpdateFormData(formObj);
+        //   setModalType("update");
+        //   setModalOpen(true);
+        // }}
+        // handleRowDelete={(row: any, rowIndex: number) => {
+        //   openDeleteModal(row);
+        // }}
       />
-      
-
-      <Space h="lg" /> */}
-
-      <SimpleGrid cols={2}>
-        {originList.map((list: any, index: number) => {
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}> {list?.portName} </Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {transportData?.map((data: any) => {
-                    if (data._originPortId === list._id) {
-                      return data?.sourceLocations?.map((d: any, i: number) => {
-                        return (
-                          <Box
-                            key={i}
-                            sx={(theme) => ({
-                              display: "block",
-                              backgroundColor:
-                                theme.colorScheme === "dark"
-                                  ? theme.colors.dark[6]
-                                  : "#fff",
-                              color:
-                                theme.colorScheme === "dark"
-                                  ? theme.colors.dark[4]
-                                  : theme.colors.dark[7],
-                              textAlign: "left",
-                              padding: theme.spacing.md,
-                              borderRadius: theme.radius.md,
-                              cursor: "default",
-
-                              "&:hover": {
-                                backgroundColor:
-                                  theme.colorScheme === "dark"
-                                    ? theme.colors.dark[5]
-                                    : theme.colors.gray[1],
-                              },
-                            })}
-                          >
-                            <List.Item style={{ fontWeight: "500" }}>
-                              {
-                                sourceList.find(
-                                  (sourceData: any) =>
-                                    sourceData._id === d._sourcePortId
-                                )?.region
-                              }{" "}
-                              -{" "}
-                              <span style={{ fontWeight: "800" }}>
-                                INR {d.transportationCharge}
-                              </span>
-                            </List.Item>
-                          </Box>
-                        );
-                      });
-                    }
-                  })}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
+    
     </PageWrapper>
   );
 }
