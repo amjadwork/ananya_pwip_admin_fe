@@ -60,7 +60,7 @@ function AddOrEditProductForm(props: any) {
     const regionResponse = await APIRequest("location/source", "GET");
 
     if (regionResponse) {
-      const options: any = regionResponse[0].source.map((d: any) => ({
+      const options: any = regionResponse.source.map((d: any) => ({
         label: d.region,
         value: d._id,
       }));

@@ -13,14 +13,14 @@ export const getChaData = async (regionList: any) => {
 };
 
 export const getDestinationData = async () => {
-  const response = await APIRequest("location?filterType=destination", "GET");
+  const response = await APIRequest("location/destination", "GET");
   if (response) {
     return response;
   }
 };
 
 export const getRegionSource = async () => {
-  const response = await APIRequest("location?filterType=origin", "GET");
+  const response = await APIRequest("location/origin", "GET");
   if (response) {
     return response;
   }

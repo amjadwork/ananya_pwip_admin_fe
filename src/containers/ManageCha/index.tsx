@@ -122,7 +122,7 @@ function ManageChaContainer() {
   const handleGetRegionSource = async () => {
     const regionResponse = await getRegionSource();
     if (regionResponse) {
-      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+      const formattedRegion = regionResponse.origin.map((d: any) => {
         return {
           name: d.portName,
           _originId: d._id,
@@ -130,7 +130,7 @@ function ManageChaContainer() {
         };
       });
 
-      const regionOptions = regionResponse[0].origin.map((d: any) => {
+      const regionOptions = regionResponse.origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
@@ -166,7 +166,7 @@ function ManageChaContainer() {
     const destinationResponse = await getDestinationData();
 
     if (destinationResponse) {
-      const destinationOptions = destinationResponse[0].destination.map(
+      const destinationOptions = destinationResponse.destination.map(
         (d: any) => {
           return {
             label: d.portName,
