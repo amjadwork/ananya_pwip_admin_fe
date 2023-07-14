@@ -67,6 +67,10 @@ const columns = [
     label: "COO",
     key: "coo",
   },
+  {
+    label: "Actions",
+    key: "action",
+  },
 ];
 
 const RenderPageHeader = (props: any) => {
@@ -387,14 +391,6 @@ function ManageShlContainer() {
       }}
       modalSize="70%"
     >
-      <PageLabel
-        title="Shipping Line Locals Charges"
-        editModeActive={editModeActive}
-        setModalOpen={setModalOpen}
-      />
-      <Space h="lg" />
-
-
       <DataTable
         data={tableRowData}
         columns={columns}
