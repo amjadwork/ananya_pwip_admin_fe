@@ -36,6 +36,7 @@ function AddOrEditProductForm(props: any) {
   const handleSaveCallback = props.handleSaveCallback;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
+  const modalOpen = props.modalOpen || false;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
 
@@ -55,11 +56,8 @@ function AddOrEditProductForm(props: any) {
     }
   }, [updateFormData, modalType]);
 
-  const handleGetRegions: any = async () => {
-    const regionResponse = await APIRequest(
-      "location?filterType=source",
-      "GET"
-    );
+  const handleGetSources: any = async () => {
+    const regionResponse = await APIRequest("location/source", "GET");
 
     if (regionResponse) {
       const options: any = regionResponse[0].source.map((d: any) => ({
@@ -97,8 +95,10 @@ function AddOrEditProductForm(props: any) {
   }));
 
   React.useEffect(() => {
-    handleGetRegions();
-  }, []);
+    if (modalOpen) {
+      handleGetSources();
+    }
+  }, [modalOpen]);
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>

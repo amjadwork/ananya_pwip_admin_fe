@@ -8,10 +8,7 @@ import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 
-import {
-  generateQueryString,
-  getChangedPropertiesFromObject,
-} from "../../helper/helper";
+import { getChangedPropertiesFromObject } from "../../helper/helper";
 
 const columns = [
   {
@@ -34,6 +31,10 @@ const columns = [
     key: "price",
   },
   {
+    label: "Unit",
+    key: "unit",
+  },
+  {
     label: "Action",
     key: "action",
   },
@@ -46,6 +47,7 @@ const RenderModalContent = (props: any) => {
   const variantsData = props.variantsData;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType;
+  const modalOpen = props.modalOpen;
 
   let regionCostingList: any = [];
 
@@ -62,6 +64,7 @@ const RenderModalContent = (props: any) => {
       variantsData={variantsData}
       updateFormData={updateFormData}
       modalType={modalType}
+      modalOpen={modalOpen}
     />
   );
 };
@@ -92,9 +95,10 @@ function ManageProductsContainer(props: any) {
   const handleSave = async (payload: any) => {
     let variantPayload = { ...payload, _productId: productId };
     let params = "";
+    let changedProperties = {};
 
     if (modalType === "update") {
-      const changedProperties = getChangedPropertiesFromObject(
+      changedProperties = getChangedPropertiesFromObject(
         tableRowData[selectedTableRowIndex],
         variantPayload.sourceRates[0]
       );
@@ -106,8 +110,6 @@ function ManageProductsContainer(props: any) {
       };
 
       params = `/${variantPayload._variantId}/${variantPayload._sourceRateId}`;
-
-      params = params + "?" + generateQueryString(changedProperties);
     }
 
     let endpoint = "variant";
@@ -119,7 +121,7 @@ function ManageProductsContainer(props: any) {
     const addVariantResponse = await APIRequest(
       endpoint,
       modalType === "add" ? "POST" : "PATCH",
-      modalType === "add" ? variantPayload : {}
+      modalType === "add" ? variantPayload : changedProperties
     );
 
     if (addVariantResponse) {
@@ -143,14 +145,7 @@ function ManageProductsContainer(props: any) {
 
     if (selectedProductId) {
       setProductId(selectedProductId);
-
-      const productDetailResponse: any = await APIRequest(
-        `product/${selectedProductId}`,
-        "GET"
-      );
-      if (productDetailResponse) {
-        handleGetCategoryData(productDetailResponse._id);
-      }
+      handleGetCategoryData(selectedProductId);
     } else {
       setProductId(null);
     }
@@ -230,15 +225,15 @@ function ManageProductsContainer(props: any) {
     }
   }, [variantsData, categoryData]);
 
-  console.log(categoryData);
-
   return (
     <PageWrapper
       PageHeader={() => null}
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add Product Variant" : "Update Product Variant"
+        modalType === "add"
+          ? "Add product variant"
+          : "Update variant price our source location"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -255,6 +250,7 @@ function ManageProductsContainer(props: any) {
             variantsData={selectedVariantData}
             updateFormData={updateFormData}
             modalType={modalType}
+            modalOpen={modalOpen}
           />
         );
       }}
