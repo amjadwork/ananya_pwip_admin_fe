@@ -1,33 +1,18 @@
 import React from "react";
 import {
-  SimpleGrid,
-  Box,
   Group,
   Popover,
   Space,
-  Title,
-  Badge,
-  List,
-  ScrollArea,
 } from "@mantine/core";
 import { Pencil, Plus, X, Check } from "tabler-icons-react";
 import {
-  Card as SectionCard,
-  Input,
   Button,
   Text,
   ActionIcon,
 } from "../../components/index";
-
-// import {Group,Popover,Space} from "@mantine/core";
-// import {Pencil,X,Check} from "tabler-icons-react";
-// import {Button,Text,ActionIcon} from "../../components/index";
-
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
-import PageLabel from "../../components/PageLabel/PageLabel";
-import CardModal from "../../components/CardModal/CardModal";
+import DataTable from "../../components/DataTable/DataTable";
 
 import {
   getDestinationData,
@@ -36,16 +21,27 @@ import {
   postOfcData,
 } from "../../services/export-costing/OFC";
 
-const RenderPageHeader = (props: any) => {
-  return (
-    <PageHeader
-    // breadcrumbs={[
-    //   { title: "Products", href: "/admin/dashboard/products" },
-    //   { title: "Manage", href: "#" },
-    // ]}
-    />
-  );
-};
+
+const columns = [
+    {
+    label: "Origin",
+    key: "originPort",
+    sortable: true,
+  },
+  {
+    label: "Destination",
+    key: "destinationPort",
+    sortable: true,
+  },
+  {
+    label: "OFC",
+    key: "ofcCharge",
+  },
+  {
+    label: "Actions",
+    key: "action",
+  },
+];
 
 const RenderPageAction = (props: any) => {
   const handleSaveAction = props.handleSaveAction;
@@ -152,7 +148,6 @@ const RenderModalContent = (props: any) => {
 };
 
 function ManageOfcContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
   const [modalType, setModalType] = React.useState<string>("edit");
@@ -161,7 +156,7 @@ function ManageOfcContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [ofcAPIPayload, setOfcAPIPayload] = React.useState<any>(null);
-  const [dataCopy, setDataCopy] = React.useState<any>([]);
+    const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const handleRefetchOfcList = (ofcPostResponse: any) => {
     if (ofcPostResponse) {
@@ -174,7 +169,6 @@ function ManageOfcContainer() {
     const ofcResponse = await getOfcData(regionList);
     try {
       if (ofcResponse) {
-        console.log(regionList);
         let array: any = regionList?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
@@ -195,7 +189,6 @@ function ManageOfcContainer() {
         });
 
         setOfcData(() => [...array]);
-        setDataCopy(() => [...array]);
       }
     } catch (error) {
       console.log(error);
@@ -254,7 +247,6 @@ function ManageOfcContainer() {
     });
 
     setOfcData(() => [...ofcArr]);
-    setDataCopy(() => [...ofcArr]);
   };
 
   const handleSaveAction = async () => {
@@ -287,21 +279,34 @@ function ManageOfcContainer() {
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
-
   React.useEffect(() => {
     handleGetRegionSource();
   }, []);
 
+React.useEffect(() => {
+  if (ofcData.length && destinationSelectOptions.length) {
+    let tableData: any = [];
+
+    [...ofcData].forEach((d) => {
+      d.list.forEach((l:any) => {
+        const destination = destinationSelectOptions.find((option:any) => option.value === l._destinationPortId);
+        const destinationName = destination? destination.label : '';
+        const obj = {
+          ...l,
+          destinationPort: destinationName,
+          originPort: d.name,
+          _originPortId: d._originId,
+        };
+        tableData.push(obj);
+      });
+    });
+    setTableRowData(tableData);
+  }
+}, [ofcData, destinationSelectOptions]);
+
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
+      PageHeader={() => null}
       PageAction={() => (
         <RenderPageAction
           handleActionClick={() => setModalOpen(true)}
@@ -339,50 +344,43 @@ function ManageOfcContainer() {
       }}
       modalSize="70%"
     >
-      <Box
-        sx={(theme) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>OFC Charges</Title>
-          <Group spacing="md">
-            <Input placeholder="Search" />
-            {editModeActive && (
-              <Button
-                type="submit"
-                leftIcon={<Plus size={14} />}
-                onClick={() => setModalOpen(true)}
-              >
-                Add
-              </Button>
-            )}
-          </Group>
-        </Group>
-      </Box>
-      {/* <PageLabel
-         title="OFC Charges"
-         editModeActive={editModeActive}
-         setModalOpen={setModalOpen}
-      />
-     <Space h="lg" />
+         <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("add");
+              setModalOpen(true);
+            },
+          },
+        ]}
+        // handleRowEdit={(row: any, rowIndex: number) => {
+        //   let obj = { ...row };
+        //   delete obj["updatedAt"];
+        //   delete obj["_id"];
+        //   delete obj["_originPortId"];
+        //   delete obj["createdAt"];
+        //   delete obj["originPort"];
 
-     <CardModal
-      dataCopy={dataCopy}
-      destinationSelectOptions={destinationSelectOptions}
-      /> */}
+        //   const formObj = {
+        //     _originPortId: row._originPortId,
+        //     destinations: [obj],
+        //   };
+
+        //   setUpdateFormData(formObj);
+        //   setModalType("update");
+        //   setModalOpen(true);
+        // }}
+        // handleRowDelete={(row: any, rowIndex: number) => {
+        //   openDeleteModal(row);
+        // }}
+      />
+   
     </PageWrapper>
   );
 }
