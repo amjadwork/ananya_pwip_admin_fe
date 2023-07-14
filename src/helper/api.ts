@@ -89,7 +89,7 @@ const APIRequest = async (
         });
         break;
       case "PATCH":
-        response = await axios.put(apiURL + endpoint, payload, {
+        response = await axios.patch(apiURL + endpoint, payload, {
           headers: {
             ...authHeaders,
           },

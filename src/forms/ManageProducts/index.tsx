@@ -16,7 +16,7 @@ import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
 
-// testong
+// testing
 
 const initialFormValues: any = {
   _categoryId: "",
@@ -101,7 +101,7 @@ function AddOrEditProductForm(props: any) {
   }, []);
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
-    <React.Fragment key={item.key + index}>
+    <React.Fragment key={item?.key + index * 12}>
       <Group spacing="md">
         <Select
           required
@@ -160,6 +160,7 @@ function AddOrEditProductForm(props: any) {
         label="Select Category"
         placeholder="Eg. Non-Basmati"
         data={categoryOptions}
+        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_categoryId")}
       />
 
@@ -169,6 +170,7 @@ function AddOrEditProductForm(props: any) {
         required
         label="Variant name"
         placeholder="eg. 1509 Sella"
+        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("variantName")}
       />
 

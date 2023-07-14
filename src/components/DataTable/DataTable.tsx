@@ -175,7 +175,7 @@ export function DataTable({
           {actionItems.map((item: any, index: number) => {
             return (
               <Button
-                key={item.label + index}
+                key={item.label + index * 27}
                 type={item.type}
                 leftIcon={item.icon ? <item.icon size={14} /> : null}
                 onClick={item.onClickAction}
@@ -200,7 +200,7 @@ export function DataTable({
             {columns.map((col: any, index: number) => {
               return (
                 <Th
-                  key={col.key + index * 100}
+                  key={col.key + index * 17}
                   sorted={sortBy === col.key}
                   reversed={reverseSortDirection}
                   onSort={() => setSorting(col.key)}
@@ -220,11 +220,11 @@ export function DataTable({
                 const columnKeys = [...columns].map((col: any) => col.key);
 
                 return (
-                  <tr key={row._destinationPortId + index}>
-                    {columnKeys.map((key: any, index: number) => {
+                  <tr key={row._destinationPortId + index * 19}>
+                    {columnKeys.map((key: any, colIndex: number) => {
                       if (key === "action") {
                         return (
-                          <td key={key + index}>
+                          <td key={key + colIndex * 137}>
                             <Flex justify="flex-end" gap="sm" align="center">
                               <ActionIcon
                                 variant="light"
@@ -252,7 +252,7 @@ export function DataTable({
                             overflow: "hidden",
                             whiteSpace: "pre",
                           }}
-                          key={key + index}
+                          key={key + index * 23}
                         >
                           {row[key]}
                         </td>

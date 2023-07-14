@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Trash } from "tabler-icons-react";
+import { Plus } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+
+import {
+  generateQueryString,
+  getChangedPropertiesFromObject,
+} from "../../helper/helper";
 
 const columns = [
   {
@@ -16,7 +21,12 @@ const columns = [
   },
   {
     label: "Category",
-    key: "_categoryId",
+    key: "categoryName",
+    sortable: true,
+  },
+  {
+    label: "Source",
+    key: "sourceName",
     sortable: true,
   },
   {
@@ -63,6 +73,9 @@ function ManageProductsContainer(props: any) {
   const [variantsData, setVariantsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
   const [updateFormData, setUpdateFormData] = React.useState<any>(null);
+  const [productId, setProductId] = React.useState<any>(null);
+  const [selectedTableRowIndex, setSelectedTableRowIndex] =
+    React.useState<any>(null);
 
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
@@ -77,14 +90,36 @@ function ManageProductsContainer(props: any) {
   }, []);
 
   const handleSave = async (payload: any) => {
-    let variantPayload = { ...payload };
+    let variantPayload = { ...payload, _productId: productId };
+    let params = "";
 
-    console.log(variantPayload);
+    if (modalType === "update") {
+      const changedProperties = getChangedPropertiesFromObject(
+        tableRowData[selectedTableRowIndex],
+        variantPayload.sourceRates[0]
+      );
+
+      variantPayload = {
+        ...changedProperties,
+        _variantId: payload?.sourceRates[0]._variantId,
+        _sourceRateId: payload?.sourceRates[0]._id,
+      };
+
+      params = `/${variantPayload._variantId}/${variantPayload._sourceRateId}`;
+
+      params = params + "?" + generateQueryString(changedProperties);
+    }
+
+    let endpoint = "variant";
+
+    if (params) {
+      endpoint = "variant" + params;
+    }
 
     const addVariantResponse = await APIRequest(
-      "variant",
+      endpoint,
       modalType === "add" ? "POST" : "PATCH",
-      variantPayload
+      modalType === "add" ? variantPayload : {}
     );
 
     if (addVariantResponse) {
@@ -94,7 +129,7 @@ function ManageProductsContainer(props: any) {
 
   const handleDeleteVariant = async (data: any) => {
     const deleteVariantResponse = await APIRequest(
-      "variant" + "/" + data._id,
+      "variant" + "/" + data._variantId + "/" + data._id,
       "DELETE"
     );
 
@@ -104,22 +139,28 @@ function ManageProductsContainer(props: any) {
   };
 
   const handleGetProductData = async () => {
-    const productId = window.location.pathname.split("products/")[1];
+    const selectedProductId = window.location.pathname.split("products/")[1];
 
-    const productDetailResponse: any = await APIRequest(
-      `product/${productId}`,
-      "GET"
-    );
-    if (productDetailResponse) {
-      handleGetCategoryData(productDetailResponse._id);
+    if (selectedProductId) {
+      setProductId(selectedProductId);
+
+      const productDetailResponse: any = await APIRequest(
+        `product/${selectedProductId}`,
+        "GET"
+      );
+      if (productDetailResponse) {
+        handleGetCategoryData(productDetailResponse._id);
+      }
+    } else {
+      setProductId(null);
     }
   };
 
   const handleGetCategoryData = async (id: string) => {
-    const productId = id;
+    const selectedProductId = id;
 
     const categoryDetailResponse: any = await APIRequest(
-      `category?_productId=${productId}`,
+      `category?_productId=${selectedProductId}`,
       "GET"
     );
     if (categoryDetailResponse) {
@@ -166,7 +207,7 @@ function ManageProductsContainer(props: any) {
     });
 
   React.useEffect(() => {
-    if (variantsData.length) {
+    if (variantsData.length && categoryData.length) {
       let tableData: any = [];
 
       [...variantsData].forEach((d: any) => {
@@ -176,6 +217,10 @@ function ManageProductsContainer(props: any) {
             priceWithUnit: `${l.price} per ${l.unit || "Kgs"}`,
             variantName: d.variantName,
             _categoryId: d._categoryId,
+            categoryName: categoryData.find(
+              (cat: any) => cat._id === d._categoryId
+            )?.name,
+            _variantId: d._id,
           };
           tableData.push(obj);
         });
@@ -183,7 +228,9 @@ function ManageProductsContainer(props: any) {
 
       setTableRowData(tableData);
     }
-  }, [variantsData]);
+  }, [variantsData, categoryData]);
+
+  console.log(categoryData);
 
   return (
     <PageWrapper
@@ -197,6 +244,7 @@ function ManageProductsContainer(props: any) {
         setModalOpen(false);
         setSelectedVariantData(null);
         setUpdateFormData(null);
+        setSelectedTableRowIndex(null);
       }}
       ModalContent={() => {
         return (
@@ -228,8 +276,10 @@ function ManageProductsContainer(props: any) {
             },
           },
         ]}
-        handleRowEdit={(row: any) => {
+        handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
+
+          setSelectedTableRowIndex(index);
 
           const formObj = {
             _categoryId: obj._categoryId,

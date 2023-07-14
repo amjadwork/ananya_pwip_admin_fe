@@ -22,3 +22,25 @@ export function getCookie(name) {
 export function deleteCookie(name) {
   document.cookie = name + "=; Path=/; Expires=/;";
 }
+
+export function generateQueryString(params) {
+  const queryString = Object.keys(params)
+    .map(
+      (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+    )
+    .join("&");
+
+  return queryString;
+}
+
+export function getChangedPropertiesFromObject(original, updated) {
+  const changedProperties = {};
+
+  for (const key in updated) {
+    if (original[key] !== updated[key]) {
+      changedProperties[key] = updated[key];
+    }
+  }
+
+  return changedProperties;
+}
