@@ -6,10 +6,23 @@ const APIRequest = async (
   endpoint: string,
   method: string,
   payload?: object,
-  headers?: object
+  headers?: object,
+  isPublic?: boolean
 ) => {
-  const url = `https://api-stage.pwip.co/admin/api/`;
-  // const url = `http://localhost:8000/admin/api/`;
+  const environment = process.env.REACT_APP_ENV;
+
+  const stageApiURL = process.env.REACT_APP_API_URL_STAGE;
+  const localApiURL = process.env.REACT_APP_API_URL_LOCAL;
+
+  const baseURL = environment === "stage" ? stageApiURL : localApiURL;
+  const url = baseURL + `/admin/api/`;
+  const publicURL = baseURL + `/api/`;
+
+  let apiURL = url;
+
+  if (isPublic) {
+    apiURL = publicURL;
+  }
 
   const accessToken = getCookie("access_token");
 
@@ -52,47 +65,43 @@ const APIRequest = async (
     let response: any = null;
     switch (method) {
       case "GET":
-        response = await axios.get(url + endpoint, {
+        response = await axios.get(apiURL + endpoint, {
           headers: {
             ...authHeaders,
           },
-          withCredentials:true
-
+          withCredentials: true,
         });
         break;
       case "POST":
-        response = await axios.post(url + endpoint, payload, {
+        response = await axios.post(apiURL + endpoint, payload, {
           headers: {
             ...authHeaders,
           },
-          withCredentials:true
+          withCredentials: true,
         });
         break;
       case "PUT":
-        response = await axios.put(url + endpoint, payload, {
+        response = await axios.put(apiURL + endpoint, payload, {
           headers: {
             ...authHeaders,
           },
-          withCredentials:true
-
+          withCredentials: true,
         });
         break;
       case "PATCH":
-        response = await axios.put(url + endpoint, payload, {
+        response = await axios.put(apiURL + endpoint, payload, {
           headers: {
             ...authHeaders,
           },
-          withCredentials:true
-
+          withCredentials: true,
         });
         break;
       case "DELETE":
-        response = await axios.delete(url + endpoint, {
+        response = await axios.delete(apiURL + endpoint, {
           headers: {
             ...authHeaders,
           },
-          withCredentials:true
-
+          withCredentials: true,
         });
         break;
       default:

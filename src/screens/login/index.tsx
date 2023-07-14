@@ -83,10 +83,10 @@ const LoginScreen = (props: any) => {
 
   const loginUser = async (payload: any) => {
     setIsLoading(true);
-    const loginResponse = await APIRequest("login", "POST", payload);
+    const loginResponse = await APIRequest("login", "POST", payload, {}, true);
 
     if (loginResponse && loginResponse.message === "success") {
-      setCookie("userData", JSON.stringify(loginResponse?.data));
+      setCookie("userData", JSON.stringify(loginResponse?.data), 7);
 
       setIsLoading(false);
       router("/admin/dashboard");
