@@ -217,24 +217,26 @@ function EditChaForm(props: any) {
 
       {fields}
 
-      <Group
-        sx={(theme) => ({
-          borderRadius: 12,
-          padding: 12,
-          display: "flex",
-          justifyContent: "flex-end",
-        })}
-      >
-        <Box
-          style={{
-            textAlign: "right",
-            width: "auto",
-            color: "blue",
-          }}
+      {modalType === "add" ? (
+        <Group
+          sx={(theme) => ({
+            borderRadius: 12,
+            padding: 12,
+            display: "flex",
+            justifyContent: "flex-end",
+          })}
         >
-          <div onClick={handleAddItem}>+ Add More</div>
-        </Box>
-      </Group>
+          <Box
+            style={{
+              textAlign: "right",
+              width: "auto",
+              color: "blue",
+            }}
+          >
+            <div onClick={handleAddItem}>+ Add More</div>
+          </Box>
+        </Group>
+      ) : null}
 
       <Space h="lg" />
 
