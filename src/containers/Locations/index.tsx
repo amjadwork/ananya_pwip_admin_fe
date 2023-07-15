@@ -5,7 +5,7 @@ import { Button, ActionIcon, Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import EditLocationFormContainer from "../../forms/Location/index";
+import AddEditLocationFormContainer from "../../forms/Location/index";
 import {
   getLocationData,
   submitLocationData,
@@ -177,13 +177,15 @@ const RenderModalContent = (props: any) => {
   const handleSettingLocationData = props.handleSettingLocationData;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
+  const selectedFilterValue = props.selectedFilterValue;
 
   return (
-    <EditLocationFormContainer
+    <AddEditLocationFormContainer
       handleCloseModal={handleCloseModal}
       handleSettingLocationData={handleSettingLocationData}
       locationPayload={locationPayload}
       locationData={locationData}
+      selectedFilterValue={selectedFilterValue}
     />
   );
 };
@@ -191,7 +193,6 @@ const RenderModalContent = (props: any) => {
 function LocationsContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [modalType, setModalType] = React.useState<string>("add");
-  const [editModeActive, setEditModeActive] = React.useState(false);
   const [locationData, setLocationData] = React.useState<any>({
     source: [],
     origin: [],
@@ -202,29 +203,26 @@ function LocationsContainer() {
     origin: [],
     destination: [],
   });
-  const [selectedTab, setSelectedTab] = React.useState("source");
+  const [selectedFilterValue, setSelectedFilterValue] =
+    React.useState("source");
 
-  const handleTabChange = (value: any) => {
-    setSelectedTab(value);
+  const handleSelectRadioFilterChange = (value: any) => {
+    setSelectedFilterValue(value);
   };
 
   let tableRowData: any[] = [];
   let tableColumns: Column[] = [];
 
-  if (selectedTab === "source") {
+  if (selectedFilterValue === "source") {
     tableRowData = locationData.source;
     tableColumns = sourceColumns;
-  } else if (selectedTab === "origin") {
+  } else if (selectedFilterValue === "origin") {
     tableRowData = locationData.origin;
     tableColumns = originColumns;
-  } else if (selectedTab === "destination") {
+  } else if (selectedFilterValue === "destination") {
     tableRowData = locationData.destination;
     tableColumns = destinationColumns;
   }
-
-  const handleEdit = (bool: boolean) => {
-    setEditModeActive(bool);
-  };
 
   const handleSaveAction = async () => {
     let payload: any = {};
@@ -285,7 +283,9 @@ function LocationsContainer() {
       PageHeader={() => null}
       PageAction={() => null}
       modalOpen={modalOpen}
-      modalTitle="Add a location"
+      modalTitle={
+        modalType === "add" ? "Add a location" : "Update selected location"
+      }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => (
         <RenderModalContent
@@ -328,49 +328,49 @@ function LocationsContainer() {
           }}
           locationPayload={locationPayload}
           locationData={locationData}
+          selectedFilterValue={selectedFilterValue}
         />
       )}
       modalSize="40%"
     >
-      <Tabs
-        {...({
-          defaultValue: "source",
-          active: selectedTab,
-          onTabChange: handleTabChange,
-        } as TabsProps)}
-      >
-        <Tabs.List grow position="center">
-          <Tabs.Tab value="source">SOURCE</Tabs.Tab>
-          <Tabs.Tab value="origin">ORIGIN</Tabs.Tab>
-          <Tabs.Tab value="destination">DESTINATION</Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value={selectedTab} pt="xs">
-          <DataTable
-            data={tableRowData}
-            columns={tableColumns}
-            actionItems={[
-              {
-                label: "Add",
-                icon: Plus,
-                color: "gray",
-                type: "button",
-                onClickAction: () => {
-                  setModalType("add");
-                  setModalOpen(true);
-                },
-              },
-            ]}
-            handleRowEdit={(row: any, rowIndex: number) => {
-              setModalType("update");
+      <DataTable
+        data={tableRowData}
+        columns={tableColumns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("add");
               setModalOpen(true);
-            }}
-            handleRowDelete={(row: any, rowIndex: number) => {
-              openDeleteModal(row);
-            }}
-          />
-        </Tabs.Panel>
-      </Tabs>
+            },
+          },
+        ]}
+        handleRowEdit={(row: any, rowIndex: number) => {
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any, rowIndex: number) => {
+          openDeleteModal(row);
+        }}
+        selectFilterTypes={[
+          {
+            type: "radio-group",
+            label: "Location type",
+            name: "locationTyoe",
+            placeholder: "eg. Origin",
+            options: [
+              { value: "source", label: "Source" },
+              { value: "origin", label: "Origin" },
+              { value: "destination", label: "Destination" },
+            ],
+          },
+        ]}
+        selectedFilterValue={selectedFilterValue}
+        handleSelectRadioFilterChange={handleSelectRadioFilterChange}
+      />
     </PageWrapper>
   );
 }

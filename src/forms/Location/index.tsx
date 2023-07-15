@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  Group,
-  TextInput,
-  Space,
-  MultiSelect,
-} from "@mantine/core";
+import { Group, TextInput, Space, MultiSelect } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Select,Button } from "../../components";
+import { Select, Button } from "../../components";
 import { showNotification } from "@mantine/notifications";
 import { stateName } from "../../constants/state.constants";
 
-function EditLocationFormContainer(props: any) {
+function AddEditLocationFormContainer(props: any) {
   const handleSettingLocationData = props.handleSettingLocationData;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
+  const selectedFilterValue = props.selectedFilterValue || null;
 
   const [select, setSelect] = useState(false);
   const [locationType, setLocationType] = useState("");
@@ -29,6 +25,12 @@ function EditLocationFormContainer(props: any) {
     //     value.length < 2 ? "Name must have at least 2 letters" : null,
     // },
   });
+
+  useEffect(() => {
+    if (selectedFilterValue) {
+      setLocationType(selectedFilterValue);
+    }
+  }, [selectedFilterValue]);
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.name) {
@@ -76,8 +78,8 @@ function EditLocationFormContainer(props: any) {
   };
 
   const originOptions = locationData?.origin?.map((d: any) => {
-    return {label: d.portName, value: d._id};
-  })
+    return { label: d.portName, value: d._id };
+  });
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
@@ -92,6 +94,7 @@ function EditLocationFormContainer(props: any) {
           { value: "origin", label: "Origin" },
           { value: "destination", label: "Destination" },
         ]}
+        value={locationType}
         onChange={(value: any) => {
           setLocationType(value);
         }}
@@ -192,4 +195,4 @@ function EditLocationFormContainer(props: any) {
   );
 }
 
-export default EditLocationFormContainer;
+export default AddEditLocationFormContainer;

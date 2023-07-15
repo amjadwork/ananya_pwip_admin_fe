@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import {
+  Group,
   createStyles,
   Table,
   ScrollArea,
@@ -13,6 +14,8 @@ import {
   Space,
   Button,
   ActionIcon,
+  Select,
+  Radio,
 } from "@mantine/core";
 import {
   Pencil,
@@ -61,6 +64,9 @@ interface TableSortProps {
   onClickAction?: any;
   handleRowEdit?: any;
   handleRowDelete?: any;
+  selectFilterTypes?: any; //enter array of object with column keys, type, name and labek
+  selectedFilterValue?: any;
+  handleSelectRadioFilterChange?: any;
 }
 
 interface ThProps {
@@ -115,6 +121,9 @@ export function DataTable({
   actionItems,
   handleRowEdit,
   handleRowDelete,
+  selectFilterTypes = [],
+  selectedFilterValue = null,
+  handleSelectRadioFilterChange = () => null,
 }: TableSortProps) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState<any>([]);
@@ -122,6 +131,13 @@ export function DataTable({
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [activePage, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(7);
+  const [radioValue, setRadioValue] = useState<any>(null);
+
+  useEffect(() => {
+    if (selectedFilterValue) {
+      setRadioValue(selectedFilterValue);
+    }
+  }, [selectedFilterValue]);
 
   useEffect(() => {
     setSortedData(data);
@@ -164,13 +180,53 @@ export function DataTable({
   return (
     <ScrollArea>
       <Flex align="center" justify="space-between">
-        <TextInput
-          placeholder="Search by any field"
-          mb="md"
-          icon={<Search size="14px" strokeWidth={1.5} color={"#adb5bd"} />}
-          value={search}
-          onChange={handleSearchChange}
-        />
+        <Flex align="flex-start" justify="flex-start" gap="lg">
+          <TextInput
+            label="Search"
+            placeholder="Search by any column"
+            mb="md"
+            icon={<Search size="14px" strokeWidth={1.5} color={"#adb5bd"} />}
+            value={search}
+            onChange={handleSearchChange}
+          />
+          {selectFilterTypes.map((item: any) => {
+            if (item.type === "select") {
+              return (
+                <Select
+                  label={item.label}
+                  placeholder={item.placeholder || ""}
+                  data={item.options}
+                  name={item.name}
+                />
+              );
+            }
+
+            if (item.type === "radio-group") {
+              return (
+                <Radio.Group
+                  name={item.name}
+                  label={item.label}
+                  value={radioValue}
+                  onChange={(value) => {
+                    handleSelectRadioFilterChange(value);
+                  }}
+                >
+                  <Group>
+                    {item.options.map((opt: any, index: any) => {
+                      return (
+                        <Radio
+                          key={opt.label + index * 9}
+                          value={opt.value}
+                          label={opt.label}
+                        />
+                      );
+                    })}
+                  </Group>
+                </Radio.Group>
+              );
+            }
+          })}
+        </Flex>
         <Flex align="center" gap="md">
           {actionItems.map((item: any, index: number) => {
             return (
