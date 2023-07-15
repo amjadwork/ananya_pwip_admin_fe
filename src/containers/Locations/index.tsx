@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import { Tabs, Group, Popover, Space } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Button,
-  ActionIcon,
-  Text,
-} from "../../components/index";
+import { Button, ActionIcon, Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -106,7 +102,8 @@ const RenderPageAction = (props: any) => {
           sx={{
             "&[data-disabled]": { opacity: 0.4 },
           }}
-          onClick={() => handleEdit(false)}>
+          onClick={() => handleEdit(false)}
+        >
           <X size={16} />
         </ActionIcon>
 
@@ -115,14 +112,16 @@ const RenderPageAction = (props: any) => {
           trapFocus
           position="bottom-end"
           withArrow
-          shadow="lg">
+          shadow="lg"
+        >
           <Popover.Target>
             <ActionIcon
               variant="filled"
               color="blue"
               sx={{
                 "&[data-disabled]": { opacity: 0.4 },
-              }}>
+              }}
+            >
               <Check size={16} />
             </ActionIcon>
           </Popover.Target>
@@ -132,7 +131,8 @@ const RenderPageAction = (props: any) => {
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
                   : theme.white,
-            })}>
+            })}
+          >
             <Text size="sm">Are you sure you want to save the changes</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
@@ -147,7 +147,8 @@ const RenderPageAction = (props: any) => {
                     handleSaveAction();
                   }
                   handleEdit(false);
-                }}>
+                }}
+              >
                 Save
               </Button>
             </Group>
@@ -164,7 +165,8 @@ const RenderPageAction = (props: any) => {
       sx={{
         "&[data-disabled]": { opacity: 0.4 },
       }}
-      onClick={() => handleEdit(true)}>
+      onClick={() => handleEdit(true)}
+    >
       <Pencil size={16} />
     </ActionIcon>
   );
@@ -188,6 +190,7 @@ const RenderModalContent = (props: any) => {
 
 function LocationsContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
+  const [modalType, setModalType] = React.useState<string>("add");
   const [editModeActive, setEditModeActive] = React.useState(false);
   const [locationData, setLocationData] = React.useState<any>({
     source: [],
@@ -204,26 +207,19 @@ function LocationsContainer() {
   const handleTabChange = (value: any) => {
     setSelectedTab(value);
   };
-  let tabData: any[] = [];
-  let tabColumns: Column[] = [];
+
+  let tableRowData: any[] = [];
+  let tableColumns: Column[] = [];
 
   if (selectedTab === "source") {
-    tabData = locationData.source;
-    tabColumns = sourceColumns;
+    tableRowData = locationData.source;
+    tableColumns = sourceColumns;
   } else if (selectedTab === "origin") {
-    tabData = locationData.origin;
-    tabColumns = originColumns;
+    tableRowData = locationData.origin;
+    tableColumns = originColumns;
   } else if (selectedTab === "destination") {
-    // tabData = locationData.destination.flatMap((d: any) =>
-    //   d.linkedOrigin.map((l: any) => ({
-    //     portName: d.portName,
-    //     country: d.country,
-    //     originPortName: l.originPortName,
-    //     _originId: l._originId,
-    //   }))
-    // );
-    tabData = locationData.destination;
-    tabColumns = destinationColumns;
+    tableRowData = locationData.destination;
+    tableColumns = destinationColumns;
   }
 
   const handleEdit = (bool: boolean) => {
@@ -258,11 +254,9 @@ function LocationsContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this location record?
-          <Text c="red">
-            Note:This action is destructive and you will have to contact support
-            to restore your data.
-          </Text>
+          Are you sure you want to delete this location record? Note:This action
+          is destructive and you will have to contact support to restore your
+          data.
         </Text>
       ),
       labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
@@ -275,9 +269,9 @@ function LocationsContainer() {
     const locationResponse = await getLocationData();
     if (locationResponse) {
       setLocationData({
-        source: locationResponse[0].source || [],
-        origin: locationResponse[0].origin || [],
-        destination: locationResponse[0].destination || [],
+        source: locationResponse.source || [],
+        origin: locationResponse.origin || [],
+        destination: locationResponse.destination || [],
       });
     }
   };
@@ -288,15 +282,8 @@ function LocationsContainer() {
 
   return (
     <PageWrapper
-      PageHeader={() => <RenderPageHeader />}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          handleEdit={handleEdit}
-          editModeActive={editModeActive}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageHeader={() => null}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle="Add a location"
       onModalClose={() => setModalOpen(false)}
@@ -343,13 +330,15 @@ function LocationsContainer() {
           locationData={locationData}
         />
       )}
-      modalSize="40%">
+      modalSize="40%"
+    >
       <Tabs
         {...({
           defaultValue: "source",
           active: selectedTab,
           onTabChange: handleTabChange,
-        } as TabsProps)}>
+        } as TabsProps)}
+      >
         <Tabs.List grow position="center">
           <Tabs.Tab value="source">SOURCE</Tabs.Tab>
           <Tabs.Tab value="origin">ORIGIN</Tabs.Tab>
@@ -358,8 +347,8 @@ function LocationsContainer() {
 
         <Tabs.Panel value={selectedTab} pt="xs">
           <DataTable
-            data={tabData}
-            columns={tabColumns}
+            data={tableRowData}
+            columns={tableColumns}
             actionItems={[
               {
                 label: "Add",
@@ -367,28 +356,15 @@ function LocationsContainer() {
                 color: "gray",
                 type: "button",
                 onClickAction: () => {
-                  // setModalType("add");
+                  setModalType("add");
                   setModalOpen(true);
                 },
               },
             ]}
-            // handleRowEdit={(row: any, rowIndex: number) => {
-            //   let obj = { ...row };
-            //   delete obj["updatedAt"];
-            //   delete obj["_id"];
-            //   delete obj["_originPortId"];
-            //   delete obj["createdAt"];
-            //   delete obj["originPort"];
-
-            //   const formObj = {
-            //     _originPortId: row._originPortId,
-            //     destinations: [obj],
-            //   };
-
-            //   setUpdateFormData(formObj);
-            //   setModalType("update");
-            //   setModalOpen(true);
-            // }}
+            handleRowEdit={(row: any, rowIndex: number) => {
+              setModalType("update");
+              setModalOpen(true);
+            }}
             handleRowDelete={(row: any, rowIndex: number) => {
               openDeleteModal(row);
             }}
