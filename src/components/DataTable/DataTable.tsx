@@ -245,6 +245,17 @@ export function DataTable({
                           </td>
                         );
                       }
+                      if (key === "originPortName") {
+                        return (
+                          <td key={key + index}>
+                            {row["linkedOrigin"]
+                              ?.map(
+                                (originPort: any) => originPort?.originPortName
+                              )
+                              .join(" ,")}
+                          </td>
+                        );
+                      }
 
                       return (
                         <td

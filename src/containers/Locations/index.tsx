@@ -1,31 +1,92 @@
-import React from "react";
-import {
-  Box,
-  Group,
-  Popover,
-  Space,
-  Title,
-  List,
-  ScrollArea,
-} from "@mantine/core";
+import React, { useEffect } from "react";
+import { Tabs, Group, Popover, Space } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
 import {
-  Card as SectionCard,
   Button,
   ActionIcon,
   Text,
 } from "../../components/index";
-
+import { openConfirmModal } from "@mantine/modals";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import EditLocationFormContainer from "../../forms/Location/index";
-import PageLabel from "../../components/PageLabel/PageLabel";
-
 import {
   getLocationData,
   submitLocationData,
 } from "../../services/export-costing/Locations";
-import { upperFirst } from "@mantine/hooks";
+import DataTable from "../../components/DataTable/DataTable";
+
+const sourceColumns = [
+  {
+    label: "Source",
+    key: "region",
+    sortable: true,
+  },
+  {
+    label: "State",
+    key: "state",
+    sortable: true,
+  },
+  {
+    label: "Actions",
+    key: "action",
+  },
+];
+const originColumns = [
+  {
+    label: "Port Name",
+    key: "portName",
+    sortable: true,
+  },
+  {
+    label: "CFS Station",
+    key: "cfsStation",
+  },
+  {
+    label: "City",
+    key: "city",
+  },
+  {
+    label: "State",
+    key: "state",
+  },
+  {
+    label: "Actions",
+    key: "action",
+  },
+];
+
+const destinationColumns = [
+  {
+    label: "Destination Port",
+    key: "portName",
+    sortable: true,
+  },
+  {
+    label: "Country",
+    key: "country",
+  },
+  {
+    label: "Origin Port",
+    key: "originPortName",
+  },
+  {
+    label: "Actions",
+    key: "action",
+  },
+];
+
+type Column = {
+  label: string;
+  key: string;
+  sortable?: boolean;
+};
+
+type TabsProps = {
+  defaultValue: string;
+  active: string;
+  onTabChange: (value: string) => void;
+};
 
 const RenderPageHeader = (props: any) => {
   return <PageHeader />;
@@ -45,8 +106,7 @@ const RenderPageAction = (props: any) => {
           sx={{
             "&[data-disabled]": { opacity: 0.4 },
           }}
-          onClick={() => handleEdit(false)}
-        >
+          onClick={() => handleEdit(false)}>
           <X size={16} />
         </ActionIcon>
 
@@ -55,16 +115,14 @@ const RenderPageAction = (props: any) => {
           trapFocus
           position="bottom-end"
           withArrow
-          shadow="lg"
-        >
+          shadow="lg">
           <Popover.Target>
             <ActionIcon
               variant="filled"
               color="blue"
               sx={{
                 "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
+              }}>
               <Check size={16} />
             </ActionIcon>
           </Popover.Target>
@@ -74,8 +132,7 @@ const RenderPageAction = (props: any) => {
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[7]
                   : theme.white,
-            })}
-          >
+            })}>
             <Text size="sm">Are you sure you want to save the changes</Text>
             <Space h="sm" />
             <Group position="right" spacing="md">
@@ -90,8 +147,7 @@ const RenderPageAction = (props: any) => {
                     handleSaveAction();
                   }
                   handleEdit(false);
-                }}
-              >
+                }}>
                 Save
               </Button>
             </Group>
@@ -108,8 +164,7 @@ const RenderPageAction = (props: any) => {
       sx={{
         "&[data-disabled]": { opacity: 0.4 },
       }}
-      onClick={() => handleEdit(true)}
-    >
+      onClick={() => handleEdit(true)}>
       <Pencil size={16} />
     </ActionIcon>
   );
@@ -144,12 +199,38 @@ function LocationsContainer() {
     origin: [],
     destination: [],
   });
+  const [selectedTab, setSelectedTab] = React.useState("source");
+
+  const handleTabChange = (value: any) => {
+    setSelectedTab(value);
+  };
+  let tabData: any[] = [];
+  let tabColumns: Column[] = [];
+
+  if (selectedTab === "source") {
+    tabData = locationData.source;
+    tabColumns = sourceColumns;
+  } else if (selectedTab === "origin") {
+    tabData = locationData.origin;
+    tabColumns = originColumns;
+  } else if (selectedTab === "destination") {
+    // tabData = locationData.destination.flatMap((d: any) =>
+    //   d.linkedOrigin.map((l: any) => ({
+    //     portName: d.portName,
+    //     country: d.country,
+    //     originPortName: l.originPortName,
+    //     _originId: l._originId,
+    //   }))
+    // );
+    tabData = locationData.destination;
+    tabColumns = destinationColumns;
+  }
 
   const handleEdit = (bool: boolean) => {
     setEditModeActive(bool);
   };
 
-  const handleSaveAction = () => {
+  const handleSaveAction = async () => {
     let payload: any = {};
 
     if (locationPayload?.source?.length) {
@@ -164,16 +245,31 @@ function LocationsContainer() {
       payload.destination = locationPayload.destination;
     }
 
-    submitLocation(payload);
-  };
-
-  const submitLocation = async (payload: any) => {
     const addLocationResponse = await submitLocationData(payload);
 
     if (addLocationResponse) {
       getLocations();
     }
   };
+
+  const openDeleteModal = (data: any) =>
+    openConfirmModal({
+      title: "Delete Location",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this location record?
+          <Text c="red">
+            Note:This action is destructive and you will have to contact support
+            to restore your data.
+          </Text>
+        </Text>
+      ),
+      labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => console.log("Confirmed"),
+    });
 
   const getLocations = async () => {
     const locationResponse = await getLocationData();
@@ -247,91 +343,58 @@ function LocationsContainer() {
           locationData={locationData}
         />
       )}
-      modalSize="40%"
-    >
-      <PageLabel
-        title="Location Charges"
-        editModeActive={editModeActive}
-        setModalOpen={setModalOpen}
-      />
-      <Space h="lg" />
+      modalSize="40%">
+      <Tabs
+        {...({
+          defaultValue: "source",
+          active: selectedTab,
+          onTabChange: handleTabChange,
+        } as TabsProps)}>
+        <Tabs.List grow position="center">
+          <Tabs.Tab value="source">SOURCE</Tabs.Tab>
+          <Tabs.Tab value="origin">ORIGIN</Tabs.Tab>
+          <Tabs.Tab value="destination">DESTINATION</Tabs.Tab>
+        </Tabs.List>
 
-      <div style={{ width: "100%", height: "auto" }}>
-        <Group spacing="md" grow>
-          {Object.keys(locationData).map((locationType: any, index: number) => {
-            return (
-              <SectionCard
-                key={index}
-                withBorder
-                radius="md"
-                p="lg"
-                component="a"
-              >
-                <Group position="apart">
-                  <Title order={3} transform="capitalize">
-                    {locationType}
-                  </Title>
-                </Group>
-                <Space h="xl" />
-                <ScrollArea
-                  scrollbarSize={2}
-                  style={{ maxHeight: 380, height: 360 }}
-                >
-                  <List type="ordered" spacing="lg">
-                    {locationData[locationType].map((d: any, i: number) => (
-                      <Box
-                        key={i}
-                        sx={(theme: any) => ({
-                          display: "block",
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[6]
-                              : "#fff",
-                          color:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[4]
-                              : theme.colors.dark[7],
-                          textAlign: "left",
-                          padding: theme.spacing.md,
-                          borderRadius: theme.radius.md,
-                          cursor: "default",
+        <Tabs.Panel value={selectedTab} pt="xs">
+          <DataTable
+            data={tabData}
+            columns={tabColumns}
+            actionItems={[
+              {
+                label: "Add",
+                icon: Plus,
+                color: "gray",
+                type: "button",
+                onClickAction: () => {
+                  // setModalType("add");
+                  setModalOpen(true);
+                },
+              },
+            ]}
+            // handleRowEdit={(row: any, rowIndex: number) => {
+            //   let obj = { ...row };
+            //   delete obj["updatedAt"];
+            //   delete obj["_id"];
+            //   delete obj["_originPortId"];
+            //   delete obj["createdAt"];
+            //   delete obj["originPort"];
 
-                          "&:hover": {
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[5]
-                                : theme.colors.gray[1],
-                          },
-                        })}
-                      >
-                        <List.Item>
-                          {locationType === "source"
-                            ? d.region
-                            : locationType === "origin"
-                            ? d.portName
-                            : d.portName}
-                          <Text
-                            size="sm"
-                            sx={(theme: any) => ({
-                              color: theme.colors.dark[1],
-                            })}
-                          >
-                            {locationType === "source"
-                              ? d.state
-                              : locationType === "origin"
-                              ? d.state
-                              : d.country}
-                          </Text>
-                        </List.Item>
-                      </Box>
-                    ))}
-                  </List>
-                </ScrollArea>
-              </SectionCard>
-            );
-          })}
-        </Group>
-      </div>
+            //   const formObj = {
+            //     _originPortId: row._originPortId,
+            //     destinations: [obj],
+            //   };
+
+            //   setUpdateFormData(formObj);
+            //   setModalType("update");
+            //   setModalOpen(true);
+            // }}
+            handleRowDelete={(row: any, rowIndex: number) => {
+              openDeleteModal(row);
+            }}
+          />
+        </Tabs.Panel>
+      </Tabs>
     </PageWrapper>
   );
 }
