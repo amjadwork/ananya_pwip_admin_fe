@@ -54,7 +54,7 @@ const columns = [
     key: "coo",
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];

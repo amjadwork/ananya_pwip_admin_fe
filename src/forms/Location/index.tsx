@@ -19,11 +19,6 @@ function AddEditLocationFormContainer(props: any) {
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {},
-
-    // validate: {
-    //   name: (value) =>
-    //     value.length < 2 ? "Name must have at least 2 letters" : null,
-    // },
   });
 
   useEffect(() => {

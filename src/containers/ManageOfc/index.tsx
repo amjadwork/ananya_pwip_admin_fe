@@ -1,15 +1,7 @@
 import React from "react";
-import {
-  Group,
-  Popover,
-  Space,
-} from "@mantine/core";
+import { Group, Popover, Space } from "@mantine/core";
 import { Pencil, Plus, X, Check } from "tabler-icons-react";
-import {
-  Button,
-  Text,
-  ActionIcon,
-} from "../../components/index";
+import { Button, Text, ActionIcon } from "../../components/index";
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
@@ -21,9 +13,8 @@ import {
   postOfcData,
 } from "../../services/export-costing/OFC";
 
-
 const columns = [
-    {
+  {
     label: "Origin",
     key: "originPort",
     sortable: true,
@@ -38,7 +29,7 @@ const columns = [
     key: "ofcCharge",
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];
@@ -150,13 +141,13 @@ const RenderModalContent = (props: any) => {
 function ManageOfcContainer() {
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
+  const [modalType, setModalType] = React.useState<string>("add");
   const [ofcData, setOfcData] = React.useState<any>([]);
   const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] =
     React.useState<any>([]);
   const [ofcAPIPayload, setOfcAPIPayload] = React.useState<any>(null);
-    const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
 
   const handleRefetchOfcList = (ofcPostResponse: any) => {
     if (ofcPostResponse) {
@@ -197,7 +188,7 @@ function ManageOfcContainer() {
 
   const handleEditAction = (bool: boolean) => {
     setEditModeActive(() => bool);
-    setModalType("edit");
+    setModalType("add");
   };
 
   const handleEditToUpdateAction = () => {
@@ -283,26 +274,28 @@ function ManageOfcContainer() {
     handleGetRegionSource();
   }, []);
 
-React.useEffect(() => {
-  if (ofcData.length && destinationSelectOptions.length) {
-    let tableData: any = [];
+  React.useEffect(() => {
+    if (ofcData.length && destinationSelectOptions.length) {
+      let tableData: any = [];
 
-    [...ofcData].forEach((d) => {
-      d.list.forEach((l:any) => {
-        const destination = destinationSelectOptions.find((option:any) => option.value === l._destinationPortId);
-        const destinationName = destination? destination.label : '';
-        const obj = {
-          ...l,
-          destinationPort: destinationName,
-          originPort: d.name,
-          _originPortId: d._originId,
-        };
-        tableData.push(obj);
+      [...ofcData].forEach((d) => {
+        d.list.forEach((l: any) => {
+          const destination = destinationSelectOptions.find(
+            (option: any) => option.value === l._destinationPortId
+          );
+          const destinationName = destination ? destination.label : "";
+          const obj = {
+            ...l,
+            destinationPort: destinationName,
+            originPort: d.name,
+            _originPortId: d._originId,
+          };
+          tableData.push(obj);
+        });
       });
-    });
-    setTableRowData(tableData);
-  }
-}, [ofcData, destinationSelectOptions]);
+      setTableRowData(tableData);
+    }
+  }, [ofcData, destinationSelectOptions]);
 
   return (
     <PageWrapper
@@ -317,11 +310,11 @@ React.useEffect(() => {
       )}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit" ? "Add OFC Charges" : "Update OFC Charges"
+        modalType === "add" ? "Add OFC Charges" : "Update OFC Charges"
       }
       onModalClose={() => setModalOpen(false)}
       ModalContent={() => {
-        if (modalType === "edit") {
+        if (modalType === "add") {
           return (
             <RenderModalContent
               handleCloseModal={(bool: any) => setModalOpen(bool)}
@@ -344,7 +337,7 @@ React.useEffect(() => {
       }}
       modalSize="70%"
     >
-         <DataTable
+      <DataTable
         data={tableRowData}
         columns={columns}
         actionItems={[
@@ -380,7 +373,6 @@ React.useEffect(() => {
         //   openDeleteModal(row);
         // }}
       />
-   
     </PageWrapper>
   );
 }

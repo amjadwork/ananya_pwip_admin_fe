@@ -51,11 +51,11 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface RowData {
-  name: string;
-  email: string;
-  company: string;
-}
+// interface RowData {
+//   name: string;
+//   email: string;
+//   company: string;
+// }
 
 interface TableSortProps {
   data: any;

@@ -24,7 +24,7 @@ const sourceColumns = [
     sortable: true,
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];
@@ -47,7 +47,7 @@ const originColumns = [
     key: "state",
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];
@@ -63,11 +63,11 @@ const destinationColumns = [
     key: "country",
   },
   {
-    label: "Origin Port",
+    label: "Available Origin Port",
     key: "originPortName",
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];

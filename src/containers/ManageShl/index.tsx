@@ -10,11 +10,7 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Button,
-  Text,
-  ActionIcon,
-} from "../../components/index";
+import { Button, Text, ActionIcon } from "../../components/index";
 
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
@@ -28,7 +24,6 @@ import {
   getRegionSource,
   postShlData,
 } from "../../services/export-costing/SHL";
-
 
 const columns = [
   {
@@ -68,7 +63,7 @@ const columns = [
     key: "coo",
   },
   {
-    label: "Actions",
+    label: "Action",
     key: "action",
   },
 ];
@@ -196,7 +191,6 @@ function ManageShlContainer() {
     React.useState<any>([]);
   const [shlAPIPayload, setShlAPIPayload] = React.useState<any>(null);
   const [tableRowData, setTableRowData] = React.useState<any>([]);
- 
 
   //What does this below function do? Is it necessary? #askSwain
   const handleRefetchShlList = (shlPostResponse: any) => {
@@ -414,7 +408,6 @@ function ManageShlContainer() {
           },
         ]}
       />
-    
     </PageWrapper>
   );
 }

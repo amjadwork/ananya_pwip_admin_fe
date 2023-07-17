@@ -50,26 +50,26 @@ const AdminAppLayout: React.FC<any> = () => {
             />
           </HeaderWrapper>
         }
-        footer={
-          <Footer
-            height={40}
-            style={{
-              width: "100%",
-            }}
-            p="sm"
-            px="md"
-            color="gray"
-            fixed={true}
-            position={{
-              bottom: 0,
-              right: 0,
-            }}
-          >
-            <Text size="xs" color="dimmed" align="right">
-              Export Costing Management by <u>PWIP</u>
-            </Text>
-          </Footer>
-        }
+        // footer={
+        //   <Footer
+        //     height={40}
+        //     style={{
+        //       width: "100%",
+        //     }}
+        //     p="sm"
+        //     px="md"
+        //     color="gray"
+        //     fixed={true}
+        //     position={{
+        //       bottom: 0,
+        //       right: 0,
+        //     }}
+        //   >
+        //     <Text size="xs" color="dimmed" align="right">
+        //       Export Costing Management by <u>PWIP</u>
+        //     </Text>
+        //   </Footer>
+        // }
         styles={(theme) => ({
           main: {
             minHeight: "95vh",
