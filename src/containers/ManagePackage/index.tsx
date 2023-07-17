@@ -1,162 +1,103 @@
 import React, { useEffect } from "react";
-import {
-  SimpleGrid,
-  Box,
-  Group,
-  Popover,
-  Space,
-  Title,
-  List,
-  ScrollArea,
-} from "@mantine/core";
-import { Pencil, X, Check } from "tabler-icons-react";
-import {
-  Card as SectionCard,
-  Button,
-  Input,
-  ActionIcon,
-  Text,
-} from "../../components/index";
+import {Plus } from "tabler-icons-react";
+import {Text} from "../../components/index";
+import { openConfirmModal } from "@mantine/modals";
 
-import EditPackageContainer from "./EditPackage/EditPackage";
-
+import EditPackageForm from "../../forms/ManagePackage";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
-import PageLabel from "../../components/PageLabel/PageLabel";
-
+import DataTable from "../../components/DataTable/DataTable";
 import APIRequest from "../../helper/api";
 
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
 
-  return <PageHeader />;
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
+const columns = [
+  {
+    label: "Bag Type",
+    key: "bag",
+    sortable: true,
+  },
+  {
+    label: "Weight(in Kgs)",
+    key: "weight",
+  },
+  {
+    label: "Cost(in INR)",
+    key: "cost",
+  },
+  {
+    label: "Action",
+    key: "action",
+  },
+];
 
 const initialBagTypes = [
   {
-    name: "PPWOVEN",
+    type: "PPWOVEN",
     list: [],
   },
   {
-    name: "JUTE",
+    type: "JUTE",
     list: [],
   },
   {
-    name: "PE",
+    type: "PE",
     list: [],
   },
   {
-    name: "BOPP",
+    type: "BOPP",
     list: [],
   },
 ];
 
+const RenderModalContent = (props: any) => {
+  const handleCloseModal = props.handleCloseModal;
+  const handleSaveCallback = props.handleSaveCallback;
+  const updateFormData = props.updateFormData;
+  const modalType=props.modalType;
+  const modalOpen = props.modalOpen;
+
+  return (
+    <EditPackageForm
+      handleCloseModal={handleCloseModal}
+      handleSaveCallback={handleSaveCallback}
+      updateFormData={updateFormData}
+      modalType={modalType}
+      modalOpen={modalOpen}
+    />
+  );
+};
+
 function ManagePackageContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
   const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
+  const [modalType, setModalType] = React.useState<string>("add");
   const [packagingList, setPackagingList] = React.useState([
     ...initialBagTypes,
   ]);
+  const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [selectedTableRowIndex, setSelectedTableRowIndex] =
+  React.useState<any>(null);
+  const [updateFormData, setUpdateFormData] = React.useState<any>(null);
 
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
+  // const handleEditAction = (bool: boolean) => {
+  //   setEditModeActive(bool);
+  //   setModalType("edit");
+  // };
+
+  // const handleEditToUpdateAction = () => {
+  //   setModalType("update");
+  //   setModalOpen(true);
+  // };
+
+  const handleSaveCallback = (payload: any) => {
+    setModalOpen(false);
+    handleSave(payload);
+  };
+  const handleRefreshCalls = () => {
+    handleGetPackagingList();
   };
 
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
+  const handleSaveAction = () => {
+    // Implement the handleSaveAction logic here
+    // For example, to save data to the backend
   };
 
   const handleGetPackagingList = async () => {
@@ -165,7 +106,7 @@ function ManagePackageContainer() {
       let initialList = [...initialBagTypes];
       const modList = initialList.map((d: any) => {
         const list = packagingResponse.filter((p: any) => {
-          if (d.name.toLowerCase() === p.bag.toLowerCase()) {
+          if (d.type.toLowerCase() === p.bag.toLowerCase()) {
             return p;
           }
         });
@@ -175,7 +116,7 @@ function ManagePackageContainer() {
           list: list,
         };
       });
-      setPackagingList(() => [...modList]);
+      setPackagingList([...modList]);
     }
   };
 
@@ -183,135 +124,125 @@ function ManagePackageContainer() {
     handleGetPackagingList();
   }, []);
 
-  if (editModeActive) {
-    return (
-      <EditPackageContainer
-        editModeActive={editModeActive}
-        handleEditAction={(bool: boolean) => handleEditAction(bool)}
-        modalType={modalType}
-        modalOpen={modalOpen}
-        handleEditToUpdateAction={handleEditToUpdateAction}
-        handleSaveCallback={() => handleGetPackagingList()}
-        packagingList={packagingList}
-      />
-    );
-  }
+  const handleSave = async (payload:any) => {
+    let obj = { ...payload };
+    obj.currency = "INR";
+  
+    try {
+      const method = modalType === "add" ? "POST" : "PATCH";
+      const response = await APIRequest("packaging", method, obj);
+  
+      if (response) {
+        handleRefreshCalls();
+      }
+    } catch (error) {
+      console.error("Error while saving:", error);
+    }
+  };
+
+  const handleDeleteVariant = async (data: any) => {
+    // const deleteVariantResponse = await APIRequest(
+    //   "packaging" + "/" + data.packaging + "/" + data._id,
+    //   "DELETE"
+    // );
+
+    // if (deleteVariantResponse) {
+    //   handleRefreshCalls();
+    // }
+  };
+
+  const openDeleteModal = (rowData: any) =>
+    openConfirmModal({
+      title: "Delete the Packaging Data",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the packaging detail? 
+          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
+          this data.</Text> 
+          </Text>
+      ),
+      labels: { confirm: "Delete Packaging Data", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleDeleteVariant(rowData),
+    });
+
+  React.useEffect(() => {
+    if (packagingList.length) {
+      let tableData: any = [];
+
+      [...packagingList].forEach((d: any) => {
+        d.list.forEach((l: any) => {
+          const obj = {
+            ...l,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [packagingList]);
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
+      PageHeader={() => null}
+      PageAction={() => null}
+      modalOpen={modalOpen}
+      modalTitle={modalType === "add" ? "Add Packaging Charges" : "Update Packaging Charges"}
+    onModalClose={() => {
+      setModalOpen(false);
+      setUpdateFormData(null);
+      setSelectedTableRowIndex(null);
+    }}
+    ModalContent={() => {
+      return (
+        <RenderModalContent
+          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+          handleSaveCallback={handleSaveCallback}
+          // variantsData={selectedVariantData}
+          updateFormData={updateFormData}
+          modalType={modalType}
+          modalOpen={modalOpen}
         />
-      )}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleEditAction}
-          editModeActive={editModeActive}
-        />
-      )}
+      );
+    }}
+      modalSize="70%"
     >
-      <Box
-        sx={(theme: any) => ({
-          display: "block",
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[1],
-          color:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[4]
-              : theme.colors.dark[7],
-          textAlign: "center",
-          padding: theme.spacing.xl,
-          borderRadius: theme.radius.md,
-          cursor: "default",
-        })}
-      >
-        <Group position="apart">
-          <Title order={1}>Manage Packaging</Title>
-          <Input placeholder="Search" />
-        </Group>
-      </Box>
+      <DataTable
+        data={tableRowData}
+        columns={columns}
+        actionItems={[
+          {
+            label: "Add",
+            icon: Plus,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalOpen(true);
+              setModalType("add");
+            },
+          },
+        ]}
+        handleRowEdit={(row: any, index: number) => {
+          let obj = { ...row };
+          setSelectedTableRowIndex(index);
 
-      {/* <PageLabel
-        title="Packaging Charges"
-        editModeActive={editModeActive}
-        setModalOpen={setModalOpen}
+          const formObj = {
+            bag: obj.bag,
+            weight: obj.weight,
+            cost:obj.cost,
+          };
+
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
       />
-      
-
-      <Space h="lg" /> */}
-
-      <SimpleGrid cols={2}>
-        {packagingList.map((cat: any, index: number) => {
-          return (
-            <SectionCard
-              key={index}
-              withBorder
-              radius="md"
-              p="lg"
-              component="a"
-            >
-              <Title order={3}>{cat.name}</Title>
-              <Space h="xl" />
-              <ScrollArea
-                scrollbarSize={2}
-                style={{ maxHeight: 380, height: 360 }}
-              >
-                <List type="ordered" spacing="lg">
-                  {cat.list.map((d: any, i: number) => (
-                    <Box
-                      key={i}
-                      sx={(theme: any) => ({
-                        display: "block",
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : "#fff",
-                        color:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[4]
-                            : theme.colors.dark[7],
-                        textAlign: "left",
-                        padding: theme.spacing.md,
-                        borderRadius: theme.radius.md,
-                        cursor: "default",
-
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <List.Item>
-                        <Text size="md" weight="bold">
-                          {d.bag} - {d.currency} {d.cost}{" "}
-                          <Text
-                            size="sm"
-                            weight="normal"
-                            sx={(theme: any) => ({
-                              color: theme.colors.dark[1],
-                            })}
-                          >
-                            Weight: {d.weight} {d.unit}
-                          </Text>
-                        </Text>
-                      </List.Item>
-                    </Box>
-                  ))}
-                </List>
-              </ScrollArea>
-            </SectionCard>
-          );
-        })}
-      </SimpleGrid>
     </PageWrapper>
   );
 }
