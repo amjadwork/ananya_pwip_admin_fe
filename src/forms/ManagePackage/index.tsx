@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Group,
   NumberInput,
@@ -7,24 +7,40 @@ import {
 import { useForm } from "@mantine/form";
 import {Select,Button} from "../../components/index"
 import { showNotification } from "@mantine/notifications";
-import APIRequest from "../../helper/api";
+
+const initialFormValues: any ={
+    bag: "",
+    weight: "",
+    unit: "",
+    cost: "",
+    currency: "",
+  };
+  
 
 function EditPackageForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
   const handleSaveCallback = props.handleSaveCallback;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
+  const modalOpen = props.modalOpen || false;
 
   const inputRef: any = useRef(null);
 
   const form = useForm({
     clearInputErrorOnChange: true,
-    initialValues: {
-      bag: "",
-      weight: "",
-      unit: "",
-      cost: "",
-      currency: "",
+    initialValues: { ...initialFormValues },
+
+    validate: {
+      bag: (value) =>
+        value.length < 2 ? "Name must have at least 2 letters" : null,
     },
   });
+
+  useEffect(() => {
+    if (updateFormData && modalType === "update") {
+      form.setValues(updateFormData);
+    }
+  }, [updateFormData, modalType]);
 
   const handleError = (errors: typeof form.errors) => {
     if (errors.name) {
@@ -33,19 +49,9 @@ function EditPackageForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    let obj: any = { ...formValues };
-    obj.currency = "INR";
-
-    const payload = { ...obj };
-
-    const addPackagingResponse = await APIRequest("packaging", "POST", payload);
-
-    if (addPackagingResponse) {
-      handleSaveCallback();
-      handleCloseModal(false);
-    }
+    handleCloseModal(false);
+    handleSaveCallback(formValues);
   };
-
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Select
@@ -62,10 +68,12 @@ function EditPackageForm(props: any) {
         {...form.getInputProps("bag")}
       />
 
-      <Space h="md" />
+<Space h="md" />
 
-      <NumberInput
+
+<NumberInput
         required
+        hideControls
         label="Weight (in KG)"
         placeholder="eg. 18"
         ref={inputRef}
@@ -84,26 +92,22 @@ function EditPackageForm(props: any) {
           { value: "METRIC TON", label: "Metric Ton" },
         ]}
         ref={inputRef}
-        {...form.getInputProps("unit")}
+       {...form.getInputProps("unit")}
       />
 
       <Space h="md" />
 
       <NumberInput
         required
-        label="Cost per bag"
+        hideControls
+        label="Cost(in INR)/bag"
         placeholder="eg. 18"
         ref={inputRef}
         {...form.getInputProps("cost")}
       />
 
-      <Space h="lg" />
-
       <Group position="right" mt="md" spacing="md">
-        <Button type="button" color="blue" variant="subtle">
-          Save & add another
-        </Button>
-        <Button type="submit">Add</Button>
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );
