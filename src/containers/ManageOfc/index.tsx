@@ -1,28 +1,30 @@
-import React from "react";
-import { Group, Popover, Space } from "@mantine/core";
-import { Pencil, Plus, X, Check } from "tabler-icons-react";
-import { Button, Text, ActionIcon } from "../../components/index";
+import React, {useEffect,useState} from "react";
+import { Plus, X , Check} from "tabler-icons-react";
+import { Text} from "../../components/index";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 
 import {
-  getDestinationData,
   getOfcData,
-  getRegionSource,
+  getDestinationData,
+  getOriginData,
   postOfcData,
+  deleteOfcData,
+  patchOfcData,
 } from "../../services/export-costing/OFC";
 
 const columns = [
   {
-    label: "Origin",
-    key: "originPort",
-    sortable: true,
+    label: "Destination",
+    key: "destination",
   },
   {
-    label: "Destination",
-    key: "destinationPort",
-    sortable: true,
+    label: "Origin",
+    key: "origin",
   },
   {
     label: "OFC",
@@ -34,143 +36,52 @@ const columns = [
   },
 ];
 
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
-
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
-  const handleUpdateOfcUIData = props.handleUpdateOfcUIData;
+  const updateFormData = props.updateFormData;
+  const handleSaveAction = props.handleSaveAction;
+  const modalType = props.modalType;
 
   return (
     <EditOfcForm
       handleCloseModal={handleCloseModal}
       regionSelectOptions={regionSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
-      handleUpdateOfcUIData={handleUpdateOfcUIData}
+      handleSaveAction={handleSaveAction}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
 
 function ManageOfcContainer() {
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("add");
-  const [ofcData, setOfcData] = React.useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] =
-    React.useState<any>([]);
-  const [ofcAPIPayload, setOfcAPIPayload] = React.useState<any>(null);
-  const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [modalOpen, setModalOpen] = useState<any>(false);
+  const [modalType, setModalType] = useState<string>("add");
+  const [ofcData, setOfcData] = useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [tableRowData, setTableRowData] = useState<any>([]);
 
-  const handleRefetchOfcList = (ofcPostResponse: any) => {
-    if (ofcPostResponse) {
-      handleGetRegionSource();
-      getOFCList(ofcPostResponse);
-    }
-  };
-
-  const getOFCList = async (regionList: any) => {
-    const ofcResponse = await getOfcData(regionList);
+  //to get OFC Data from database
+  const handleGetOfc= async (list: any) => {
+    const response: any = await getOfcData(list);
     try {
-      if (ofcResponse) {
-        let array: any = regionList?.map((item: any) => {
+      if (response) {
+        let array: any = list?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
 
-          ofcResponse.forEach((region: any) => {
-            if (item._originId === region._originPortId) {
-              destinationArr.push(region.destinations);
-              originIdStringArr.push(region._originId);
+          response.forEach((origin: any) => {
+            if (item._originId === origin._originPortId) {
+              destinationArr.push(origin.destinations);
+              originIdStringArr.push(origin._originId);
             }
           });
 
+         
           return {
             ...item,
             list: originIdStringArr.includes(item._originPortId)
@@ -179,27 +90,18 @@ function ManageOfcContainer() {
           };
         });
 
-        setOfcData(() => [...array]);
+      setOfcData(() => [...array]);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("add");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
-  };
-
-  const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource();
-    if (regionResponse) {
-      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+  //to get Origin Data from database
+  const handleGetOrigin= async () => {
+    const response = await getOriginData();
+    if (response) {
+      const originList = response.origin.map((d: any) => {
         return {
           name: d.portName,
           _originId: d._id,
@@ -207,58 +109,24 @@ function ManageOfcContainer() {
         };
       });
 
-      const regionOptions = regionResponse[0].origin.map((d: any) => {
+      const originOptions = response.origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
         };
       });
-
-      setRegionSelectOptions(() => [...regionOptions]);
-
+      setRegionSelectOptions(() => [...originOptions]);
       handleGetDestination();
-      getOFCList(formattedRegion);
+      handleGetOfc(originList);
     }
   };
 
-  const handleUpdateOfcUIData = (formData: any) => {
-    setOfcAPIPayload({ ...formData });
-    let ofcArr: any = [...ofcData];
-
-    ofcArr = ofcArr.map((d: any) => {
-      if (formData._originPortId === d._originId) {
-        return {
-          ...d,
-          list: [...d.list, ...formData.destinations],
-        };
-      }
-      return {
-        ...d,
-      };
-    });
-
-    setOfcData(() => [...ofcArr]);
-  };
-
-  const handleSaveAction = async () => {
-    if (ofcAPIPayload) {
-      const ofcResponse = await postOfcData(ofcAPIPayload);
-
-      if (ofcResponse) {
-        handleGetRegionSource();
-      }
-    }
-  };
-
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
-  };
-
+  //to get Destination Data from database
   const handleGetDestination = async () => {
-    const destinationResponse = await getDestinationData();
+    const response = await getDestinationData();
 
-    if (destinationResponse) {
-      const destinationOptions = destinationResponse[0].destination.map(
+    if (response) {
+      const destinationOptions = response.destination.map(
         (d: any) => {
           return {
             label: d.portName,
@@ -266,31 +134,103 @@ function ManageOfcContainer() {
           };
         }
       );
-
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
-  React.useEffect(() => {
-    handleGetRegionSource();
+
+ //to add new or edit the existing row in the table
+  const handleSaveAction = async (data:any) => {
+    const payload = data.destinations.flatMap((destination:any) => ({
+      _originPortId: data._originPortId,
+      _ofcObjectId:data._ofcObjectId,
+      ...destination,
+    }));
+  
+    if (payload[0] && modalType === "add") {
+      const response = await postOfcData(payload[0]);
+
+      if (response) {
+        handleGetOrigin();
+        showNotification({
+          title: "OFC Charges Added!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });   
+      }
+    }
+
+    if (payload && modalType === "update") {
+      const response = await patchOfcData(payload);
+
+      if (response) {
+        handleGetOrigin();
+        showNotification({
+          title: "OFC Charges Updated!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });
+      }
+    }
+  };
+
+  //to delete a single row data
+  const openDeleteModal = (rowData: any) =>
+    openConfirmModal({
+      title: "Delete the OFC Data",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the OFC Data? 
+          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
+          this data.</Text> 
+          </Text>
+      ),
+      labels: { confirm: "Delete OFC Data", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleDeleteVariant(rowData),
+    });
+  const handleDeleteVariant = async (data: any) => {
+    const response = await deleteOfcData(data);
+
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "OFC Charges Deleted!",
+        message: "",
+        autoClose: 2000,
+        icon: <X />,
+        color:'red',
+      });
+    }  
+  };
+
+  const handleRefreshCalls = () => {
+    handleGetOrigin();
+  };
+
+  useEffect(() => {
+    handleGetOrigin();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (ofcData.length && destinationSelectOptions.length) {
-      let tableData: any = [];
-
-      [...ofcData].forEach((d) => {
-        d.list.forEach((l: any) => {
+      const tableData = ofcData.flatMap((d:any) => {
+        return d.list.map((l:any) => {
           const destination = destinationSelectOptions.find(
-            (option: any) => option.value === l._destinationPortId
+            (option:any) => option.value === l._destinationPortId
           );
-          const destinationName = destination ? destination.label : "";
-          const obj = {
+  
+          return {
             ...l,
-            destinationPort: destinationName,
-            originPort: d.name,
+            origin: d.name,
+            destination: destination ? destination.label : "Null",
             _originPortId: d._originId,
           };
-          tableData.push(obj);
         });
       });
       setTableRowData(tableData);
@@ -300,40 +240,28 @@ function ManageOfcContainer() {
   return (
     <PageWrapper
       PageHeader={() => null}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          editModeActive={editModeActive}
-          handleEditAction={handleSave}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
         modalType === "add" ? "Add OFC Charges" : "Update OFC Charges"
       }
-      onModalClose={() => setModalOpen(false)}
-      ModalContent={() => {
-        if (modalType === "add") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-              handleUpdateOfcUIData={handleUpdateOfcUIData}
-            />
-          );
-        }
+      onModalClose={() => {
+        setModalOpen(false)
+        setUpdateFormData(null);
+      }}
 
-        if (modalType === "update") {
+      ModalContent={() => {
           return (
             <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               regionSelectOptions={regionSelectOptions}
+              handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
+              updateFormData={updateFormData}
+              modalType={modalType}
+              modalOpen={modalOpen}
             />
           );
-        }
       }}
       modalSize="70%"
     >
@@ -347,31 +275,31 @@ function ManageOfcContainer() {
             color: "gray",
             type: "button",
             onClickAction: () => {
-              setModalType("add");
               setModalOpen(true);
+              setModalType("add");
             },
           },
         ]}
-        // handleRowEdit={(row: any, rowIndex: number) => {
-        //   let obj = { ...row };
-        //   delete obj["updatedAt"];
-        //   delete obj["_id"];
-        //   delete obj["_originPortId"];
-        //   delete obj["createdAt"];
-        //   delete obj["originPort"];
-
-        //   const formObj = {
-        //     _originPortId: row._originPortId,
-        //     destinations: [obj],
-        //   };
-
-        //   setUpdateFormData(formObj);
-        //   setModalType("update");
-        //   setModalOpen(true);
-        // }}
-        // handleRowDelete={(row: any, rowIndex: number) => {
-        //   openDeleteModal(row);
-        // }}
+        handleRowEdit={(row: any, index: number) => {
+          setModalType('update')
+          let obj = { ...row };
+          const formObj = {
+            _originPortId: obj._originPortId,
+            destinations: [
+              {
+                _destinationPortId: obj._destinationPortId,
+                ofcCharge: obj.ofcCharge,
+                _ofcObjectId: obj._id,
+              },
+            ],
+          }
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
       />
     </PageWrapper>
   );
