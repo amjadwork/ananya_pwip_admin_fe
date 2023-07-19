@@ -1,38 +1,30 @@
-import React from "react";
-import {
-  SimpleGrid,
-  Box,
-  Group,
-  Popover,
-  Space,
-  Title,
-  List,
-  ScrollArea,
-} from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Button, Text, ActionIcon } from "../../components/index";
+import React, {useEffect,useState} from "react";
+import { Plus, X , Check} from "tabler-icons-react";
+import { Text} from "../../components/index";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
-import PageLabel from "../../components/PageLabel/PageLabel";
 import DataTable from "../../components/DataTable/DataTable";
 
 import {
   getShlData,
   getDestinationData,
-  getRegionSource,
+  getOriginData,
   postShlData,
+  deleteShlData,
+  patchShlData,
 } from "../../services/export-costing/SHL";
 
 const columns = [
   {
     label: "Destination",
-    key: "_destinationPortId",
+    key: "destination",
   },
   {
     label: "Origin",
-    key: "originPort",
+    key: "origin",
   },
   {
     label: "SHL",
@@ -68,150 +60,48 @@ const columns = [
   },
 ];
 
-const RenderPageHeader = (props: any) => {
-  const activeFilter = props.activeFilter;
-  const handleRadioChange = props.handleRadioChange;
-
-  return (
-    <PageHeader
-    // breadcrumbs={[
-    //   { title: "Products", href: "/admin/dashboard/products" },
-    //   { title: "Manage", href: "#" },
-    // ]}
-    />
-  );
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover width={200} trapFocus position="bottom" withArrow shadow="md">
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes?</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
-
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
-  const handleUpdateShlUIData = props.handleUpdateShlUIData;
+  const updateFormData = props.updateFormData;
+  const handleSaveAction = props.handleSaveAction;
+  const modalType = props.modalType;
 
   return (
     <EditShlForm
       handleCloseModal={handleCloseModal}
       regionSelectOptions={regionSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
-      handleUpdateShlUIData={handleUpdateShlUIData}
+      handleSaveAction={handleSaveAction}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
 
 function ManageShlContainer() {
-  const [activeFilter, setActiveFilter] = React.useState<any>(null);
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
-  const [shlData, setShlData] = React.useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] =
-    React.useState<any>([]);
-  const [shlAPIPayload, setShlAPIPayload] = React.useState<any>(null);
-  const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [modalOpen, setModalOpen] = useState<any>(false);
+  const [modalType, setModalType] = useState<string>("add");
+  const [shlData, setShlData] = useState<any>([]);
+  const [regionSelectOptions, setRegionSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [tableRowData, setTableRowData] = useState<any>([]);
 
-  //What does this below function do? Is it necessary? #askSwain
-  const handleRefetchShlList = (shlPostResponse: any) => {
-    if (shlPostResponse) {
-      handleGetRegionSource();
-      getSHLList(shlPostResponse);
-    }
-  };
-
-  const getSHLList = async (regionList: any) => {
-    const shlDataResponse: any = await getShlData(regionList);
+  //to get SHL Data from database
+  const handleGetShl= async (list: any) => {
+    const response: any = await getShlData(list);
     try {
-      if (shlDataResponse) {
-        let array: any = regionList?.map((item: any) => {
+      if (response) {
+        let array: any = list?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
 
-          shlDataResponse.forEach((region: any) => {
-            if (item._originId === region._originPortId) {
-              destinationArr.push(region.destinations);
-              originIdStringArr.push(region._originId);
+          response.forEach((origin: any) => {
+            if (item._originId === origin._originPortId) {
+              destinationArr.push(origin.destinations);
+              originIdStringArr.push(origin._originId);
             }
           });
 
@@ -230,20 +120,11 @@ function ManageShlContainer() {
     }
   };
 
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
-  };
-
-  const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource();
-    if (regionResponse) {
-      const formattedRegion = regionResponse[0].origin.map((d: any) => {
+  //to get Origin Data from database
+  const handleGetOrigin= async () => {
+    const response = await getOriginData();
+    if (response) {
+      const originList = response.origin.map((d: any) => {
         return {
           name: d.portName,
           _originId: d._id,
@@ -251,58 +132,24 @@ function ManageShlContainer() {
         };
       });
 
-      const regionOptions = regionResponse[0].origin.map((d: any) => {
+      const originOptions = response.origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
         };
       });
-
-      setRegionSelectOptions(() => [...regionOptions]);
-
+      setRegionSelectOptions(() => [...originOptions]);
       handleGetDestination();
-      getSHLList(formattedRegion);
+      handleGetShl(originList);
     }
   };
 
-  const handleUpdateShlUIData = (formData: any) => {
-    setShlAPIPayload({ ...formData });
-    let shlArr: any = [...shlData];
-
-    shlArr = shlArr.map((d: any) => {
-      if (formData._originPortId === d._originId) {
-        return {
-          ...d,
-          list: [...d.list, ...formData.destinations],
-        };
-      }
-      return {
-        ...d,
-      };
-    });
-
-    setShlData(() => [...shlArr]);
-  };
-
-  const handleSaveAction = async () => {
-    if (shlAPIPayload) {
-      const shlResponse = await postShlData(shlAPIPayload);
-
-      if (shlResponse) {
-        handleGetRegionSource();
-      }
-    }
-  };
-
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
-  };
-
+  //to get Destination Data from database
   const handleGetDestination = async () => {
-    const destinationResponse = await getDestinationData();
+    const response = await getDestinationData();
 
-    if (destinationResponse) {
-      const destinationOptions = destinationResponse[0].destination.map(
+    if (response) {
+      const destinationOptions = response.destination.map(
         (d: any) => {
           return {
             label: d.portName,
@@ -310,78 +157,133 @@ function ManageShlContainer() {
           };
         }
       );
-
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
 
-  React.useEffect(() => {
-    handleGetRegionSource();
+ //to add new or edit the existing row in the table
+  const handleSaveAction = async (data:any) => {
+    const payload = data.destinations.flatMap((destination:any) => ({
+      _originPortId: data._originPortId,
+      ...destination,
+    }));
+  
+    if (payload[0] && modalType === "add") {
+      const response = await postShlData(payload[0]);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "SHL Charges Added!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });   
+      }
+    }
+
+    if (payload && modalType === "update") {
+      const response = await patchShlData(payload);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "SHL Charges Updated!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });   
+      }
+    }
+  };
+
+  //to delete a single row data
+  const openDeleteModal = (rowData: any) =>
+    openConfirmModal({
+      title: "Delete the SHL Data",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the SHL Data? 
+          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
+          this data.</Text> 
+          </Text>
+      ),
+      labels: { confirm: "Delete SHL Data", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleDeleteVariant(rowData),
+    });
+  const handleDeleteVariant = async (data: any) => {
+    const response = await deleteShlData(data);
+
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "SHL Charges Deleted!",
+        message: "",
+        autoClose: 2000,
+        icon: <X />,
+        color:'red',
+      });
+    }  
+  };
+
+  const handleRefreshCalls = () => {
+    handleGetOrigin();
+  };
+
+  useEffect(() => {
+    handleGetOrigin();
   }, []);
 
-  React.useEffect(() => {
-    if (shlData.length) {
-      let tableData: any = [];
-
-      [...shlData].forEach((d: any) => {
-        d.list.forEach((l: any) => {
-          const obj = {
+  useEffect(() => {
+    if (shlData.length && destinationSelectOptions.length) {
+      const tableData = shlData.flatMap((d:any) => {
+        return d.list.map((l:any) => {
+          const destination = destinationSelectOptions.find(
+            (option:any) => option.value === l._destinationPortId
+          );
+  
+          return {
             ...l,
-            originPort: d.name,
-            _originPortId: d._originPortId,
+            origin: d.name,
+            destination: destination ? destination.label : "Null",
+            _originPortId: d._originId,
           };
-          tableData.push(obj);
         });
       });
-
       setTableRowData(tableData);
     }
-  }, [shlData]);
+  }, [shlData, destinationSelectOptions]);
 
   return (
     <PageWrapper
-      PageHeader={() => (
-        <RenderPageHeader
-          activeFilter={activeFilter}
-          handleRadioChange={(value: any, index: number) =>
-            setActiveFilter(index)
-          }
-        />
-      )}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          editModeActive={editModeActive}
-          handleEditAction={handleSave}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageHeader={() => null}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit" ? "Add SHL Charges" : "Update SHL Charges"
+        modalType === "add" ? "Add SHL Charges" : "Update SHL Charges"
       }
-      onModalClose={() => setModalOpen(false)}
-      ModalContent={() => {
-        if (modalType === "edit") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
-              destinationSelectOptions={destinationSelectOptions}
-              handleUpdateShlUIData={handleUpdateShlUIData}
-            />
-          );
-        }
+      onModalClose={() => {
+        setModalOpen(false)
+        setUpdateFormData(null);
+      }}
 
-        if (modalType === "update") {
+      ModalContent={() => {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               regionSelectOptions={regionSelectOptions}
+              handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
+              updateFormData={updateFormData}
+              modalType={modalType}
+              modalOpen={modalOpen}
             />
           );
-        }
       }}
       modalSize="70%"
     >
@@ -396,17 +298,38 @@ function ManageShlContainer() {
             type: "button",
             onClickAction: () => {
               setModalOpen(true);
-            },
-          },
-          {
-            label: "Save",
-            type: "button",
-            color: "blue",
-            onClickAction: () => {
-              handleSaveAction();
+              setModalType("add");
             },
           },
         ]}
+        handleRowEdit={(row: any, index: number) => {
+          setModalType('update')
+          let obj = { ...row };
+
+          const formObj = {
+            _originPortId: obj._originPortId,
+            destinations: [
+              {
+                _destinationPortId: obj._destinationPortId,
+                shlCharge: obj.shlCharge,
+                thc: obj.thc,
+                blFee: obj.blFee,
+                surrender: obj.surrender,
+                convenienceFee: obj.convenienceFee,
+                muc: obj.muc,
+                seal: obj.seal,
+                coo: obj.seal,
+                _id:obj._id,
+              },
+            ],
+          }
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
       />
     </PageWrapper>
   );
