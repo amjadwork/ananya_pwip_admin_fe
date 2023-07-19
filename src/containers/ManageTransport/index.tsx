@@ -1,44 +1,33 @@
-import React, { useEffect, useState } from "react";
-import {
-  Group,
-  Popover,
-  Space,
-} from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import {
-  Button,
-  Text,
-  ActionIcon,
-} from "../../components/index";
+import React, {useEffect,useState} from "react";
+import { Plus, X , Check} from "tabler-icons-react";
+import { Text} from "../../components/index";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 
-import EditTransportForm from "../../forms/ManageTransport/index";
+import EditTransportationForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 
 import {
   getOriginData,
   getSourceData,
-  getTransportData,
-  postTransportData,
+  getTransportationData,
+  postTransportationData,
+  deleteTransportationData,
+  patchTransportationData,
 } from "../../services/export-costing/Transport";
 
 const columns = [
   {
-    label: "Origin",
-    key: "originPort",
-    sortable:true,
-  },
-  {
     label: "Source",
     key: "source",
-    sortable:true,
   },
   {
-    label: "State",
-    key: "state",
+    label: "Origin",
+    key: "origin",
   },
   {
-    label: "Charges",
+    label: "Transportation",
     key: "transportationCharge",
   },
   {
@@ -47,285 +36,235 @@ const columns = [
   },
 ];
 
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEditAction = props.handleEditAction;
-  const editModeActive = props.editModeActive;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEditAction(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="md"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button
-                size="xs"
-                color="gray"
-                onClick={() => handleEditAction(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEditAction(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEditAction(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
-};
-
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  const sourceSelectOptions = props.sourceSelectOptions;
   const originSelectOptions = props.originSelectOptions;
-  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
+  const sourceSelectOptions = props.sourceSelectOptions;
+  const updateFormData = props.updateFormData;
+  const handleSaveAction = props.handleSaveAction;
+  const modalType = props.modalType;
 
   return (
-    <EditTransportForm
+    <EditTransportationForm
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       sourceSelectOptions={sourceSelectOptions}
-      handleUpdateTransportUIData={handleUpdateTransportUIData}
+      handleSaveAction={handleSaveAction}
+      updateFormData={updateFormData}
+      modalType={modalType}
     />
   );
 };
 
 function ManageTransportContainer() {
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [editModeActive, setEditModeActive] = React.useState<boolean>(false);
-  const [modalType, setModalType] = React.useState<string>("edit");
-  const [transportData, setTransportData] = React.useState<any>([]);
-  const [sourceSelectOptions, setSourceSelectOptions] = React.useState<any>([]);
-  const [originSelectOptions, setOriginSelectOptions] = React.useState<any>([]);
-  const [transportAPIPayload, setTransportAPIPayload] =
-    React.useState<any>(null);
-  const [originList, setOriginList] = useState<any>([]);
-  const [sourceList, setSourceList] = useState<any>([]);
-    const [tableRowData, setTableRowData] = React.useState<any>([]);
+  const [modalOpen, setModalOpen] = useState<any>(false);
+  const [modalType, setModalType] = useState<string>("add");
+  const [transportationData, setTransportationData] = useState<any>([]);
+  const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
+  const [sourceSelectOptions, setSourceSelectOptions] = useState<any>([]);
+  const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [tableRowData, setTableRowData] = useState<any>([]);
 
-  const handleRefetchTransportList = (transportPostResponse: any) => {
-    if (transportPostResponse) {
-      handleGetSource();
-      handleGetOrigin();
+  //to get Transportation Data from database
+  const handleGetTransportation = async () => {
+    const response: any[] = await getTransportationData();
+    console.log("getT", response);
+  
+    try {
+      if (response) {
+        let array: any[] = response.map((item: any) => {
+          let destinationArr: any[] = [];
+          let originIdStringArr: string[] = [];
+  
+          response.forEach((origin: any) => {
+            if (item._originPortId === origin._originPortId) {
+              destinationArr.push(origin.sourceLocations);
+              originIdStringArr.push(origin._id);
+            }
+          });
+  
+          return {
+            ...item,
+            list: originIdStringArr.includes(item._id) ? destinationArr.flat(1) : [],
+          };
+        });
+  
+        setTransportationData(() => [...array]);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+  
 
-  const getTransportList = async () => {
-    const transportResponse: any = await getTransportData();
-    if (transportResponse) {
-      setTransportData(() => [...transportResponse]);
-    }
-  };
-  const handleEditAction = (bool: boolean) => {
-    setEditModeActive(() => bool);
-    setModalType("edit");
-  };
-
-  const handleEditToUpdateAction = () => {
-    setModalType("update");
-    setModalOpen(true);
-  };
-
-  const handleGetSource = async () => {
-    const sourceResponse = await getSourceData();
-    setSourceList(sourceResponse[0].source);
-
-    if (sourceResponse) {
-      const sourceOptions = sourceResponse[0].source.map((d: any) => {
-        return {
-          label: d.region,
-          value: d._id,
-        };
-      });
-      setSourceSelectOptions(() => [...sourceOptions]);
-      getTransportList();
-    }
-  };
- 
-  const handleGetOrigin = async () => {
-    const originResponse = await getOriginData();
-    setOriginList(originResponse[0].origin);
-    if (originResponse) {
-      const regionOptions = originResponse[0].origin.map((d: any) => {
+  //to get Origin Data from database
+  const handleGetOrigin= async () => {
+    const response = await getOriginData();
+    if (response) {
+      const originOptions = response.origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
         };
       });
-
-      setOriginSelectOptions(() => [...regionOptions]);
-      // getTransportList();
+      console.log("originOptions", originOptions)
+      setOriginSelectOptions(() => [...originOptions]);
+      handleGetSource();
+      handleGetTransportation();
     }
   };
-  const handleUpdateTransportUIData = (formData: any) => {
-    setTransportAPIPayload({ ...formData });
 
-    let transportArr: any = [...transportData];
+  //to get Source Data from database
+  const handleGetSource = async () => {
+    const response = await getSourceData();
+    if (response) {
+      const sourceOptions = response.source.map(
+        (d: any) => {
+          return {
+            label: d.region,
+            value: d._id,
+            state: d._state,
+          };
+        }
+      );
+      setSourceSelectOptions(() => [...sourceOptions]);
+    }
+  };
 
-    const arr = transportArr.map((d: any) => {
-      if (d?._originPortId === formData?._originPortId) {
-        return {
-          ...d,
-          sourceLocations: [...d.sourceLocations, ...formData.sourceLocations],
-        };
+ //to add new or edit the existing row in the table
+  const handleSaveAction = async (data:any) => {
+    const payload = data.sourceLocations.flatMap((d:any) => ({
+      _originPortId: data._originPortId,
+      ...d,
+    }));
+  
+    if (payload[0] && modalType === "add") {
+      const response = await postTransportationData(payload[0]);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Transportation Charges Added!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });   
       }
-      return {
-        ...d,
-      };
-    });
+    }
 
-    setTransportData(() => [...arr]);
-  };
+    if (payload && modalType === "update") {
+      const response = await patchTransportationData(payload);
 
-  const handleSave = (bool: boolean) => {
-    handleEditAction(bool);
-  };
-
-  const handleSaveAction = async () => {
-    if (transportAPIPayload) {
-      const transportResponse = await postTransportData(transportAPIPayload);
-      if (transportResponse) {
-        handleGetSource();
+      if (response) {
         handleGetOrigin();
+        showNotification({
+          title: "Transportation Charges Updated!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });
       }
     }
   };
-  useEffect(() => {
-  }, [sourceList]);
 
-  React.useEffect(() => {
-    handleGetSource();
+  //to delete a single row data
+  const openDeleteModal = (rowData: any) =>
+    openConfirmModal({
+      title: "Delete the Transportation Data",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete the Transportation Data? 
+          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
+          this data.</Text> 
+          </Text>
+      ),
+      labels: { confirm: "Delete Transportation Data", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleDeleteRow(rowData),
+    });
+  const handleDeleteRow = async (data: any) => {
+    const response = await deleteTransportationData(data);
+
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "Tranportation Charges Deleted!",
+        message: "",
+        autoClose: 2000,
+        icon: <X />,
+        color:'red',
+      });
+    }  
+  };
+
+  const handleRefreshCalls = () => {
+    handleGetOrigin();
+  };
+
+  useEffect(() => {
     handleGetOrigin();
   }, []);
 
-  React.useEffect(() => {
-    if (transportData.length) {
-      let tableData: any = [];
+  useEffect(() => {
+    if (transportationData.length && sourceSelectOptions.length && originSelectOptions.length) {
+      const tableData = transportationData.flatMap((list: any) => {
+        return list.sourceLocations.map((item: any) => {
+          const sourceOption = sourceSelectOptions.find(
+            (d: any) => d.value === item._sourcePortId
+          );
+          //to display source label instead of _id
+          const sourceName = sourceOption ? sourceOption.label : "Null";
 
-      [...transportData].forEach(({ _originPortId, sourceLocations }: { _originPortId: string, sourceLocations: { transportationCharge: string, _sourcePortId: string }[] }) => {
-        const originData = originList.find(({ _id }: { _id: string }) => _id === _originPortId);
-        const originPort = originData ? originData.portName : '';
-        sourceLocations.forEach(({ transportationCharge, _sourcePortId }) => {
-          const sourceData = sourceList.find(({ _id }: { _id: string }) => _id === _sourcePortId);
-          const source = sourceData ? sourceData.region : '';
-          const state = sourceData ? sourceData.state : '';
-  
-          const obj = {
-            transportationCharge,
-            _sourcePortId,
-            source,
-            state,
-            originPort,
-            _originPortId,
+          //to display origin label instead of _id
+          const originOption = originSelectOptions.find(
+            (d: any) => d.value === list._originPortId
+          );
+          const originName = originOption ? originOption.label : "Null";
+    
+          return {
+            ...item,
+            _originPortId:list._originPortId,
+            origin: originName,
+            source: sourceName,
           };
-          tableData.push(obj);
         });
       });
       setTableRowData(tableData);
+      console.log("table", tableData);
     }
-  }, [transportData, originList, sourceList]);
-
+  }, [transportationData, sourceSelectOptions, originSelectOptions]);
   
+  
+
   return (
     <PageWrapper
       PageHeader={() => null}
-      PageAction={() => (
-        <RenderPageAction
-          handleActionClick={() => setModalOpen(true)}
-          handleEditAction={handleSave}
-          editModeActive={editModeActive}
-          handleSaveAction={handleSaveAction}
-        />
-      )}
+      PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "edit"
-          ? "Add Transportation Charges"
-          : "Update Transportation Charges"
+        modalType === "add" ? "Add Transportation Charges" : "Update Transportation Charges"
       }
-      onModalClose={() => setModalOpen(false)}
-      ModalContent={() => {
-        if (modalType === "edit") {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
-              sourceSelectOptions={sourceSelectOptions}
-              originSelectOptions={originSelectOptions}
-              handleUpdateTransportUIData={handleUpdateTransportUIData}
-            />
-          );
-        }
+      onModalClose={() => {
+        setModalOpen(false)
+        setUpdateFormData(null);
+      }}
 
-        if (modalType === "update") {
+      ModalContent={() => {
           return (
             <RenderModalContent
-              handleCloseModal={(bool: any) => setModalOpen(bool)}
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               originSelectOptions={originSelectOptions}
+              handleSaveAction={handleSaveAction}
               sourceSelectOptions={sourceSelectOptions}
+              updateFormData={updateFormData}
+              modalType={modalType}
+              modalOpen={modalOpen}
             />
           );
-        }
       }}
       modalSize="70%"
     >
@@ -339,33 +278,33 @@ function ManageTransportContainer() {
             color: "gray",
             type: "button",
             onClickAction: () => {
-              setModalType("add");
               setModalOpen(true);
+              setModalType("add");
             },
           },
         ]}
-        // handleRowEdit={(row: any, rowIndex: number) => {
-        //   let obj = { ...row };
-        //   delete obj["updatedAt"];
-        //   delete obj["_id"];
-        //   delete obj["_originPortId"];
-        //   delete obj["createdAt"];
-        //   delete obj["originPort"];
-
-        //   const formObj = {
-        //     _originPortId: row._originPortId,
-        //     destinations: [obj],
-        //   };
-
-        //   setUpdateFormData(formObj);
-        //   setModalType("update");
-        //   setModalOpen(true);
-        // }}
-        // handleRowDelete={(row: any, rowIndex: number) => {
-        //   openDeleteModal(row);
-        // }}
+        handleRowEdit={(row: any, index: number) => {
+          setModalType('update')
+          let obj = { ...row };
+          const formObj = {
+            _originPortId: obj._originPortId,
+            sourceLocations: [
+              {
+                _transportObjId: obj._id,
+                transportationCharge: obj.transportationCharge,
+                _sourcePortId: obj._sourcePortId,
+        
+              },
+            ],
+          }
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
       />
-    
     </PageWrapper>
   );
 }

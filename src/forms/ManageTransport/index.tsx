@@ -1,212 +1,172 @@
-import React, { useState } from "react";
-import {
-  Group,
-  NumberInput,
-  Space,
-} from "@mantine/core"; 
-import {Button, Select, ActionIcon} from "../../components/index"
-import { Plus, Minus, Check } from "tabler-icons-react";
+import React, { useEffect } from "react";
+import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
+import { Select, Button, ActionIcon } from "../../components/index";
+import { Trash } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { randomId } from "@mantine/hooks";
 
 const initialFormValues = {
-  "_originPortId": "",
-  "_sourcePortId": "",
-  "transportationCharge": "",
+  _originPortId: "",
+  sourceLocations: [
+    {
+      _sourcePortId: "",
+      transportationCharge: "",
+      key: randomId(),
+    },
+  ],
 };
 
-function EditTransportForm(props: any) {
-  const originSelectOptions = props.originSelectOptions || [];
+function EditTransportationForm(props: any) {
+  const originSelectOptions = props.originSelectOptions;
   const sourceSelectOptions = props.sourceSelectOptions;
-  const handleUpdateTransportUIData = props.handleUpdateTransportUIData;
   const handleCloseModal = props.handleCloseModal;
+  const handleSaveAction = props.handleSaveAction;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
 
-  const [transportItemList, setTransportItemList] = useState([]);
-  const [transportPayload, setTransportPayload] = useState(null);
-  const [transportFormValues, setTransportFormValues] = useState({
-    ...initialFormValues,
-  });
-
-  const form = useForm({
+  const form: any = useForm({
     clearInputErrorOnChange: true,
-    initialValues: transportFormValues,
-    // validate: {
-    //   name: (value) =>
-    //     value.length < 2 ? "Name must have at least 2 letters" : null,
-    // },
+    initialValues: { ...initialFormValues },
   });
 
+  //to show previous values while editing the row
+  useEffect(() => {
+  if (updateFormData && modalType === "update") {
+    form.setValues(updateFormData);
+  }
+}, [updateFormData, modalType]);
+
+  //to add more destination item in the form
   const handleAddItem: any = () => {
-    let arr: any = [];
-
-    arr.push("");
-    let transportObject: any = {};
-    const object: any = { ...form.values };
-
-    let transportArr: any = [...transportItemList];
-
-    Object.keys(object)
-      .filter((key) => {
-        // const _key = key.split("_|")[0];
-        if (key !== "_originPortId") {
-          return key;
-        }
-      })
-      .map((key) => {
-        // const _key = key.split("_|")[0];
-        transportObject[key] = object[key];
-        return null;
-      });
-
-    transportArr.push(transportObject);
-
-    console.log(transportArr)
-
-    const payloadObject: any = {
-      _originPortId: object._originPortId,
-      sourceLocations: [...transportArr],
-    };
-
-    setTransportPayload(payloadObject);
-    setTransportItemList(transportArr);
-
-    // reset inital form value
-    let formResetValues: any = {};
-    Object.keys({ ...transportObject }).map((key) => {
-      formResetValues[`${key}_|`] = "";
+    form.insertListItem("sourceLocations", initialFormValues.sourceLocations[0], {
+      ...initialFormValues.sourceLocations[0],
     });
-    setTransportFormValues(formResetValues);
-    // reset inital form value ends
   };
 
-  const handleDeleteItem = (index: number) => {
-    let transportArr: any = [...transportItemList];
-
-    // logic to delete an item starts
-    if (index > -1) {
-      transportArr.splice(index, 1);
-    }
-
-    // logic to delete an item end
-
-    setTransportItemList(transportArr);
-  };
-
-  const handleError = (errors: typeof form.errors) => {
-    if (errors.name) {
-      showNotification({ message: "Please fill name field", color: "red" });
-    }
-  };
-  // const handleUpdate = (index: number) => {
-  //   const arr: any = [...categoriesList];
-  //   arr[index] = catUpdateValue;
-
-  //   setCategoriesList(arr);
-
-  //   console.log(arr);
-  // };
+  //to remove the destination item in the form modal
+  const handleRemoveItem: any = (index: number) => {
+        form.removeListItem("sourceLocations", index);
+      };
 
   const handleFormSubmit = (formValues: typeof form.values) => {
-    handleUpdateTransportUIData(transportPayload);
+    handleSaveAction(formValues);
     handleCloseModal(false);
+    form.setValues(initialFormValues);
   };
 
+ const fields = form.values.sourceLocations.map((item: any, index: number) => (
+  <React.Fragment key={item?.key}>
+    <Group
+      spacing="md"
+      sx={(theme) => ({
+        border: `1px solid ${theme.colors.gray[2]}`,
+        borderRadius: 12,
+        padding: 12,
+        backgroundColor: theme.colors.gray[0],
+      })}
+    >
+      <Grid>
+        <Grid.Col span={11}>
+          <Grid>
+            <Grid.Col span={6}>
+              <Select
+                required
+                searchable
+                label="Select Source "
+                placeholder="Eg. Karnal"
+                data={sourceSelectOptions}
+                {...form.getInputProps(
+                  `sourceLocations.${index}._sourcePortId`
+                )}
+              />
+            </Grid.Col>
+
+            <Grid.Col span={6}>
+              <NumberInput
+                required
+                precision={2}
+                hideControls
+                label="Transportation Charge"
+                placeholder="Eg. 26500"
+                {...form.getInputProps(`sourceLocations.${index}.transportationCharge`)}
+              />
+            </Grid.Col>
+          </Grid>
+        </Grid.Col>
+
+        <Grid.Col span={1}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {form.values.sourceLocations.length > 1 && modalType !== "update" ? (
+              <Group spacing="md" position="right" margin-bottom="5px">
+                <ActionIcon
+                  variant="light"
+                  color="red"
+                  onClick={() => handleRemoveItem(index)}
+                >
+                  <Trash size="1rem" />
+                </ActionIcon>
+              </Group>
+            ) : null}
+          </div>
+        </Grid.Col>
+      </Grid>
+    </Group>
+    <Space h="md" />
+  </React.Fragment>
+));
+
+
+
   return (
-    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Select
         required
         searchable
-        label="Enter Origin Port"
+        label="Select Origin Port"
         placeholder="Eg. Chennai"
         data={originSelectOptions}
         {...form.getInputProps("_originPortId")}
+        sx={() => ({
+          marginBottom: 18,
+        })}
       />
 
-      <Space h="md" />
-      {transportItemList.map((item, i) => {
-        return (
-          <Group spacing="md" key={i}>
-            <Select
-              required
-              searchable
-              label="Enter Source Location"
-              placeholder="eg. Karnal "
-              data={sourceSelectOptions}
-              defaultValue={item["_sourcePortId"]}
-              {...form.getInputProps("_sourcePortId" + i)}
-            />
+      {fields}
 
-            <NumberInput
-              required
-              label="Enter Transport Charges"
-              placeholder="Eg. 26500"
-              precision={2}
-              hideControls
-              defaultValue={item["transportationCharge"]}
-              {...form.getInputProps("transportationCharge" + i)}
-            />
-
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "bottom",
-                // width: "100%",
-                marginTop: `3%`,
-              }}
-            >
-              <Group spacing="md" position="right" margin-bottom="10px">
-                <ActionIcon
-                  variant="filled"
-                  onClick={() => handleDeleteItem(i)}
-                >
-                  <Minus size={20} />
-                </ActionIcon>
-              </Group>
-            </div>
-          </Group>
-        );
-      })}
-
-      <Space h="md" />
-
-      <Group spacing="md" grow>
-        <Select
-          required
-          searchable
-          label="Enter Source Location"
-          placeholder="eg. Punjab"
-          data={sourceSelectOptions}
-          {...form.getInputProps("_sourcePortId")}
-        />
-
-        <NumberInput
-          required
-          label="Enter Transport charges"
-          placeholder="Eg. 26500"
-          precision={2}
-          hideControls
-          {...form.getInputProps("transportationCharge")}
-        />
-
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "bottom",
-            width: "100%",
-            marginTop: `3%`,
-          }}
+      {modalType === "add" ? (
+        <Group
+          sx={(theme) => ({
+            borderRadius: 12,
+            padding: 2,
+            display: "flex",
+            justifyContent: "flex-end",
+          })}
         >
-          <Button onClick={handleAddItem}>+</Button>
-        </div>
-      </Group>
+          <Box
+            style={{
+              textAlign: "right",
+              width: "auto",
+              color: "blue",
+            }}
+          >
+            <div onClick={handleAddItem}>+ Add More</div>
+          </Box>
+        </Group>
+      ) : null}
 
-      <Space h="lg" />
-
-      <Group position="right" mt="md">
-        <Button type="submit">Save</Button>
+      <Group position="right" mt="sm">
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );
 }
 
-export default EditTransportForm;
+export default EditTransportationForm;
