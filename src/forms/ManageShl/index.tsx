@@ -1,125 +1,206 @@
-import React, { useState } from "react";
-import {
-  Group,
-  NumberInput,
-  Space,
-  Grid,
-} from "@mantine/core";
-import { Plus, Minus, Check } from "tabler-icons-react";
-import { Button,Select,ActionIcon } from "../../components/index";
-
+import React, { useEffect } from "react";
+import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
+import { Select, Button, ActionIcon } from "../../components/index";
+import { Trash } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { randomId } from "@mantine/hooks";
 
 const initialFormValues = {
-  "_originPortId_|": "",
-  "_destinationPortId_|": "",
-  "shlCharge_|": "",
-  "thc_|": "",
-  "blFee_|": "",
-  "surrender_|": "",
-  "convenienceFee_|": "",
-  "muc_|": "",
-  "seal_|": "",
-  "coo_|": 0,
+  _originPortId: "",
+  destinations: [
+    {
+      _destinationPortId: "",
+      shlCharge: "",
+      thc: "",
+      blFee: "",
+      surrender: "",
+      convenienceFee: "",
+      muc: "",
+      seal: "",
+      coo: "",
+      key: randomId(),
+    },
+  ],
 };
 
 function EditShlForm(props: any) {
   const regionSelectOptions = props.regionSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
   const handleCloseModal = props.handleCloseModal;
-  const handleUpdateShlUIData = props.handleUpdateShlUIData;
+  const handleSaveAction = props.handleSaveAction;
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
 
-  const [shlDestinationItemList, setShlDestinationItemList] = useState([]);
-  const [shlPayload, setShlPayload] = useState(null);
-  const [shlFormValues, setShlFormValues] = useState({ ...initialFormValues });
-
-  const form = useForm({
+  const form: any = useForm({
     clearInputErrorOnChange: true,
-    initialValues: shlFormValues,
-    // validate: {
-    //   name: (value) =>
-    //     value.length < 2 ? "Name must have at least 2 letters" : null,
-    // },
+    initialValues: { ...initialFormValues },
   });
 
+  //to show previous values while editing the row
+  useEffect(() => {
+  if (updateFormData && modalType === "update") {
+    form.setValues(updateFormData);
+  }
+}, [updateFormData, modalType]);
+
+  //to add more destination item in the form
   const handleAddItem: any = () => {
-    let arr: any = [];
-
-    arr.push("");
-    let destinationObject: any = {};
-    const object: any = { ...form.values };
-    let destinationsArr: any = [...shlDestinationItemList];
-
-    Object.keys(object)
-      .filter((key) => {
-        const _key = key.split("_|")[0];
-        if (_key !== "_originPortId") {
-          return key;
-        }
-      })
-      .map((key) => {
-        const _key = key.split("_|")[0];
-        destinationObject[_key] = object[key];
-        return {
-          [_key]: object[key],
-        };
-      });
-
-    destinationsArr.push(destinationObject);
-
-    const payloadObject: any = {
-      _originPortId: object._originPortId,
-      destinations: [...destinationsArr],
-    };
-
-    setShlPayload(payloadObject);
-    setShlDestinationItemList(destinationsArr);
-
-    // reset inital form value
-    let formResetValues: any = {};
-    Object.keys({ ...destinationObject }).map((key) => {
-      formResetValues[`${key}_|`] = "";
+    form.insertListItem("destinations", initialFormValues.destinations[0], {
+      ...initialFormValues.destinations[0],
     });
-    setShlFormValues(formResetValues);
-    // reset inital form value ends
   };
 
-  const handleDeleteItem = (index: number) => {
-    let destinationsArr: any = [...shlDestinationItemList];
-
-    // logic to delete an item starts
-    if (index > -1) {
-      destinationsArr.splice(index, 1);
-    }
-
-    // logic to delete an item end
-
-    setShlDestinationItemList(destinationsArr);
-  };
-
-  const handleError = (errors: typeof form.errors) => {
-    if (errors.name) {
-      showNotification({ message: "Please fill name field", color: "red" });
-    }
-  };
-  // const handleUpdate = (index: number) => {
-  //   const arr: any = [...categoriesList];
-  //   arr[index] = catUpdateValue;
-
-  //   setCategoriesList(arr);
-
-  //   console.log(arr);
-  // };
+  //to remove the destination item in the form modal
+  const handleRemoveItem: any = (index: number) => {
+        form.removeListItem("destinations", index);
+      };
 
   const handleFormSubmit = (formValues: typeof form.values) => {
-    handleUpdateShlUIData(shlPayload);
-
+    handleSaveAction(formValues);
     handleCloseModal(false);
+    form.setValues(initialFormValues);
   };
 
+  const fields = form.values.destinations.map((item: any, index: number) => (
+    <React.Fragment key={item?.key}>
+      <Group
+        spacing="md"
+        sx={(theme) => ({
+          border: `1px solid ${theme.colors.gray[2]}`,
+          borderRadius: 12,
+          padding: 12,
+          backgroundColor: theme.colors.gray[0],
+        })}
+      >
+        <Grid>
+          <Grid.Col span={11}>
+            <Select
+              required
+              searchable
+              label="Select Destination Port"
+              placeholder="Eg. singapore"
+              data={destinationSelectOptions}
+              {...form.getInputProps(
+                `destinations.${index}._destinationPortId`
+              )}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={1}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "flex-end",
+                justifyContent: "flex-end",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              {form.values.destinations.length > 1 &&modalType !== "update" ?  (
+                <Group spacing="md" position="right" margin-bottom="5px">
+                  <ActionIcon
+                    variant="light"
+                    color="red"
+                    onClick={() => handleRemoveItem(index)}
+                  >
+                    <Trash size="1rem" />
+                  </ActionIcon>
+                </Group>
+              ) : null}
+            </div>
+          </Grid.Col>
+
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="SHL Charges"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.shlCharge`)}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="Convenience"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.convenienceFee`)}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="BL Fees"
+              placeholder="Eg. 26500"             
+              {...form.getInputProps(`destinations.${index}.blFee`)}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="Surrender"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.surrender`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="MUC"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.muc`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="THC"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.thc`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="Seal"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.seal`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="COO"
+              placeholder="Eg. 26500"
+              {...form.getInputProps(`destinations.${index}.coo`)}
+            />
+          </Grid.Col>
+        </Grid>
+      </Group>
+      <Space h="md" />
+    </React.Fragment>
+  ));
+
   return (
-    <form onSubmit={form.onSubmit(handleFormSubmit, handleError)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Select
         required
         searchable
@@ -132,259 +213,33 @@ function EditShlForm(props: any) {
         })}
       />
 
-      <Space h="md" />
-      {shlDestinationItemList.map((item, i) => {
-        return (
-          <React.Fragment key={i}>
-            <Group
-              spacing="md"
-              sx={(theme) => ({
-                border: `1px solid ${theme.colors.gray[2]}`,
-                borderRadius: 12,
-                padding: 12,
-                backgroundColor: theme.colors.gray[0],
-              })}
-            >
-              <Grid>
-                <Grid.Col span={10}>
-                  <Select
-                    defaultValue={item["_destinationPortId"]}
-                    required
-                    searchable
-                    label="Select Destination Port"
-                    placeholder="Eg. singapore"
-                    data={destinationSelectOptions}
-                    {...form.getInputProps("_destinationPortId_|" + i)}
-                  />
-                </Grid.Col>
+      {fields}
 
-                <Grid.Col span={2}>
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "flex-end",
-                      justifyContent: "flex-end",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
-                    <Group spacing="md" position="right" margin-bottom="5px">
-                      <ActionIcon
-                        variant="filled"
-                        onClick={() => handleDeleteItem(i)}
-                      >
-                        <Minus size={20} />
-                      </ActionIcon>
-                    </Group>
-                  </div>
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="Enter CHA Charges"
-                    placeholder="Eg. 26500"
-                    defaultValue={item["shlCharge"]}
-                    {...form.getInputProps("shlCharge_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="Surrender"
-                    placeholder="Eg. 26500"
-                    defaultValue={item["surrender"]}
-                    {...form.getInputProps("surrender_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="THC"
-                    placeholder="Eg. 26500"
-                    defaultValue={item["thc"]}
-                    {...form.getInputProps("thc_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="B/L Fee"
-                    placeholder="Eg. 26500"
-                    {...form.getInputProps("blFee_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="Seal"
-                    placeholder="Eg. 26500"
-                    {...form.getInputProps("seal_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="Convenience Fees"
-                    placeholder="Eg. 26500"
-                    {...form.getInputProps("convenienceFee_|" + i)}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={2}>
-                  <NumberInput
-                    required
-                    precision={2}
-                    hideControls
-                    label="MUC"
-                    placeholder="Eg. 26500"
-                    {...form.getInputProps("muc_|" + i)}
-                  />
-                </Grid.Col>
-
-              </Grid>
-            </Group>
-            <Space h="md" />
-          </React.Fragment>
-        );
-      })}
-
-      <Group
-        sx={(theme) => ({
-          border: `1px solid ${theme.colors.gray[2]}`,
-          borderRadius: 12,
-          padding: 12,
-        })}
-      >
-        <Grid>
-          {/* <TextInput
-            required
-            label="Enter Destination Port"
-            placeholder="Eg. singapore"
-            {...form.getInputProps("destination")}
-          /> */}
-          <Grid.Col span={11}>
-            <Select
-              required
-              searchable
-              label="Select Destination Port"
-              placeholder="Eg. singapore"
-              data={destinationSelectOptions}
-              {...form.getInputProps("_destinationPortId_|")}
-            />
-          </Grid.Col>
-
-          <Grid.Col span={1}>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "flex-end",
-                height: "100%",
-                width: "100%",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Button onClick={handleAddItem}>+</Button>
-            </div>
-          </Grid.Col>
-
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="Enter SHL Charges"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("shlCharge_|")}
-            />
-          </Grid.Col>
-
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="THC"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("thc_|")}
-            />
-          </Grid.Col>
-
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="B/L Fee"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("blFee_|")}
-            />
-          </Grid.Col>
-
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="Surrender"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("surrender_|")}
-            />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="Convenience Fees"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("convenienceFee_|")}
-            />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="MUC"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("muc_|")}
-            />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="Seal"
-              placeholder="Eg. 26500"
-              {...form.getInputProps("seal_|")}
-            />
-          </Grid.Col>
-        </Grid>
-      </Group>
+      {modalType === "add" ? (
+        <Group
+          sx={(theme) => ({
+            borderRadius: 12,
+            padding: 12,
+            display: "flex",
+            justifyContent: "flex-end",
+          })}
+        >
+          <Box
+            style={{
+              textAlign: "right",
+              width: "auto",
+              color: "blue",
+            }}
+          >
+            <div onClick={handleAddItem}>+ Add More</div>
+          </Box>
+        </Group>
+      ) : null}
 
       <Space h="lg" />
 
       <Group position="right" mt="md">
-        <Button type="submit">Save</Button>
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );
