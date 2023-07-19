@@ -7,15 +7,15 @@ export const getOfcData = async (regionList: any) => {
   }
 };
 
-export const getRegionSource = async () => {
-  const response = await APIRequest("location?filterType=origin", "GET");
+export const getOriginData = async () => {
+  const response = await APIRequest("location/origin", "GET");
   if (response) {
     return response;
   }
 };
 
 export const getDestinationData = async () => {
-  const response = await APIRequest("location?filterType=destination", "GET");
+  const response = await APIRequest("location/destination", "GET");
   if (response) {
     return response;
   }
@@ -27,3 +27,25 @@ export const postOfcData = async (ofcAPIPayload: any) => {
     return response;
   }
 };
+
+export const deleteOfcData = async (data: any) => {
+  const response = await APIRequest(
+    "ofc" + "/" + data._originPortId + "/" + data._id,
+    "DELETE"
+  );
+  if (response) {
+    return response;
+  }
+};
+
+export const patchOfcData = async (data: any) => {
+  const response = await APIRequest(
+    "ofc" + "/" + data[0]._originPortId + "/" + data[0]._ofcObjectId,
+    "PATCH", data[0]);
+  if (response) {
+    console.log(response)
+    return response;
+  }
+};
+
+
