@@ -94,7 +94,9 @@ function AddEditLocationFormContainer(props: any) {
           setLocationType(value);
         }}
       />
+
       <Space h="md" />
+
       {locationType === "source" ? (
         <>
           <TextInput
@@ -158,6 +160,7 @@ function AddEditLocationFormContainer(props: any) {
       ) : null}
 
       <Space h="md" />
+
       {locationType === "destination" ? (
         <>
           <TextInput

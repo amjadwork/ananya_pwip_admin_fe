@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
-import { Tabs, Group, Popover, Space } from "@mantine/core";
-import { Pencil, X, Check, Plus } from "tabler-icons-react";
-import { Button, ActionIcon, Text } from "../../components/index";
+import { Plus } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import PageHeader from "../../components/PageHeader/PageHeader";
 import AddEditLocationFormContainer from "../../forms/Location/index";
 import {
   getLocationData,
@@ -26,6 +24,7 @@ const sourceColumns = [
   {
     label: "Action",
     key: "action",
+    sortable: false,
   },
 ];
 const originColumns = [
@@ -49,6 +48,7 @@ const originColumns = [
   {
     label: "Action",
     key: "action",
+    sortable: false,
   },
 ];
 
@@ -69,6 +69,7 @@ const destinationColumns = [
   {
     label: "Action",
     key: "action",
+    sortable: false,
   },
 ];
 
@@ -76,100 +77,6 @@ type Column = {
   label: string;
   key: string;
   sortable?: boolean;
-};
-
-type TabsProps = {
-  defaultValue: string;
-  active: string;
-  onTabChange: (value: string) => void;
-};
-
-const RenderPageHeader = (props: any) => {
-  return <PageHeader />;
-};
-
-const RenderPageAction = (props: any) => {
-  const handleSaveAction = props.handleSaveAction;
-  const handleEdit = props.handleEdit;
-  const editModeActive = props.editModeActive || false;
-
-  if (editModeActive) {
-    return (
-      <Group position="right" spacing="md">
-        <ActionIcon
-          variant="filled"
-          color="gray"
-          sx={{
-            "&[data-disabled]": { opacity: 0.4 },
-          }}
-          onClick={() => handleEdit(false)}
-        >
-          <X size={16} />
-        </ActionIcon>
-
-        <Popover
-          width={250}
-          trapFocus
-          position="bottom-end"
-          withArrow
-          shadow="lg"
-        >
-          <Popover.Target>
-            <ActionIcon
-              variant="filled"
-              color="blue"
-              sx={{
-                "&[data-disabled]": { opacity: 0.4 },
-              }}
-            >
-              <Check size={16} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown
-            sx={(theme: any) => ({
-              background:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.white,
-            })}
-          >
-            <Text size="sm">Are you sure you want to save the changes</Text>
-            <Space h="sm" />
-            <Group position="right" spacing="md">
-              <Button size="xs" color="gray" onClick={() => handleEdit(false)}>
-                Cancel
-              </Button>
-              <Button
-                size="xs"
-                color="blue"
-                onClick={() => {
-                  if (handleSaveAction) {
-                    handleSaveAction();
-                  }
-                  handleEdit(false);
-                }}
-              >
-                Save
-              </Button>
-            </Group>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-    );
-  }
-
-  return (
-    <ActionIcon
-      variant="filled"
-      color="gray"
-      sx={{
-        "&[data-disabled]": { opacity: 0.4 },
-      }}
-      onClick={() => handleEdit(true)}
-    >
-      <Pencil size={16} />
-    </ActionIcon>
-  );
 };
 
 const RenderModalContent = (props: any) => {

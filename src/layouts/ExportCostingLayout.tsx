@@ -73,6 +73,8 @@ const ExportCostingLayout: React.FC<any> = () => {
     "manage-packaging",
     "ofc",
     "transport",
+    "others",
+    "pwip-services",
   ];
 
   const handleNavigation = (path: string) => {
@@ -160,7 +162,7 @@ const ExportCostingLayout: React.FC<any> = () => {
           <Route path="/ofc" element={<ManageOfcContainer />} />
           <Route path="/transport" element={<ManageTransportContainer />} />
           <Route
-            path="/pwipServices"
+            path="/pwip-services"
             element={<ManagePwipServicesContainer />}
           />
           <Route path="/others" element={<ManageOthersContainer />} />
