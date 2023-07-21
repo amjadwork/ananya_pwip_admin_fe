@@ -20,6 +20,7 @@ import ManageOfcContainer from "../containers/ManageOfc";
 import ManageTransportContainer from "../containers/ManageTransport";
 import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
+import ManageContainer from "../containers/ManageContainer";
 
 const useStyles = createStyles((theme) => ({
   tabs: {
@@ -70,11 +71,11 @@ const ExportCostingLayout: React.FC<any> = () => {
     "locations",
     "cha",
     "shl",
-    "manage-packaging",
     "ofc",
     "transport",
+    "packaging",
+    "container",
     "others",
-    "pwip-services",
   ];
 
   const handleNavigation = (path: string) => {
@@ -155,16 +156,10 @@ const ExportCostingLayout: React.FC<any> = () => {
           <Route path="/locations" element={<LocationsContainer />} />
           <Route path="/cha" element={<ManageChaContainer />} />
           <Route path="/shl" element={<ManageShlContainer />} />
-          <Route
-            path="/manage-packaging"
-            element={<ManagePackageContainer />}
-          />
           <Route path="/ofc" element={<ManageOfcContainer />} />
           <Route path="/transport" element={<ManageTransportContainer />} />
-          <Route
-            path="/pwip-services"
-            element={<ManagePwipServicesContainer />}
-          />
+          <Route path="/packaging" element={<ManagePackageContainer />} />
+          <Route path="/container" element={<ManageContainer />} />
           <Route path="/others" element={<ManageOthersContainer />} />
         </Routes>
       </Container>
