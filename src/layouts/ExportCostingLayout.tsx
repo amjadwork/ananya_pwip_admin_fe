@@ -18,7 +18,6 @@ import ManageChaContainer from "../containers/ManageCha";
 import ManageShlContainer from "../containers/ManageShl";
 import ManageOfcContainer from "../containers/ManageOfc";
 import ManageTransportContainer from "../containers/ManageTransport";
-import ManagePwipServicesContainer from "../containers/ManagePwipService";
 import ManageOthersContainer from "../containers/ManageOthers";
 import ManageContainer from "../containers/ManageContainer";
 
