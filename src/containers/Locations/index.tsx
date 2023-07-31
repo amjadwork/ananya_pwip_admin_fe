@@ -1,12 +1,16 @@
-import React, { useEffect } from "react";
-import { Plus } from "tabler-icons-react";
+import React, { useState, useEffect } from "react";
+import { Plus, Check } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import AddEditLocationFormContainer from "../../forms/Location/index";
 import {
-  getLocationData,
-  submitLocationData,
+  getAllLocationData,
+  postLocationData,
+  deleteLocationData,
+  patchLocationData,
 } from "../../services/export-costing/Locations";
 import DataTable from "../../components/DataTable/DataTable";
 
@@ -28,6 +32,10 @@ const sourceColumns = [
   },
 ];
 const originColumns = [
+  {
+    label: "Port Code",
+    key: "portCode",
+  },
   {
     label: "Port Name",
     key: "portName",
@@ -51,8 +59,11 @@ const originColumns = [
     sortable: false,
   },
 ];
-
 const destinationColumns = [
+  {
+    label: "Port Code",
+    key: "portCode",
+  },
   {
     label: "Destination Port",
     key: "portName",
@@ -72,7 +83,6 @@ const destinationColumns = [
     sortable: false,
   },
 ];
-
 type Column = {
   label: string;
   key: string;
@@ -81,37 +91,41 @@ type Column = {
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  const handleSettingLocationData = props.handleSettingLocationData;
+  const handleSetLocationPayload = props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
+  const updateFormData = props.updateFormData;
   const locationData = props.locationData;
   const selectedFilterValue = props.selectedFilterValue;
+  const modalType = props.modalType;
 
   return (
     <AddEditLocationFormContainer
       handleCloseModal={handleCloseModal}
-      handleSettingLocationData={handleSettingLocationData}
+      handleSetLocationPayload={handleSetLocationPayload}
       locationPayload={locationPayload}
+      updateFormData={updateFormData}
       locationData={locationData}
       selectedFilterValue={selectedFilterValue}
+      modalType={modalType}
     />
   );
 };
 
 function LocationsContainer() {
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [modalType, setModalType] = React.useState<string>("add");
-  const [locationData, setLocationData] = React.useState<any>({
+  const [modalOpen, setModalOpen] = useState<any>(false);
+  const [modalType, setModalType] = useState<string>("add");
+  const [locationData, setLocationData] = useState<any>({
     source: [],
     origin: [],
     destination: [],
   });
-  const [locationPayload, setLocationPayload] = React.useState<any>({
+  const [locationPayload, setLocationPayload] = useState<any>({
     source: [],
     origin: [],
     destination: [],
   });
-  const [selectedFilterValue, setSelectedFilterValue] =
-    React.useState("source");
+  const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [selectedFilterValue, setSelectedFilterValue] = useState("source");
 
   const handleSelectRadioFilterChange = (value: any) => {
     setSelectedFilterValue(value);
@@ -131,58 +145,140 @@ function LocationsContainer() {
     tableColumns = destinationColumns;
   }
 
-  const handleSaveAction = async () => {
-    let payload: any = {};
-
-    if (locationPayload?.source?.length) {
-      payload.source = locationPayload.source;
-    }
-
-    if (locationPayload?.origin?.length) {
-      payload.origin = locationPayload.origin;
-    }
-
-    if (locationPayload?.destination?.length) {
-      payload.destination = locationPayload.destination;
-    }
-
-    const addLocationResponse = await submitLocationData(payload);
-
-    if (addLocationResponse) {
-      getLocations();
-    }
-  };
-
-  const openDeleteModal = (data: any) =>
-    openConfirmModal({
-      title: "Delete Location",
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete this location record? Note:This action
-          is destructive and you will have to contact support to restore your
-          data.
-        </Text>
-      ),
-      labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
-      confirmProps: { color: "red" },
-      onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
-    });
-
-  const getLocations = async () => {
-    const locationResponse = await getLocationData();
-    if (locationResponse) {
+  //to get all Location Data from database  
+  const handleGetLocation = async () => {
+    const response= await getAllLocationData();
+    if (response) {
       setLocationData({
-        source: locationResponse.source || [],
-        origin: locationResponse.origin || [],
-        destination: locationResponse.destination || [],
+        source: response.source || [],
+        origin: response.origin || [],
+        destination: response.destination || [],
       });
     }
   };
 
+  const handleSetLocationPayload= async (form: any) => {
+    let data = { ...form };
+    let payload: any = {};    
+    data.destination = data.destination.map((p: any) => {
+      const linkedOrigin = [...p.linkedOrigin];
+      const newLinkedOrigin = locationData.origin
+        .filter((o: any) => {
+          if (linkedOrigin.includes(o._id)) {
+            return o;
+          }
+        })
+        .map((o: any) => {
+          return {
+            originPortName: o.portName,
+            _originId: o._id,
+          };
+        });
+
+      return {
+        ...p,
+        linkedOrigin: [...newLinkedOrigin],
+      };
+    });
+
+    if (data?.source?.length) {
+      payload= [...data.source]
+    }
+
+    if (data?.origin?.length) {
+      payload= [...data.origin];
+    }
+
+    if (data?.destination?.length) {
+      payload= [...data.destination];
+    }
+
+    handleSaveAction(payload); //API post request to database
+
+    const obj: any = {
+      source: [...locationData.source, ...data.source],
+      origin: [...locationData.origin, ...data.origin],
+      destination: [
+        ...locationData.destination,
+        ...data.destination,
+      ],
+    };
+    setLocationData(obj);
+  }; 
+ 
+ //to add new location data row in the table
+  const handleSaveAction = async (data:any) => {
+
+    if (data[0] && modalType === "add"){
+
+    const response = await postLocationData(data[0],selectedFilterValue);
+
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "Location added successfully!",
+        message: "",
+        autoClose: 2000,
+        icon: <Check />,
+        color:'green',
+      });
+    }
+  }
+    if (data[0] && modalType === "update") {
+      const response = await patchLocationData(data[0], selectedFilterValue);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Location Data Updated!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color:'green',
+        });
+      }
+    }
+  };
+
+  //to delete the location data of particular row in table
+  const openDeleteModal = (rowData: any) =>
+  openConfirmModal({
+    title: "Delete Location",
+    centered: true,
+    children: (
+      <Text size="sm">
+        Are you sure you want to delete this location record? Note:This action
+        is destructive and you will have to contact support to restore your
+        data.
+      </Text>
+    ),
+    labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
+    confirmProps: { color: "red" },
+    onCancel: () => console.log("Cancel"),
+    onConfirm: () => handleDelete(rowData),
+  });
+
+  const handleDelete = async (data: any) => {
+  const response = await deleteLocationData(data,selectedFilterValue);
+
+  if (response) {
+    handleRefreshCalls();
+    showNotification({
+      title: "Location deleted successfully!",
+      message: "",
+      autoClose: 2000,
+      icon: <Check />,
+      color:'green',
+    });
+  }  
+};
+
+const handleRefreshCalls = () => {
+  handleGetLocation();
+};
+
   React.useEffect(() => {
-    getLocations();
+    handleGetLocation();
   }, []);
 
   return (
@@ -193,48 +289,19 @@ function LocationsContainer() {
       modalTitle={
         modalType === "add" ? "Add a location" : "Update selected location"
       }
-      onModalClose={() => setModalOpen(false)}
+      onModalClose={() => {
+        setModalOpen(false)
+        setUpdateFormData(null);
+      }}
       ModalContent={() => (
         <RenderModalContent
           handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-          handleSettingLocationData={(data: any) => {
-            let payload = { ...data };
-
-            payload.destination = payload.destination.map((p: any) => {
-              const linkedOrigin = [...p.linkedOrigin];
-              const newLinkedOrigin = locationData.origin
-                .filter((o: any) => {
-                  if (linkedOrigin.includes(o._id)) {
-                    return o;
-                  }
-                })
-                .map((o: any) => {
-                  return {
-                    originPortName: o.portName,
-                    _originId: o._id,
-                  };
-                });
-
-              return {
-                ...p,
-                linkedOrigin: [...newLinkedOrigin],
-              };
-            });
-            setLocationPayload(payload);
-
-            const obj: any = {
-              source: [...locationData.source, ...payload.source],
-              origin: [...locationData.origin, ...payload.origin],
-              destination: [
-                ...locationData.destination,
-                ...payload.destination,
-              ],
-            };
-
-            setLocationData(obj);
-          }}
+          handleSetLocationPayload={handleSetLocationPayload}
           locationPayload={locationPayload}
+          updateFormData={updateFormData}
           locationData={locationData}
+          modalType={modalType}
+          modalOpen={modalOpen}
           selectedFilterValue={selectedFilterValue}
         />
       )}
@@ -255,8 +322,39 @@ function LocationsContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, rowIndex: number) => {
-          setModalType("update");
+        handleRowEdit={(row: any, index: number) => {
+          setModalType('update')
+          let obj = { ...row };
+          let formObj = {};
+
+         if(selectedFilterValue==='source'){
+          formObj = {
+            _id: obj._id,
+            region: obj.region,
+            state: obj.state,
+          }
+         }
+         if(selectedFilterValue==='origin'){
+          formObj = {
+            _id: obj._id,
+            cfsStation: obj.cfsStation,
+            city: obj.city,
+            portName: obj.portName,
+            state: obj.state,
+            portCode: obj.portCode,          
+          }
+         }
+         if(selectedFilterValue==='destination'){
+          formObj = {
+            portName: obj.portName,
+            portCode: obj.portCode,  
+            country:obj.country,
+            _id: obj._id,   
+            linkedOrigin: obj.linkedOrigin
+          }
+         }
+
+          setUpdateFormData(formObj);
           setModalOpen(true);
         }}
         handleRowDelete={(row: any, rowIndex: number) => {
