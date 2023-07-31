@@ -14,7 +14,7 @@ import { useForm } from "@mantine/form";
 import { eceForm } from "../../constants/eceForm.constants";
 
 import { showNotification } from "@mantine/notifications";
-import { getLocationData } from "../../services/export-costing/Locations";
+import { getAllLocationData } from "../../services/export-costing/Locations";
 import { getPackagingData, getProductData, getSpecificCategoryData, getSpecificVariantData } from "../../services/export-costing/Playground";
 
 const initialFormState: any = {
@@ -220,7 +220,7 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetLocationsData = async () => {
-    const locationResponse: any = await getLocationData()
+    const locationResponse: any = await getAllLocationData()
     if (locationResponse) {
       setLocationList(locationResponse);
 

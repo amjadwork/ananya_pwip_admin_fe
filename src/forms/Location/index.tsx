@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Group, TextInput, Space, MultiSelect } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Select, Button } from "../../components";
-import { showNotification } from "@mantine/notifications";
-import { stateName } from "../../constants/state.constants";
+import { Select, Button } from "../../components";import { stateName } from "../../constants/state.constants";
+
 
 function AddEditLocationFormContainer(props: any) {
-  const handleSettingLocationData = props.handleSettingLocationData;
+  const handleSetLocationPayload= props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
   const selectedFilterValue = props.selectedFilterValue || null;
-
-  const [select, setSelect] = useState(false);
+  const updateFormData = props.updateFormData;
+  const modalType = props.modalType || "add";
   const [locationType, setLocationType] = useState("");
 
   const handleCloseModal = props.handleCloseModal;
@@ -20,6 +19,12 @@ function AddEditLocationFormContainer(props: any) {
     clearInputErrorOnChange: true,
     initialValues: {},
   });
+    //to show previous values while editing the row
+    useEffect(() => {
+      if (updateFormData && modalType === "update") {
+        form.setValues(updateFormData);
+      }
+    }, [updateFormData, modalType]);
 
   useEffect(() => {
     if (selectedFilterValue) {
@@ -27,14 +32,7 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [selectedFilterValue]);
 
-  const handleError = (errors: typeof form.errors) => {
-    if (errors.name) {
-      showNotification({ message: "Please fill name field", color: "red" });
-    }
-  };
-
   const handleSubmit = (values: typeof form.values) => {
-    setSelect(true);
     handleCloseModal(false);
 
     let sourceArr: any = [...locationPayload.source];
@@ -69,21 +67,24 @@ function AddEditLocationFormContainer(props: any) {
       payload.destination = [...destinationArr];
     }
 
-    handleSettingLocationData(payload);
+     handleSetLocationPayload(payload);
+
   };
+
+  console.log("form", form.values)
 
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <Select
         required
         searchable
         label="Select location type"
         placeholder="Eg. Source"
-        disabled={select}
+        disabled={modalType === "update" ? true : false}
         data={[
           { value: "source", label: "Source" },
           { value: "origin", label: "Origin" },
@@ -131,6 +132,12 @@ function AddEditLocationFormContainer(props: any) {
           />
           <Space h="md" />
           <TextInput
+            label="Origin Port Code"
+            placeholder="eg. QWS23"
+            {...form.getInputProps("portCode")}
+          />
+          <Space h="md" />
+          <TextInput
             required
             label="Enter CFS Station"
             placeholder="eg. Chennai cfs"
@@ -171,6 +178,12 @@ function AddEditLocationFormContainer(props: any) {
           />
           <Space h="md" />
           <TextInput
+            label="Destination Port Code"
+            placeholder="eg. QWS23"
+            {...form.getInputProps("portCode")}
+          />
+          <Space h="md" />
+          <TextInput
             required
             label="Enter Country Name"
             placeholder="eg. Vietnam"
@@ -182,6 +195,7 @@ function AddEditLocationFormContainer(props: any) {
             label="Select Origin Ports"
             placeholder="Eg. Vishakapatnam"
             {...form.getInputProps("linkedOrigin")}
+            
           />
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
