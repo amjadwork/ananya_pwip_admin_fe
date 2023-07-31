@@ -21,6 +21,7 @@ import { randomId } from "@mantine/hooks";
 const initialFormValues: any = {
   _categoryId: "",
   variantName: "",
+  HSNCode: "",
   sourceRates: [
     {
       _sourceId: "",
@@ -93,6 +94,8 @@ function AddOrEditProductForm(props: any) {
     value: cat._id,
     label: cat.name,
   }));
+
+  console.log("form", form.values)
 
   React.useEffect(() => {
     if (modalOpen) {
@@ -172,6 +175,16 @@ function AddOrEditProductForm(props: any) {
         placeholder="eg. 1509 Sella"
         disabled={modalType === "update" ? true : false}
         {...form.getInputProps("variantName")}
+      />
+
+      <Space h="md" />
+
+
+      <TextInput
+        label="HSN Code"
+        placeholder="eg. CSQ212"
+        disabled={modalType === "update" ? true : false}
+        {...form.getInputProps("HSNCode")}
       />
 
       <Space h="md" />

@@ -12,6 +12,10 @@ import { getChangedPropertiesFromObject } from "../../helper/helper";
 
 const columns = [
   {
+    label: "Code",
+    key: "HSNCode",
+  },
+  {
     label: "Variant",
     key: "variantName",
     sortable: true,
@@ -211,6 +215,7 @@ function ManageProductsContainer(props: any) {
             ...l,
             priceWithUnit: `${l.price} per ${l.unit || "Kgs"}`,
             variantName: d.variantName,
+            HSNCode: d.HSNCode,
             _categoryId: d._categoryId,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
@@ -224,6 +229,9 @@ function ManageProductsContainer(props: any) {
       setTableRowData(tableData);
     }
   }, [variantsData, categoryData]);
+
+  console.log("tabelDsta", tableRowData)
+  console.log("variant", variantsData)
 
   return (
     <PageWrapper
@@ -280,6 +288,7 @@ function ManageProductsContainer(props: any) {
           const formObj = {
             _categoryId: obj._categoryId,
             variantName: obj.variantName,
+            HSNCode: obj.HSNCode,
             sourceRates: [{ ...obj }],
           };
 
