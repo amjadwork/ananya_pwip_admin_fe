@@ -36,7 +36,8 @@
     "saga-duck": "^3.4.8",
     "tabler-icons-react": "^1.54.0",
     "typescript": "^4.7.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

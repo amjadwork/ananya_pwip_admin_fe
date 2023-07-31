@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus } from "tabler-icons-react";
+import { Plus, Upload } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
-
+import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
+
 
 const columns = [
   {
@@ -50,6 +51,12 @@ const RenderModalContent = (props: any) => {
   const modalOpen = props.modalOpen;
 
   let regionCostingList: any = [];
+
+  if (modalType === "upload") {
+    return (
+      <SheetUpload />
+    );
+  }
 
   if (variantsData) {
     regionCostingList = [...variantsData.costing];
@@ -231,10 +238,12 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add"
-          ? "Add product variant"
-          : "Update variant price our source location"
-      }
+          modalType === "add"
+            ? "Add Product Variant"
+            : modalType === "upload"
+            ? "Upload Data from Excel Sheet"
+            : "Update Variant Price and Source Location"
+        }
       onModalClose={() => {
         setModalOpen(false);
         setSelectedVariantData(null);
@@ -254,13 +263,24 @@ function ManageProductsContainer(props: any) {
           />
         );
       }}
-      modalSize="70%"
+      modalSize="50%"
     >
       <Space h="sm" />
       <DataTable
         data={tableRowData}
         columns={columns}
         actionItems={[
+
+          {
+            label: "Upload",
+            icon: Upload,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);    
+            },
+          },
           {
             label: "Add",
             icon: Plus,
