@@ -17,14 +17,13 @@ const initialFormValues = {
       convenienceFee: "",
       muc: "",
       seal: "",
-      coo: "",
       key: randomId(),
     },
   ],
 };
 
 function EditShlForm(props: any) {
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
@@ -79,6 +78,7 @@ function EditShlForm(props: any) {
               searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
+              disabled={modalType === "update" ? true : false}
               data={destinationSelectOptions}
               {...form.getInputProps(
                 `destinations.${index}._destinationPortId`
@@ -183,16 +183,6 @@ function EditShlForm(props: any) {
               {...form.getInputProps(`destinations.${index}.seal`)}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
-            <NumberInput
-              required
-              precision={2}
-              hideControls
-              label="COO"
-              placeholder="Eg. 26500"
-              {...form.getInputProps(`destinations.${index}.coo`)}
-            />
-          </Grid.Col>
         </Grid>
       </Group>
       <Space h="md" />
@@ -206,7 +196,8 @@ function EditShlForm(props: any) {
         searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
-        data={regionSelectOptions}
+        data={originSelectOptions}
+        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_originPortId")}
         sx={() => ({
           marginBottom: 18,
@@ -246,3 +237,4 @@ function EditShlForm(props: any) {
 }
 
 export default EditShlForm;
+

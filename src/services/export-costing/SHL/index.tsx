@@ -14,15 +14,15 @@ export const getDestinationData = async () => {
   }
 };
 
-export const getShlData = async (regionList: any) => {
+export const getShlData = async () => {
   const response: any = await APIRequest("shl", "GET");
   if (response) {
     return response;
   }
 };
 
-export const postShlData = async (shlAPIPayload: any) => {
-  const response = await APIRequest("shl", "POST", shlAPIPayload);
+export const postShlData = async (data: any) => {
+  const response = await APIRequest("shl", "POST", data);
   if (response) {
     return response;
   }
@@ -40,11 +40,12 @@ export const deleteShlData = async (data: any) => {
 
 export const patchShlData = async (data: any) => {
   const response = await APIRequest(
-    "shl" + "/" + data[0]._originPortId + "/" + data[0]._id,
-    "PATCH", data[0]);
+    "shl" + "/" + data._originPortId + "/" + data._id,
+    "PATCH", data.destinations[0]);
   if (response) {
-    console.log(response)
     return response;
   }
 };
+
+
 
