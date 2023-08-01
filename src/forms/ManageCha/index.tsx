@@ -6,25 +6,42 @@ import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
 
 const initialFormValues = {
-  _originPortId: "",
-  destinations: [
-    {
-      _destinationPortId: "",
-      chaCharge: "",
-      silicaGel: "",
-      craftPaper: "",
-      transportCharge: "",
-      loadingCharge: "",
-      customCharge: "",
-      pqc: "",
-      coo: "",
-      key: randomId(),
-    },
-  ],
-};
+    _originPortId: "",
+    destinations: [
+      {
+        _destinationPortId: "",
+        chaCharge: "",
+        silicaGel: "",
+        craftPaper: "",
+        transportCharge: "",
+        loadingCharge: "",
+        customCharge: "",
+        pqc: "",
+        coo: "",
+        key: randomId(),
+      },
+    ],
+  };
+
+
+function calculateTotalCharge(destinations:any) {
+  return destinations.reduce((total:any, destination:any) => {
+    const {
+      silicaGel = 0,
+      craftPaper = 0,
+      transportCharge = 0,
+      loadingCharge = 0,
+      customCharge = 0,
+      pqc = 0,
+      coo = 0,
+    } = destination;
+    return total + parseFloat(silicaGel) + parseFloat(craftPaper) + parseFloat(transportCharge) + parseFloat(loadingCharge) + parseFloat(customCharge) + parseFloat(pqc)+ parseFloat(coo);
+  }, 0);
+}
+
 
 function EditChaForm(props: any) {
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
@@ -36,26 +53,39 @@ function EditChaForm(props: any) {
     initialValues: { ...initialFormValues },
   });
 
+  //to show previous values while editing the row
   useEffect(() => {
-    if (updateFormData && modalType === "update") {
-      form.setValues(updateFormData);
-    }
-  }, [updateFormData, modalType]);
+  if (updateFormData && modalType === "update") {
+    form.setValues(updateFormData);
+  }
+}, [updateFormData, modalType]);
 
+  //to add more destination item in the form
   const handleAddItem: any = () => {
     form.insertListItem("destinations", initialFormValues.destinations[0], {
       ...initialFormValues.destinations[0],
     });
   };
 
-  const handleFormSubmit = (formValues: typeof form.values) => {
-    handleSaveAction(formValues); //update table UI
-    handleCloseModal(false);
+  //to remove the destination item in the form modal
+  const handleRemoveItem: any = (index: number) => {
+        form.removeListItem("destinations", index);
+      };
+
+  const handleFormSubmit = async (formValues: typeof form.values) => {
+    const total = calculateTotalCharge(formValues.destinations);
+    const updateChaCharge = formValues.destinations.map((destination: any) => ({
+      ...destination,
+      chaCharge: total,
+    }));     
+    const formData = { ...formValues, destinations: updateChaCharge };
+    await handleSaveAction(formData);
     form.setValues(initialFormValues);
+    handleCloseModal(false);
   };
 
   const fields = form.values.destinations.map((item: any, index: number) => (
-    <React.Fragment key={item.key}>
+    <React.Fragment key={item?.key}>
       <Group
         spacing="md"
         sx={(theme) => ({
@@ -68,12 +98,12 @@ function EditChaForm(props: any) {
         <Grid>
           <Grid.Col span={11}>
             <Select
-              // defaultValue={item["_destinationPortId"]}
               required
               searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
               data={destinationSelectOptions}
+              disabled={modalType === "update" ? true : false}
               {...form.getInputProps(
                 `destinations.${index}._destinationPortId`
               )}
@@ -90,12 +120,12 @@ function EditChaForm(props: any) {
                 height: "100%",
               }}
             >
-              {form.values.destinations.length > 1 ? (
+              {form.values.destinations.length > 1 &&modalType !== "update" ?  (
                 <Group spacing="md" position="right" margin-bottom="5px">
                   <ActionIcon
                     variant="light"
                     color="red"
-                    onClick={() => form.removeListItem("destinations", index)}
+                    onClick={() => handleRemoveItem(index)}
                   >
                     <Trash size="1rem" />
                   </ActionIcon>
@@ -107,12 +137,11 @@ function EditChaForm(props: any) {
           <Grid.Col span={3}>
             <NumberInput
               required
+              disabled
               precision={2}
               hideControls
               label="CHA Charges"
-              placeholder="Eg. 26500"
-              // defaultValue={item["chaCharge"]}
-              {...form.getInputProps(`destinations.${index}.chaCharge`)}
+              value={calculateTotalCharge([form.values.destinations[index]])}
             />
           </Grid.Col>
 
@@ -122,8 +151,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="Silica Gel"
-              placeholder="Eg. 26500"
-              // defaultValue={item["silicaGel"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.silicaGel`)}
             />
           </Grid.Col>
@@ -134,8 +162,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="Craft Paper"
-              placeholder="Eg. 26500"
-              // defaultValue={item["craftPaper"]}
+              placeholder="eg. 500.00"            
               {...form.getInputProps(`destinations.${index}.craftPaper`)}
             />
           </Grid.Col>
@@ -146,8 +173,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="Transport Charge"
-              placeholder="Eg. 26500"
-              // defaultValue={item["transportCharge"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.transportCharge`)}
             />
           </Grid.Col>
@@ -157,8 +183,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="Loading Charge"
-              placeholder="Eg. 26500"
-              // defaultValue={item["loadingCharge"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.loadingCharge`)}
             />
           </Grid.Col>
@@ -168,8 +193,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="Custom Charge"
-              placeholder="Eg. 26500"
-              // defaultValue={item["customCharge"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.customCharge`)}
             />
           </Grid.Col>
@@ -179,8 +203,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="PQC"
-              placeholder="Eg. 26500"
-              // defaultValue={item["pqc"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.pqc`)}
             />
           </Grid.Col>
@@ -190,8 +213,7 @@ function EditChaForm(props: any) {
               precision={2}
               hideControls
               label="COO"
-              placeholder="Eg. 26500"
-              // defaultValue={item["coo"]}
+              placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.coo`)}
             />
           </Grid.Col>
@@ -208,7 +230,8 @@ function EditChaForm(props: any) {
         searchable
         label="Select Origin Port"
         placeholder="Eg. chennai"
-        data={regionSelectOptions}
+        data={originSelectOptions}
+        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_originPortId")}
         sx={() => ({
           marginBottom: 18,
@@ -241,7 +264,7 @@ function EditChaForm(props: any) {
       <Space h="lg" />
 
       <Group position="right" mt="md">
-        <Button type="submit">Submit & Save</Button>
+        <Button type="submit">Submit</Button>
       </Group>
     </form>
   );

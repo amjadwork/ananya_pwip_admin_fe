@@ -1,7 +1,8 @@
-import React from "react";
-import { Space, Text } from "@mantine/core";
-import { Plus } from "tabler-icons-react";
+import React, {useEffect,useState} from "react";
+import { Plus, X , Check} from "tabler-icons-react";
+import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
@@ -10,19 +11,21 @@ import DataTable from "../../components/DataTable/DataTable";
 import {
   getChaData,
   getDestinationData,
-  getRegionSource,
+  getOriginData,
   postChaData,
+  deleteChaData,
+  patchChaData,
 } from "../../services/export-costing/CHA";
 
 const columns = [
   {
-    label: "Destination",
-    key: "_destinationPortId",
+    label: "Origin",
+    key: "originPort",
     sortable: true,
   },
   {
-    label: "Origin",
-    key: "originPort",
+    label: "Destination",
+    key: "destinationPort",
     sortable: true,
   },
   {
@@ -50,6 +53,10 @@ const columns = [
     key: "loadingCharge",
   },
   {
+    label: "PQC",
+    key: "pqc",
+  },
+  {
     label: "COO",
     key: "coo",
   },
@@ -61,16 +68,16 @@ const columns = [
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
-  const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
+  const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
 
   return (
     <EditChaForm
       handleCloseModal={handleCloseModal}
-      regionSelectOptions={regionSelectOptions}
+      originSelectOptions={originSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
@@ -80,24 +87,25 @@ const RenderModalContent = (props: any) => {
 };
 
 function ManageChaContainer() {
-  const [modalOpen, setModalOpen] = React.useState<any>(false);
-  const [modalType, setModalType] = React.useState<string>("add");
-  const [chaData, setChaData] = React.useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = React.useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] =
-    React.useState<any>([]);
-  const [tableRowData, setTableRowData] = React.useState<any>([]);
-  const [updateFormData, setUpdateFormData] = React.useState<any>(null);
+  const [modalOpen, setModalOpen] = useState<any>(false);
+  const [modalType, setModalType] = useState<string>("add");
+  const [chaData, setChaData] = useState<any>([]);
+  const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [tableRowData, setTableRowData] = useState<any>([]);
 
-  const getCHAList = async (regionList: any) => {
-    const chaDataResponse: any = await getChaData(regionList);
+  //to get CHA Data from database
+  const handleGetCha= async (data: any) => {
+    const response: any = await getChaData();
+    console.log(response, "response")
     try {
-      if (chaDataResponse) {
-        let array: any = regionList?.map((item: any) => {
+      if (response) {
+        let array: any = data?.map((item: any) => {
           let destinationArr: any = [];
           let originIdStringArr: any = [];
 
-          chaDataResponse.forEach((region: any) => {
+          response.forEach((region: any) => {
             if (item._originId === region._originPortId) {
               destinationArr.push(region.destinations);
               originIdStringArr.push(region._originId);
@@ -119,10 +127,10 @@ function ManageChaContainer() {
     }
   };
 
-  const handleGetRegionSource = async () => {
-    const regionResponse = await getRegionSource();
-    if (regionResponse) {
-      const formattedRegion = regionResponse.origin.map((d: any) => {
+  const handleGetOriginData = async () => {
+    const response = await getOriginData();
+    if (response) {
+      const formattedOrigin = response.origin.map((d: any) => {
         return {
           name: d.portName,
           _originId: d._id,
@@ -130,43 +138,27 @@ function ManageChaContainer() {
         };
       });
 
-      const regionOptions = regionResponse.origin.map((d: any) => {
+      const originOptions = response.origin.map((d: any) => {
         return {
           label: d.portName,
           value: d._id,
         };
       });
 
-      setRegionSelectOptions(() => [...regionOptions]);
+      setOriginSelectOptions(() => [...originOptions]);
 
       handleGetDestination();
-      getCHAList(formattedRegion);
+      handleGetCha(formattedOrigin);
     }
   };
 
-  const handleSaveAction = async (payload: any) => {
-    if (payload && modalType === "add") {
-      const chaResponse = await postChaData(payload);
 
-      if (chaResponse) {
-        handleGetRegionSource();
-      }
-    }
-
-    if (payload && modalType === "update") {
-      const chaResponse = null; //Call PUT request
-
-      if (chaResponse) {
-        handleGetRegionSource();
-      }
-    }
-  };
-
+  //to get Destination Data from database
   const handleGetDestination = async () => {
-    const destinationResponse = await getDestinationData();
+    const response = await getDestinationData();
 
-    if (destinationResponse) {
-      const destinationOptions = destinationResponse.destination.map(
+    if (response) {
+      const destinationOptions = response.destination.map(
         (d: any) => {
           return {
             label: d.portName,
@@ -174,50 +166,104 @@ function ManageChaContainer() {
           };
         }
       );
-
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
 
-  const openDeleteModal = (data: any) =>
+ //to add new or edit the existing row in the table
+  const handleSaveAction = async (data:any) => {
+    console.log("addPayload", data)
+
+    if (data && modalType === "add") {
+      const response = await postChaData(data);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "CHA Charges Added!",
+          message: "",
+          autoClose: 4000,
+          icon: <Check />,
+          color:'green',
+        });   
+      }
+    }
+
+    if (data && modalType === "update") {
+      const response = await patchChaData(data);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "CHA Charges Updated!",
+          message: "",
+          autoClose: 4000,
+          icon: <Check />,
+          color:'green',
+        });   
+      }
+    }
+  };
+
+  //to delete a single row data
+  const openDeleteModal = (rowData: any) =>
     openConfirmModal({
-      title: "Delete CHA details",
+      title: "Delete the CHA Data",
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the CHA record for{" "}
-          {data._originPortId} to {data._destinationPortId}? This action is
-          destructive and you will have to contact support to restore your data.
-        </Text>
+          Are you sure you want to delete the CHA Data? 
+          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
+          this data.</Text> 
+          </Text>
       ),
-      labels: { confirm: "Delete CHA", cancel: "No don't delete it" },
+      labels: { confirm: "Delete CHA Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onConfirm: () => handleDeleteRow(rowData),
     });
+  const handleDeleteRow = async (data: any) => {
+    const response = await deleteChaData(data);
+
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "CHA Charges Deleted!",
+        message: "",
+        autoClose: 4000,
+        icon: <Check />,
+        color:'green',
+      });
+    }  
+  };
+
+  const handleRefreshCalls = () => {
+    handleGetOriginData();
+  };
 
   React.useEffect(() => {
-    handleGetRegionSource();
+    handleGetOriginData();
   }, []);
 
-  React.useEffect(() => {
-    if (chaData.length) {
-      let tableData: any = [];
-
-      [...chaData].forEach((d: any) => {
-        d.list.forEach((l: any) => {
-          const obj = {
-            ...l,
-            originPort: d.name,
-            _originPortId: d._originId,
-          };
-          tableData.push(obj);
-        });
+useEffect(() => {
+  if (chaData.length && destinationSelectOptions.length) {
+    const tableData = chaData.flatMap((d:any) => {
+      return d.list.map((l:any) => {
+        const destination = destinationSelectOptions.find(
+          (option:any) => option.value === l._destinationPortId
+        );
+        return {
+          ...l,
+          originPort: d.name,
+          destinationPort: destination ? destination.label : "Null",
+          _originPortId: d._originId,
+        };
       });
+    });
+    setTableRowData(tableData);
+  }
+}, [chaData, destinationSelectOptions]);
 
-      setTableRowData(tableData);
-    }
-  }, [chaData]);
 
   return (
     <PageWrapper
@@ -227,26 +273,26 @@ function ManageChaContainer() {
       modalTitle={
         modalType === "add" ? "Add CHA Charges" : "Update CHA Charges"
       }
-      modalSize="60%"
       onModalClose={() => {
-        setModalOpen(false);
+        setModalOpen(false)
         setUpdateFormData(null);
       }}
-      ModalContent={() => {
-        return (
-          <RenderModalContent
-            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-            regionSelectOptions={regionSelectOptions}
-            destinationSelectOptions={destinationSelectOptions}
-            handleSaveAction={handleSaveAction}
-            updateFormData={updateFormData}
-            modalType={modalType}
-          />
-        );
-      }}
-    >
-      <Space h="sm" />
 
+      ModalContent={() => {
+          return (
+            <RenderModalContent
+              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+              originSelectOptions={originSelectOptions}
+              handleSaveAction={handleSaveAction}
+              destinationSelectOptions={destinationSelectOptions}
+              updateFormData={updateFormData}
+              modalType={modalType}
+              modalOpen={modalOpen}
+            />
+          );
+      }}
+      modalSize="60%"
+    >
       <DataTable
         data={tableRowData}
         columns={columns}
@@ -257,29 +303,40 @@ function ManageChaContainer() {
             color: "gray",
             type: "button",
             onClickAction: () => {
-              setModalType("add");
               setModalOpen(true);
+              setModalType("add");
             },
           },
         ]}
-        handleRowEdit={(row: any, rowIndex: number) => {
+        handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
-          delete obj["updatedAt"];
-          delete obj["_id"];
-          delete obj["_originPortId"];
-          delete obj["createdAt"];
-          delete obj["originPort"];
+          console.log(obj, "obj")
 
           const formObj = {
-            _originPortId: row._originPortId,
-            destinations: [obj],
-          };
-
+            _originPortId: obj._originPortId,
+            _id: obj._id,
+            destinations: [
+              {
+                _destinationPortId: obj._destinationPortId,
+                chaCharge: obj.chaCharge,
+                silicaGel: obj.silicaGel,
+                craftPaper: obj.craftPaper,
+                transportCharge: obj.transportCharge,
+                loadingCharge: obj.loadingCharge,
+                customCharge: obj.customCharge,
+                pqc: obj.pqc,
+                coo: obj.coo,
+              },
+            ],
+          }
+          
+          console.log(formObj, "formObj")
+      
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any, rowIndex: number) => {
+        handleRowDelete={(row: any) => {
           openDeleteModal(row);
         }}
       />

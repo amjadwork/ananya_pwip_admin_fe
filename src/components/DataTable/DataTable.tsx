@@ -245,9 +245,10 @@ export function DataTable({
       </Flex>
 
       <Table
-        horizontalSpacing="sm"
-        verticalSpacing="md"
-        fontSize="sm"
+        highlightOnHover
+        horizontalSpacing='xl'
+        verticalSpacing="sm"
+        fontSize="md"
         mih={320}
         sx={{ tableLayout: "fixed" }}
       >
