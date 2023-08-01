@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
 import { Select, Button, ActionIcon } from "../../components/index";
 import { Trash } from "tabler-icons-react";
@@ -22,6 +22,20 @@ const initialFormValues = {
   ],
 };
 
+function calculateTotalCharge(destinations:any) {
+  return destinations.reduce((total:any, destination:any) => {
+    const {
+      thc = 0,
+      blFee = 0,
+      surrender = 0,
+      convenienceFee = 0,
+      muc = 0,
+      seal = 0,
+    } = destination;
+    return total + parseFloat(thc) + parseFloat(blFee) + parseFloat(surrender) + parseFloat(convenienceFee) + parseFloat(muc) + parseFloat(seal);
+  }, 0);
+}
+
 function EditShlForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
@@ -32,7 +46,7 @@ function EditShlForm(props: any) {
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
-    initialValues: { ...initialFormValues },
+    initialValues: { ...initialFormValues},
   });
 
   //to show previous values while editing the row
@@ -54,11 +68,18 @@ function EditShlForm(props: any) {
         form.removeListItem("destinations", index);
       };
 
-  const handleFormSubmit = (formValues: typeof form.values) => {
-    handleSaveAction(formValues);
-    handleCloseModal(false);
+  //updating the value totalShlCharge in respective key and updating the form
+  const handleFormSubmit = async (formValues: typeof form.values) => {
+    const total = calculateTotalCharge(formValues.destinations);
+    const updateShlCharge = formValues.destinations.map((destination: any) => ({
+      ...destination,
+      shlCharge: total,
+    }));     
+    const formData = { ...formValues, destinations: updateShlCharge };
+    await handleSaveAction(formData);
     form.setValues(initialFormValues);
-  };
+    handleCloseModal(false);
+    };
 
   const fields = form.values.destinations.map((item: any, index: number) => (
     <React.Fragment key={item?.key}>
@@ -113,11 +134,13 @@ function EditShlForm(props: any) {
           <Grid.Col span={3}>
             <NumberInput
               required
+              disabled
               precision={2}
               hideControls
               label="SHL Charges"
               placeholder="Eg. 26500"
-              {...form.getInputProps(`destinations.${index}.shlCharge`)}
+              value={calculateTotalCharge([form.values.destinations[index]])}
+              // {...form.getInputProps(`destinations.${index}.shlCharge`)}
             />
           </Grid.Col>
 
