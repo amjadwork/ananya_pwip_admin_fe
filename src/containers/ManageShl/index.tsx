@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, X , Check} from "tabler-icons-react";
+import { Plus, Check} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -19,12 +19,14 @@ import {
 
 const columns = [
   {
-    label: "Destination",
-    key: "destination",
-  },
-  {
     label: "Origin",
     key: "origin",
+    sortable: true,
+  },
+  {
+    label: "Destination",
+    key: "destination",
+    sortable: true,
   },
   {
     label: "SHL",
@@ -51,10 +53,6 @@ const columns = [
     key: "seal",
   },
   {
-    label: "COO",
-    key: "coo",
-  },
-  {
     label: "Action",
     key: "action",
   },
@@ -62,7 +60,7 @@ const columns = [
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
@@ -71,7 +69,7 @@ const RenderModalContent = (props: any) => {
   return (
     <EditShlForm
       handleCloseModal={handleCloseModal}
-      regionSelectOptions={regionSelectOptions}
+      originSelectOptions={originSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
@@ -84,14 +82,14 @@ function ManageShlContainer() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
   const [shlData, setShlData] = useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = useState<any>([]);
+  const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get SHL Data from database
   const handleGetShl= async (list: any) => {
-    const response: any = await getShlData(list);
+    const response: any = await getShlData();
     try {
       if (response) {
         let array: any = list?.map((item: any) => {
@@ -138,7 +136,7 @@ function ManageShlContainer() {
           value: d._id,
         };
       });
-      setRegionSelectOptions(() => [...originOptions]);
+      setOriginSelectOptions(() => [...originOptions]);
       handleGetDestination();
       handleGetShl(originList);
     }
@@ -163,13 +161,8 @@ function ManageShlContainer() {
 
  //to add new or edit the existing row in the table
   const handleSaveAction = async (data:any) => {
-    const payload = data.destinations.flatMap((destination:any) => ({
-      _originPortId: data._originPortId,
-      ...destination,
-    }));
-  
-    if (payload[0] && modalType === "add") {
-      const response = await postShlData(payload[0]);
+    if (data && modalType === "add") {
+      const response = await postShlData(data);
 
       if (response) {
         handleRefreshCalls();
@@ -183,8 +176,8 @@ function ManageShlContainer() {
       }
     }
 
-    if (payload && modalType === "update") {
-      const response = await patchShlData(payload);
+    if (data && modalType === "update") {
+      const response = await patchShlData(data);
 
       if (response) {
         handleRefreshCalls();
@@ -214,9 +207,9 @@ function ManageShlContainer() {
       labels: { confirm: "Delete SHL Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => handleDeleteVariant(rowData),
+      onConfirm: () => handleDeleteRow(rowData),
     });
-  const handleDeleteVariant = async (data: any) => {
+  const handleDeleteRow= async (data: any) => {
     const response = await deleteShlData(data);
 
     if (response) {
@@ -225,8 +218,8 @@ function ManageShlContainer() {
         title: "SHL Charges Deleted!",
         message: "",
         autoClose: 2000,
-        icon: <X />,
-        color:'red',
+        icon: <Check />,
+        color:'green',
       });
     }  
   };
@@ -276,7 +269,7 @@ function ManageShlContainer() {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
+              originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
               updateFormData={updateFormData}
@@ -303,11 +296,11 @@ function ManageShlContainer() {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-          setModalType('update')
           let obj = { ...row };
 
           const formObj = {
             _originPortId: obj._originPortId,
+            _id: obj._id,
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
@@ -318,8 +311,6 @@ function ManageShlContainer() {
                 convenienceFee: obj.convenienceFee,
                 muc: obj.muc,
                 seal: obj.seal,
-                coo: obj.seal,
-                _id:obj._id,
               },
             ],
           }
@@ -336,3 +327,4 @@ function ManageShlContainer() {
 }
 
 export default ManageShlContainer;
+
