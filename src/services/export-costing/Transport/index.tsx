@@ -48,7 +48,6 @@ export const patchTransportationData = async (data: any) => {
     + "/" + data[0]._transportObjId,
     "PATCH", data[0]);
   if (response) {
-    console.log(response)
     return response;
   }
 };

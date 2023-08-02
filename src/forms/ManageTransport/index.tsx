@@ -74,6 +74,7 @@ function EditTransportationForm(props: any) {
                 searchable
                 label="Select Source "
                 placeholder="Eg. Karnal"
+                disabled={modalType === "update" ? true : false}
                 data={sourceSelectOptions}
                 {...form.getInputProps(
                   `sourceLocations.${index}._sourcePortId`
@@ -131,6 +132,7 @@ function EditTransportationForm(props: any) {
         required
         searchable
         label="Select Origin Port"
+        disabled={modalType === "update" ? true : false}
         placeholder="Eg. Chennai"
         data={originSelectOptions}
         {...form.getInputProps("_originPortId")}
