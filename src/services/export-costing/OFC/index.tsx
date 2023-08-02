@@ -1,6 +1,6 @@
 import APIRequest from "../../../helper/api";
 
-export const getOfcData = async (regionList: any) => {
+export const getOfcData = async () => {
   const response: any = await APIRequest("ofc", "GET");
   if (response) {
     return response;
@@ -21,8 +21,8 @@ export const getDestinationData = async () => {
   }
 };
 
-export const postOfcData = async (ofcAPIPayload: any) => {
-  const response = await APIRequest("ofc", "POST", ofcAPIPayload);
+export const postOfcData = async (data: any) => {
+  const response = await APIRequest("ofc", "POST", data);
   if (response) {
     return response;
   }
@@ -39,9 +39,10 @@ export const deleteOfcData = async (data: any) => {
 };
 
 export const patchOfcData = async (data: any) => {
+  console.log("here", data)
   const response = await APIRequest(
-    "ofc" + "/" + data[0]._originPortId + "/" + data[0]._ofcObjectId,
-    "PATCH", data[0]);
+    "ofc" + "/" + data._originPortId + "/" + data._ofcObjectId,
+    "PATCH", data);
   if (response) {
     console.log(response)
     return response;

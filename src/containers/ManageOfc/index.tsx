@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, X , Check} from "tabler-icons-react";
+import { Plus, Check} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -19,12 +19,12 @@ import {
 
 const columns = [
   {
-    label: "Destination",
-    key: "destination",
-  },
-  {
     label: "Origin",
     key: "origin",
+  },
+  {
+    label: "Destination",
+    key: "destination",
   },
   {
     label: "OFC",
@@ -67,7 +67,7 @@ function ManageOfcContainer() {
 
   //to get OFC Data from database
   const handleGetOfc= async (list: any) => {
-    const response: any = await getOfcData(list);
+    const response: any = await getOfcData();
     try {
       if (response) {
         let array: any = list?.map((item: any) => {
@@ -140,36 +140,38 @@ function ManageOfcContainer() {
 
  //to add new or edit the existing row in the table
   const handleSaveAction = async (data:any) => {
-    const payload = data.destinations.flatMap((destination:any) => ({
-      _originPortId: data._originPortId,
-      _ofcObjectId:data._ofcObjectId,
-      ...destination,
-    }));
-  
-    if (payload[0] && modalType === "add") {
-      const response = await postOfcData(payload[0]);
+
+    if (data && modalType === "add") {
+      const response = await postOfcData(data);
 
       if (response) {
         handleGetOrigin();
         showNotification({
           title: "OFC Charges Added!",
           message: "",
-          autoClose: 2000,
+          autoClose: 4000,
           icon: <Check />,
           color:'green',
         });   
       }
     }
 
-    if (payload && modalType === "update") {
-      const response = await patchOfcData(payload);
+     const payload = data.destinations.flatMap((destination:any) => ({
+      _originPortId: data._originPortId,
+      ...destination,
+    }));
+    console.log("payload", payload)
+  
+
+    if (payload[0] && modalType === "update") {
+      const response = await patchOfcData(payload[0]);
 
       if (response) {
         handleGetOrigin();
         showNotification({
           title: "OFC Charges Updated!",
           message: "",
-          autoClose: 2000,
+          autoClose: 4000,
           icon: <Check />,
           color:'green',
         });
@@ -192,9 +194,9 @@ function ManageOfcContainer() {
       labels: { confirm: "Delete OFC Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => handleDeleteVariant(rowData),
+      onConfirm: () => handleDeleteRow(rowData),
     });
-  const handleDeleteVariant = async (data: any) => {
+  const handleDeleteRow = async (data: any) => {
     const response = await deleteOfcData(data);
 
     if (response) {
@@ -202,9 +204,9 @@ function ManageOfcContainer() {
       showNotification({
         title: "OFC Charges Deleted!",
         message: "",
-        autoClose: 2000,
-        icon: <X />,
-        color:'red',
+        autoClose: 4000,
+        icon: <Check />,
+        color:'green',
       });
     }  
   };

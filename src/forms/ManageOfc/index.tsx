@@ -75,6 +75,7 @@ function EditOfcForm(props: any) {
                 label="Select Destination Port"
                 placeholder="Eg. singapore"
                 data={destinationSelectOptions}
+                disabled={modalType === "update" ? true : false}
                 {...form.getInputProps(
                   `destinations.${index}._destinationPortId`
                 )}
@@ -133,6 +134,7 @@ function EditOfcForm(props: any) {
         label="Select Origin Port"
         placeholder="Eg. chennai"
         data={regionSelectOptions}
+        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_originPortId")}
         sx={() => ({
           marginBottom: 18,
