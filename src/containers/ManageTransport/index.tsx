@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, X , Check} from "tabler-icons-react";
+import { Plus , Check} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -19,12 +19,12 @@ import {
 
 const columns = [
   {
-    label: "Source",
-    key: "source",
-  },
-  {
     label: "Origin",
     key: "origin",
+  },
+  {
+    label: "Source",
+    key: "source",
   },
   {
     label: "Transportation",
@@ -68,7 +68,6 @@ function ManageTransportContainer() {
   //to get Transportation Data from database
   const handleGetTransportation = async () => {
     const response: any[] = await getTransportationData();
-    console.log("getT", response);
   
     try {
       if (response) {
@@ -107,7 +106,7 @@ function ManageTransportContainer() {
           value: d._id,
         };
       });
-      console.log("originOptions", originOptions)
+
       setOriginSelectOptions(() => [...originOptions]);
       handleGetSource();
       handleGetTransportation();
@@ -138,15 +137,15 @@ function ManageTransportContainer() {
       ...d,
     }));
   
-    if (payload[0] && modalType === "add") {
-      const response = await postTransportationData(payload[0]);
+    if (data && modalType === "add") {
+      const response = await postTransportationData(data);
 
       if (response) {
         handleRefreshCalls();
         showNotification({
           title: "Transportation Charges Added!",
           message: "",
-          autoClose: 2000,
+          autoClose: 4000,
           icon: <Check />,
           color:'green',
         });   
@@ -194,9 +193,9 @@ function ManageTransportContainer() {
       showNotification({
         title: "Tranportation Charges Deleted!",
         message: "",
-        autoClose: 2000,
-        icon: <X />,
-        color:'red',
+        autoClose: 4000,
+        icon: <Check />,
+        color:'green',
       });
     }  
   };
@@ -234,7 +233,6 @@ function ManageTransportContainer() {
         });
       });
       setTableRowData(tableData);
-      console.log("table", tableData);
     }
   }, [transportationData, sourceSelectOptions, originSelectOptions]);
   
@@ -266,7 +264,7 @@ function ManageTransportContainer() {
             />
           );
       }}
-      modalSize="70%"
+      modalSize="60%"
     >
       <DataTable
         data={tableRowData}
