@@ -224,6 +224,7 @@ function ManageProductsContainer(props: any) {
             variantName: d.variantName,
             HSNCode: d.HSNCode,
             _categoryId: d._categoryId,
+            brokenPercentage: d.brokenPercentage,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -236,9 +237,6 @@ function ManageProductsContainer(props: any) {
       setTableRowData(tableData);
     }
   }, [variantsData, categoryData]);
-
-  console.log("tabelDsta", tableRowData)
-  console.log("variant", variantsData)
 
   return (
     <PageWrapper
@@ -302,13 +300,14 @@ function ManageProductsContainer(props: any) {
         ]}
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
-
+          
           setSelectedTableRowIndex(index);
 
           const formObj = {
             _categoryId: obj._categoryId,
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
+            brokenPercentage: obj.brokenPercentage,
             sourceRates: [{ ...obj }],
           };
 
