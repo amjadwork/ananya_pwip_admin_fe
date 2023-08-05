@@ -22,6 +22,7 @@ const initialFormValues: any = {
   _categoryId: "",
   variantName: "",
   HSNCode: "",
+  brokenPercentage: "",
   sourceRates: [
     {
       _sourceId: "",
@@ -94,8 +95,6 @@ function AddOrEditProductForm(props: any) {
     value: cat._id,
     label: cat.name,
   }));
-
-  console.log("form", form.values)
 
   React.useEffect(() => {
     if (modalOpen) {
@@ -188,6 +187,16 @@ function AddOrEditProductForm(props: any) {
       />
 
       <Space h="md" />
+
+         <NumberInput
+          min={0}
+          label="Broken %"
+          placeholder="eg. 5"
+          disabled={modalType === "update" ? true : false}
+          {...form.getInputProps("brokenPercentage")}
+        />
+
+          <Space h="md" />
 
       {fields}
 
