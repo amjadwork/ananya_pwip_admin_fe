@@ -8,7 +8,9 @@ import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
+import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
+
 
 
 const columns = [
@@ -62,6 +64,14 @@ const RenderModalContent = (props: any) => {
     );
   }
 
+  if (modalType === "line-chart") {
+    return (
+      <LineChartModal
+      variantsData={variantsData} 
+      />
+    );
+  }
+
   if (variantsData) {
     regionCostingList = [...variantsData.costing];
   }
@@ -90,7 +100,6 @@ function ManageProductsContainer(props: any) {
   const [productId, setProductId] = React.useState<any>(null);
   const [selectedTableRowIndex, setSelectedTableRowIndex] =
     React.useState<any>(null);
-
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
 
@@ -249,6 +258,8 @@ function ManageProductsContainer(props: any) {
             ? "Add Product Variant"
             : modalType === "upload"
             ? "Upload Data from Excel Sheet"
+            : modalType === "line-chart"
+            ? "Line Chart for Pricing Trend"
             : "Update Variant Price and Source Location"
         }
       onModalClose={() => {
@@ -270,14 +281,14 @@ function ManageProductsContainer(props: any) {
           />
         );
       }}
-      modalSize="50%"
+      modalSize="70%"
     >
       <Space h="sm" />
       <DataTable
         data={tableRowData}
         columns={columns}
+        showChartLineAction={true}
         actionItems={[
-
           {
             label: "Upload",
             icon: Upload,
@@ -299,6 +310,13 @@ function ManageProductsContainer(props: any) {
             },
           },
         ]}
+
+        handleLineChart={(row: any) => {
+          setModalType("line-chart");
+          setSelectedVariantData(row)
+          setModalOpen(true);
+        }}
+
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
           
