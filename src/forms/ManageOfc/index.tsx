@@ -10,6 +10,7 @@ const initialFormValues = {
   destinations: [
     {
       _destinationPortId: "",
+      _containerId:"",
       ofcCharge: "",
       key: randomId(),
     },
@@ -17,8 +18,9 @@ const initialFormValues = {
 };
 
 function EditOfcForm(props: any) {
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
@@ -68,12 +70,12 @@ function EditOfcForm(props: any) {
       <Grid>
         <Grid.Col span={10}>
           <Grid>
-            <Grid.Col span={7}>
+            <Grid.Col span={6}>
               <Select
                 required
                 searchable
                 label="Select Destination Port"
-                placeholder="Eg. singapore"
+                placeholder="eg. Singapore"
                 data={destinationSelectOptions}
                 disabled={modalType === "update" ? true : false}
                 {...form.getInputProps(
@@ -82,7 +84,21 @@ function EditOfcForm(props: any) {
               />
             </Grid.Col>
 
-            <Grid.Col span={5}>
+            <Grid.Col span={6}>
+            <Select
+              required
+              searchable
+              label="Select Container Type"
+              placeholder="eg. Standard Dry"
+              data={containerSelectOptions}
+              disabled={modalType === "update" ? true : false}
+              {...form.getInputProps(
+                `destinations.${index}._containerId`
+              )}
+            />
+          </Grid.Col>
+            
+            <Grid.Col span={12}>
               <NumberInput
                 required
                 precision={2}
@@ -132,8 +148,8 @@ function EditOfcForm(props: any) {
         required
         searchable
         label="Select Origin Port"
-        placeholder="Eg. chennai"
-        data={regionSelectOptions}
+        placeholder="eg. Chennai"
+        data={originSelectOptions}
         disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_originPortId")}
         sx={() => ({
@@ -164,9 +180,7 @@ function EditOfcForm(props: any) {
         </Group>
       ) : null}
 
-      <Space h="lg" />
-
-      <Group position="right" mt="md">
+      <Group position="right" mt="sm">
         <Button type="submit">Submit</Button>
       </Group>
     </form>

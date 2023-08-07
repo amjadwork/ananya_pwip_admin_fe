@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
-
+import { getContainerData } from "../../services/export-costing/Container";
 import {
   getShlData,
   getDestinationData,
@@ -62,6 +62,7 @@ const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
@@ -71,6 +72,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
+      containerSelectOptions={containerSelectOptions}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -83,6 +85,7 @@ function ManageShlContainer() {
   const [modalType, setModalType] = useState<string>("add");
   const [shlData, setShlData] = useState<any>([]);
   const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
+  const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
@@ -138,6 +141,7 @@ function ManageShlContainer() {
       });
       setOriginSelectOptions(() => [...originOptions]);
       handleGetDestination();
+      handleGetContainer();
       handleGetShl(originList);
     }
   };
@@ -156,6 +160,24 @@ function ManageShlContainer() {
         }
       );
       setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+
+  //to get Container Data from database
+  const handleGetContainer = async () => {
+    const response = await getContainerData();
+
+    if (response) {
+      const containerOptions = response.map(
+        (d: any) => {
+          return {
+            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+            value: d._id,
+          };
+        }
+      );
+      setContainerSelectOptions(() => [...containerOptions]);
     }
   };
 
@@ -272,6 +294,7 @@ function ManageShlContainer() {
               originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
+              containerSelectOptions={containerSelectOptions}
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
@@ -304,6 +327,7 @@ function ManageShlContainer() {
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
+                _containerId:obj._containerId,
                 shlCharge: obj.shlCharge,
                 thc: obj.thc,
                 blFee: obj.blFee,

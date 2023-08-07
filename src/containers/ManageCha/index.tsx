@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, X , Check} from "tabler-icons-react";
+import { Plus, Check} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
-
+import { getContainerData } from "../../services/export-costing/Container";
 import {
   getChaData,
   getDestinationData,
@@ -70,6 +70,7 @@ const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
@@ -79,6 +80,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
+      containerSelectOptions={containerSelectOptions}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -92,13 +94,13 @@ function ManageChaContainer() {
   const [chaData, setChaData] = useState<any>([]);
   const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get CHA Data from database
   const handleGetCha= async (data: any) => {
     const response: any = await getChaData();
-    console.log(response, "response")
     try {
       if (response) {
         let array: any = data?.map((item: any) => {
@@ -148,6 +150,7 @@ function ManageChaContainer() {
       setOriginSelectOptions(() => [...originOptions]);
 
       handleGetDestination();
+      handleGetContainer();
       handleGetCha(formattedOrigin);
     }
   };
@@ -170,9 +173,26 @@ function ManageChaContainer() {
     }
   };
 
+  //to get Container Data from database
+  const handleGetContainer = async () => {
+    const response = await getContainerData();
+
+    if (response) {
+      const containerOptions = response.map(
+        (d: any) => {
+          return {
+            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+            value: d._id,
+          };
+        }
+      );
+      setContainerSelectOptions(() => [...containerOptions]);
+    }
+  };
+
+
  //to add new or edit the existing row in the table
   const handleSaveAction = async (data:any) => {
-    console.log("addPayload", data)
 
     if (data && modalType === "add") {
       const response = await postChaData(data);
@@ -285,6 +305,7 @@ useEffect(() => {
               originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
+              containerSelectOptions={containerSelectOptions}
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
@@ -310,7 +331,6 @@ useEffect(() => {
         ]}
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
-          console.log(obj, "obj")
 
           const formObj = {
             _originPortId: obj._originPortId,
@@ -318,6 +338,7 @@ useEffect(() => {
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
+                _containerId:obj._containerId,
                 chaCharge: obj.chaCharge,
                 silicaGel: obj.silicaGel,
                 craftPaper: obj.craftPaper,
@@ -330,8 +351,6 @@ useEffect(() => {
             ],
           }
           
-          console.log(formObj, "formObj")
-      
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);

@@ -10,6 +10,7 @@ const initialFormValues = {
   destinations: [
     {
       _destinationPortId: "",
+      _containerId:"",
       shlCharge: "",
       thc: "",
       blFee: "",
@@ -39,6 +40,7 @@ function calculateTotalCharge(destinations:any) {
 function EditShlForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
@@ -107,6 +109,20 @@ function EditShlForm(props: any) {
             />
           </Grid.Col>
 
+          <Grid.Col span={11}>
+            <Select
+              required
+              searchable
+              label="Select Container Type"
+              placeholder="eg. Standard Dry"
+              data={containerSelectOptions}
+              disabled={modalType === "update" ? true : false}
+              {...form.getInputProps(
+                `destinations.${index}._containerId`
+              )}
+            />
+          </Grid.Col>
+
           <Grid.Col span={1}>
             <div
               style={{
@@ -140,7 +156,6 @@ function EditShlForm(props: any) {
               label="SHL Charges"
               placeholder="Eg. 26500"
               value={calculateTotalCharge([form.values.destinations[index]])}
-              // {...form.getInputProps(`destinations.${index}.shlCharge`)}
             />
           </Grid.Col>
 

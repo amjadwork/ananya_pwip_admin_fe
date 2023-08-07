@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
-
+import { getContainerData } from "../../services/export-costing/Container";
 import {
   getOfcData,
   getDestinationData,
@@ -38,8 +38,9 @@ const columns = [
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
-  const regionSelectOptions = props.regionSelectOptions;
+  const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
@@ -47,8 +48,9 @@ const RenderModalContent = (props: any) => {
   return (
     <EditOfcForm
       handleCloseModal={handleCloseModal}
-      regionSelectOptions={regionSelectOptions}
+      originSelectOptions={originSelectOptions}
       destinationSelectOptions={destinationSelectOptions}
+      containerSelectOptions={containerSelectOptions}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -60,8 +62,9 @@ function ManageOfcContainer() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
   const [ofcData, setOfcData] = useState<any>([]);
-  const [regionSelectOptions, setRegionSelectOptions] = useState<any>([]);
+  const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
@@ -115,8 +118,9 @@ function ManageOfcContainer() {
           value: d._id,
         };
       });
-      setRegionSelectOptions(() => [...originOptions]);
+      setOriginSelectOptions(() => [...originOptions]);
       handleGetDestination();
+      handleGetContainer();
       handleGetOfc(originList);
     }
   };
@@ -135,6 +139,23 @@ function ManageOfcContainer() {
         }
       );
       setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+   //to get Container Data from database
+   const handleGetContainer = async () => {
+    const response = await getContainerData();
+
+    if (response) {
+      const containerOptions = response.map(
+        (d: any) => {
+          return {
+            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+            value: d._id,
+          };
+        }
+      );
+      setContainerSelectOptions(() => [...containerOptions]);
     }
   };
 
@@ -256,16 +277,17 @@ function ManageOfcContainer() {
           return (
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              regionSelectOptions={regionSelectOptions}
+              originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
               destinationSelectOptions={destinationSelectOptions}
+              containerSelectOptions={containerSelectOptions}
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
             />
           );
       }}
-      modalSize="70%"
+      modalSize="60%"
     >
       <DataTable
         data={tableRowData}
@@ -290,6 +312,7 @@ function ManageOfcContainer() {
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
+                _containerId:obj._containerId,
                 ofcCharge: obj.ofcCharge,
                 _ofcObjectId: obj._id,
               },
