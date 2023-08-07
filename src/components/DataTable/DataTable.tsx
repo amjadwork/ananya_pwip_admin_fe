@@ -24,6 +24,7 @@ import {
   ChevronDown,
   Selector,
   Search,
+  ChartLine
 } from "tabler-icons-react";
 
 const useStyles = createStyles((theme) => ({
@@ -64,6 +65,8 @@ interface TableSortProps {
   onClickAction?: any;
   handleRowEdit?: any;
   handleRowDelete?: any;
+  handleLineChart?:any;
+  showChartLineAction?: boolean;
   selectFilterTypes?: any; //enter array of object with column keys, type, name and labek
   selectedFilterValue?: any;
   handleSelectRadioFilterChange?: any;
@@ -121,8 +124,10 @@ export function DataTable({
   actionItems,
   handleRowEdit,
   handleRowDelete,
+  handleLineChart,
   selectFilterTypes = [],
   selectedFilterValue = null,
+  showChartLineAction = false,
   handleSelectRadioFilterChange = () => null,
 }: TableSortProps) {
   const [search, setSearch] = useState("");
@@ -283,6 +288,16 @@ export function DataTable({
                         return (
                           <td key={row[key] + colIndex * 137}>
                             <Flex justify="flex-end" gap="sm" align="center">
+
+                           {showChartLineAction && (
+                            <ActionIcon
+                              variant="light"
+                              color="green"
+                              onClick={() => handleLineChart(row, index)}
+                            >
+                              <ChartLine size="1rem" />
+                            </ActionIcon>
+                           )}
                               <ActionIcon
                                 variant="light"
                                 color="blue"
