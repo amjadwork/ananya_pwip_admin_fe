@@ -10,6 +10,7 @@ const initialFormValues = {
     destinations: [
       {
         _destinationPortId: "",
+        _containerId:"",
         chaCharge: "",
         silicaGel: "",
         craftPaper: "",
@@ -43,6 +44,7 @@ function calculateTotalCharge(destinations:any) {
 function EditChaForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
   const destinationSelectOptions = props.destinationSelectOptions;
+  const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
@@ -106,6 +108,20 @@ function EditChaForm(props: any) {
               disabled={modalType === "update" ? true : false}
               {...form.getInputProps(
                 `destinations.${index}._destinationPortId`
+              )}
+            />
+          </Grid.Col>
+
+           <Grid.Col span={11}>
+            <Select
+              required
+              searchable
+              label="Select Container Type"
+              placeholder="eg. Standard Dry"
+              data={containerSelectOptions}
+              disabled={modalType === "update" ? true : false}
+              {...form.getInputProps(
+                `destinations.${index}._containerId`
               )}
             />
           </Grid.Col>

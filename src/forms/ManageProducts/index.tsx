@@ -8,6 +8,7 @@ import {
   Space,
   ActionIcon,
   Flex,
+  MultiSelect,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -23,6 +24,7 @@ const initialFormValues: any = {
   variantName: "",
   HSNCode: "",
   brokenPercentage: "",
+  tags:"",
   sourceRates: [
     {
       _sourceId: "",
@@ -41,6 +43,13 @@ function AddOrEditProductForm(props: any) {
   const modalOpen = props.modalOpen || false;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
+  const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
+
+  const tagsOptions = [
+  { value: 'raw', label: 'Raw' },
+  { value: 'steam', label: 'Steam' },
+  { value: 'paraboiled', label: 'Paraboiled' },
+  ];
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -96,11 +105,20 @@ function AddOrEditProductForm(props: any) {
     label: cat.name,
   }));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (modalOpen) {
       handleGetSources();
     }
   }, [modalOpen]);
+
+  //to set if the category selected is Basmati, if yes Tags field will be disabled
+  useEffect(() => {
+    const selectedCategory = categoryData.find(
+      (cat: any) => cat._id === form.values._categoryId
+    );
+    setIsBasmatiCategory(selectedCategory?.name === "Basmati");
+  }, [form.values._categoryId, categoryData]);
+
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
@@ -170,7 +188,7 @@ function AddOrEditProductForm(props: any) {
 
       <TextInput
         required
-        label="Variant name"
+        label="Variant Name"
         placeholder="eg. 1509 Sella"
         disabled={modalType === "update" ? true : false}
         {...form.getInputProps("variantName")}
@@ -178,6 +196,15 @@ function AddOrEditProductForm(props: any) {
 
       <Space h="md" />
 
+      <Select
+            data={tagsOptions || []}
+            label="Tags"
+            placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
+            disabled={isBasmatiCategory || modalType === "update"}
+            {...form.getInputProps("tags")}
+          />
+
+     <Space h="md" />
 
       <TextInput
         label="HSN Code"

@@ -225,6 +225,7 @@ function ManageProductsContainer(props: any) {
             HSNCode: d.HSNCode,
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
+            tags: d.tags,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -308,6 +309,7 @@ function ManageProductsContainer(props: any) {
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
+            tags:obj.tags,
             sourceRates: [{ ...obj }],
           };
 

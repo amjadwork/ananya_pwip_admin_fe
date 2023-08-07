@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Group, NumberInput, Space, TextInput} from "@mantine/core";
+import { Group, NumberInput, Space, TextInput, MultiSelect, Select} from "@mantine/core";
 import { Button} from "../../components/index";
 import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
@@ -7,6 +7,7 @@ import { randomId } from "@mantine/hooks";
 const initialFormValues = {
     typeOfCharge: "",
     typeOfValue: "",
+    applicableFor:"",
     value: "",
     key: randomId(),
 };
@@ -14,6 +15,7 @@ const initialFormValues = {
 function EditOtherChargesForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
+  const variantSelectOptions=props.variantSelectOptions;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
 
@@ -21,6 +23,13 @@ function EditOtherChargesForm(props: any) {
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
   });
+
+  const TypeOfValue=[
+    { value: 'flat', label: 'Flat' },
+    { value: 'percentage', label: 'Percentage' },
+    { value: 'fixed', label: 'Fixed' },
+  ]
+
 
   //to show previous values while editing the row
   useEffect(() => {
@@ -41,18 +50,31 @@ function EditOtherChargesForm(props: any) {
           <TextInput
             required
             label="Type of Charge"
-            placeholder="Eg. export duty"
+            placeholder="eg. Export Duty"
+            disabled={modalType === "update" ? true : false}
             {...form.getInputProps("typeOfCharge")}
           />
     
-    <Space h="sm" />
+          <Space h="sm" />
 
-    <TextInput
+          <Select
             required
             hideControls
-            label="Type of Charge"
+            label="Type of Value"
+            data={TypeOfValue}
             placeholder="eg. percentage"
+            disabled={modalType === "update" ? true : false}
             {...form.getInputProps("typeOfValue")}
+          />
+
+          <Space h="sm" />
+
+         <MultiSelect
+            data={variantSelectOptions || []}
+            label="Applicable For (Select Variant/s)"
+            placeholder="eg. 1509 Basmati Steam"
+            {...form.getInputProps("applicableFor")}
+            
           />
     
           <Space h="sm" />
@@ -64,6 +86,7 @@ function EditOtherChargesForm(props: any) {
             placeholder="eg. 20"
             {...form.getInputProps("value")}
           />
+          
     
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>

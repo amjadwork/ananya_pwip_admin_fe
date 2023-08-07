@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditOtherChargesForm from "../../forms/ManageOthers/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import { getVariantData } from "../../services/export-costing/Products";
 import {
   getOtherChargesData,
   postOtherChargesData,
@@ -38,12 +39,14 @@ const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
+  const variantSelectOptions=props.variantSelectOptions;
   const modalType = props.modalType;
 
   return (
     <EditOtherChargesForm
       handleCloseModal={handleCloseModal}
       handleSaveAction={handleSaveAction}
+      variantSelectOptions={variantSelectOptions}
       updateFormData={updateFormData}
       modalType={modalType}
     />
@@ -54,6 +57,7 @@ function ManageOthers() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
   const [otherChargesData, setOtherChargesData] = useState<any>([]);
+  const [variantSelectOptions, setVariantSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
@@ -63,7 +67,25 @@ function ManageOthers() {
         if (response) {
           setOtherChargesData([...response]);
         }
+        handleGetVariant();
       };
+
+    //to get Container Data from database
+  const handleGetVariant = async () => {
+     const response = await getVariantData();
+      if (response) {
+        const variantOptions = response.map(
+          (d: any) => {
+            return {
+              label: d.variantName,
+              value: d._id,
+            };
+          }
+        );
+
+        setVariantSelectOptions(() => [...variantOptions]);
+      }
+    };
 
  //to add new or edit the existing row in the table
   const handleSaveAction = async (data:any) => {
@@ -114,10 +136,10 @@ function ManageOthers() {
       labels: { confirm: "Delete Other Charge Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => handleDeleteData(rowData),
+      onConfirm: () => handleDeleteRow(rowData),
     });
     
-  const handleDeleteData = async (data: any) => {
+  const handleDeleteRow= async (data: any) => {
     const response = await deleteOtherChargesData(data);
 
     if (response) {
@@ -170,6 +192,7 @@ function ManageOthers() {
             <RenderModalContent
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               handleSaveAction={handleSaveAction}
+              variantSelectOptions={variantSelectOptions}
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
@@ -198,6 +221,7 @@ function ManageOthers() {
                     const formObj = {
                       typeOfCharge: obj.typeOfCharge,
                       typeOfValue: obj.typeOfValue,
+                      applicableFor: obj.applicableFor,
                       value:obj.value,
                       _id: obj._id,
                     };

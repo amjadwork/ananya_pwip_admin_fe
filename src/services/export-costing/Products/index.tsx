@@ -24,6 +24,13 @@ export const postProductData = async (payload: any) => {
 };
 
 //ManageProducts Module
+
+export const getVariantData= async () => {
+  const response: any = await APIRequest("variant", "GET");
+  return response;
+};
+
+
 export const putProductData = async (payload: any, productData: any) => {
   const response = await APIRequest(
     `product/${productData._id}`,
