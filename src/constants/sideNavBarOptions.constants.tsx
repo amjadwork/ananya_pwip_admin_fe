@@ -3,6 +3,7 @@ import {
   Help,
   Apps,
   User,
+  Article,
   Dashboard,
 } from "tabler-icons-react";
 
@@ -33,66 +34,12 @@ export const NavbarOptions = [
     initiallyOpened: true,
     links: [
       { label: "Export costing", link: "/export-costing" },
-      { label: "OFC (comig soon)", link: "#!" },
+      { label: "OFC (coming soon)", link: "#!" },
     ],
   },
   { label: "Users", icon: User, link: "/user-management" },
+  { label: "Plans", icon: Article, link: "/plans-management" },
   { label: "Reporting", icon: PresentationAnalytics, link: "/reports" },
   { label: "Support", icon: Help, link: "/customer-support" },
 
-  // {
-  //   label: "Location",
-  //   navigateTo: "/admin/dashboard/locations",
-  //   icon: "dollar",
-  //   color: "green",
-  // },
-  // {
-  //   label: "Packaging",
-  //   navigateTo: "/admin/dashboard/managePackaging",
-  //   icon: "calendar",
-  //   color: "yellow",
-  //   badge: "",
-  // },
-  // {
-  //   label: "CHA",
-  //   navigateTo: "/admin/dashboard/cha",
-  //   icon: "dice",
-  //   color: "red",
-  //   badge: "",
-  // },
-  // {
-  //   label: "SHL",
-  //   navigateTo: "/admin/dashboard/shl",
-  //   icon: "heart",
-  //   color: "yellow",
-  //   badge: "",
-  // },
-  // {
-  //   label: "OFC",
-  //   navigateTo: "/admin/dashboard/ofc",
-  //   icon: "star",
-  //   color: "blue",
-  //   badge: "",
-  // },
-  // {
-  //   label: "Transportation",
-  //   navigateTo: "/admin/dashboard/transport",
-  //   icon: "disc",
-  //   color: "green",
-  //   badge: "",
-  // },
-  // {
-  //   label: "PWIP Services",
-  //   navigateTo: "/admin/dashboard/pwipServices",
-  //   icon: "calendar",
-  //   color: "yellow",
-  //   badge: "",
-  // },
-  // {
-  //   label: "Others",
-  //   navigateTo: "/admin/dashboard/others",
-  //   icon: "calendar",
-  //   color: "yellow",
-  //   badge: "",
-  // },
 ];
