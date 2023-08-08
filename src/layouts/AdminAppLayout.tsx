@@ -14,6 +14,7 @@ import ExportCostingLayout from "./ExportCostingLayout";
 
 import Header from "../components/common/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
+import PlansManagementLayout from "./PlansManagementLayout";
 
 const AdminAppLayout: React.FC<any> = () => {
   const [opened, setOpened] = useState(false);
@@ -93,6 +94,7 @@ const AdminAppLayout: React.FC<any> = () => {
           <Routes>
             <Route path="/" element={<div></div>} />
             <Route path="/export-costing/*" element={<ExportCostingLayout />} />
+            <Route path="/plans-management/*" element={<PlansManagementLayout />} />
           </Routes>
         </Box>
       </AppShell>
