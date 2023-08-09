@@ -111,7 +111,10 @@ const handleGetVariantPriceTrend= async () => {
             domain={['dataMin', 'dataMax']}
             tickCount={10}
           />
-          <Tooltip />
+          <Tooltip
+           wrapperStyle={{ backgroundColor: 'lightgray' }} 
+           labelFormatter={(label) => moment(label).format('hh:mm:ss, DD-MM-YYYY')}
+           formatter={(value) => `${value} INR`} />
           <Line connectNulls type="monotone" dataKey="price" stroke="#8884d8" fill="#8884d8" />
         </LineChart>
       </ResponsiveContainer>
