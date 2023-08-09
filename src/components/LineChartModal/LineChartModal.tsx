@@ -35,7 +35,6 @@ const handleGetVariantPriceTrend= async () => {
             price: item.price,
             date: new Date(item.createdAt)
           }));
-          console.log(filteredResponse,"filtered")
      setGraphData(filteredResponse)
     }
   }
@@ -102,7 +101,11 @@ const handleGetVariantPriceTrend= async () => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
-            tickFormatter={(date) => moment(date).format('DD-MMMM')}
+            tickFormatter={(date) => moment(date).format('DD-MM-YYYY')}
+            tick={{
+              fontSize: 12,
+              textAnchor: 'middle',
+            }}
             // label={{ value: 'day', position: 'bottom', dy: 10 }}
           />
           <YAxis
@@ -110,6 +113,10 @@ const handleGetVariantPriceTrend= async () => {
             // label={{ value: 'Price', position: 'left', dy: 10 }}
             domain={['dataMin', 'dataMax']}
             tickCount={10}
+            tick={{
+              fontSize: 14,
+              textAnchor: 'end',
+            }}
           />
           <Tooltip />
           <Line connectNulls type="monotone" dataKey="price" stroke="#8884d8" fill="#8884d8" />
