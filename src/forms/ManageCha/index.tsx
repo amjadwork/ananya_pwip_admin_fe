@@ -36,8 +36,22 @@ function calculateTotalCharge(destinations:any) {
       pqc = 0,
       coo = 0,
     } = destination;
-    return total + parseFloat(silicaGel) + parseFloat(craftPaper) + parseFloat(transportCharge) + parseFloat(loadingCharge) + parseFloat(customCharge) + parseFloat(pqc)+ parseFloat(coo);
-  }, 0);
+
+  const charges = [
+    parseFloat(silicaGel),
+    parseFloat(craftPaper),
+    parseFloat(transportCharge),
+    parseFloat(loadingCharge),
+    parseFloat(customCharge),
+    parseFloat(pqc),
+    parseFloat(coo),
+  ];
+
+  const destinationTotal = charges.reduce((acc, charge) => acc + (isNaN(charge) ? 0 : charge), 0);
+
+  return total + destinationTotal;
+}, 0);
+
 }
 
 
