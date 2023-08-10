@@ -33,8 +33,20 @@ function calculateTotalCharge(destinations:any) {
       muc = 0,
       seal = 0,
     } = destination;
-    return total + parseFloat(thc) + parseFloat(blFee) + parseFloat(surrender) + parseFloat(convenienceFee) + parseFloat(muc) + parseFloat(seal);
-  }, 0);
+
+    const charges = [
+    parseFloat(thc),
+    parseFloat(blFee),
+    parseFloat(surrender),
+    parseFloat(convenienceFee),
+    parseFloat(muc),
+    parseFloat(seal),
+  ];
+  
+    const destinationTotal = charges.reduce((acc, charge) => acc + (isNaN(charge) ? 0 : charge), 0);
+
+  return total + destinationTotal;
+}, 0);
 }
 
 function EditShlForm(props: any) {
