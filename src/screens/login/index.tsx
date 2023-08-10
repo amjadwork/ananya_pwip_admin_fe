@@ -95,7 +95,7 @@ const LoginScreen = (props: any) => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      fetchTokenAndLogin({ ...user });
+      fetchTokenAndLogin({ ...user, auth_id: user.sub });
     }
   }, [isAuthenticated, user]);
 
