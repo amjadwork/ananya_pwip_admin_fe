@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
 import { Select, Button, ActionIcon } from "../../components/index";
 import { Trash } from "tabler-icons-react";
@@ -19,12 +19,13 @@ const initialFormValues = {
 
 function EditOfcForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
   const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
+  const { handleGetDestinationDataByOrigin } = props;
+  const [destinationOptions, setDestinationOptions] = useState<any>([]);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
@@ -49,6 +50,21 @@ function EditOfcForm(props: any) {
   const handleRemoveItem: any = (index: number) => {
         form.removeListItem("destinations", index);
       };
+
+  //getting destination port list based on selected origin Port
+  useEffect(() => {
+    const fetchDestinationOptions = async () => {
+      if (form.values._originPortId) {
+        try {
+          const response = await handleGetDestinationDataByOrigin(form.values._originPortId);
+          setDestinationOptions(response);
+        } catch (error) {
+          console.error("Error fetching destination data:", error);
+        }
+      }
+    };
+    fetchDestinationOptions();
+  }, [form.values._originPortId]);
 
   const handleFormSubmit = (formValues: typeof form.values) => {
     handleSaveAction(formValues);
@@ -76,7 +92,7 @@ function EditOfcForm(props: any) {
                 searchable
                 label="Select Destination Port"
                 placeholder="eg. Singapore"
-                data={destinationSelectOptions}
+                data={destinationOptions}
                 disabled={modalType === "update" ? true : false}
                 {...form.getInputProps(
                   `destinations.${index}._destinationPortId`

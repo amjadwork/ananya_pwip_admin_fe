@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Group, NumberInput, Space, Grid, Box } from "@mantine/core";
 import { Select, Button, ActionIcon } from "../../components/index";
 import { Trash } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
+
 
 const initialFormValues = {
     _originPortId: "",
@@ -51,18 +52,17 @@ function calculateTotalCharge(destinations:any) {
 
   return total + destinationTotal;
 }, 0);
-
 }
-
 
 function EditChaForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
   const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
+  const { handleGetDestinationDataByOrigin } = props;
+  const [destinationOptions, setDestinationOptions] = useState<any>([]);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
@@ -88,17 +88,36 @@ function EditChaForm(props: any) {
         form.removeListItem("destinations", index);
       };
 
-  const handleFormSubmit = async (formValues: typeof form.values) => {
-    const total = calculateTotalCharge(formValues.destinations);
-    const updateChaCharge = formValues.destinations.map((destination: any) => ({
-      ...destination,
-      chaCharge: total,
-    }));     
-    const formData = { ...formValues, destinations: updateChaCharge };
-    await handleSaveAction(formData);
-    form.setValues(initialFormValues);
-    handleCloseModal(false);
-  };
+//getting destination port list based on selected origin Port
+      useEffect(() => {
+        const fetchDestinationOptions = async () => {
+          if (form.values._originPortId) {
+            try {
+              const response = await handleGetDestinationDataByOrigin(form.values._originPortId);
+              setDestinationOptions(response);
+            } catch (error) {
+              console.error("Error fetching destination data:", error);
+            }
+          }
+        };
+        fetchDestinationOptions();
+      }, [form.values._originPortId]);
+      
+
+      const handleFormSubmit = async (formValues: typeof form.values) => {
+        const updateChaCharge = formValues.destinations.map((destination: any) => {
+          const destinationTotal = calculateTotalCharge([destination]);
+          return {
+            ...destination,
+            chaCharge: destinationTotal,
+          };
+        });
+      
+        const formData = { ...formValues, destinations: updateChaCharge };
+        await handleSaveAction(formData);
+        form.setValues(initialFormValues);
+        handleCloseModal(false);
+      };
 
   const fields = form.values.destinations.map((item: any, index: number) => (
     <React.Fragment key={item?.key}>
@@ -118,7 +137,7 @@ function EditChaForm(props: any) {
               searchable
               label="Select Destination Port"
               placeholder="Eg. singapore"
-              data={destinationSelectOptions}
+              data={destinationOptions}
               disabled={modalType === "update" ? true : false}
               {...form.getInputProps(
                 `destinations.${index}._destinationPortId`

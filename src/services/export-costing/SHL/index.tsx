@@ -1,19 +1,5 @@
 import APIRequest from "../../../helper/api";
 
-export const getOriginData = async () => {
-  const response = await APIRequest("location/origin", "GET");
-  if (response) {
-    return response;
-  }
-};
-
-export const getDestinationData = async () => {
-  const response = await APIRequest("location/destination", "GET");
-  if (response) {
-    return response;
-  }
-};
-
 export const getShlData = async () => {
   const response: any = await APIRequest("shl", "GET");
   if (response) {

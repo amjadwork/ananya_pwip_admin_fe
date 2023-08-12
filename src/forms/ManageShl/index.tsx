@@ -51,12 +51,13 @@ function calculateTotalCharge(destinations:any) {
 
 function EditShlForm(props: any) {
   const originSelectOptions = props.originSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
   const containerSelectOptions=props.containerSelectOptions;
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
+  const { handleGetDestinationDataByOrigin } = props;
+  const [destinationOptions, setDestinationOptions] = useState<any>([]);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
@@ -82,18 +83,36 @@ function EditShlForm(props: any) {
         form.removeListItem("destinations", index);
       };
 
+  //getting destination port list based on selected origin Port
+  useEffect(() => {
+    const fetchDestinationOptions = async () => {
+      if (form.values._originPortId) {
+        try {
+          const response = await handleGetDestinationDataByOrigin(form.values._originPortId);
+          setDestinationOptions(response);
+        } catch (error) {
+          console.error("Error fetching destination data:", error);
+        }
+      }
+    };
+    fetchDestinationOptions();
+  }, [form.values._originPortId]);
+
   //updating the value totalShlCharge in respective key and updating the form
   const handleFormSubmit = async (formValues: typeof form.values) => {
-    const total = calculateTotalCharge(formValues.destinations);
-    const updateShlCharge = formValues.destinations.map((destination: any) => ({
-      ...destination,
-      shlCharge: total,
-    }));     
+    const updateShlCharge = formValues.destinations.map((destination: any) => {
+      const destinationTotal = calculateTotalCharge([destination]);
+      return {
+        ...destination,
+        shlCharge: destinationTotal,
+      };
+    });
+  
     const formData = { ...formValues, destinations: updateShlCharge };
     await handleSaveAction(formData);
     form.setValues(initialFormValues);
     handleCloseModal(false);
-    };
+  };
 
   const fields = form.values.destinations.map((item: any, index: number) => (
     <React.Fragment key={item?.key}>
@@ -114,7 +133,7 @@ function EditShlForm(props: any) {
               label="Select Destination Port"
               placeholder="Eg. singapore"
               disabled={modalType === "update" ? true : false}
-              data={destinationSelectOptions}
+              data={destinationOptions}
               {...form.getInputProps(
                 `destinations.${index}._destinationPortId`
               )}

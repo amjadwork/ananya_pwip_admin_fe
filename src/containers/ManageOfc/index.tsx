@@ -8,10 +8,13 @@ import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import { getContainerData } from "../../services/export-costing/Container";
-import {
-  getOfcData,
+import { 
+  getDestinationDataByOrigin, 
   getDestinationData,
   getOriginData,
+} from "../../services/export-costing/Locations";
+import {
+  getOfcData,
   postOfcData,
   deleteOfcData,
   patchOfcData,
@@ -39,8 +42,8 @@ const columns = [
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
   const containerSelectOptions=props.containerSelectOptions;
+  const handleGetDestinationDataByOrigin = props.handleGetDestinationDataByOrigin;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
@@ -49,8 +52,8 @@ const RenderModalContent = (props: any) => {
     <EditOfcForm
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
-      destinationSelectOptions={destinationSelectOptions}
       containerSelectOptions={containerSelectOptions}
+      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin} 
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -139,6 +142,19 @@ function ManageOfcContainer() {
         }
       );
       setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+  const handleGetDestinationDataByOrigin = async (originPortId:any) => {
+    try {
+      const response = await getDestinationDataByOrigin(originPortId);
+      return response.destination.map((d: any) => ({
+        label: d.portName,
+        value: d._id,
+      }));
+    } catch (error) {
+      console.error("Error fetching destination data:", error);
+      return [];
     }
   };
 
@@ -279,7 +295,7 @@ function ManageOfcContainer() {
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
-              destinationSelectOptions={destinationSelectOptions}
+              handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
               containerSelectOptions={containerSelectOptions}
               updateFormData={updateFormData}
               modalType={modalType}

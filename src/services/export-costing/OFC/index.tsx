@@ -7,20 +7,6 @@ export const getOfcData = async () => {
   }
 };
 
-export const getOriginData = async () => {
-  const response = await APIRequest("location/origin", "GET");
-  if (response) {
-    return response;
-  }
-};
-
-export const getDestinationData = async () => {
-  const response = await APIRequest("location/destination", "GET");
-  if (response) {
-    return response;
-  }
-};
-
 export const postOfcData = async (data: any) => {
   const response = await APIRequest("ofc", "POST", data);
   if (response) {

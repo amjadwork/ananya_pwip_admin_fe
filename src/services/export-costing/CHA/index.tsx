@@ -1,19 +1,5 @@
 import APIRequest from "../../../helper/api";
 
-export const getDestinationData = async () => {
-  const response = await APIRequest("location/destination", "GET");
-  if (response) {
-    return response;
-  }
-};
-
-export const getOriginData = async () => {
-  const response = await APIRequest("location/origin", "GET");
-  if (response) {
-    return response;
-  }
-};
-
 export const getChaData = async () => {
   const response: any = await APIRequest("cha", "GET");
   if (response) {
@@ -39,8 +25,6 @@ export const patchChaData = async (data: any) => {
     return response;
   }
 };
-
-
 
 export const deleteChaData = async (data: any) => {
   const response = await APIRequest(
