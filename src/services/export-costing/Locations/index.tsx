@@ -69,3 +69,13 @@ export const patchLocationData = async (data:any, locationType:any) => {
     return response;
   }
 };
+
+//get destination by originId
+export const getDestinationDataByOrigin = async (data:any) => {
+  const response = await APIRequest(`location/destination?filterBy=origin&originId=${data}`, "GET");
+  if (response) {
+    return response;
+  }
+};
+
+

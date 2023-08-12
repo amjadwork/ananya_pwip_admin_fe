@@ -8,10 +8,13 @@ import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import { getContainerData } from "../../services/export-costing/Container";
-import {
-  getChaData,
+import { 
+  getDestinationDataByOrigin, 
   getDestinationData,
   getOriginData,
+} from "../../services/export-costing/Locations";
+import {
+  getChaData,
   postChaData,
   deleteChaData,
   patchChaData,
@@ -69,8 +72,8 @@ const columns = [
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
-  const destinationSelectOptions = props.destinationSelectOptions;
   const containerSelectOptions=props.containerSelectOptions;
+  const handleGetDestinationDataByOrigin = props.handleGetDestinationDataByOrigin;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
@@ -79,8 +82,8 @@ const RenderModalContent = (props: any) => {
     <EditChaForm
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
-      destinationSelectOptions={destinationSelectOptions}
       containerSelectOptions={containerSelectOptions}
+      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin} 
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -99,7 +102,7 @@ function ManageChaContainer() {
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get CHA Data from database
-  const handleGetCha= async (data: any) => {
+  const handleGetCha= async (data: any = []) => {
     const response: any = await getChaData();
     try {
       if (response) {
@@ -170,6 +173,19 @@ function ManageChaContainer() {
         }
       );
       setDestinationSelectOptions(() => [...destinationOptions]);
+    }
+  };
+
+  const handleGetDestinationDataByOrigin = async (originPortId:any) => {
+    try {
+      const response = await getDestinationDataByOrigin(originPortId);
+      return response.destination.map((d: any) => ({
+        label: d.portName,
+        value: d._id,
+      }));
+    } catch (error) {
+      console.error("Error fetching destination data:", error);
+      return [];
     }
   };
 
@@ -304,8 +320,8 @@ useEffect(() => {
               handleCloseModal={(bool: boolean) => setModalOpen(bool)}
               originSelectOptions={originSelectOptions}
               handleSaveAction={handleSaveAction}
-              destinationSelectOptions={destinationSelectOptions}
               containerSelectOptions={containerSelectOptions}
+              handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
