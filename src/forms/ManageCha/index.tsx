@@ -15,6 +15,8 @@ const initialFormValues = {
         chaCharge: "",
         silicaGel: "",
         craftPaper: "",
+        serviceCharge:"",
+        fumigationCharge:"",
         transportCharge: "",
         loadingCharge: "",
         customCharge: "",
@@ -34,6 +36,8 @@ function calculateTotalCharge(destinations:any) {
       transportCharge = 0,
       loadingCharge = 0,
       customCharge = 0,
+      serviceCharge=0,
+      fumigationCharge=0,
       pqc = 0,
       coo = 0,
     } = destination;
@@ -44,6 +48,8 @@ function calculateTotalCharge(destinations:any) {
     parseFloat(transportCharge),
     parseFloat(loadingCharge),
     parseFloat(customCharge),
+    parseFloat(serviceCharge),
+    parseFloat(fumigationCharge),
     parseFloat(pqc),
     parseFloat(coo),
   ];
@@ -183,18 +189,18 @@ function EditChaForm(props: any) {
             </div>
           </Grid.Col>
 
-          <Grid.Col span={3}>
+          <Grid.Col span={11}>
             <NumberInput
               required
               disabled
               precision={2}
               hideControls
-              label="CHA Charges"
+              label="Total CHA Charge"
               value={calculateTotalCharge([form.values.destinations[index]])}
             />
           </Grid.Col>
 
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -205,7 +211,7 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
 
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -216,7 +222,7 @@ function EditChaForm(props: any) {
             />
           </Grid.Col>
 
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -226,7 +232,7 @@ function EditChaForm(props: any) {
               {...form.getInputProps(`destinations.${index}.transportCharge`)}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -236,7 +242,7 @@ function EditChaForm(props: any) {
               {...form.getInputProps(`destinations.${index}.loadingCharge`)}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -246,7 +252,7 @@ function EditChaForm(props: any) {
               {...form.getInputProps(`destinations.${index}.customCharge`)}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -256,7 +262,7 @@ function EditChaForm(props: any) {
               {...form.getInputProps(`destinations.${index}.pqc`)}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <NumberInput
               required
               precision={2}
@@ -264,6 +270,25 @@ function EditChaForm(props: any) {
               label="COO"
               placeholder="eg. 500.00"
               {...form.getInputProps(`destinations.${index}.coo`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <NumberInput
+              required
+              precision={2}
+              hideControls
+              label="Service Charge"
+              placeholder="eg. 500.00"
+              {...form.getInputProps(`destinations.${index}.serviceCharge`)}
+            />
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <NumberInput
+              precision={2}
+              hideControls
+              label="Fumigation Charge"
+              placeholder="eg. 500.00"
+              {...form.getInputProps(`destinations.${index}.fumigationCharge`)}
             />
           </Grid.Col>
         </Grid>
