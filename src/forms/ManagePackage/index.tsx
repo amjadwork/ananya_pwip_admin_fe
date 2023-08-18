@@ -8,7 +8,7 @@ const initialFormValues = {
     _id: "",
     bag: "",
     weight: "",
-    unit: "KG",
+    unit: "kg",
     cost: "",
     currency: "INR",
     key: randomId(),
