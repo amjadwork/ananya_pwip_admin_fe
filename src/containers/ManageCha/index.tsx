@@ -56,6 +56,14 @@ const columns = [
     key: "loadingCharge",
   },
   {
+    label: "Service",
+    key: "serviceCharge",
+  },
+  {
+    label: "Fumigation",
+    key: "fumigationCharge",
+  },
+  {
     label: "PQC",
     key: "pqc",
   },
@@ -361,6 +369,8 @@ useEffect(() => {
                 transportCharge: obj.transportCharge,
                 loadingCharge: obj.loadingCharge,
                 customCharge: obj.customCharge,
+                serviceCharge:obj.serviceCharge,
+                fumigationCharge:obj.fumigationCharge,
                 pqc: obj.pqc,
                 coo: obj.coo,
               },
