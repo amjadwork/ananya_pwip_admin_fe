@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 
+
+
 import {
   Group,
   createStyles,
@@ -24,7 +26,8 @@ import {
   ChevronDown,
   Selector,
   Search,
-  ChartLine
+  ChartLine,
+  PlayerPlay,
 } from "tabler-icons-react";
 
 const useStyles = createStyles((theme) => ({
@@ -66,7 +69,9 @@ interface TableSortProps {
   handleRowEdit?: any;
   handleRowDelete?: any;
   handleLineChart?:any;
+  handleVideoPlay?:any;
   showChartLineAction?: boolean;
+  showPlayAction?:boolean;
   selectFilterTypes?: any; //enter array of object with column keys, type, name and labek
   selectedFilterValue?: any;
   handleSelectRadioFilterChange?: any;
@@ -125,9 +130,11 @@ export function DataTable({
   handleRowEdit,
   handleRowDelete,
   handleLineChart,
+  handleVideoPlay,
   selectFilterTypes = [],
   selectedFilterValue = null,
   showChartLineAction = false,
+  showPlayAction=false,
   handleSelectRadioFilterChange = () => null,
 }: TableSortProps) {
   const [search, setSearch] = useState("");
@@ -298,6 +305,17 @@ export function DataTable({
                               <ChartLine size="1rem" />
                             </ActionIcon>
                            )}
+
+                          {showPlayAction && (
+                            <ActionIcon
+                              variant="light"
+                              color="green"
+                              onClick={() => handleVideoPlay(row, index)}
+                            >
+                              <PlayerPlay
+                              size="1rem" />
+                            </ActionIcon>
+                           )} 
                               <ActionIcon
                                 variant="light"
                                 color="blue"
@@ -314,6 +332,14 @@ export function DataTable({
                                 <Trash size="1rem" />
                               </ActionIcon>
                             </Flex>
+                          </td>
+                        );
+                      }
+                      if (key === "video") {
+                        const column = columns.find((col:any) => col.key === key);
+                        return (
+                          <td key={key + index}>
+                            {column && column.render ? column.render(row) : ""}
                           </td>
                         );
                       }

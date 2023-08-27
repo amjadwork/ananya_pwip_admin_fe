@@ -4,6 +4,7 @@ import {
   Apps,
   User,
   Article,
+  Video,
   Dashboard,
 } from "tabler-icons-react";
 
@@ -39,6 +40,7 @@ export const NavbarOptions = [
   },
   { label: "Users", icon: User, link: "/user-management" },
   { label: "Plans", icon: Article, link: "/plans-management" },
+  { label: "Learn", icon: Video, link: "/learn-management" },
   { label: "Reporting", icon: PresentationAnalytics, link: "/reports" },
   { label: "Support", icon: Help, link: "/customer-support" },
 
