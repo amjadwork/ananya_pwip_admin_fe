@@ -30,17 +30,19 @@ function EditPlansForm(props: any) {
   const validityType=[
     { value: 'days', label: 'Days' },
     { value: 'hours', label: 'Hours' },
+    { value: 'usage-cap', label: 'Usage Cap' },
   ]
 
   //to show previous values while editing the row
   useEffect(() => {
-  if (updateFormData && modalType === "update") {
-    form.setValues(updateFormData);
-  }
-}, [updateFormData, modalType]);
-
-console.log(updateFormData, "updated")
-console.log(form.values, "form")
+    if (updateFormData && modalType === "update") {
+      const updatedFormData = {
+        ...updateFormData,
+        price: parseFloat(updateFormData.price),
+      };
+      form.setValues(updatedFormData);
+    }
+  }, [updateFormData, modalType]);
 
   const handleFormSubmit = (formValues: typeof form.values) => {
     handleSaveAction(formValues);

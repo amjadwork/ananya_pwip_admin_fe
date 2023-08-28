@@ -104,8 +104,7 @@ function ManageTags() {
       children: (
         <Text size="sm">
           Are you sure you want to delete this Tag? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          <Text fw={500}>Note: Deleting tag will affect modules which have this tag, make sure to unlink the tags before deleting it from here.</Text> 
           </Text>
       ),
       labels: { confirm: "Delete Tag ", cancel: "No, don't delete it" },

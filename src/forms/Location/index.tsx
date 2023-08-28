@@ -12,6 +12,7 @@ function AddEditLocationFormContainer(props: any) {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
   const [locationType, setLocationType] = useState("");
+  const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
 
   const handleCloseModal = props.handleCloseModal;
 
@@ -19,13 +20,32 @@ function AddEditLocationFormContainer(props: any) {
     clearInputErrorOnChange: true,
     initialValues: {},
   });
+
+  const originOptions = locationData?.origin?.map((d: any) => {
+    return { label: d.portName, value: d._id };
+  });
+
     //to show previous values while editing the row
     useEffect(() => {
       if (updateFormData && modalType === "update") {
-        form.setValues(updateFormData);
+
+        const originAsStringArray = updateFormData.linkedOrigin.map((arr:any) => arr._originId);
+        setDefaultOriginValues(originAsStringArray);
+        form.setValues({
+          ...updateFormData,
+          linkedOrigin: [...originAsStringArray],
+        });
       }
     }, [updateFormData, modalType]);
 
+    const handleLinkedOriginChange = (newOriginValues: string[]) => {
+      setDefaultOriginValues(newOriginValues);
+      form.setValues((prevValues: any) => ({
+        ...prevValues,
+        linkedOrigin: newOriginValues,
+      }));
+    };
+  
   useEffect(() => {
     if (selectedFilterValue) {
       setLocationType(selectedFilterValue);
@@ -70,12 +90,6 @@ function AddEditLocationFormContainer(props: any) {
      handleSetLocationPayload(payload);
 
   };
-
-  console.log("form", form.values)
-
-  const originOptions = locationData?.origin?.map((d: any) => {
-    return { label: d.portName, value: d._id };
-  });
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -190,12 +204,14 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("country")}
           />
           <Space h="md" />
-          <MultiSelect
-            data={originOptions || []}
-            label="Select Origin Ports"
-            placeholder="Eg. Vishakapatnam"
-            {...form.getInputProps("linkedOrigin")}
-            
+           <MultiSelect
+            data={originOptions}
+            label="Linked Origins"
+            placeholder="Select Linked Origins"
+            value={defaultOriginValues}
+            onChange={handleLinkedOriginChange}
+            clearButtonLabel="Clear selection"
+            clearable
           />
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">

@@ -13,6 +13,7 @@ import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
 import ReactPlayer from "react-player";
 
+
 const initialFormValues = {
   url: "",
   title: "",
@@ -30,14 +31,16 @@ function EditLearnForm(props: any) {
   const tagsList = props.tagsList;
   const modalType = props.modalType || "add";
   const [inputURL, setInputURL] = useState("");
-  const playerRef = useRef<ReactPlayer | null>(null); 
   const [duration, setDuration] = useState<number | null>(null);
+  const [tagValues, setTagValues] = useState<string[]>([]);
+  const playerRef = useRef<ReactPlayer | null>(null); 
   // const playerRef = useRef(null);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
   });
+
   const listOfTags = tagsList.map((d: any) => ({
     value: d._id,
     label: d.tagName,
@@ -46,10 +49,24 @@ function EditLearnForm(props: any) {
   //to show previous values while editing the row
   useEffect(() => {
     if (updateFormData && modalType === "update") {
-      form.setValues(updateFormData);
+      const tagsAsStringArray = updateFormData.tags.map((tag:any) => tag.value);
+      setTagValues(tagsAsStringArray);
+      form.setValues({
+        ...updateFormData,
+        tags: [...tagsAsStringArray],
+      });
       setInputURL(updateFormData.url);
     }
   }, [updateFormData, modalType]);
+
+
+  const handleTagChange = (newTagValues: string[]) => {
+    setTagValues(newTagValues);
+    form.setValues((prevValues: any) => ({
+      ...prevValues,
+      tags: newTagValues,
+    }));
+  };
 
   const handleFormSubmit = (formValues: typeof form.values) => {
     // const duration = playerRef.current? playerRef.current.getDuration(): "0";
@@ -58,6 +75,7 @@ function EditLearnForm(props: any) {
     handleCloseModal(false);
     form.setValues(initialFormValues);
   };
+
 
   useEffect(() => {
     if (inputURL && playerRef.current) {
@@ -140,12 +158,14 @@ function EditLearnForm(props: any) {
           />
         </Grid.Col>
         <Grid.Col span={12}>
-          <MultiSelect
+           <MultiSelect
             data={listOfTags}
             label="Tags"
-            searchable
-            placeholder="Select Tag/s"
-            {...form.getInputProps("tags")}
+            placeholder="Pick all that you like"
+            value={tagValues}
+            onChange={handleTagChange}
+            clearButtonLabel="Clear selection"
+            clearable
           />
         </Grid.Col>
       </Grid>
