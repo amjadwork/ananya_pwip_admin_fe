@@ -72,7 +72,6 @@ function ManagePlans() {
   //to get Plans  Data from database
   const handleGetPlansData = async () => {
         const response = await getPlansData();
-        console.log("response", response)
         if (response) {
           setPlansData([...response]);
         }
@@ -236,7 +235,6 @@ function ManagePlans() {
         ]}
         handleRowEdit={(row: any, index: number) => {
                     let obj = { ...row };
-                    console.log(obj,"obj")
                     const formObj = {
                         name: obj.name,
                         description: obj.description,
@@ -248,7 +246,6 @@ function ManagePlans() {
                         currency: obj.currency,
                         id:obj.id
                     };
-                    console.log(formObj, "here")
                     setUpdateFormData(formObj);
                     setModalType("update");
                     setModalOpen(true);

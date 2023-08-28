@@ -34,10 +34,9 @@ const columns = [
       sortable: false,
     },
     {
-        label: "Tags",
-        key: "tags",
-        sortable: false,
-        render: (rowData:any) => rowData.tags.join(", "),
+      label: "Tags",
+      key: "tagsName",
+      sortable: false,
     },
     {
         label: "Author",
@@ -105,20 +104,30 @@ function ManageLearn() {
   const [tableRowData, setTableRowData] = useState<any>([]);
   const [tagsList, setTagsList] = useState<any>([]);
 
-  //to get Learn  Data from database
-  const handleGetLearnData = async () => {
-        const response = await getLearnData();
-        if (response) {
-            setLearnData([...response]);
-          }
-      };
+const handleGetTagAndLearnData = async () => {
+  const tagResponse = await getTagsData();
+  const learnResponse = await getLearnData();
 
-  const handleGetTagData= async () => {
-    const response = await getTagsData();
-    if (response) {
-      setTagsList([...response]);
+  if (tagResponse) {
+    if (learnResponse) {
+    
+      const modifiedLearnData = learnResponse.map((item:any) => {
+        const modifiedTags = item.tags.map((tagId:any) => {
+          const correspondingTag = tagResponse.find((tag:any) => tag._id === tagId);
+          return correspondingTag
+            ? { _id: correspondingTag._id, tagName: correspondingTag.tagName }
+            : null;
+        });
+
+        return { ...item, tags: modifiedTags };
+      });
+
+      setLearnData([...modifiedLearnData]);
     }
-  };
+
+    setTagsList([...tagResponse]);
+  }
+};
 
  //to add new or edit the existing row in the table
   const handleSaveAction = async (data:any) => {
@@ -187,31 +196,33 @@ function ManageLearn() {
   };
 
   const handleRefreshCalls = () => {
-    handleGetLearnData();
+    handleGetTagAndLearnData();
   };
 
   useEffect(() => {
-    handleGetLearnData();
-    handleGetTagData();
+    handleGetTagAndLearnData();
   }, []);
-
+console.log("learbData", learnData)
   useEffect(() => {
-    if (learnData && learnData.length && tagsList.length) {
-      const formattedData = learnData.map((d:any) => {
-        const formattedTags = d.tags.map((id:any) => {
-          const tag = tagsList.find((list:any) => list._id === id);
-          return tag ? tag.tagName : "";
-        });
+    if (learnData && learnData.length) {
+      const formattedData = learnData.map((d: any) => {
+        const formattedTags = d.tags.map((t: any) => ({
+          value: t?._id,
+          label: t?.tagName,
+        }));
+        
+        const tagsName = d.tags.map((tag: any) => tag?.tagName).join(", ");
+
         return {
           ...d,
-          tags: formattedTags.join(", "),
+          tags: formattedTags,
+          tagsName: tagsName,
           duration: formatDuration(d.duration_seconds),
         };
-      });  
+      });
       setTableRowData(formattedData);
     }
-  }, [learnData, tagsList]);
-
+  }, [learnData]);
 
   return (
     <PageWrapper
@@ -276,7 +287,7 @@ function ManageLearn() {
                       author:obj.author,
                       duration_seconds:obj.duration_seconds,
                       about:obj.about,
-                      tags:obj.tag,
+                      tags:obj.tags,
                       _id:obj._id,
                     };
                     setUpdateFormData(formObj);

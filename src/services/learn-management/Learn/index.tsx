@@ -22,7 +22,6 @@ export const postLearnData = async (data:any) => {
   };
 
   export const patchLearnData = async (data: any) => {
-    console.log("triggerd")
     const response = await APIRequest(
       "learn" + "/" + data._id,
       "PATCH", data);
