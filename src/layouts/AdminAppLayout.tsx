@@ -6,8 +6,6 @@ import {
   MantineProvider,
   AppShell,
   Header as HeaderWrapper,
-  Footer,
-  Text,
 } from "@mantine/core";
 
 import ExportCostingLayout from "./ExportCostingLayout";
@@ -16,6 +14,7 @@ import Header from "../components/common/Header";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import PlansManagementLayout from "./PlansManagementLayout";
 import LearnManagementLayout from "./LearnManagementLayout";
+import TagsManagementLayout from "./TagsManagementLayout";
 
 const AdminAppLayout: React.FC<any> = () => {
   const [opened, setOpened] = useState(false);
@@ -97,6 +96,7 @@ const AdminAppLayout: React.FC<any> = () => {
             <Route path="/export-costing/*" element={<ExportCostingLayout />} />
             <Route path="/plans-management/*" element={<PlansManagementLayout />} />
             <Route path="/learn-management/*" element={<LearnManagementLayout />} />
+            <Route path="/tags-management/*" element={<TagsManagementLayout />} />
           </Routes>
         </Box>
       </AppShell>
