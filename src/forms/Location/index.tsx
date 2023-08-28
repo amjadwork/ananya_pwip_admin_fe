@@ -13,14 +13,12 @@ function AddEditLocationFormContainer(props: any) {
   const modalType = props.modalType || "add";
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
-
   const handleCloseModal = props.handleCloseModal;
 
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: {},
   });
-
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
@@ -28,7 +26,7 @@ function AddEditLocationFormContainer(props: any) {
     //to show previous values while editing the row
     useEffect(() => {
       if (updateFormData && modalType === "update") {
-
+       if(selectedFilterValue==="destination"){
         const originAsStringArray = updateFormData.linkedOrigin.map((arr:any) => arr._originId);
         setDefaultOriginValues(originAsStringArray);
         form.setValues({
@@ -36,6 +34,10 @@ function AddEditLocationFormContainer(props: any) {
           linkedOrigin: [...originAsStringArray],
         });
       }
+      form.setValues({
+        ...updateFormData,
+      });
+    }
     }, [updateFormData, modalType]);
 
     const handleLinkedOriginChange = (newOriginValues: string[]) => {
