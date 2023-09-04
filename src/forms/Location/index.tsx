@@ -26,19 +26,15 @@ function AddEditLocationFormContainer(props: any) {
     //to show previous values while editing the row
     useEffect(() => {
       if (updateFormData && modalType === "update") {
-       if(selectedFilterValue==="destination"){
-        const originAsStringArray = updateFormData.linkedOrigin.map((arr:any) => arr._originId);
+        const originAsStringArray = updateFormData.linkedOrigin.map((arr: any) => arr._originId);
         setDefaultOriginValues(originAsStringArray);
         form.setValues({
           ...updateFormData,
           linkedOrigin: [...originAsStringArray],
         });
       }
-      form.setValues({
-        ...updateFormData,
-      });
-    }
     }, [updateFormData, modalType]);
+    
 
     const handleLinkedOriginChange = (newOriginValues: string[]) => {
       setDefaultOriginValues(newOriginValues);
@@ -46,6 +42,7 @@ function AddEditLocationFormContainer(props: any) {
         ...prevValues,
         linkedOrigin: newOriginValues,
       }));
+      
     };
   
   useEffect(() => {
