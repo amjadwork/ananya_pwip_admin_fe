@@ -11,8 +11,10 @@ import {
   postLocationData,
   deleteLocationData,
   patchLocationData,
+  getDestinationData
 } from "../../services/export-costing/Locations";
 import DataTable from "../../components/DataTable/DataTable";
+
 
 const sourceColumns = [
   {
@@ -148,13 +150,15 @@ function LocationsContainer() {
   //to get all Location Data from database  
   const handleGetLocation = async () => {
     const response= await getAllLocationData();
+    const responseDestination= await getDestinationData();
     if (response) {
       setLocationData({
         source: response.source || [],
         origin: response.origin || [],
-        destination: response.destination || [],
+        destination: responseDestination.destination || [],
       });
     }
+ 
   };
 
   const handleSetLocationPayload= async (form: any) => {
@@ -203,6 +207,7 @@ function LocationsContainer() {
         ...data.destination,
       ],
     };
+   
     setLocationData(obj);
   }; 
  
@@ -275,11 +280,14 @@ function LocationsContainer() {
 
 const handleRefreshCalls = () => {
   handleGetLocation();
+
 };
 
   React.useEffect(() => {
     handleGetLocation();
-  }, []);
+    console.log(tableRowData)
+    
+  }, [selectedFilterValue]);
 
   return (
     <PageWrapper

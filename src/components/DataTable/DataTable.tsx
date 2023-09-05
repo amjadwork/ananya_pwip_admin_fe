@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-
-
 import {
   Group,
   createStyles,
@@ -18,6 +16,7 @@ import {
   ActionIcon,
   Select,
   Radio,
+  Tooltip,
 } from "@mantine/core";
 import {
   Pencil,
@@ -27,8 +26,12 @@ import {
   Selector,
   Search,
   ChartLine,
+  CircleCheck,
+  CircleX,
   PlayerPlay,
 } from "tabler-icons-react";
+import { AlertCircle } from "tabler-icons-react";
+import { zIndex } from "html2canvas/dist/types/css/property-descriptors/z-index";
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -53,6 +56,18 @@ const useStyles = createStyles((theme) => ({
     borderRadius: "21px",
     marginLeft: "12px",
   },
+  warningText: {
+    fontWeight: "bold",
+    color: "#fdbc00",
+  },
+  successText: {
+    fontWeight: "bold",
+    color: "#5F8575",
+  },
+  errorText: {
+    fontWeight: "bold",
+    color: "#C41E3A",
+  },
 }));
 
 // interface RowData {
@@ -68,10 +83,10 @@ interface TableSortProps {
   onClickAction?: any;
   handleRowEdit?: any;
   handleRowDelete?: any;
-  handleLineChart?:any;
-  handleVideoPlay?:any;
+  handleLineChart?: any;
+  handleVideoPlay?: any;
   showChartLineAction?: boolean;
-  showPlayAction?:boolean;
+  showPlayAction?: boolean;
   selectFilterTypes?: any; //enter array of object with column keys, type, name and labek
   selectedFilterValue?: any;
   handleSelectRadioFilterChange?: any;
@@ -134,7 +149,7 @@ export function DataTable({
   selectFilterTypes = [],
   selectedFilterValue = null,
   showChartLineAction = false,
-  showPlayAction=false,
+  showPlayAction = false,
   handleSelectRadioFilterChange = () => null,
 }: TableSortProps) {
   const [search, setSearch] = useState("");
@@ -154,7 +169,7 @@ export function DataTable({
   useEffect(() => {
     setSortedData(data);
   }, [data]);
-
+  const { classes } = useStyles();
   const setSorting = (field: any) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
@@ -258,7 +273,7 @@ export function DataTable({
 
       <Table
         highlightOnHover
-        horizontalSpacing='xl'
+        horizontalSpacing="xl"
         verticalSpacing="sm"
         fontSize="md"
         mih={320}
@@ -295,27 +310,25 @@ export function DataTable({
                         return (
                           <td key={row[key] + colIndex * 137}>
                             <Flex justify="flex-end" gap="sm" align="center">
+                              {showChartLineAction && (
+                                <ActionIcon
+                                  variant="light"
+                                  color="green"
+                                  onClick={() => handleLineChart(row, index)}
+                                >
+                                  <ChartLine size="1rem" />
+                                </ActionIcon>
+                              )}
 
-                           {showChartLineAction && (
-                            <ActionIcon
-                              variant="light"
-                              color="green"
-                              onClick={() => handleLineChart(row, index)}
-                            >
-                              <ChartLine size="1rem" />
-                            </ActionIcon>
-                           )}
-
-                          {showPlayAction && (
-                            <ActionIcon
-                              variant="light"
-                              color="green"
-                              onClick={() => handleVideoPlay(row, index)}
-                            >
-                              <PlayerPlay
-                              size="1rem" />
-                            </ActionIcon>
-                           )} 
+                              {showPlayAction && (
+                                <ActionIcon
+                                  variant="light"
+                                  color="green"
+                                  onClick={() => handleVideoPlay(row, index)}
+                                >
+                                  <PlayerPlay size="1rem" />
+                                </ActionIcon>
+                              )}
                               <ActionIcon
                                 variant="light"
                                 color="blue"
@@ -336,7 +349,9 @@ export function DataTable({
                         );
                       }
                       if (key === "video") {
-                        const column = columns.find((col:any) => col.key === key);
+                        const column = columns.find(
+                          (col: any) => col.key === key
+                        );
                         return (
                           <td key={key + index}>
                             {column && column.render ? column.render(row) : ""}
@@ -345,13 +360,122 @@ export function DataTable({
                       }
                       if (key === "originPortName") {
                         return (
-                          <td key={key + index}>
-                            {row["linkedOrigin"]
-                              ?.map(
-                                (originPort: any) => originPort?.originPortName
-                              )
-                              .join(" ,")}
-                          </td>
+                          <table
+                            style={{
+                              marginRight: 10,
+                              marginLeft: 10,
+                              zIndex: 1,
+                            }}
+                          >
+                            {row["linkedOrigin"]?.map((originPort: any) => (
+                              <tr style={{ fontSize: 10, minWidth: "30px" }}>
+                                <td style={{ margin: 0, padding: 0 }}>
+                                  <Tooltip.Floating
+                                    label={
+                                      originPort.isChaFound &&
+                                      originPort.isShlFound &&
+                                      originPort.isOfcFound
+                                        ? "All Charges Found."
+                                        : !originPort.isChaFound &&
+                                          !originPort.isShlFound &&
+                                          !originPort.isOfcFound
+                                        ? "All charges are Missing [CHA,SHL,OFC]"
+                                        : ` ${
+                                            originPort.isChaFound
+                                              ? ""
+                                              : "CHA : Not found"
+                                          } \n${
+                                            originPort.isShlFound
+                                              ? ""
+                                              : " SHL : Not found"
+                                          } \n  ${
+                                            originPort.isOfcFound
+                                              ? ""
+                                              : "OFC : Not found"
+                                          }`
+                                    }
+                                    // label={`cha : ${
+                                    //   originPort.isChaFound
+                                    //     ? "Found"
+                                    //     : "Not found"
+                                    // } \n shl : ${
+                                    //   originPort.isShlFound
+                                    //     ? "Found"
+                                    //     : "Not found"
+                                    // } \n ofc : ${
+                                    //   originPort.isOfcFound
+                                    //     ? "Found"
+                                    //     : "Not found"
+                                    // }`}
+                                    color="grey"
+                                    // width={"auto"}
+
+                                    multiline={true}
+                                  >
+                                    <span
+                                      // className={
+                                      //   originPort.isChaFound &&
+                                      //   originPort.isShlFound &&
+                                      //   originPort.isOfcFound
+                                      //     ? classes.successText
+                                      //     : !originPort.isChaFound &&
+                                      //       !originPort.isShlFound &&
+                                      //       !originPort.isOfcFound
+                                      //     ? classes.errorText
+                                      //     : classes.warningText
+                                      // }
+                                      style={{
+                                        cursor: "pointer",
+                                        minWidth: "200px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      {originPort?.originPortName}
+                                      {originPort.isChaFound &&
+                                      originPort.isShlFound &&
+                                      originPort.isOfcFound ? (
+                                        <CircleCheck
+                                          size={22}
+                                          strokeWidth={2}
+                                          color="#4abf40"
+                                          style={{ marginLeft: 5 }}
+                                        />
+                                      ) : !originPort.isChaFound &&
+                                        !originPort.isShlFound &&
+                                        !originPort.isOfcFound ? (
+                                        <CircleX
+                                          size={22}
+                                          strokeWidth={2}
+                                          color="red"
+                                          style={{ marginLeft: 5 }}
+                                        />
+                                      ) : (
+                                        <AlertCircle
+                                          size={22}
+                                          strokeWidth={2}
+                                          color="#FFB81C"
+                                          style={{ marginLeft: 5 }}
+                                        />
+                                      )}
+                                    </span>
+                                  </Tooltip.Floating>
+                                </td>
+                                {/* <td style={{ margin: 2, padding: 0 }}><div style={{ height:25,width:25,backgroundColor: `${(false)?"#bbb":"#fdbc00"}`,display:"inline-block",borderRadius:"50%"}}></div></td> */}
+                              </tr>
+                            ))
+                            //  .join(" ,")
+                            }
+                          </table>
+
+                          // <td key={key + index}>
+                          //   {row["linkedOrigin"]
+                          //     ?.map(
+                          //       (originPort: any) => originPort?.originPortName
+                          //     )
+                          //     .join(" ,")}
+                          // </td>
                         );
                       }
 
