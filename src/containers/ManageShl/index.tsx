@@ -49,6 +49,10 @@ const columns = [
     key: "surrender",
   },
   {
+    label: "MUC",
+    key: "muc",
+  },
+  {
     label: "Convenience",
     key: "convenienceFee",
   },

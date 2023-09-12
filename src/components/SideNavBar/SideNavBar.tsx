@@ -23,7 +23,7 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
 
   return (
     <Navbar
-      width={{ base: 300 }}
+      width={{ base: 230 }}
       p="md"
       hiddenBreakpoint="md"
       hidden={!opened}
