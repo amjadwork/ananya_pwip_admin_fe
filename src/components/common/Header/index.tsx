@@ -33,7 +33,7 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
     <header className={classes.headerContainer}>
       <div
         className={classes.logoContainer}
-        onClick={() => window?.open("https://particlesnft.io/", "_blank")}
+        // onClick={() => window?.open("")}
       >
         <img
           width={36}

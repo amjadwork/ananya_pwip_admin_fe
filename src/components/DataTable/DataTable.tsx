@@ -31,7 +31,6 @@ import {
   PlayerPlay,
 } from "tabler-icons-react";
 import { AlertCircle } from "tabler-icons-react";
-import { zIndex } from "html2canvas/dist/types/css/property-descriptors/z-index";
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -273,7 +272,7 @@ export function DataTable({
 
       <Table
         highlightOnHover
-        horizontalSpacing="xl"
+        horizontalSpacing="xs"
         verticalSpacing="sm"
         fontSize="md"
         mih={320}
@@ -290,7 +289,8 @@ export function DataTable({
                   onSort={() => setSorting(col.key)}
                   sortable={col.sortable || false}
                 >
-                  {col.label}
+                {col.label}
+                 
                 </Th>
               );
             })}

@@ -126,7 +126,7 @@ export function LinksGroup({
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ThemeIcon variant="light" size={30}>
+            <ThemeIcon variant="light" size={28}>
               <Icon size="1.1rem" />
             </ThemeIcon>
             <Box ml="md">{label}</Box>
