@@ -7,7 +7,8 @@ const APIRequest = async (
   method: string,
   payload?: object,
   headers?: object,
-  isPublic?: boolean
+  isPublic?: boolean,
+  responseType?:string
 ) => {
   const environment = process.env.REACT_APP_ENV;
 
@@ -69,7 +70,21 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
+       
           withCredentials: true,
+      
+          
+        });
+        break;
+      case "GETEXCEL":
+        response = await axios.get(apiURL + endpoint, {
+          headers: {
+            ...authHeaders,
+          },
+       
+          withCredentials: true,
+          responseType:"blob"
+          
         });
         break;
       case "POST":
