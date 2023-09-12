@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus , Check} from "tabler-icons-react";
+import { Plus , Check, Upload} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditTransportationForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import SheetUpload from "../../components/SheetUpload/SheetUpload";
 
 import {
   getOriginData,
@@ -43,6 +44,14 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
+  const containerType=props.containerType
+
+  if (modalType === "upload") {
+    return (
+      <SheetUpload
+      containerType={containerType} />
+    );
+  }
 
   return (
     <EditTransportationForm
@@ -64,6 +73,7 @@ function ManageTransportContainer() {
   const [sourceSelectOptions, setSourceSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
+  const containerType: any = "transportation";
 
   //to get Transportation Data from database
   const handleGetTransportation = async () => {
@@ -244,7 +254,11 @@ function ManageTransportContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add Transportation Charges" : "Update Transportation Charges"
+        modalType === "add"
+        ? "Add Transportation Charges"
+        : modalType === "upload"
+        ? "Update Or Add Data by Excel Sheet"
+        : "Update Transportation Charges"
       }
       onModalClose={() => {
         setModalOpen(false)
@@ -261,15 +275,26 @@ function ManageTransportContainer() {
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
+              containerType={containerType}
             />
           );
       }}
-      modalSize="60%"
+      modalSize="70%"
     >
       <DataTable
         data={tableRowData}
         columns={columns}
         actionItems={[
+          {
+            label: "Upload",
+            icon: Upload,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);    
+            },
+          },
           {
             label: "Add",
             icon: Plus,
@@ -281,6 +306,7 @@ function ManageTransportContainer() {
             },
           },
         ]}
+
         handleRowEdit={(row: any, index: number) => {
           setModalType('update')
           let obj = { ...row };

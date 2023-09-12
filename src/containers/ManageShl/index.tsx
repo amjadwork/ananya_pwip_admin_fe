@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, Check} from "tabler-icons-react";
+import { Plus, Check, Upload} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
 import { 
   getDestinationDataByOrigin, 
@@ -69,6 +70,14 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
+  const containerType=props.containerType
+
+    if (modalType === "upload") {
+    return (
+      <SheetUpload 
+      containerType={containerType}/>
+    );
+  }
 
   return (
     <EditShlForm
@@ -92,6 +101,7 @@ function ManageShlContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
+  const containerType: any = "shl";
 
   //to get SHL Data from database
   const handleGetShl= async (list: any) => {
@@ -296,7 +306,11 @@ function ManageShlContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add SHL Charges" : "Update SHL Charges"
+           modalType === "add"
+            ? "Add SHL Charges"
+            : modalType === "upload"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update SHL Charges"
       }
       onModalClose={() => {
         setModalOpen(false)
@@ -314,6 +328,7 @@ function ManageShlContainer() {
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
+              containerType={containerType}
             />
           );
       }}
@@ -323,6 +338,16 @@ function ManageShlContainer() {
         data={tableRowData}
         columns={columns}
         actionItems={[
+          {
+            label: "Upload",
+            icon: Upload,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);    
+            },
+          },
           {
             label: "Add",
             icon: Plus,

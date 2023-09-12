@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, Check} from "tabler-icons-react";
+import { Plus, Check, Upload} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
 import { 
   getDestinationDataByOrigin, 
@@ -85,6 +86,14 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
+  const containerType=props.containerType
+
+    if (modalType === "upload") {
+    return (
+      <SheetUpload 
+      containerType={containerType}/>
+    );
+  }
 
   return (
     <EditChaForm
@@ -107,7 +116,11 @@ function ManageChaContainer() {
   const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
   const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
+  const [selectedChaData, setSelectedChaData] =
+    React.useState<any>(null);
+
   const [tableRowData, setTableRowData] = useState<any>([]);
+  const containerType: any = "cha";
 
   //to get CHA Data from database
   const handleGetCha= async (data: any = []) => {
@@ -315,10 +328,15 @@ useEffect(() => {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add CHA Charges" : "Update CHA Charges"
+         modalType === "add"
+            ? "Add CHA Charges"
+            : modalType === "upload"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update CHA CHarges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
+        setSelectedChaData(null);
         setUpdateFormData(null);
       }}
 
@@ -333,15 +351,26 @@ useEffect(() => {
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
+              containerType={containerType}
             />
           );
       }}
-      modalSize="60%"
+      modalSize="70%"
     >
       <DataTable
         data={tableRowData}
         columns={columns}
         actionItems={[
+           {
+            label: "Upload",
+            icon: Upload,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);    
+            },
+          },
           {
             label: "Add",
             icon: Plus,
@@ -353,6 +382,7 @@ useEffect(() => {
             },
           },
         ]}
+
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
 
