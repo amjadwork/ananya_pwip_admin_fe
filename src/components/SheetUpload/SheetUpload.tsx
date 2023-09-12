@@ -1,21 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Alert, Flex } from "@mantine/core";
+import React, { useEffect, useState } from "react";
 import * as xlsx from "xlsx";
 import { useHover } from "@mantine/hooks";
 import APIRequest from "../../helper/api";
 import { showNotification } from "@mantine/notifications";
-import {
-  IconCreditCard,
-  IconBuildingBank,
-  IconRepeat,
-  IconReceiptRefund,
-  IconReceipt,
-  IconReceiptTax,
-  IconReport,
-  IconCashBanknote,
-  IconCoin,
-} from "@tabler/icons-react";
-import { FileSpreadsheet, CoinRupee, Car, FilePlus } from "tabler-icons-react";
+import { FileSpreadsheet, NewSection, FilePlus } from "tabler-icons-react";
+import { MessageTemplates, messages } from "../../constants/messages.constants";
 import {
   createStyles,
   Card,
@@ -27,12 +16,8 @@ import {
   Image,
   Button,
 } from "@mantine/core";
-import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 import { useMantineTheme } from "@mantine/core";
-import { IconUpload, IconPhoto, IconX } from "@tabler/icons";
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import axios from "axios";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -80,11 +65,49 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function SheetUpload() {
+function SheetUpload(props:any) {
+  const containerType=props.containerType;
   const [jsonData, setJsonData] = useState<any>([]);
+  const [isFileSelected, setIsFileSelected] = useState(false);
+
+
+  const capitalContainerType = containerType.charAt(0).toUpperCase() + containerType.slice(1);
+
+  const containerMessages = (messages as MessageTemplates)[containerType] || {
+    successMessage: "",
+    errorMessage: "Unknown container type",
+  };
+
   useEffect(() => {
     console.log(jsonData);
   }, [jsonData]);
+
+  let END_POINT_TO_GET = "";
+  let END_POINT_TO_UPDATE = "";
+  let END_POINT_TO_POST = "";
+
+  switch (containerType) {
+    case "variant":
+      END_POINT_TO_GET = `${containerType}/excel`;
+      END_POINT_TO_UPDATE = `${containerType}/price/update`;
+      END_POINT_TO_POST = `${containerType}/bysheet`;
+      break;
+  
+    case "transportation":
+    case "cha":
+    case "ofc":
+    case "shl":
+      END_POINT_TO_GET = `${containerType}/excel`;
+      END_POINT_TO_UPDATE = `${containerType}/update`;
+      END_POINT_TO_POST= `${containerType}/addbyexcel`;
+      break;
+  
+    default:
+      END_POINT_TO_GET = `${containerType}/excel`;
+      END_POINT_TO_UPDATE = `${containerType}/update`;
+      END_POINT_TO_POST= `${containerType}/addbyexcel`;
+      break;
+  }
 
   const handleSheetToJson = (e: any) => {
     e.preventDefault();
@@ -98,38 +121,60 @@ function SheetUpload() {
         const json = xlsx.utils.sheet_to_json(worksheet);
         const payload = { data: json };
         setJsonData(payload);
+        setIsFileSelected(true); 
       };
       reader.readAsArrayBuffer(e.target.files[0]);
       setUploadedSheet(e.target.files[0].name);
     }
   };
   const handleJsonUploadForUpdatePrice = async () => {
-    const response = await APIRequest("variant/price/update", "PATCH", jsonData);
+    const response = await APIRequest(END_POINT_TO_UPDATE, "PATCH", jsonData);
     showNotification({
-      title: response.success?"Updated Price ":"something went wrong",
-      message: `update as per sheet`,
-    });
+    //   title: response.success?"Updated Price ":"something went wrong",
+    //   message: `update as per sheet`,
+    // });
+    title: response.success
+    ? containerMessages.successMessage
+    : "Something went wrong",
+  message: response.success
+    ? `No of rows added ${response.added}`
+    : containerMessages.errorMessage,
+   });  
     if (response) {
       return "success";
     }
   };
+
   const handleJsonUploadForAddingVariant = async () => {
-    const response = await APIRequest("variant/bysheet", "POST", jsonData);
-    showNotification({
-      title: response.success?"ADD VARIANTS ":"something went wrong",
-      message: `No of rows added ${response.added}`,
-    });
-    if (response) {
+    try {
+      const response = await APIRequest(END_POINT_TO_POST, "POST", jsonData);
+      
+      let title, message;
+      if (response.success) {
+        title = containerMessages.successMessage;
+        message = `No of rows added ${response.added}`;
+      } else {
+        title = "Something went wrong";
+        message = containerMessages.errorMessage;
+      }
+      showNotification({
+        title,
+        message,
+      });
       return "success";
+    } catch (error) {
+      console.error("API request error:", error);
+      throw error; 
     }
   };
+  
   const handleDownloadSampleSheetForPriceUpdate = async () => {
-    const response = await APIRequest("variant/excel", "GETEXCEL")
+    const response = await APIRequest(END_POINT_TO_GET, "GETEXCEL")
       .then((response: any) => {
         const url = window.URL.createObjectURL(new Blob([response]));
         const link = document.createElement("a");
         link.href = url;
-        link.download = "sample_variant_price_update_sheet" + ".xlsx";
+        link.download = `${containerType}_data_sheet_for_update` + ".xlsx";
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -142,31 +187,13 @@ function SheetUpload() {
       });
     // console.log(response);
   };
-  const handleDownloadSampleSheetForAddingVariant = async () => {
-    const response = await APIRequest("variant/excel", "GETEXCEL")
-      .then((response: any) => {
-        const url = window.URL.createObjectURL(new Blob([response]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "sample_variant_price_update_sheet" + ".xlsx";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      })
-      .catch((error) => {
-        showNotification({
-          title: "Something went wrong !",
-          message: "please try again",
-        });
-      });
-    // console.log(response);
-  };
+
   const mockdata = [
-    { title: "Update price only", icon: CoinRupee, color: "yellow" },
-    { title: "Add variants", icon: FileSpreadsheet, color: "indigo" },
+    { title:  
+    containerType === "variant" ? "Upload Existing Variant Price": `Upload Existing ${capitalContainerType} Charges`, icon: FileSpreadsheet, color: "blue" },
+    { title: containerType === "variant" ? "Add New Variant Price": `Add New ${capitalContainerType} Charges`, icon: NewSection, color: "green" },
   ];
   const { classes, theme } = useStyles();
-  const { hovered, ref } = useHover();
   const [hoveredTabName, setHoveredTabName] = useState("update");
   const [selectedTabName, setSelectedTabName] = useState("");
   const items = mockdata.map((item) => {
@@ -175,12 +202,12 @@ function SheetUpload() {
         key={item.title}
         className={classes.item}
         onMouseOver={() => {
-          if (item.title == "Update price only") {
+          if (item.title === "Upload Existing Variant Price" || item.title === `Upload Existing ${capitalContainerType} Charges`) {
             setHoveredTabName("update");
           } else setHoveredTabName("add");
         }}
         onClick={() => {
-          if (item.title == "Update price only") {
+          if (item.title === "Upload Existing Variant Price" || item.title === `Upload Existing ${capitalContainerType} Charges`) {
             setSelectedTabName("update");
           } else setSelectedTabName("add");
         }}
@@ -226,12 +253,11 @@ function SheetUpload() {
         </Card.Section>
         <div style={{ width: "50%", margin: 20, paddingLeft: 20 }}>
           <Text weight={500} size="lg" mt="md">
-            Update Price by Excel sheet
+            Update {capitalContainerType} Data by Excel Sheet
           </Text>
 
           <Text mt="xs" color="dimmed" size="sm">
-            Please click anywhere on this card to claim your reward, this is not
-            a fraud, trust us
+          Please click on the Upload button above to proceed with the following action.
           </Text>
         </div>
       </Card>
@@ -269,23 +295,21 @@ function SheetUpload() {
         </Card.Section>
         <div style={{ width: "50%", margin: 20, paddingLeft: 20 }}>
           <Text weight={500} size="lg" mt="md">
-            Add Variant by Excel sheet .
+            Add New {capitalContainerType} Data by Excel
           </Text>
 
           <Text mt="xs" color="dimmed" size="sm">
-            Please click anywhere on this card to claim your reward, this is not
-            a fraud, trust us
+           Please click on the Add button above to proceed with the following action. 
           </Text>
         </div>
       </Card>
     );
   };
 
-
-  const mantineTheme = useMantineTheme();
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
   const [uploadedSheet, setUploadedSheet] = useState(null);
-  function updatePriceForm() {
+
+  function updateDataForm() {
     // setJsonData([])
     // setUploadedSheet(null)
     return (
@@ -323,17 +347,17 @@ function SheetUpload() {
             }
           }}
         >
-          <FilePlus size={200} strokeWidth={0.4} color={"#407fbf"} />
+          <FilePlus size={200} strokeWidth={0.4} color={"green"} />
           {
             
           }
           <div>
             <Text size="xl" inline>
-              {uploadedSheet?`${uploadedSheet}`:`Click here to Browse excel.`}
+              {uploadedSheet?`${uploadedSheet}`:`Update Existing - Click here to Browse File`}
             </Text>
             <Text size="sm" color="dimmed" inline mt={7}>
               
-               {uploadedSheet?`Attached file successfully !`:` Attach excel sheet - with same format. for Update Price`}
+               {uploadedSheet?`Attached file successfully!`:`Download Current Data Sheet below to make the changes and upload the updated excel.`}
              
             </Text>
           </div>
@@ -345,7 +369,6 @@ function SheetUpload() {
             height: "20%",
             justifyContent: "space-between",
             alignItems: "center",
-            paddingRight: 10,
           }}
           position="right"
           mt="md"
@@ -360,20 +383,20 @@ function SheetUpload() {
                 handleDownloadSampleSheetForPriceUpdate();
               }}
             >
-              Download Sample Sheet
+             Download Current Data Sheet
             </Button>
           </div>
           <div
             style={{
-              width: "26%",
               display: "flex",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
             }}
           >
             <Button
-              variant="light"
+              variant="outline"
               color="red"
               type="reset"
+              style={{ marginRight: "10px" }}
               onClick={() => {
                 setSelectedTabName("");
                 setUploadedSheet(null)
@@ -386,6 +409,7 @@ function SheetUpload() {
               variant="light"
               color="dark"
               type="reset"
+              style={{ marginRight: "10px" }}
               onClick={()=>{
                 setUploadedSheet(null)
                 setJsonData([])
@@ -394,7 +418,11 @@ function SheetUpload() {
               Reset
             </Button>
 
-            <Button variant="filled" type="button" onClick={handleJsonUploadForUpdatePrice}>
+            <Button 
+            variant="filled" 
+            type="button"
+             onClick={handleJsonUploadForUpdatePrice}
+             disabled={!isFileSelected}>
               Upload Excel Sheet
             </Button>
           </div>
@@ -402,7 +430,7 @@ function SheetUpload() {
       </div>
     );
   }
-  function addVariantForm() {
+  function addNewDataForm() {
     // setJsonData([])
     // setUploadedSheet(null)
     return (
@@ -440,18 +468,17 @@ function SheetUpload() {
             }
           }}
         >
-          <FilePlus size={200} strokeWidth={0.4} color={"#407fbf"} />
+          <FilePlus size={200} strokeWidth={0.4} color={"green"} />
           {
             
           }
           <div>
             <Text size="xl" inline>
-              {uploadedSheet?`${uploadedSheet}`:`Click here to Browse excel.`}
+              {uploadedSheet?`${uploadedSheet}`:`Add New - Click here to Browse File`}
             </Text>
             <Text size="sm" color="dimmed" inline mt={7}>
               
-               {uploadedSheet?`Attached file successfully !`:` Attach excel sheet - with same format. Adding variants`}
-             
+               {uploadedSheet?`Attached file successfully!`:`Make sure the excel sheet is in the desired format to add new data effortlessly`}
             </Text>
           </div>
         </div>
@@ -459,50 +486,37 @@ function SheetUpload() {
         <Group
           style={{
             display: "flex",
-            height: "20%",
-            justifyContent: "space-between",
+            justifyContent: "flex-end", 
             alignItems: "center",
-            paddingRight: 10,
+            paddingTop: 50,
           }}
           position="right"
-          mt="md"
-          spacing="sm"
+          spacing="md"
         >
-          <div>
-            <Button
-              variant="light"
-              color="blue"
-              type="reset"
-              onClick={() => {
-                handleDownloadSampleSheetForPriceUpdate();
-              }}
-            >
-              Download Sample Sheet
-            </Button>
-          </div>
           <div
             style={{
-              width: "26%",
               display: "flex",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
             }}
           >
             <Button
-              variant="light"
+              variant="outline"
               color="red"
               type="reset"
+              style={{ marginRight: "10px" }}
               onClick={() => {
                 setSelectedTabName("");
                 setUploadedSheet(null)
                 setJsonData([])
               }}
             >
-              cancel
+              Cancel
             </Button>
             <Button
               variant="light"
               color="dark"
               type="reset"
+              style={{ marginRight: "10px" }}
               onClick={()=>{
                 setUploadedSheet(null)
                 setJsonData([])
@@ -511,7 +525,11 @@ function SheetUpload() {
               Reset
             </Button>
 
-            <Button variant="filled" type="button" onClick={handleJsonUploadForAddingVariant}>
+            <Button 
+            variant="filled" 
+            type="button" 
+            onClick={handleJsonUploadForAddingVariant}
+            disabled={!isFileSelected}>
               Upload Excel Sheet
             </Button>
           </div>
@@ -530,12 +548,6 @@ function SheetUpload() {
         {
           selectedTabName == "" ? (
             <>
-              <Group position="apart">
-                <Text className={classes.title}>Services</Text>
-                <Anchor size="xs" color="dimmed" sx={{ lineHeight: 1 }}>
-                  info
-                </Anchor>
-              </Group>
               <SimpleGrid cols={2} mt="md">
                 {items}
               </SimpleGrid>
@@ -545,11 +557,10 @@ function SheetUpload() {
                 : addVariantInfoCard()}
             </>
           ) : selectedTabName == "update" ? (
-            updatePriceForm()
+            updateDataForm()
           ) : (
-            addVariantForm()
+            addNewDataForm()
           )
-          // formUpdate()
         }
       </Card>
     </div>

@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from "react";
-import { Plus, Check} from "tabler-icons-react";
+import { Plus, Check, Upload} from "tabler-icons-react";
 import { Text} from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
+import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
 import { 
   getDestinationDataByOrigin, 
@@ -47,6 +48,14 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
+  const containerType=props.containerType
+
+  if (modalType === "upload") {
+    return (
+      <SheetUpload 
+      containerType={containerType}/>
+    );
+  }
 
   return (
     <EditOfcForm
@@ -70,6 +79,7 @@ function ManageOfcContainer() {
   const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
+  const containerType: any = "ofc";
 
   //to get OFC Data from database
   const handleGetOfc= async (list: any) => {
@@ -282,7 +292,8 @@ function ManageOfcContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add OFC Charges" : "Update OFC Charges"
+        modalType === "add" ? "Add OFC Charges" :
+        modalType ==="upload"? "Update Or Add Data by Excel Sheet": "Update OFC Charges"
       }
       onModalClose={() => {
         setModalOpen(false)
@@ -300,15 +311,26 @@ function ManageOfcContainer() {
               updateFormData={updateFormData}
               modalType={modalType}
               modalOpen={modalOpen}
+              containerType={containerType}
             />
           );
       }}
-      modalSize="60%"
+      modalSize="70%"
     >
       <DataTable
         data={tableRowData}
         columns={columns}
         actionItems={[
+          {
+            label: "Upload",
+            icon: Upload,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);    
+            },
+          },
           {
             label: "Add",
             icon: Plus,

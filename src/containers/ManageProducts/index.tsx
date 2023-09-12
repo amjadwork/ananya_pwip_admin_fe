@@ -55,12 +55,14 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType;
   const modalOpen = props.modalOpen;
+  const containerType = props.containerType;
 
   let regionCostingList: any = [];
 
   if (modalType === "upload") {
     return (
-      <SheetUpload />
+      <SheetUpload 
+      containerType={containerType}/>
     );
   }
 
@@ -102,6 +104,7 @@ function ManageProductsContainer(props: any) {
     React.useState<any>(null);
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
+  const containerType: any = "variant";
 
   const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
@@ -257,7 +260,7 @@ function ManageProductsContainer(props: any) {
           modalType === "add"
             ? "Add Product Variant"
             : modalType === "upload"
-            ? "Upload Data from Excel Sheet"
+            ? "Update Or Add Data by Excel Sheet"
             : modalType === "line-chart"
             ? "Line Chart for Pricing Trend"
             : "Update Variant Price and Source Location"
@@ -278,6 +281,7 @@ function ManageProductsContainer(props: any) {
             updateFormData={updateFormData}
             modalType={modalType}
             modalOpen={modalOpen}
+            containerType={containerType}
           />
         );
       }}
