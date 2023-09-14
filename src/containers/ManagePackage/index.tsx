@@ -37,11 +37,15 @@ const columns = [
 
   const initialBagTypes = [
       {
-        type: "PPWOVEN",
+        type: "PP Woven",
         list: [],
       },
       {
-        type: "JUTE",
+        type: "Non Woven",
+        list: [],
+      },
+      {
+        type: "Jute",
         list: [],
       },
       {

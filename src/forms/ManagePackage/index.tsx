@@ -44,12 +44,13 @@ function EditPackageForm(props: any) {
           <Select
             required
             label="Select Bag"
-            placeholder="Eg. BOPP"
+            placeholder="Eg. Jute"
             data={[
+              { value: "PP Woven", label: "PP Woven" },
+              { value: "Non Woven", label: "Non Woven" },
+              { value: "Jute", label: "Jute" },
               { value: "BOPP", label: "BOPP" },
-              { value: "PPWOVEN", label: "PPWOVEN" },
               { value: "PE", label: "PE" },
-              { value: "JUTE", label: "JUTE" },
             ]}
             {...form.getInputProps("bag")}
           />
