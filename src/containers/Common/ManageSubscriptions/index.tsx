@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
-import { getSubscriptionsData } from "../../../services/plans-management/Subscriptions";
+import { getSubscriptionsData } from "../../../services/plans-management/SubscriptionsAndServices";
 import { dummySubscription } from "../../../constants/subscriptions.constants";
 
 const columns = [
