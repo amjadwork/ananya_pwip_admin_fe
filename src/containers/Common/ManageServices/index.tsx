@@ -1,38 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Check } from "tabler-icons-react";
-import { Title, Box } from "@mantine/core";
+
 import { Text } from "../../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
-import EditPlansForm from "../../../forms/Common/ManagePlans";
+import EditServicesForm from "../../../forms/Common/ManageServices";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
 import {
-  getPlansData,
-  postPlansData,
-  deletePlansData,
-  putPlansData,
-} from "../../../services/plans-management/Plans";
+  getServicesData,
+  postServicesData,
+  deleteServicesData,
+  putServicesData,
+} from "../../../services/plans-management/SubscriptionsAndServices";
 
 const columns = [
   {
-    label: "Plans",
+    label: "Name",
     key: "name",
     sortable: true,
   },
   {
-    label: "Price",
-    key: "cost",
-  },
-  {
-    label: "Valid For",
-    key: "validityFor",
-  },
-  {
-    label: "Refundable",
-    key: "refund",
+    label: "Type",
+    key: "type",
+    sortable: true,
   },
   {
     label: "Action",
@@ -48,7 +41,7 @@ const RenderModalContent = (props: any) => {
   const modalType = props.modalType;
 
   return (
-    <EditPlansForm
+    <EditServicesForm
       handleCloseModal={handleCloseModal}
       handleSaveAction={handleSaveAction}
       variantSelectOptions={variantSelectOptions}
@@ -58,18 +51,18 @@ const RenderModalContent = (props: any) => {
   );
 };
 
-function ManagePlans() {
+function ManageServices() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
-  const [plansData, setPlansData] = useState<any>([]);
+  const [servicesData, setServicesData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
-  //to get Plans  Data from database
-  const handleGetPlansData = async () => {
-    const response = await getPlansData();
+  //to get Services  Data from database
+  const handleGetServicesData = async () => {
+    const response = await getServicesData();
     if (response) {
-      setPlansData([...response]);
+      setServicesData([...response]);
     }
   };
 
@@ -78,12 +71,12 @@ function ManagePlans() {
     let payload = { ...data };
 
     if (payload && modalType === "add") {
-      const response = await postPlansData(payload);
+      const response = await postServicesData(payload);
 
       if (response) {
         handleRefreshCalls();
         showNotification({
-          title: "Plan added successfully!",
+          title: "Service added successfully!",
           message: "",
           autoClose: 2000,
           icon: <Check />,
@@ -93,11 +86,11 @@ function ManagePlans() {
     }
 
     if (payload && modalType === "update") {
-      const response = await putPlansData(payload);
+      const response = await putServicesData(payload);
       if (response) {
         handleRefreshCalls();
         showNotification({
-          title: "Plan updated successfully!",
+          title: "Service updated successfully!",
           message: "",
           autoClose: 2000,
           icon: <Check />,
@@ -110,30 +103,30 @@ function ManagePlans() {
   // to delete a single row data
   const openDeleteModal = (rowData: any) =>
     openConfirmModal({
-      title: "Delete the Plans Data",
+      title: "Delete the Service Data",
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this Plan Data?
+          Are you sure you want to delete this Service Data?
           <Text fw={500}>
             Note:This action is destructive and you will have to contact support
             to restore this data.
           </Text>
         </Text>
       ),
-      labels: { confirm: "Delete Plan Data", cancel: "No, don't delete it" },
+      labels: { confirm: "Delete Service Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteRow(rowData),
     });
 
   const handleDeleteRow = async (data: any) => {
-    const response = await deletePlansData(data);
+    const response = await deleteServicesData(data);
 
     if (response) {
       handleRefreshCalls();
       showNotification({
-        title: "Plan deleted successfully!",
+        title: "Service deleted successfully!",
         message: "",
         autoClose: 2000,
         icon: <Check />,
@@ -143,42 +136,32 @@ function ManagePlans() {
   };
 
   const handleRefreshCalls = () => {
-    handleGetPlansData();
+    handleGetServicesData();
   };
 
   useEffect(() => {
-    handleGetPlansData();
+    handleGetServicesData();
   }, []);
 
   useEffect(() => {
-    if (plansData && plansData.length) {
+    if (servicesData && servicesData.length) {
       let tableData: any = [];
-      plansData.forEach((d: any) => {
+      servicesData.forEach((d: any) => {
         const obj = {
           ...d,
-          cost: `${d.price} ${d.currency}`,
-          validityFor: `${d.validity} ${d.validity_type}`,
-          refund: `${
-            d.refund_policy ? `Yes, ${d.refund_policy_valid_day} day/s` : "No"
-          }`,
         };
-
         tableData.push(obj);
       });
       setTableRowData(tableData);
     }
-  }, [plansData]);
+  }, [servicesData]);
 
   return (
     <PageWrapper
       PageHeader={() => null}
       PageAction={() => null}
       modalOpen={modalOpen}
-      modalTitle={
-        modalType === "add"
-          ? "Add Plan and Descriptions"
-          : "Update Plan and Descriptions"
-      }
+      modalTitle={modalType === "add" ? "Add Services" : "Update Services"}
       onModalClose={() => {
         setModalOpen(false);
         setUpdateFormData(null);
@@ -194,7 +177,7 @@ function ManagePlans() {
           />
         );
       }}
-      modalSize="50%"
+      modalSize="60%"
     >
       <DataTable
         data={tableRowData}
@@ -214,15 +197,9 @@ function ManagePlans() {
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
           const formObj = {
-            name: obj.name,
-            description: obj.description,
-            validity_type: obj.validity_type,
-            validity: obj.validity,
-            refund_policy: obj.refund_policy,
-            refund_policy_valid_day: obj.refund_policy_valid_day,
-            price: obj.price,
-            currency: obj.currency,
             id: obj.id,
+            name: obj.name,
+            type: obj.type,
           };
           setUpdateFormData(formObj);
           setModalType("update");
@@ -236,4 +213,4 @@ function ManagePlans() {
   );
 }
 
-export default ManagePlans;
+export default ManageServices;

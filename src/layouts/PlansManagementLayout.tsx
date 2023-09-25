@@ -11,6 +11,7 @@ import {
 
 import ManageSubscription from "../containers/Common/ManageSubscriptions";
 import ManagePlans from "../containers/Common/ManagePlans";
+import ManageServices from "../containers/Common/ManageServices";
 
 const useStyles = createStyles((theme) => ({
   tabs: {
@@ -55,7 +56,7 @@ const PlansManagementLayout: React.FC<any> = () => {
 
   const [activeTab, setActiveTab] = React.useState<any>("");
 
-  const tabRoutes = ["subscriptions", "plans"];
+  const tabRoutes = ["subscriptions", "plans", "services"];
 
   const handleNavigation = (path: string) => {
     navigate(path, { replace: true });
@@ -134,6 +135,7 @@ const PlansManagementLayout: React.FC<any> = () => {
           <Route path="/" element={<ManageSubscription />} />
           <Route path="/subscriptions" element={<ManageSubscription />} />
           <Route path="/plans" element={<ManagePlans />} />
+          <Route path="/services" element={<ManageServices />} />
         </Routes>
       </Container>
     </MantineProvider>
