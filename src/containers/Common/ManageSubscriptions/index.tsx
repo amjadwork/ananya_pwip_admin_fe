@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
 import { getSubscriptionsData } from "../../../services/plans-management/SubscriptionsAndServices";
-import { dummySubscription } from "../../../constants/subscriptions.constants";
 
 const columns = [
   {
@@ -38,20 +37,18 @@ function ManageSubscriptions() {
   const [subscriptionsData, setSubscriptionsData] = useState<any>([]);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
-  //to get Plans  Data from database
+  //to get Subscription Data from database
   const handleGetSubscriptionsData = async () => {
-    // const response = await getSubscriptionsData();
-    // if (response) {
-    //   setSubscriptionsData([...response]);
-    // }
+    const response = await getSubscriptionsData();
+    console.log(response, "response")
+    if (response) {
+      setSubscriptionsData([...response]);
+    }
   };
 
   useEffect(() => {
-    setSubscriptionsData(dummySubscription);
     handleGetSubscriptionsData();
   }, []);
-
-  console.log("data", subscriptionsData);
 
   useEffect(() => {
     if (subscriptionsData && subscriptionsData.length) {
@@ -68,7 +65,7 @@ function ManageSubscriptions() {
 
   return (
     <PageWrapper PageHeader={() => null} PageAction={() => null}>
-      <DataTable data={dummySubscription} columns={columns} actionItems={[]} />
+      <DataTable data={tableRowData} columns={columns} actionItems={[]} />
     </PageWrapper>
   );
 }

@@ -289,8 +289,7 @@ export function DataTable({
                   onSort={() => setSorting(col.key)}
                   sortable={col.sortable || false}
                 >
-                {col.label}
-                 
+                  {col.label}
                 </Th>
               );
             })}
@@ -329,21 +328,34 @@ export function DataTable({
                                   <PlayerPlay size="1rem" />
                                 </ActionIcon>
                               )}
-                              <ActionIcon
-                                variant="light"
-                                color="blue"
-                                onClick={() => handleRowEdit(row, index)}
-                              >
-                                <Pencil size="1rem" />
-                              </ActionIcon>
 
-                              <ActionIcon
-                                variant="light"
-                                color="red"
-                                onClick={() => handleRowDelete(row, index)}
-                              >
-                                <Trash size="1rem" />
-                              </ActionIcon>
+                              {row.active === 0 ? (
+                                <ActionIcon variant="light" color="gray">
+                                  <Pencil size="1rem" />
+                                </ActionIcon>
+                              ) : (
+                                <ActionIcon
+                                  variant="light"
+                                  color="blue"
+                                  onClick={() => handleRowEdit(row, index)}
+                                >
+                                  <Pencil size="1rem" />
+                                </ActionIcon>
+                              )}
+
+                              {row.active === 0 ? (
+                                <ActionIcon variant="light" color="gray">
+                                  <Trash size="1rem" />
+                                </ActionIcon>
+                              ) : (
+                                <ActionIcon
+                                  variant="light"
+                                  color="red"
+                                  onClick={() => handleRowDelete(row, index)}
+                                >
+                                  <Trash size="1rem" />
+                                </ActionIcon>
+                              )}
                             </Flex>
                           </td>
                         );

@@ -13,7 +13,7 @@ import {
   getServicesData,
   postServicesData,
   deleteServicesData,
-  putServicesData,
+  patchServicesData,
 } from "../../../services/plans-management/SubscriptionsAndServices";
 
 const columns = [
@@ -25,6 +25,11 @@ const columns = [
   {
     label: "Type",
     key: "type",
+    sortable: true,
+  },
+  {
+    label: "Status",
+    key: "activeStatus",
     sortable: true,
   },
   {
@@ -86,7 +91,7 @@ function ManageServices() {
     }
 
     if (payload && modalType === "update") {
-      const response = await putServicesData(payload);
+      const response = await patchServicesData(payload);
       if (response) {
         handleRefreshCalls();
         showNotification({
@@ -150,6 +155,7 @@ function ManageServices() {
         const obj = {
           ...d,
         };
+        obj.activeStatus = d.active === 1 ? "Active" : "Inactive";
         tableData.push(obj);
       });
       setTableRowData(tableData);
