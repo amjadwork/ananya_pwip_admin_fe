@@ -1,14 +1,14 @@
 import APIRequest from "../../../helper/api";
 
 export const getSubscriptionsData = async () => {
-  const response: any = await APIRequest("subscriptions", "GET");
+  const response = await APIRequest("subscription", "GET");
   if (response) {
     return response;
   }
 };
 
 export const getServicesData = async () => {
-  const response: any = await APIRequest("services", "GET");
+  const response = await APIRequest("services", "GET");
   if (response) {
     return response;
   }
@@ -21,20 +21,16 @@ export const postServicesData = async (data: any) => {
   }
 };
 
-
-export const deleteServicesData = async (data:any) => {
-  const response = await APIRequest ("services" + "/" + data.id, "DELETE");
+export const deleteServicesData = async (data: any) => {
+  const response = await APIRequest("services" + "/" + data.id, "DELETE");
   if (response) {
     return response;
   }
-}
+};
 
-export const putServicesData = async (data:any) => {
-  const response = await APIRequest ("services" + "/" + data.id, "PUT", data);
+export const patchServicesData = async (data: any) => {
+  const response = await APIRequest("services" + "/" + data.id, "PATCH", data);
   if (response) {
     return response;
   }
-}
-
-
-
+};

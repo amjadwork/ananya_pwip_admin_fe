@@ -2,12 +2,10 @@ import React, { useEffect } from "react";
 import { Grid, Space, TextInput, Select, Group } from "@mantine/core";
 import { Button } from "../../../components/index";
 import { useForm } from "@mantine/form";
-import { randomId } from "@mantine/hooks";
 
 const initialFormValues = {
   name: "",
   type: "",
-  key: randomId(),
 };
 
 function EditServicesForm(props: any) {
