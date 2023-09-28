@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
 import { getSubscriptionsData } from "../../../services/plans-management/SubscriptionsAndServices";
+import { getPlansData } from "../../../services/plans-management/Plans";
 
 const columns = [
   {
@@ -11,7 +11,7 @@ const columns = [
   },
   {
     label: "Plan_ID",
-    key: "plan_id",
+    key: "planID",
     sortable: true,
   },
   {
@@ -22,6 +22,10 @@ const columns = [
   {
     label: "Amount",
     key: "amount_paid",
+  },
+  {
+    label: "Payment Status",
+    key: "payment_status",
   },
   {
     label: "Payment Date",
@@ -35,33 +39,56 @@ const columns = [
 
 function ManageSubscriptions() {
   const [subscriptionsData, setSubscriptionsData] = useState<any>([]);
+  const [plansData, setPlansData] = useState<any>([]);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get Subscription Data from database
   const handleGetSubscriptionsData = async () => {
     const response = await getSubscriptionsData();
-    console.log(response, "response")
+
     if (response) {
       setSubscriptionsData([...response]);
     }
   };
 
+  //to get Plans Data from database
+  const handleGetPlansData = async () => {
+    const response = await getPlansData();
+
+    if (response) {
+      setPlansData([...response]);
+    }
+  };
+
   useEffect(() => {
     handleGetSubscriptionsData();
+    handleGetPlansData();
   }, []);
 
   useEffect(() => {
-    if (subscriptionsData && subscriptionsData.length) {
+    if (
+      subscriptionsData &&
+      subscriptionsData.length &&
+      plansData &&
+      plansData.length
+    ) {
       let tableData: any = [];
-      subscriptionsData.forEach((d: any) => {
-        const obj = {
-          ...d,
-        };
-        tableData.push(obj);
+      subscriptionsData.forEach((subscription: any) => {
+        const matchedId = plansData.find(
+          (plan: any) => plan.id === subscription.plan_id
+        );
+        if (matchedId) {
+          const obj = {
+            ...subscription,
+            planID: matchedId.id,
+            plan: matchedId,
+          };
+          tableData.push(obj);
+        }
       });
       setTableRowData(tableData);
     }
-  }, [subscriptionsData]);
+  }, [subscriptionsData, plansData]);
 
   return (
     <PageWrapper PageHeader={() => null} PageAction={() => null}>
