@@ -29,8 +29,10 @@ import {
   CircleCheck,
   CircleX,
   PlayerPlay,
+  InfoCircle,
 } from "tabler-icons-react";
 import { AlertCircle } from "tabler-icons-react";
+import { max } from "moment";
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -370,6 +372,69 @@ export function DataTable({
                           </td>
                         );
                       }
+                      if (key === "planID") {
+                        return (
+                          <td key="planID">
+                            <Flex>
+                              <Tooltip
+                                width={200}
+                                withArrow={true}
+                                arrowSize={5}
+                                position="top"
+                                color="#20C997"
+                                transition="pop"
+                                transitionDuration={200}
+                                events={{
+                                  hover: true,
+                                  focus: false,
+                                  touch: false,
+                                }}
+                                label={
+                                  <div>
+                                    <div>
+                                      {" "}
+                                      <strong>Plan:</strong> {row.plan.name}
+                                    </div>
+                                    <div>
+                                      <strong>Price:</strong> {row.plan.price}{" "}
+                                      {row.plan.currency}
+                                    </div>
+                                    <div>
+                                      <strong>Validity:</strong>{" "}
+                                      {row.plan.validity}{" "}
+                                      {row.plan.validity_type}
+                                    </div>
+                                    <div>
+                                      <strong>Refundable:</strong>{" "}
+                                      {row.plan.refund_policy === 1
+                                        ? `Yes, ${row.plan.refund_policy_valid_day} day/s`
+                                        : "No"}
+                                    </div>
+                                  </div>
+                                }
+                                multiline={true}
+                                style={{ marginTop: 5, marginLeft: 2 }}
+                              >
+                                <span
+                                  style={{
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "left",
+                                  }}
+                                >
+                                  <InfoCircle
+                                    size={18}
+                                    strokeWidth={2}
+                                    color="teal"
+                                    style={{ marginInline: 3, marginTop: 3 }}
+                                  />
+                                </span>
+                              </Tooltip>
+                              <span>{row.plan.id}</span>
+                            </Flex>
+                          </td>
+                        );
+                      }
                       if (key === "originPortName") {
                         return (
                           <table
@@ -406,36 +471,8 @@ export function DataTable({
                                               : "OFC : Not found"
                                           }`
                                     }
-                                    // label={`cha : ${
-                                    //   originPort.isChaFound
-                                    //     ? "Found"
-                                    //     : "Not found"
-                                    // } \n shl : ${
-                                    //   originPort.isShlFound
-                                    //     ? "Found"
-                                    //     : "Not found"
-                                    // } \n ofc : ${
-                                    //   originPort.isOfcFound
-                                    //     ? "Found"
-                                    //     : "Not found"
-                                    // }`}
-                                    color="grey"
-                                    // width={"auto"}
-
-                                    multiline={true}
                                   >
                                     <span
-                                      // className={
-                                      //   originPort.isChaFound &&
-                                      //   originPort.isShlFound &&
-                                      //   originPort.isOfcFound
-                                      //     ? classes.successText
-                                      //     : !originPort.isChaFound &&
-                                      //       !originPort.isShlFound &&
-                                      //       !originPort.isOfcFound
-                                      //     ? classes.errorText
-                                      //     : classes.warningText
-                                      // }
                                       style={{
                                         cursor: "pointer",
                                         minWidth: "200px",
@@ -474,20 +511,9 @@ export function DataTable({
                                     </span>
                                   </Tooltip.Floating>
                                 </td>
-                                {/* <td style={{ margin: 2, padding: 0 }}><div style={{ height:25,width:25,backgroundColor: `${(false)?"#bbb":"#fdbc00"}`,display:"inline-block",borderRadius:"50%"}}></div></td> */}
                               </tr>
-                            ))
-                            //  .join(" ,")
-                            }
+                            ))}
                           </table>
-
-                          // <td key={key + index}>
-                          //   {row["linkedOrigin"]
-                          //     ?.map(
-                          //       (originPort: any) => originPort?.originPortName
-                          //     )
-                          //     .join(" ,")}
-                          // </td>
                         );
                       }
 
