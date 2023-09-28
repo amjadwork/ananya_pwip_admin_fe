@@ -362,6 +362,19 @@ export function DataTable({
                           </td>
                         );
                       }
+                      if (key === "servicesNames") {
+                        return (
+                          <td key={key + index}>
+                            {row.servicesNames.map(
+                              (service: any, serviceIndex: any) => (
+                                <div key={serviceIndex}>
+                                  {serviceIndex + 1}. {service}
+                                </div>
+                              )
+                            )}
+                          </td>
+                        );
+                      }
                       if (key === "video") {
                         const column = columns.find(
                           (col: any) => col.key === key
