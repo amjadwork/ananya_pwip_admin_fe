@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   NumberInput,
@@ -8,6 +8,7 @@ import {
   Textarea,
   Checkbox,
   Group,
+  MultiSelect,
 } from "@mantine/core";
 import { Button } from "../../../components/index";
 import { useForm } from "@mantine/form";
@@ -17,6 +18,7 @@ const initialFormValues = {
   description: "",
   validity_type: "",
   validity: "",
+  applicable_services: [],
   refund_policy: false,
   refund_policy_valid_day: 0,
   price: "",
@@ -27,7 +29,10 @@ function EditPlansForm(props: any) {
   const handleCloseModal = props.handleCloseModal;
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
+  const servicesData = props.servicesData;
   const modalType = props.modalType || "add";
+
+  const [applicableServices, setApplicableServices] = useState<string[]>([]);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
@@ -40,6 +45,21 @@ function EditPlansForm(props: any) {
     { value: "usage-cap", label: "Usage Cap" },
   ];
 
+  const servicesOptions = servicesData
+    .filter((option: any) => option.active === 1)
+    .map((list: any) => ({
+      value: list.id,
+      label: list.name,
+    }));
+
+  const handleServiceChange = (newServiceValues: string[]) => {
+    setApplicableServices(newServiceValues);
+    form.setValues((prevValues: any) => ({
+      ...prevValues,
+      applicable_services: newServiceValues,
+    }));
+  };
+
   //to show previous values while editing the row
   useEffect(() => {
     if (updateFormData && modalType === "update") {
@@ -47,6 +67,9 @@ function EditPlansForm(props: any) {
         ...updateFormData,
         price: parseFloat(updateFormData.price),
       };
+
+      // Set the applicable_services state and form values
+      setApplicableServices(updatedFormData.applicable_services || []); // Ensure it's an array
       form.setValues(updatedFormData);
     }
   }, [updateFormData, modalType]);
@@ -73,6 +96,18 @@ function EditPlansForm(props: any) {
             placeholder="Write here"
             label="Description(optional)"
             {...form.getInputProps("description")}
+          />
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <MultiSelect
+            data={servicesOptions}
+            required
+            label="Applicable Services"
+            placeholder="Pick all that you like"
+            value={applicableServices}
+            onChange={handleServiceChange}
+            clearButtonLabel="Clear selection"
+            clearable
           />
         </Grid.Col>
         <Grid.Col span={12}>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Check } from "tabler-icons-react";
-import { Title, Box } from "@mantine/core";
 import { Text } from "../../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -9,6 +8,7 @@ import EditPlansForm from "../../../forms/Common/ManagePlans";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
+import { getServicesData } from "../../../services/plans-management/SubscriptionsAndServices";
 import {
   getPlansData,
   postPlansData,
@@ -18,9 +18,18 @@ import {
 
 const columns = [
   {
+    label: "ID",
+    key: "id",
+    sortable: true,
+  },
+  {
     label: "Plans",
     key: "name",
     sortable: true,
+  },
+  {
+    label: "Applicable Services",
+    key: "servicesNames",
   },
   {
     label: "Price",
@@ -45,6 +54,7 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const variantSelectOptions = props.variantSelectOptions;
+  const servicesData = props.servicesData;
   const modalType = props.modalType;
 
   return (
@@ -53,6 +63,7 @@ const RenderModalContent = (props: any) => {
       handleSaveAction={handleSaveAction}
       variantSelectOptions={variantSelectOptions}
       updateFormData={updateFormData}
+      servicesData={servicesData}
       modalType={modalType}
     />
   );
@@ -62,14 +73,25 @@ function ManagePlans() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
   const [plansData, setPlansData] = useState<any>([]);
+  const [servicesData, setServicesData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get Plans  Data from database
   const handleGetPlansData = async () => {
     const response = await getPlansData();
+
     if (response) {
       setPlansData([...response]);
+    }
+  };
+
+  //to get Services  Data from database
+  const handleGetServicesData = async () => {
+    const response = await getServicesData();
+
+    if (response) {
+      setServicesData([...response]);
     }
   };
 
@@ -148,12 +170,19 @@ function ManagePlans() {
 
   useEffect(() => {
     handleGetPlansData();
+    handleGetServicesData();
   }, []);
 
   useEffect(() => {
     if (plansData && plansData.length) {
       let tableData: any = [];
+      let servicesNames: any = [];
       plansData.forEach((d: any) => {
+        servicesNames = d.applicable_services.map((serviceId: any) => {
+          const service = servicesData.find((s: any) => s.id === serviceId);
+          return service ? service.name : "";
+        });
+
         const obj = {
           ...d,
           cost: `${d.price} ${d.currency}`,
@@ -161,13 +190,14 @@ function ManagePlans() {
           refund: `${
             d.refund_policy ? `Yes, ${d.refund_policy_valid_day} day/s` : "No"
           }`,
+          servicesNames: servicesNames,
         };
 
         tableData.push(obj);
       });
       setTableRowData(tableData);
     }
-  }, [plansData]);
+  }, [plansData, servicesData]);
 
   return (
     <PageWrapper
@@ -189,6 +219,7 @@ function ManagePlans() {
             handleCloseModal={(bool: boolean) => setModalOpen(bool)}
             handleSaveAction={handleSaveAction}
             updateFormData={updateFormData}
+            servicesData={servicesData}
             modalType={modalType}
             modalOpen={modalOpen}
           />
@@ -218,6 +249,7 @@ function ManagePlans() {
             description: obj.description,
             validity_type: obj.validity_type,
             validity: obj.validity,
+            applicable_services: obj.applicable_services,
             refund_policy: obj.refund_policy,
             refund_policy_valid_day: obj.refund_policy_valid_day,
             price: obj.price,
