@@ -83,6 +83,7 @@ interface TableSortProps {
   actionItems?: any;
   onClickAction?: any;
   handleRowEdit?: any;
+  showRowDeleteAction?: boolean;
   handleRowDelete?: any;
   handleLineChart?: any;
   handleVideoPlay?: any;
@@ -150,6 +151,7 @@ export function DataTable({
   selectFilterTypes = [],
   selectedFilterValue = null,
   showChartLineAction = false,
+  showRowDeleteAction = true,
   showPlayAction = false,
   handleSelectRadioFilterChange = () => null,
 }: TableSortProps) {
@@ -344,12 +346,11 @@ export function DataTable({
                                   <Pencil size="1rem" />
                                 </ActionIcon>
                               )}
-
                               {row.active === 0 ? (
                                 <ActionIcon variant="light" color="gray">
-                                  <Trash size="1rem" />
+                                  <Pencil size="1rem" />
                                 </ActionIcon>
-                              ) : (
+                              ) : showRowDeleteAction === false ? null : (
                                 <ActionIcon
                                   variant="light"
                                   color="red"
@@ -358,6 +359,8 @@ export function DataTable({
                                   <Trash size="1rem" />
                                 </ActionIcon>
                               )}
+
+                             
                             </Flex>
                           </td>
                         );
@@ -369,6 +372,19 @@ export function DataTable({
                               (service: any, serviceIndex: any) => (
                                 <div key={serviceIndex}>
                                   {serviceIndex + 1}. {service}
+                                </div>
+                              )
+                            )}
+                          </td>
+                        );
+                      }
+                      if (key === "permissionName") {
+                        return (
+                          <td key={key + index}>
+                            {row.permissionName.map(
+                              (list: any, p_Index: any) => (
+                                <div key={p_Index}>
+                                  {p_Index + 1}. {list}
                                 </div>
                               )
                             )}
