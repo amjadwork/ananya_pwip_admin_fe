@@ -20,7 +20,7 @@ const initialFormValues = {
   validity: "",
   applicable_services: [],
   refund_policy: false,
-  refund_policy_valid_day: 0,
+  refund_policy_valid_day: "",
   price: "",
   currency: "INR",
 };
@@ -33,16 +33,21 @@ function EditPlansForm(props: any) {
   const modalType = props.modalType || "add";
 
   const [applicableServices, setApplicableServices] = useState<string[]>([]);
+  const [refundError, setRefundError] = useState<string | null>(null);
 
   const form: any = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
+    validate: {
+      applicable_services: (value: any) =>
+        value.length < 1 ? "Add applicable services from the list" : null,
+    },
   });
 
   const validityType = [
     { value: "days", label: "Days" },
     { value: "hours", label: "Hours" },
-    { value: "usage-cap", label: "Usage Cap" },
+    { value: "usage_cap", label: "Usage Cap" },
   ];
 
   const servicesOptions = servicesData
@@ -67,14 +72,17 @@ function EditPlansForm(props: any) {
         ...updateFormData,
         price: parseFloat(updateFormData.price),
       };
-
-      // Set the applicable_services state and form values
-      setApplicableServices(updatedFormData.applicable_services || []); // Ensure it's an array
+      setApplicableServices(updatedFormData.applicable_services || []);
       form.setValues(updatedFormData);
     }
   }, [updateFormData, modalType]);
 
   const handleFormSubmit = (formValues: typeof form.values) => {
+    if (formValues.refund_policy && formValues.refund_policy_valid_day === 0) {
+      setRefundError("Refund validity cannot be zero");
+      return;
+    }
+    setRefundError(null);
     handleSaveAction(formValues);
     handleCloseModal(false);
     form.setValues(initialFormValues);
@@ -103,9 +111,10 @@ function EditPlansForm(props: any) {
             data={servicesOptions}
             required
             label="Applicable Services"
-            placeholder="Pick all that you like"
+            placeholder="Select Applicable Services"
             value={applicableServices}
             onChange={handleServiceChange}
+            error={form.errors.applicable_services}
             clearButtonLabel="Clear selection"
             clearable
           />
@@ -144,7 +153,12 @@ function EditPlansForm(props: any) {
             label="Refund Policy Applicable"
             size="sm"
             checked={form.values.refund_policy}
-            {...form.getInputProps("refund_policy")}
+            onChange={(event) => {
+              if (!event.currentTarget.checked) {
+                setRefundError(null);
+              }
+              form.getInputProps("refund_policy").onChange(event);
+            }}
           />
         </Grid.Col>
         <Grid.Col span={12}>
@@ -156,6 +170,9 @@ function EditPlansForm(props: any) {
             disabled={!form.values.refund_policy}
             {...form.getInputProps("refund_policy_valid_day")}
           />
+          {refundError && (
+            <div style={{ color: "red", fontSize: "11px" }}>{refundError}</div>
+          )}
         </Grid.Col>
       </Grid>
 
