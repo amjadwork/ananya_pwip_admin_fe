@@ -68,6 +68,13 @@ export const getRoleAndPermissionsData = async (id: any) => {
   }
 };
 
+export const getAllRoleAndPermissionsData = async () => {
+  const response = await APIRequest(`rolepermission`, "GET");
+  if (response) {
+    return response;
+  }
+};
+
 export const postRoleAndPermissionsData = async (data: any) => {
   const response = await APIRequest("rolepermission", "POST", data);
   if (response) {

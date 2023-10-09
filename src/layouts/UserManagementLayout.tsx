@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 
 import ManagePermissions from "../containers/Common/ManagePermissions";
-// import ManageUser from "../containers/Common/ManageUser";
+import ManageUsers from "../containers/Common/ManageUsers";
 import ManagePermissionAndRole from "../containers/Common/ManagePermissionAndRole";
 import ManageRoles from "../containers/Common/ManageRoles";
 
@@ -58,7 +58,7 @@ const UserManagementLayout: React.FC<any> = () => {
   const [activeTab, setActiveTab] = React.useState<any>("");
 
   const tabRoutes = [
-    // "user",
+    "users",
     "permissions",
     "roles",
     "manage-permission-and-role",
@@ -138,8 +138,8 @@ const UserManagementLayout: React.FC<any> = () => {
       </Box>
       <Container size={1200}>
         <Routes>
-          {/* <Route path="/" element={<ManageUser />} /> */}
-          {/* <Route path="/user" element={<ManageUser />} /> */}
+          <Route path="/" element={<ManageUsers />} />
+          <Route path="/users" element={<ManageUsers />} />
           <Route path="/permissions" element={<ManagePermissions />} />
           <Route path="/roles" element={<ManageRoles />} />
           <Route
