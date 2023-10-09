@@ -14,6 +14,7 @@ import {
   getRoleAndPermissionsData,
   postRoleAndPermissionsData,
   putRoleAndPermissionsData,
+  getAllRoleAndPermissionsData,
 } from "../../../services/user-management/PermissionAndRoles";
 
 const columns = [
@@ -64,6 +65,7 @@ function ManagePermissionAndRole() {
   const [modalType, setModalType] = useState<string>("add");
   const [rolesData, setRolesData] = useState<any>([]);
   const [permissionsData, setPermissionsData] = useState<any>([]);
+  const [rolePermissionsData, setRolePermissionsData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
@@ -84,11 +86,26 @@ function ManagePermissionAndRole() {
   };
 
   // to get Permission by specific role ID
-  const handleGetPermissionsByRoleId = async (id: any) => {
-    const response = await getRoleAndPermissionsData(id);
-    if (response) {
-      return response;
-    }
+  const handleGetAllRoleAndPermissions = async () => {
+    const response: Array<{ role_id: number; permission_id: number }> =
+      await getAllRoleAndPermissionsData();
+    if (!response) return;
+
+    const restructuredArray = response.reduce(
+      (acc: any, { role_id, permission_id }) => {
+        const existingRole = acc.find((item: any) => item.role_id === role_id);
+
+        if (existingRole) {
+          existingRole.permission_id.push(permission_id);
+        } else {
+          acc.push({ role_id, permission_id: [permission_id] });
+        }
+
+        return acc;
+      },
+      []
+    );
+    setRolePermissionsData(restructuredArray);
   };
 
   //to add new or edit the existing row in the table
@@ -128,44 +145,35 @@ function ManagePermissionAndRole() {
   const handleRefreshCalls = () => {
     handleGetRolesData();
     handleGetPermissionsData();
+    handleGetAllRoleAndPermissions();
   };
   useEffect(() => {
     handleGetRolesData();
     handleGetPermissionsData();
-    handleGetPermissionsByRoleId([]);
+    handleGetAllRoleAndPermissions();
   }, []);
 
   useEffect(() => {
-    if (rolesData && rolesData.length) {
-      const fetchPermissionsForRole = async () => {
-        const updatedTableData = await Promise.all(
-          rolesData.map(async (role: any) => {
-            const permissionByRoleID = await handleGetPermissionsByRoleId(
-              role._id
-            );
-            const permission_ID = permissionByRoleID.map(
-              (list: any) => list.permission_id
-            );
-            const permissionNames = permissionsData
-              .filter((permission: any) =>
-                permission_ID.includes(permission._id)
-              )
-              .map((permission: any) => permission.permission);
-
-            return {
-              ...role,
-              permissionName: permissionNames,
-              permissionId: permission_ID,
-            };
-          })
+    if (rolesData && rolePermissionsData) {
+      const newCombinedData = rolesData.map((role: any) => {
+        const roleAndPermissions = rolePermissionsData.find(
+          (list: any) => list.role_id === role._id
         );
-
-        setTableRowData(updatedTableData);
-      };
-
-      fetchPermissionsForRole();
+        const permissionIds = roleAndPermissions
+          ? roleAndPermissions.permission_id
+          : [];
+        const permissionNames = permissionsData
+          .filter((permission: any) => permissionIds.includes(permission._id))
+          .map((permission: any) => permission.permission);
+        return {
+          ...role,
+          permissionId: permissionIds,
+          permissionName: permissionNames,
+        };
+      });
+      setTableRowData(newCombinedData);
     }
-  }, [rolesData]);
+  }, [rolesData, rolePermissionsData, permissionsData]);
 
   return (
     <PageWrapper
