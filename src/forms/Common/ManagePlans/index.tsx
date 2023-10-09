@@ -77,11 +77,31 @@ function EditPlansForm(props: any) {
     }
   }, [updateFormData, modalType]);
 
-  const handleFormSubmit = (formValues: typeof form.values) => {
-    if (formValues.refund_policy && formValues.refund_policy_valid_day === 0) {
+  useEffect(() => {
+    if (
+      form.values.validity_type === "days" &&
+      form.values.validity > 0 &&
+      form.values.refund_policy_valid_day >= form.values.validity
+    ) {
+      setRefundError("Refund validity cannot exceed plan validity");
+      return;
+    } else if (
+      form.values.refund_policy &&
+      form.values.refund_policy_valid_day === 0
+    ) {
       setRefundError("Refund validity cannot be zero");
       return;
+    } else {
+      setRefundError(null);
     }
+  }, [form.values]);
+
+  const handleFormSubmit = (formValues: typeof form.values) => {
+    if (formValues.price === 0) {
+      form.values.refund_policy = false;
+      form.values.refund_policy_valid_day = 0;
+    }
+
     setRefundError(null);
     handleSaveAction(formValues);
     handleCloseModal(false);
@@ -153,6 +173,7 @@ function EditPlansForm(props: any) {
             label="Refund Policy Applicable"
             size="sm"
             checked={form.values.refund_policy}
+            disabled={form.values.price === "" || form.values.price === 0}
             onChange={(event) => {
               if (!event.currentTarget.checked) {
                 setRefundError(null);
@@ -167,11 +188,15 @@ function EditPlansForm(props: any) {
             hideControls
             label="Refundable for (in days)"
             placeholder="eg. 7 days"
-            disabled={!form.values.refund_policy}
+            disabled={
+              !form.values.refund_policy ||
+              form.values.price === "" ||
+              form.values.price === 0
+            }
             {...form.getInputProps("refund_policy_valid_day")}
           />
           {refundError && (
-            <div style={{ color: "red", fontSize: "11px" }}>{refundError}</div>
+            <div style={{ color: "red", fontSize: "12px" }}>{refundError}</div>
           )}
         </Grid.Col>
       </Grid>

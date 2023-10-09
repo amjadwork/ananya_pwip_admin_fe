@@ -176,12 +176,16 @@ function ManagePlans() {
   useEffect(() => {
     if (plansData && plansData.length) {
       let tableData: any = [];
-      let servicesNames: any = [];
       plansData.forEach((d: any) => {
-        servicesNames = d.applicable_services.map((serviceId: any) => {
-          const service = servicesData.find((s: any) => s.id === serviceId);
-          return service ? service.name : "";
-        });
+        const servicesNames = d.applicable_services
+          .map((serviceId: any) => {
+            const service = servicesData.find((s: any) => s.id === serviceId);
+            if (service && service.active === 1) {
+              return service.name;
+            }
+            return null;
+          })
+          .filter((serviceName: any) => serviceName !== null);
 
         const obj = {
           ...d,

@@ -348,7 +348,7 @@ export function DataTable({
                               )}
                               {row.active === 0 ? (
                                 <ActionIcon variant="light" color="gray">
-                                  <Pencil size="1rem" />
+                                  <Trash size="1rem" />
                                 </ActionIcon>
                               ) : showRowDeleteAction === false ? null : (
                                 <ActionIcon
