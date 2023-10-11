@@ -87,9 +87,12 @@ const LoginScreen = (props: any) => {
 
     if (loginResponse && loginResponse.message === "success") {
       setCookie("userData", JSON.stringify(loginResponse?.data), 7);
-
       setIsLoading(false);
-      router("/admin/dashboard");
+      if (loginResponse?.data.rolesAndPermissons.role === "admin") {
+        router("/admin/dashboard");
+      } else {
+        router("/access-denied");
+      }
     }
   };
 
