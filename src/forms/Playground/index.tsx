@@ -15,7 +15,12 @@ import { eceForm } from "../../constants/eceForm.constants";
 
 import { showNotification } from "@mantine/notifications";
 import { getAllLocationData } from "../../services/export-costing/Locations";
-import { getPackagingData, getProductData, getSpecificCategoryData, getSpecificVariantData } from "../../services/export-costing/Playground";
+import {
+  getPackagingData,
+  getProductData,
+  getSpecificCategoryData,
+  getSpecificVariantData,
+} from "../../services/export-costing/Playground";
 
 const initialFormState: any = {
   clearInputErrorOnChange: true,
@@ -166,7 +171,7 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetProductData = async () => {
-    const productResponse: any = await getProductData()
+    const productResponse: any = await getProductData();
 
     if (productResponse) {
       setProductList(productResponse);
@@ -182,7 +187,9 @@ const EceForm: any = (props: any) => {
   const handleGetCategoryData = async (id: string) => {
     const productId = id;
 
-    const categoryDetailResponse: any = await getSpecificCategoryData(productId)
+    const categoryDetailResponse: any = await getSpecificCategoryData(
+      productId
+    );
     if (categoryDetailResponse) {
       setCategoryList(categoryDetailResponse[0].category || []);
 
@@ -196,7 +203,7 @@ const EceForm: any = (props: any) => {
   const handleGetVariantData = async (ids: Array<[]>) => {
     const categoryIds = ids;
 
-    const variantResponse: any = await getSpecificVariantData(categoryIds)
+    const variantResponse: any = await getSpecificVariantData(categoryIds);
 
     if (variantResponse) {
       setVariantsList(variantResponse);
@@ -206,8 +213,8 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetPackageData = async (dataType?: any) => {
-    const packagingResponse: any = await getPackagingData()
-    
+    const packagingResponse: any = await getPackagingData();
+
     if (packagingResponse) {
       if (dataType === "weight") {
         handleSettingFormValues(packagingResponse, "bagWeight", "weight");
@@ -220,7 +227,7 @@ const EceForm: any = (props: any) => {
   };
 
   const handleGetLocationsData = async () => {
-    const locationResponse: any = await getAllLocationData()
+    const locationResponse: any = await getAllLocationData();
     if (locationResponse) {
       setLocationList(locationResponse);
 
@@ -241,7 +248,7 @@ const EceForm: any = (props: any) => {
         // }
 
         if (obj.name === "destinationPort") {
-          obj.options = locationResponse[0].destination.map((p: any) => ({
+          obj.options = locationResponse.destination.map((p: any) => ({
             label: p.portName,
             value: p._id,
           }));

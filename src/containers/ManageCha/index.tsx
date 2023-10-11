@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, Check, Upload} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check, Upload } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -9,8 +9,8 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
-import { 
-  getDestinationDataByOrigin, 
+import {
+  getDestinationDataByOrigin,
   getDestinationData,
   getOriginData,
 } from "../../services/export-costing/Locations";
@@ -25,74 +25,85 @@ const columns = [
   {
     label: "Origin",
     key: "originPort",
+    width: "170px",
     sortable: true,
   },
   {
     label: "Destination",
     key: "destinationPort",
+    width: "170px",
     sortable: true,
   },
   {
     label: "CHA",
     key: "chaCharge",
+    width: "80px",
   },
   {
-    label: "SilicaGel",
+    label: "Silica Gel",
     key: "silicaGel",
+    width: "70px",
   },
   {
-    label: "CraftPaper",
+    label: "Craft Paper",
     key: "craftPaper",
+    width: "70px",
   },
   {
-    label: "Transport",
+    label: "Transport Charge",
     key: "transportCharge",
+    width: "90px",
   },
   {
-    label: "Custom",
+    label: "Custom Charge",
     key: "customCharge",
+    width: "80px",
   },
   {
-    label: "Loading",
+    label: "Loading Charge",
     key: "loadingCharge",
+    width: "80px",
   },
   {
-    label: "Service",
+    label: "Service Charge",
     key: "serviceCharge",
+    width: "80px",
   },
   {
-    label: "Fumigation",
+    label: "Fumigation Charge",
     key: "fumigationCharge",
+    width: "100px",
   },
   {
-    label: "PQC",
+    label: "PQC Charge",
     key: "pqc",
+    width: "80px",
   },
   {
-    label: "COO",
+    label: "COO Charge",
     key: "coo",
+    width: "80px",
   },
   {
     label: "Action",
     key: "action",
+    width: "100px",
   },
 ];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
-  const containerSelectOptions=props.containerSelectOptions;
-  const handleGetDestinationDataByOrigin = props.handleGetDestinationDataByOrigin;
+  const containerSelectOptions = props.containerSelectOptions;
+  const handleGetDestinationDataByOrigin =
+    props.handleGetDestinationDataByOrigin;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
-  const containerType=props.containerType
+  const containerType = props.containerType;
 
-    if (modalType === "upload") {
-    return (
-      <SheetUpload 
-      containerType={containerType}/>
-    );
+  if (modalType === "upload") {
+    return <SheetUpload containerType={containerType} />;
   }
 
   return (
@@ -100,7 +111,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       containerSelectOptions={containerSelectOptions}
-      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin} 
+      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -113,17 +124,18 @@ function ManageChaContainer() {
   const [modalType, setModalType] = useState<string>("add");
   const [chaData, setChaData] = useState<any>([]);
   const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>(
+    []
+  );
   const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
-  const [selectedChaData, setSelectedChaData] =
-    React.useState<any>(null);
+  const [selectedChaData, setSelectedChaData] = React.useState<any>(null);
 
   const [tableRowData, setTableRowData] = useState<any>([]);
   const containerType: any = "cha";
 
   //to get CHA Data from database
-  const handleGetCha= async (data: any = []) => {
+  const handleGetCha = async (data: any = []) => {
     const response: any = await getChaData();
     try {
       if (response) {
@@ -179,25 +191,22 @@ function ManageChaContainer() {
     }
   };
 
-
   //to get Destination Data from database
   const handleGetDestination = async () => {
     const response = await getDestinationData();
 
     if (response) {
-      const destinationOptions = response.destination.map(
-        (d: any) => {
-          return {
-            label: d.portName,
-            value: d._id,
-          };
-        }
-      );
+      const destinationOptions = response.destination.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
 
-  const handleGetDestinationDataByOrigin = async (originPortId:any) => {
+  const handleGetDestinationDataByOrigin = async (originPortId: any) => {
     try {
       const response = await getDestinationDataByOrigin(originPortId);
       return response.destination.map((d: any) => ({
@@ -215,22 +224,18 @@ function ManageChaContainer() {
     const response = await getContainerData();
 
     if (response) {
-      const containerOptions = response.map(
-        (d: any) => {
-          return {
-            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
-            value: d._id,
-          };
-        }
-      );
+      const containerOptions = response.map((d: any) => {
+        return {
+          label: `${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+          value: d._id,
+        };
+      });
       setContainerSelectOptions(() => [...containerOptions]);
     }
   };
 
-
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
     if (data && modalType === "add") {
       const response = await postChaData(data);
 
@@ -241,8 +246,8 @@ function ManageChaContainer() {
           message: "",
           autoClose: 4000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
 
@@ -256,8 +261,8 @@ function ManageChaContainer() {
           message: "",
           autoClose: 4000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
   };
@@ -269,10 +274,12 @@ function ManageChaContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the CHA Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the CHA Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
       labels: { confirm: "Delete CHA Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
@@ -289,9 +296,9 @@ function ManageChaContainer() {
         message: "",
         autoClose: 4000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -302,25 +309,24 @@ function ManageChaContainer() {
     handleGetOriginData();
   }, []);
 
-useEffect(() => {
-  if (chaData.length && destinationSelectOptions.length) {
-    const tableData = chaData.flatMap((d:any) => {
-      return d.list.map((l:any) => {
-        const destination = destinationSelectOptions.find(
-          (option:any) => option.value === l._destinationPortId
-        );
-        return {
-          ...l,
-          originPort: d.name,
-          destinationPort: destination ? destination.label : "Null",
-          _originPortId: d._originId,
-        };
+  useEffect(() => {
+    if (chaData.length && destinationSelectOptions.length) {
+      const tableData = chaData.flatMap((d: any) => {
+        return d.list.map((l: any) => {
+          const destination = destinationSelectOptions.find(
+            (option: any) => option.value === l._destinationPortId
+          );
+          return {
+            ...l,
+            originPort: d.name,
+            destinationPort: destination ? destination.label : "Null",
+            _originPortId: d._originId,
+          };
+        });
       });
-    });
-    setTableRowData(tableData);
-  }
-}, [chaData, destinationSelectOptions]);
-
+      setTableRowData(tableData);
+    }
+  }, [chaData, destinationSelectOptions]);
 
   return (
     <PageWrapper
@@ -328,32 +334,31 @@ useEffect(() => {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-         modalType === "add"
-            ? "Add CHA Charges"
-            : modalType === "upload"
-            ? "Update Or Add Data by Excel Sheet"
-            : "Update CHA CHarges"
+        modalType === "add"
+          ? "Add CHA Charges"
+          : modalType === "upload"
+          ? "Update Or Add Data by Excel Sheet"
+          : "Update CHA CHarges"
       }
       onModalClose={() => {
         setModalOpen(false);
         setSelectedChaData(null);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              originSelectOptions={originSelectOptions}
-              handleSaveAction={handleSaveAction}
-              containerSelectOptions={containerSelectOptions}
-              handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-              containerType={containerType}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            originSelectOptions={originSelectOptions}
+            handleSaveAction={handleSaveAction}
+            containerSelectOptions={containerSelectOptions}
+            handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+            containerType={containerType}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -361,14 +366,14 @@ useEffect(() => {
         data={tableRowData}
         columns={columns}
         actionItems={[
-           {
+          {
             label: "Upload",
             icon: Upload,
             color: "gray",
             type: "button",
             onClickAction: () => {
               setModalType("upload");
-              setModalOpen(true);    
+              setModalOpen(true);
             },
           },
           {
@@ -382,7 +387,6 @@ useEffect(() => {
             },
           },
         ]}
-
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
 
@@ -392,21 +396,21 @@ useEffect(() => {
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
-                _containerId:obj._containerId,
+                _containerId: obj._containerId,
                 chaCharge: obj.chaCharge,
                 silicaGel: obj.silicaGel,
                 craftPaper: obj.craftPaper,
                 transportCharge: obj.transportCharge,
                 loadingCharge: obj.loadingCharge,
                 customCharge: obj.customCharge,
-                serviceCharge:obj.serviceCharge,
-                fumigationCharge:obj.fumigationCharge,
+                serviceCharge: obj.serviceCharge,
+                fumigationCharge: obj.fumigationCharge,
                 pqc: obj.pqc,
                 coo: obj.coo,
               },
             ],
-          }
-          
+          };
+
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);

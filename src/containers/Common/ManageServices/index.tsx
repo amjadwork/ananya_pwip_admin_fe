@@ -20,21 +20,25 @@ const columns = [
   {
     label: "Name",
     key: "name",
+    width: "250px",
     sortable: true,
   },
   {
     label: "Type",
     key: "type",
+    width: "130px",
     sortable: true,
   },
   {
     label: "Status",
     key: "activeStatus",
+    width: "130px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
+    width: "50px",
   },
 ];
 
