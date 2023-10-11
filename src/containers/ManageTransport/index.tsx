@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus , Check, Upload} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check, Upload } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -22,18 +22,22 @@ const columns = [
   {
     label: "Origin",
     key: "origin",
+    width: "150px",
   },
   {
     label: "Source",
     key: "source",
+    width: "150px",
   },
   {
-    label: "Transportation",
+    label: "Transportation Charges",
     key: "transportationCharge",
+    width: "100px",
   },
   {
     label: "Action",
     key: "action",
+    width: "40px",
   },
 ];
 
@@ -44,13 +48,10 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
-  const containerType=props.containerType
+  const containerType = props.containerType;
 
   if (modalType === "upload") {
-    return (
-      <SheetUpload
-      containerType={containerType} />
-    );
+    return <SheetUpload containerType={containerType} />;
   }
 
   return (
@@ -78,36 +79,37 @@ function ManageTransportContainer() {
   //to get Transportation Data from database
   const handleGetTransportation = async () => {
     const response: any[] = await getTransportationData();
-  
+
     try {
       if (response) {
         let array: any[] = response.map((item: any) => {
           let destinationArr: any[] = [];
           let originIdStringArr: string[] = [];
-  
+
           response.forEach((origin: any) => {
             if (item._originPortId === origin._originPortId) {
               destinationArr.push(origin.sourceLocations);
               originIdStringArr.push(origin._id);
             }
           });
-  
+
           return {
             ...item,
-            list: originIdStringArr.includes(item._id) ? destinationArr.flat(1) : [],
+            list: originIdStringArr.includes(item._id)
+              ? destinationArr.flat(1)
+              : [],
           };
         });
-  
+
         setTransportationData(() => [...array]);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  
 
   //to get Origin Data from database
-  const handleGetOrigin= async () => {
+  const handleGetOrigin = async () => {
     const response = await getOriginData();
     if (response) {
       const originOptions = response.origin.map((d: any) => {
@@ -127,26 +129,24 @@ function ManageTransportContainer() {
   const handleGetSource = async () => {
     const response = await getSourceData();
     if (response) {
-      const sourceOptions = response.source.map(
-        (d: any) => {
-          return {
-            label: d.region,
-            value: d._id,
-            state: d._state,
-          };
-        }
-      );
+      const sourceOptions = response.source.map((d: any) => {
+        return {
+          label: d.region,
+          value: d._id,
+          state: d._state,
+        };
+      });
       setSourceSelectOptions(() => [...sourceOptions]);
     }
   };
 
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-    const payload = data.sourceLocations.flatMap((d:any) => ({
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
+    const payload = data.sourceLocations.flatMap((d: any) => ({
       _originPortId: data._originPortId,
       ...d,
     }));
-  
+
     if (data && modalType === "add") {
       const response = await postTransportationData(data);
 
@@ -157,8 +157,8 @@ function ManageTransportContainer() {
           message: "",
           autoClose: 4000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
 
@@ -172,7 +172,7 @@ function ManageTransportContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
+          color: "green",
         });
       }
     }
@@ -185,12 +185,17 @@ function ManageTransportContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the Transportation Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the Transportation Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
-      labels: { confirm: "Delete Transportation Data", cancel: "No, don't delete it" },
+      labels: {
+        confirm: "Delete Transportation Data",
+        cancel: "No, don't delete it",
+      },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteRow(rowData),
@@ -205,9 +210,9 @@ function ManageTransportContainer() {
         message: "",
         autoClose: 4000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -219,7 +224,11 @@ function ManageTransportContainer() {
   }, []);
 
   useEffect(() => {
-    if (transportationData.length && sourceSelectOptions.length && originSelectOptions.length) {
+    if (
+      transportationData.length &&
+      sourceSelectOptions.length &&
+      originSelectOptions.length
+    ) {
       const tableData = transportationData.flatMap((list: any) => {
         return list.sourceLocations.map((item: any) => {
           const sourceOption = sourceSelectOptions.find(
@@ -233,10 +242,10 @@ function ManageTransportContainer() {
             (d: any) => d.value === list._originPortId
           );
           const originName = originOption ? originOption.label : "Null";
-    
+
           return {
             ...item,
-            _originPortId:list._originPortId,
+            _originPortId: list._originPortId,
             origin: originName,
             source: sourceName,
           };
@@ -245,8 +254,6 @@ function ManageTransportContainer() {
       setTableRowData(tableData);
     }
   }, [transportationData, sourceSelectOptions, originSelectOptions]);
-  
-  
 
   return (
     <PageWrapper
@@ -255,29 +262,28 @@ function ManageTransportContainer() {
       modalOpen={modalOpen}
       modalTitle={
         modalType === "add"
-        ? "Add Transportation Charges"
-        : modalType === "upload"
-        ? "Update Or Add Data by Excel Sheet"
-        : "Update Transportation Charges"
+          ? "Add Transportation Charges"
+          : modalType === "upload"
+          ? "Update Or Add Data by Excel Sheet"
+          : "Update Transportation Charges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              originSelectOptions={originSelectOptions}
-              handleSaveAction={handleSaveAction}
-              sourceSelectOptions={sourceSelectOptions}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-              containerType={containerType}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            originSelectOptions={originSelectOptions}
+            handleSaveAction={handleSaveAction}
+            sourceSelectOptions={sourceSelectOptions}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+            containerType={containerType}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -292,7 +298,7 @@ function ManageTransportContainer() {
             type: "button",
             onClickAction: () => {
               setModalType("upload");
-              setModalOpen(true);    
+              setModalOpen(true);
             },
           },
           {
@@ -306,9 +312,8 @@ function ManageTransportContainer() {
             },
           },
         ]}
-
         handleRowEdit={(row: any, index: number) => {
-          setModalType('update')
+          setModalType("update");
           let obj = { ...row };
           const formObj = {
             _originPortId: obj._originPortId,
@@ -317,10 +322,9 @@ function ManageTransportContainer() {
                 _transportObjId: obj._id,
                 transportationCharge: obj.transportationCharge,
                 _sourcePortId: obj._sourcePortId,
-        
               },
             ],
-          }
+          };
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);

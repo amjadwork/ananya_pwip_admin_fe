@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, X , Check} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, X, Check } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -16,47 +16,51 @@ import {
 } from "../../services/export-costing/Packaging";
 
 const columns = [
-    {
-      label: "Bag Type",
-      key: "bag",
-      sortable: true,
-    },
-    {
-      label: "Weight(in Kgs)",
-      key: "weight",
-    },
-    {
-      label: "Cost(in INR)",
-      key: "cost",
-    },
-    {
-      label: "Action",
-      key: "action",
-    },
-  ];
+  {
+    label: "Bag Type",
+    key: "bag",
+    width: "150px",
+    sortable: true,
+  },
+  {
+    label: "Weight(in Kgs)",
+    key: "weight",
+    width: "150px",
+  },
+  {
+    label: "Cost(in INR)",
+    key: "cost",
+    width: "100px",
+  },
+  {
+    label: "Action",
+    key: "action",
+    width: "40px",
+  },
+];
 
-  const initialBagTypes = [
-      {
-        type: "PP Woven",
-        list: [],
-      },
-      {
-        type: "Non Woven",
-        list: [],
-      },
-      {
-        type: "Jute",
-        list: [],
-      },
-      {
-        type: "PE",
-        list: [],
-      },
-      {
-        type: "BOPP",
-        list: [],
-      },
-    ];
+const initialBagTypes = [
+  {
+    type: "PP Woven",
+    list: [],
+  },
+  {
+    type: "Non Woven",
+    list: [],
+  },
+  {
+    type: "Jute",
+    list: [],
+  },
+  {
+    type: "PE",
+    list: [],
+  },
+  {
+    type: "BOPP",
+    list: [],
+  },
+];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -79,51 +83,50 @@ function ManagePackageContainer() {
   const [modalType, setModalType] = useState<string>("add");
   const [packagingData, setPackagingData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
-  const [selectedTableRowIndex, setSelectedTableRowIndex] =
-  useState<any>(null);
+  const [selectedTableRowIndex, setSelectedTableRowIndex] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get Packaging Data from database
   const handleGetPackaging = async () => {
-        const response = await APIRequest("packaging", "GET") ;
-        if (response) {
-          let initialList = [...initialBagTypes];
-          const modList = initialList.map((d: any) => {
-            const list = response.filter((p: any) => {
-              if (d.type.toLowerCase() === p.bag.toLowerCase()) {
-                return p;
-              }
-            });
+    const response = await APIRequest("packaging", "GET");
+    if (response) {
+      let initialList = [...initialBagTypes];
+      const modList = initialList.map((d: any) => {
+        const list = response.filter((p: any) => {
+          if (d.type.toLowerCase() === p.bag.toLowerCase()) {
+            return p;
+          }
+        });
 
-            return {
-              ...d,
-              list: list,
-            };
-          });
-          setPackagingData([...modList]);
-        }
-      };
-    
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-       let payload = { ...data };
-       payload.currency = "INR";
-       console.log("data here", payload)
+        return {
+          ...d,
+          list: list,
+        };
+      });
+      setPackagingData([...modList]);
+    }
+  };
 
-       if (payload && modalType === "add") {
-        const response = await postPackagingData(payload);
-  
-        if (response) {
-          handleRefreshCalls();
-          showNotification({
-            title: "Packaging Charges Added!",
-            message: "",
-            autoClose: 2000,
-            icon: <Check />,
-            color:'green',
-          });   
-        }
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
+    let payload = { ...data };
+    payload.currency = "INR";
+    console.log("data here", payload);
+
+    if (payload && modalType === "add") {
+      const response = await postPackagingData(payload);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Packaging Charges Added!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color: "green",
+        });
       }
+    }
 
     if (payload && modalType === "update") {
       const response = await putPackagingData(payload);
@@ -135,8 +138,8 @@ function ManagePackageContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
   };
@@ -148,17 +151,22 @@ function ManagePackageContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the Packaging Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the Packaging Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
-      labels: { confirm: "Delete Packaging Data", cancel: "No, don't delete it" },
+      labels: {
+        confirm: "Delete Packaging Data",
+        cancel: "No, don't delete it",
+      },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteData(rowData),
     });
-    
+
   const handleDeleteData = async (data: any) => {
     const response = await deletePackagingData(data);
 
@@ -169,9 +177,9 @@ function ManagePackageContainer() {
         message: "",
         autoClose: 2000,
         icon: <X />,
-        color:'red',
+        color: "red",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -183,20 +191,20 @@ function ManagePackageContainer() {
   }, []);
 
   useEffect(() => {
-        if (packagingData.length) {
-          let tableData: any = [];
-          [...packagingData].forEach((d: any) => {
-            d.list.forEach((l: any) => {
-              const obj = {
-                ...l,
-              };
-              tableData.push(obj);
-            });
-          });
-    
-          setTableRowData(tableData);
-        }
-      }, [packagingData]);
+    if (packagingData.length) {
+      let tableData: any = [];
+      [...packagingData].forEach((d: any) => {
+        d.list.forEach((l: any) => {
+          const obj = {
+            ...l,
+          };
+          tableData.push(obj);
+        });
+      });
+
+      setTableRowData(tableData);
+    }
+  }, [packagingData]);
 
   return (
     <PageWrapper
@@ -204,23 +212,24 @@ function ManagePackageContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add Packaging Charges" : "Update Packaging Charges"
+        modalType === "add"
+          ? "Add Packaging Charges"
+          : "Update Packaging Charges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              handleSaveAction={handleSaveAction}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            handleSaveAction={handleSaveAction}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -240,22 +249,22 @@ function ManagePackageContainer() {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-                    let obj = { ...row };
-                    setSelectedTableRowIndex(index);
-                    const formObj = {
-                      bag: obj.bag,
-                      weight: obj.weight,
-                      cost:obj.cost,
-                      _id: obj._id,
-                    };
-                    setUpdateFormData(formObj);
-                    setModalType("update");
-                    setModalOpen(true);
-                  }}
-                  handleRowDelete={(row: any) => {
-                    openDeleteModal(row);
-                  }}
-                />
+          let obj = { ...row };
+          setSelectedTableRowIndex(index);
+          const formObj = {
+            bag: obj.bag,
+            weight: obj.weight,
+            cost: obj.cost,
+            _id: obj._id,
+          };
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
+      />
     </PageWrapper>
   );
 }

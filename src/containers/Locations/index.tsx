@@ -20,16 +20,19 @@ const sourceColumns = [
   {
     label: "Source",
     key: "region",
+    width:"200px",
     sortable: true,
   },
   {
     label: "State",
     key: "state",
+    width:"200px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
+    width:"50px",
     sortable: false,
   },
 ];
@@ -37,27 +40,33 @@ const originColumns = [
   {
     label: "Port Code",
     key: "portCode",
+    width:"70px",
   },
   {
     label: "Port Name",
     key: "portName",
+    width:"100px",
     sortable: true,
   },
   {
     label: "CFS Station",
     key: "cfsStation",
+    width:"100px",
   },
   {
     label: "City",
     key: "city",
+    width:"100px",
   },
   {
     label: "State",
     key: "state",
+    width:"100px",
   },
   {
     label: "Action",
     key: "action",
+    width:"50px",
     sortable: false,
   },
 ];
@@ -65,23 +74,28 @@ const destinationColumns = [
   {
     label: "Port Code",
     key: "portCode",
+    width:"70px",
   },
   {
     label: "Destination Port",
     key: "portName",
+    width:"150px",
     sortable: true,
   },
   {
     label: "Country",
     key: "country",
+    width:"150px",
   },
   {
     label: "Available Origin Port",
     key: "originPortName",
+    width:"200px",
   },
   {
     label: "Action",
     key: "action",
+    width:"60px",
     sortable: false,
   },
 ];

@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, Check, Upload} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check, Upload } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -9,8 +9,8 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
-import { 
-  getDestinationDataByOrigin, 
+import {
+  getDestinationDataByOrigin,
   getDestinationData,
   getOriginData,
 } from "../../services/export-costing/Locations";
@@ -25,36 +25,38 @@ const columns = [
   {
     label: "Origin",
     key: "origin",
+    width: "200px",
   },
   {
     label: "Destination",
     key: "destination",
+    width: "200px",
   },
   {
     label: "OFC",
     key: "ofcCharge",
+    width: "100px",
   },
   {
     label: "Action",
     key: "action",
+    width: "50px",
   },
 ];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
-  const containerSelectOptions=props.containerSelectOptions;
-  const handleGetDestinationDataByOrigin = props.handleGetDestinationDataByOrigin;
+  const containerSelectOptions = props.containerSelectOptions;
+  const handleGetDestinationDataByOrigin =
+    props.handleGetDestinationDataByOrigin;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
-  const containerType=props.containerType
+  const containerType = props.containerType;
 
   if (modalType === "upload") {
-    return (
-      <SheetUpload 
-      containerType={containerType}/>
-    );
+    return <SheetUpload containerType={containerType} />;
   }
 
   return (
@@ -62,7 +64,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       containerSelectOptions={containerSelectOptions}
-      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin} 
+      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -75,14 +77,16 @@ function ManageOfcContainer() {
   const [modalType, setModalType] = useState<string>("add");
   const [ofcData, setOfcData] = useState<any>([]);
   const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>(
+    []
+  );
   const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
   const containerType: any = "ofc";
 
   //to get OFC Data from database
-  const handleGetOfc= async (list: any) => {
+  const handleGetOfc = async (list: any) => {
     const response: any = await getOfcData();
     try {
       if (response) {
@@ -97,7 +101,6 @@ function ManageOfcContainer() {
             }
           });
 
-         
           return {
             ...item,
             list: originIdStringArr.includes(item._originPortId)
@@ -106,7 +109,7 @@ function ManageOfcContainer() {
           };
         });
 
-      setOfcData(() => [...array]);
+        setOfcData(() => [...array]);
       }
     } catch (error) {
       console.log(error);
@@ -114,7 +117,7 @@ function ManageOfcContainer() {
   };
 
   //to get Origin Data from database
-  const handleGetOrigin= async () => {
+  const handleGetOrigin = async () => {
     const response = await getOriginData();
     if (response) {
       const originList = response.origin.map((d: any) => {
@@ -143,19 +146,17 @@ function ManageOfcContainer() {
     const response = await getDestinationData();
 
     if (response) {
-      const destinationOptions = response.destination.map(
-        (d: any) => {
-          return {
-            label: d.portName,
-            value: d._id,
-          };
-        }
-      );
+      const destinationOptions = response.destination.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
 
-  const handleGetDestinationDataByOrigin = async (originPortId:any) => {
+  const handleGetDestinationDataByOrigin = async (originPortId: any) => {
     try {
       const response = await getDestinationDataByOrigin(originPortId);
       return response.destination.map((d: any) => ({
@@ -168,26 +169,23 @@ function ManageOfcContainer() {
     }
   };
 
-   //to get Container Data from database
-   const handleGetContainer = async () => {
+  //to get Container Data from database
+  const handleGetContainer = async () => {
     const response = await getContainerData();
 
     if (response) {
-      const containerOptions = response.map(
-        (d: any) => {
-          return {
-            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
-            value: d._id,
-          };
-        }
-      );
+      const containerOptions = response.map((d: any) => {
+        return {
+          label: `${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+          value: d._id,
+        };
+      });
       setContainerSelectOptions(() => [...containerOptions]);
     }
   };
 
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
     if (data && modalType === "add") {
       const response = await postOfcData(data);
 
@@ -198,17 +196,16 @@ function ManageOfcContainer() {
           message: "",
           autoClose: 4000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
 
-     const payload = data.destinations.flatMap((destination:any) => ({
+    const payload = data.destinations.flatMap((destination: any) => ({
       _originPortId: data._originPortId,
       ...destination,
     }));
-    console.log("payload", payload)
-  
+    console.log("payload", payload);
 
     if (payload[0] && modalType === "update") {
       const response = await patchOfcData(payload[0]);
@@ -220,7 +217,7 @@ function ManageOfcContainer() {
           message: "",
           autoClose: 4000,
           icon: <Check />,
-          color:'green',
+          color: "green",
         });
       }
     }
@@ -233,10 +230,12 @@ function ManageOfcContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the OFC Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the OFC Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
       labels: { confirm: "Delete OFC Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
@@ -253,9 +252,9 @@ function ManageOfcContainer() {
         message: "",
         autoClose: 4000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -268,12 +267,12 @@ function ManageOfcContainer() {
 
   useEffect(() => {
     if (ofcData.length && destinationSelectOptions.length) {
-      const tableData = ofcData.flatMap((d:any) => {
-        return d.list.map((l:any) => {
+      const tableData = ofcData.flatMap((d: any) => {
+        return d.list.map((l: any) => {
           const destination = destinationSelectOptions.find(
-            (option:any) => option.value === l._destinationPortId
+            (option: any) => option.value === l._destinationPortId
           );
-  
+
           return {
             ...l,
             origin: d.name,
@@ -292,28 +291,30 @@ function ManageOfcContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add" ? "Add OFC Charges" :
-        modalType ==="upload"? "Update Or Add Data by Excel Sheet": "Update OFC Charges"
+        modalType === "add"
+          ? "Add OFC Charges"
+          : modalType === "upload"
+          ? "Update Or Add Data by Excel Sheet"
+          : "Update OFC Charges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              originSelectOptions={originSelectOptions}
-              handleSaveAction={handleSaveAction}
-              handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
-              containerSelectOptions={containerSelectOptions}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-              containerType={containerType}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            originSelectOptions={originSelectOptions}
+            handleSaveAction={handleSaveAction}
+            handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
+            containerSelectOptions={containerSelectOptions}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+            containerType={containerType}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -328,7 +329,7 @@ function ManageOfcContainer() {
             type: "button",
             onClickAction: () => {
               setModalType("upload");
-              setModalOpen(true);    
+              setModalOpen(true);
             },
           },
           {
@@ -343,19 +344,19 @@ function ManageOfcContainer() {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-          setModalType('update')
+          setModalType("update");
           let obj = { ...row };
           const formObj = {
             _originPortId: obj._originPortId,
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
-                _containerId:obj._containerId,
+                _containerId: obj._containerId,
                 ofcCharge: obj.ofcCharge,
                 _ofcObjectId: obj._id,
               },
             ],
-          }
+          };
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);

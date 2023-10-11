@@ -19,22 +19,26 @@ import {
 
 const columns = [
   {
-    label: "Role",
+    label: "Role Name",
     key: "role",
+    width: "100px",
     sortable: true,
   },
   {
     label: "Role ID",
     key: "_id",
+    width: "60px",
     sortable: true,
   },
   {
     label: "Permissions",
     key: "permissionName",
+    width: "200px",
   },
   {
     label: "Action",
     key: "action",
+    width: "40px",
   },
 ];
 

@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, Check} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -16,30 +16,34 @@ import {
 } from "../../services/export-costing/Others";
 
 const columns = [
-    {
-      label: "Type of Charge",
-      key: "typeOfCharge",
-      sortable: true,
-    },
-    {
-      label: "Type of Value",
-      key: "typeOfValue",
-    },
-    {
-      label: "Value",
-      key: "value",
-    },
-    {
-      label: "Action",
-      key: "action",
-    },
-  ];
+  {
+    label: "Type of Charge",
+    key: "typeOfCharge",
+    width: "200px",
+    sortable: true,
+  },
+  {
+    label: "Type of Value",
+    key: "typeOfValue",
+    width: "150px",
+  },
+  {
+    label: "Value",
+    key: "value",
+    width: "100px",
+  },
+  {
+    label: "Action",
+    key: "action",
+    width: "45px",
+  },
+];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
-  const variantSelectOptions=props.variantSelectOptions;
+  const variantSelectOptions = props.variantSelectOptions;
   const modalType = props.modalType;
 
   return (
@@ -63,48 +67,46 @@ function ManageOthers() {
 
   //to get Other Charges Data from database
   const handleGetOtherCharges = async () => {
-        const response = await getOtherChargesData();
-        if (response) {
-          setOtherChargesData([...response]);
-        }
-        handleGetVariant();
-      };
+    const response = await getOtherChargesData();
+    if (response) {
+      setOtherChargesData([...response]);
+    }
+    handleGetVariant();
+  };
 
-    //to get Container Data from database
+  //to get Container Data from database
   const handleGetVariant = async () => {
-     const response = await getVariantData();
+    const response = await getVariantData();
+    if (response) {
+      const variantOptions = response.map((d: any) => {
+        return {
+          label: d.variantName,
+          value: d._id,
+        };
+      });
+
+      setVariantSelectOptions(() => [...variantOptions]);
+    }
+  };
+
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
+    let payload = { ...data };
+
+    if (payload && modalType === "add") {
+      const response = await postOtherChargesData(payload);
+
       if (response) {
-        const variantOptions = response.map(
-          (d: any) => {
-            return {
-              label: d.variantName,
-              value: d._id,
-            };
-          }
-        );
-
-        setVariantSelectOptions(() => [...variantOptions]);
+        handleRefreshCalls();
+        showNotification({
+          title: "Charge added successfully!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color: "green",
+        });
       }
-    };
-
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-       let payload = { ...data };
-
-       if (payload && modalType === "add") {
-        const response = await postOtherChargesData(payload);
-  
-        if (response) {
-          handleRefreshCalls();
-          showNotification({
-            title: "Charge added successfully!",
-            message: "",
-            autoClose: 2000,
-            icon: <Check />,
-            color:'green',
-          });   
-        }
-      }
+    }
 
     if (payload && modalType === "update") {
       const response = await putOtherChargesData(payload);
@@ -115,8 +117,8 @@ function ManageOthers() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
   };
@@ -128,18 +130,23 @@ function ManageOthers() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the Charges Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the Charges Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
-      labels: { confirm: "Delete Other Charge Data", cancel: "No, don't delete it" },
+      labels: {
+        confirm: "Delete Other Charge Data",
+        cancel: "No, don't delete it",
+      },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteRow(rowData),
     });
-    
-  const handleDeleteRow= async (data: any) => {
+
+  const handleDeleteRow = async (data: any) => {
     const response = await deleteOtherChargesData(data);
 
     if (response) {
@@ -149,9 +156,9 @@ function ManageOthers() {
         message: "",
         autoClose: 2000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -169,7 +176,7 @@ function ManageOthers() {
         const obj = { ...d };
         tableData.push(obj);
       });
-  
+
       setTableRowData(tableData);
     }
   }, [otherChargesData]);
@@ -183,21 +190,20 @@ function ManageOthers() {
         modalType === "add" ? "Add Other Charges" : "Update Other Charges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              handleSaveAction={handleSaveAction}
-              variantSelectOptions={variantSelectOptions}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            handleSaveAction={handleSaveAction}
+            variantSelectOptions={variantSelectOptions}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -217,22 +223,22 @@ function ManageOthers() {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-                    let obj = { ...row };
-                    const formObj = {
-                      typeOfCharge: obj.typeOfCharge,
-                      typeOfValue: obj.typeOfValue,
-                      applicableFor: obj.applicableFor,
-                      value:obj.value,
-                      _id: obj._id,
-                    };
-                    setUpdateFormData(formObj);
-                    setModalType("update");
-                    setModalOpen(true);
-                  }}
-                  handleRowDelete={(row: any) => {
-                    openDeleteModal(row);
-                  }}
-                />
+          let obj = { ...row };
+          const formObj = {
+            typeOfCharge: obj.typeOfCharge,
+            typeOfValue: obj.typeOfValue,
+            applicableFor: obj.applicableFor,
+            value: obj.value,
+            _id: obj._id,
+          };
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
+      />
     </PageWrapper>
   );
 }

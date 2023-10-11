@@ -11,39 +11,44 @@ import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
 
-
-
 const columns = [
   {
     label: "Code",
     key: "HSNCode",
+    width: "70px",
   },
   {
     label: "Variant",
     key: "variantName",
+    width: "180px",
     sortable: true,
   },
   {
     label: "Category",
     key: "categoryName",
+    width: "120px",
     sortable: true,
   },
   {
     label: "Source",
     key: "sourceName",
+    width: "130px",
     sortable: true,
   },
   {
     label: "Price",
     key: "price",
+    width: "60px",
   },
   {
     label: "Unit",
     key: "unit",
+    width: "50px",
   },
   {
     label: "Action",
     key: "action",
+    width: "85px",
   },
 ];
 
@@ -60,18 +65,11 @@ const RenderModalContent = (props: any) => {
   let regionCostingList: any = [];
 
   if (modalType === "upload") {
-    return (
-      <SheetUpload 
-      containerType={containerType}/>
-    );
+    return <SheetUpload containerType={containerType} />;
   }
 
   if (modalType === "line-chart") {
-    return (
-      <LineChartModal
-      variantsData={variantsData} 
-      />
-    );
+    return <LineChartModal variantsData={variantsData} />;
   }
 
   if (variantsData) {
@@ -257,14 +255,14 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-          modalType === "add"
-            ? "Add Product Variant"
-            : modalType === "upload"
-            ? "Update Or Add Data by Excel Sheet"
-            : modalType === "line-chart"
-            ? "Line Chart for Pricing Trend"
-            : "Update Variant Price and Source Location"
-        }
+        modalType === "add"
+          ? "Add Product Variant"
+          : modalType === "upload"
+          ? "Update Or Add Data by Excel Sheet"
+          : modalType === "line-chart"
+          ? "Line Chart for Pricing Trend"
+          : "Update Variant Price and Source Location"
+      }
       onModalClose={() => {
         setModalOpen(false);
         setSelectedVariantData(null);
@@ -300,7 +298,7 @@ function ManageProductsContainer(props: any) {
             type: "button",
             onClickAction: () => {
               setModalType("upload");
-              setModalOpen(true);    
+              setModalOpen(true);
             },
           },
           {
@@ -314,16 +312,14 @@ function ManageProductsContainer(props: any) {
             },
           },
         ]}
-
         handleLineChart={(row: any) => {
           setModalType("line-chart");
-          setSelectedVariantData(row)
+          setSelectedVariantData(row);
           setModalOpen(true);
         }}
-
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
-          
+
           setSelectedTableRowIndex(index);
 
           const formObj = {
@@ -331,7 +327,7 @@ function ManageProductsContainer(props: any) {
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
-            tags:obj.tags,
+            tags: obj.tags,
             sourceRates: [{ ...obj }],
           };
 

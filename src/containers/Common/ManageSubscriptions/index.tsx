@@ -8,32 +8,39 @@ const columns = [
   {
     label: "User_ID",
     key: "user_id",
+    width:"100px",
   },
   {
     label: "Plan_ID",
     key: "planID",
+    width:"100px",
     sortable: true,
   },
   {
     label: "Payment_ID",
     key: "payment_id",
+    width:"150px",
     sortable: true,
   },
   {
     label: "Amount",
     key: "amount_paid",
+    width:"130px",
   },
   {
     label: "Payment Status",
     key: "payment_status",
+    width:"150px",
   },
   {
     label: "Payment Date",
     key: "amount_paid_date",
+    width:"130px",
   },
   {
     label: "Payment Method",
     key: "payment_platform",
+    width:"150px",
   },
 ];
 

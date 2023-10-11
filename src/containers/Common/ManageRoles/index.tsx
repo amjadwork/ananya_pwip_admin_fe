@@ -20,17 +20,19 @@ const columns = [
   {
     label: "ID",
     key: "_id",
+    width: "50px",
     sortable: false,
   },
   {
     label: "Role",
     key: "role",
+    width: "300px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
-    sortable: true,
+    width: "40px",
   },
 ];
 
