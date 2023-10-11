@@ -20,32 +20,39 @@ const columns = [
   {
     label: "ID",
     key: "id",
+    width:"80px",
     sortable: true,
   },
   {
     label: "Plans",
     key: "name",
+    width:"230px",
     sortable: true,
   },
   {
     label: "Applicable Services",
     key: "servicesNames",
+    width:"200px",
   },
   {
     label: "Price",
     key: "cost",
+    width:"130px",
   },
   {
     label: "Valid For",
     key: "validityFor",
+    width:"130px",
   },
   {
     label: "Refundable",
     key: "refund",
+    width:"130px",
   },
   {
     label: "Action",
     key: "action",
+    width:"90px",
   },
 ];
 

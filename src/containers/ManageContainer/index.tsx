@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, Check} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -15,28 +15,33 @@ import {
 } from "../../services/export-costing/Container";
 
 const columns = [
-    {
-      label: "Container Type",
-      key: "type",
-      sortable: true,
-    },
-    {
-      label: "Container Size",
-      key: "size",
-    },
-    {
-      label: "Weight(in Tons)",
-      key: "weight",
-    },
-    {
-      label: "Units",
-      key: "unit",
-    },
-    {
-      label: "Action",
-      key: "action",
-    },
-  ];
+  {
+    label: "Container Type",
+    key: "type",
+    width: "200px",
+    sortable: true,
+  },
+  {
+    label: "Container Size",
+    key: "size",
+    width: "150px",
+  },
+  {
+    label: "Weight(in Tons)",
+    key: "weight",
+    width: "150px",
+  },
+  {
+    label: "Units",
+    key: "unit",
+    width: "100px",
+  },
+  {
+    label: "Action",
+    key: "action",
+    width: "60px",
+  },
+];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
@@ -59,36 +64,35 @@ function ManageContainer() {
   const [modalType, setModalType] = useState<string>("add");
   const [containerData, setContainerData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
-  const [selectedTableRowIndex, setSelectedTableRowIndex] =
-  useState<any>(null);
+  const [selectedTableRowIndex, setSelectedTableRowIndex] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
   //to get Container Data from database
   const handleGetContainer = async () => {
-        const response = await getContainerData();
-        if (response) {
-          setContainerData([...response]);
-        }
-      };
+    const response = await getContainerData();
+    if (response) {
+      setContainerData([...response]);
+    }
+  };
 
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
-       let payload = { ...data };
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
+    let payload = { ...data };
 
-       if (payload && modalType === "add") {
-        const response = await postContainerData(payload);
-  
-        if (response) {
-          handleRefreshCalls();
-          showNotification({
-            title: "Container data added successfully!",
-            message: "",
-            autoClose: 2000,
-            icon: <Check />,
-            color:'green',
-          });   
-        }
+    if (payload && modalType === "add") {
+      const response = await postContainerData(payload);
+
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Container data added successfully!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color: "green",
+        });
       }
+    }
 
     if (payload && modalType === "update") {
       const response = await putContainerData(payload);
@@ -99,8 +103,8 @@ function ManageContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
   };
@@ -112,17 +116,22 @@ function ManageContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the Container Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the Container Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
-      labels: { confirm: "Delete Container Data", cancel: "No, don't delete it" },
+      labels: {
+        confirm: "Delete Container Data",
+        cancel: "No, don't delete it",
+      },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteData(rowData),
     });
-    
+
   const handleDeleteData = async (data: any) => {
     const response = await deleteContainerData(data);
 
@@ -133,9 +142,9 @@ function ManageContainer() {
         message: "",
         autoClose: 2000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -153,7 +162,7 @@ function ManageContainer() {
         const obj = { ...d };
         tableData.push(obj);
       });
-  
+
       setTableRowData(tableData);
     }
   }, [containerData]);
@@ -163,24 +172,21 @@ function ManageContainer() {
       PageHeader={() => null}
       PageAction={() => null}
       modalOpen={modalOpen}
-      modalTitle={
-        modalType === "add" ? "Add Container " : "Update Container"
-      }
+      modalTitle={modalType === "add" ? "Add Container " : "Update Container"}
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              handleSaveAction={handleSaveAction}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            handleSaveAction={handleSaveAction}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -200,23 +206,23 @@ function ManageContainer() {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-                    let obj = { ...row };
-                    setSelectedTableRowIndex(index);
-                    const formObj = {
-                      type: obj.type,
-                      size: obj.size,
-                      weight:obj.weight,
-                      unit:obj.unit,
-                      _id: obj._id,
-                    };
-                    setUpdateFormData(formObj);
-                    setModalType("update");
-                    setModalOpen(true);
-                  }}
-                  handleRowDelete={(row: any) => {
-                    openDeleteModal(row);
-                  }}
-                />
+          let obj = { ...row };
+          setSelectedTableRowIndex(index);
+          const formObj = {
+            type: obj.type,
+            size: obj.size,
+            weight: obj.weight,
+            unit: obj.unit,
+            _id: obj._id,
+          };
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        handleRowDelete={(row: any) => {
+          openDeleteModal(row);
+        }}
+      />
     </PageWrapper>
   );
 }

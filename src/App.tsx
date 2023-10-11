@@ -5,6 +5,7 @@ import "./App.css";
 
 import AdminScreen from "./screens/admin";
 import LoginScreen from "./screens/login";
+import AccessDeniedScreen from "./screens/access-denied";
 
 import ProtectedRoute from "./auth/protected-route";
 import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
@@ -22,6 +23,10 @@ function App() {
           <Route
             path={`${root}/*`}
             element={<ProtectedRoute element={() => <AdminScreen />} />}
+          />
+          <Route
+            path={`/*`}
+            element={<ProtectedRoute element={() => <AccessDeniedScreen />} />}
           />
         </Routes>
       </Auth0ProviderWithHistory>

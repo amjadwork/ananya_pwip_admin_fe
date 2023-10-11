@@ -18,33 +18,39 @@ import {
 
 const columns = [
   {
-    label: "User Id",
+    label: "Id",
     key: "_id",
+    width:"70px",
     sortable: false,
   },
   {
     label: "Name",
     key: "full_name",
+    width:"230px",
     sortable: true,
   },
   {
     label: "Email",
     key: "email",
+    width:"230px",
     sortable: true,
   },
   {
     label: "Phone",
     key: "phone",
+    width:"130px",
     sortable: true,
   },
   {
     label: "Role",
     key: "roleName",
+    width:"130px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
+    width:"80px",
   },
 ];
 

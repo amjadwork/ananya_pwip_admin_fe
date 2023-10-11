@@ -1,6 +1,6 @@
-import React, {useEffect,useState} from "react";
-import { Plus, Check, Upload} from "tabler-icons-react";
-import { Text} from "../../components/index";
+import React, { useEffect, useState } from "react";
+import { Plus, Check, Upload } from "tabler-icons-react";
+import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
@@ -9,8 +9,8 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
-import { 
-  getDestinationDataByOrigin, 
+import {
+  getDestinationDataByOrigin,
   getDestinationData,
   getOriginData,
 } from "../../services/export-costing/Locations";
@@ -25,62 +25,70 @@ const columns = [
   {
     label: "Origin",
     key: "origin",
+    width: "150px",
     sortable: true,
   },
   {
     label: "Destination",
     key: "destination",
+    width: "160px",
     sortable: true,
   },
   {
-    label: "SHL",
+    label: "SHL Charge",
     key: "shlCharge",
+    width: "80px",
   },
   {
-    label: "THC",
+    label: "THC Charge",
     key: "thc",
+    width: "80px",
   },
   {
-    label: "B/LFee",
+    label: "B/LFee Charge",
     key: "blFee",
+    width: "80px",
   },
   {
-    label: "Surrender",
+    label: "Surrender Charge",
     key: "surrender",
+    width: "95px",
   },
   {
-    label: "MUC",
+    label: "MUC Charge",
     key: "muc",
+    width: "80px",
   },
   {
-    label: "Convenience",
+    label: "Convenience Charge",
     key: "convenienceFee",
+    width: "120px",
   },
   {
-    label: "Seal",
+    label: "Seal Charge",
     key: "seal",
+    width: "80px",
   },
   {
     label: "Action",
     key: "action",
+    width: "85px",
   },
 ];
 
 const RenderModalContent = (props: any) => {
   const handleCloseModal = props.handleCloseModal;
   const originSelectOptions = props.originSelectOptions;
-  const containerSelectOptions=props.containerSelectOptions;
-  const handleGetDestinationDataByOrigin = props.handleGetDestinationDataByOrigin;
+  const containerSelectOptions = props.containerSelectOptions;
+  const handleGetDestinationDataByOrigin =
+    props.handleGetDestinationDataByOrigin;
   const updateFormData = props.updateFormData;
   const handleSaveAction = props.handleSaveAction;
   const modalType = props.modalType;
-  const containerType=props.containerType
+  const containerType = props.containerType;
 
-    if (modalType === "upload") {
-    return (
-      <SheetUpload 
-      containerType={containerType}/>
-    );
+  if (modalType === "upload") {
+    return <SheetUpload containerType={containerType} />;
   }
 
   return (
@@ -88,7 +96,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       originSelectOptions={originSelectOptions}
       containerSelectOptions={containerSelectOptions}
-      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin} 
+      handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
       handleSaveAction={handleSaveAction}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -102,13 +110,15 @@ function ManageShlContainer() {
   const [shlData, setShlData] = useState<any>([]);
   const [originSelectOptions, setOriginSelectOptions] = useState<any>([]);
   const [containerSelectOptions, setContainerSelectOptions] = useState<any>([]);
-  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>([]);
+  const [destinationSelectOptions, setDestinationSelectOptions] = useState<any>(
+    []
+  );
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
   const containerType: any = "shl";
 
   //to get SHL Data from database
-  const handleGetShl= async (list: any) => {
+  const handleGetShl = async (list: any) => {
     const response: any = await getShlData();
     try {
       if (response) {
@@ -139,7 +149,7 @@ function ManageShlContainer() {
   };
 
   //to get Origin Data from database
-  const handleGetOrigin= async () => {
+  const handleGetOrigin = async () => {
     const response = await getOriginData();
     if (response) {
       const originList = response.origin.map((d: any) => {
@@ -168,20 +178,18 @@ function ManageShlContainer() {
     const response = await getDestinationData();
 
     if (response) {
-      const destinationOptions = response.destination.map(
-        (d: any) => {
-          return {
-            label: d.portName,
-            value: d._id,
-          };
-        }
-      );
+      const destinationOptions = response.destination.map((d: any) => {
+        return {
+          label: d.portName,
+          value: d._id,
+        };
+      });
       setDestinationSelectOptions(() => [...destinationOptions]);
     }
   };
 
-//to get Destination by Origin ID from DB
-  const handleGetDestinationDataByOrigin = async (originPortId:any) => {
+  //to get Destination by Origin ID from DB
+  const handleGetDestinationDataByOrigin = async (originPortId: any) => {
     try {
       const response = await getDestinationDataByOrigin(originPortId);
       return response.destination.map((d: any) => ({
@@ -199,20 +207,18 @@ function ManageShlContainer() {
     const response = await getContainerData();
 
     if (response) {
-      const containerOptions = response.map(
-        (d: any) => {
-          return {
-            label:`${d.type} - ${d.size} - ${d.weight}${d.unit}`,
-            value: d._id,
-          };
-        }
-      );
+      const containerOptions = response.map((d: any) => {
+        return {
+          label: `${d.type} - ${d.size} - ${d.weight}${d.unit}`,
+          value: d._id,
+        };
+      });
       setContainerSelectOptions(() => [...containerOptions]);
     }
   };
 
- //to add new or edit the existing row in the table
-  const handleSaveAction = async (data:any) => {
+  //to add new or edit the existing row in the table
+  const handleSaveAction = async (data: any) => {
     if (data && modalType === "add") {
       const response = await postShlData(data);
 
@@ -223,8 +229,8 @@ function ManageShlContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
 
@@ -238,8 +244,8 @@ function ManageShlContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
-        });   
+          color: "green",
+        });
       }
     }
   };
@@ -251,17 +257,19 @@ function ManageShlContainer() {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the SHL Data? 
-          <Text fw={500}>Note:This action is destructive and you will have to contact support to restore
-          this data.</Text> 
+          Are you sure you want to delete the SHL Data?
+          <Text fw={500}>
+            Note:This action is destructive and you will have to contact support
+            to restore this data.
           </Text>
+        </Text>
       ),
       labels: { confirm: "Delete SHL Data", cancel: "No, don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
       onConfirm: () => handleDeleteRow(rowData),
     });
-  const handleDeleteRow= async (data: any) => {
+  const handleDeleteRow = async (data: any) => {
     const response = await deleteShlData(data);
 
     if (response) {
@@ -271,9 +279,9 @@ function ManageShlContainer() {
         message: "",
         autoClose: 2000,
         icon: <Check />,
-        color:'green',
+        color: "green",
       });
-    }  
+    }
   };
 
   const handleRefreshCalls = () => {
@@ -286,12 +294,12 @@ function ManageShlContainer() {
 
   useEffect(() => {
     if (shlData.length && destinationSelectOptions.length) {
-      const tableData = shlData.flatMap((d:any) => {
-        return d.list.map((l:any) => {
+      const tableData = shlData.flatMap((d: any) => {
+        return d.list.map((l: any) => {
           const destination = destinationSelectOptions.find(
-            (option:any) => option.value === l._destinationPortId
+            (option: any) => option.value === l._destinationPortId
           );
-  
+
           return {
             ...l,
             origin: d.name,
@@ -310,31 +318,30 @@ function ManageShlContainer() {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-           modalType === "add"
-            ? "Add SHL Charges"
-            : modalType === "upload"
-            ? "Update Or Add Data by Excel Sheet"
-            : "Update SHL Charges"
+        modalType === "add"
+          ? "Add SHL Charges"
+          : modalType === "upload"
+          ? "Update Or Add Data by Excel Sheet"
+          : "Update SHL Charges"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
-
       ModalContent={() => {
-          return (
-            <RenderModalContent
-              handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-              originSelectOptions={originSelectOptions}
-              handleSaveAction={handleSaveAction}
-              handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
-              containerSelectOptions={containerSelectOptions}
-              updateFormData={updateFormData}
-              modalType={modalType}
-              modalOpen={modalOpen}
-              containerType={containerType}
-            />
-          );
+        return (
+          <RenderModalContent
+            handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+            originSelectOptions={originSelectOptions}
+            handleSaveAction={handleSaveAction}
+            handleGetDestinationDataByOrigin={handleGetDestinationDataByOrigin}
+            containerSelectOptions={containerSelectOptions}
+            updateFormData={updateFormData}
+            modalType={modalType}
+            modalOpen={modalOpen}
+            containerType={containerType}
+          />
+        );
       }}
       modalSize="70%"
     >
@@ -349,7 +356,7 @@ function ManageShlContainer() {
             type: "button",
             onClickAction: () => {
               setModalType("upload");
-              setModalOpen(true);    
+              setModalOpen(true);
             },
           },
           {
@@ -372,7 +379,7 @@ function ManageShlContainer() {
             destinations: [
               {
                 _destinationPortId: obj._destinationPortId,
-                _containerId:obj._containerId,
+                _containerId: obj._containerId,
                 shlCharge: obj.shlCharge,
                 thc: obj.thc,
                 blFee: obj.blFee,
@@ -382,7 +389,7 @@ function ManageShlContainer() {
                 seal: obj.seal,
               },
             ],
-          }
+          };
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
@@ -396,4 +403,3 @@ function ManageShlContainer() {
 }
 
 export default ManageShlContainer;
-
