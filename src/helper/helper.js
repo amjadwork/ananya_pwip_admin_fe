@@ -35,7 +35,6 @@ export function generateQueryString(params) {
 
 export function getChangedPropertiesFromObject(original, updated) {
   const changedProperties = {};
-
   for (const key in updated) {
     if (original[key] !== updated[key]) {
       changedProperties[key] = updated[key];
@@ -43,4 +42,16 @@ export function getChangedPropertiesFromObject(original, updated) {
   }
 
   return changedProperties;
+}
+
+export function intersectObjects(refPayload, formValues) {
+  const result = {};
+
+  for (const key in refPayload) {
+    if (formValues.hasOwnProperty(key)) {
+      result[key] = formValues[key];
+    }
+  }
+
+  return result;
 }

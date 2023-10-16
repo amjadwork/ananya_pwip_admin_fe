@@ -8,67 +8,71 @@ import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditUsersForm from "../../../forms/Common/ManageUsers";
 import DataTable from "../../../components/DataTable/DataTable";
 import {
- getUsersData,
- deleteUsersData,
- patchUsersData,
+  getUsersData,
+  deleteUsersData,
+  patchUsersData,
+  getProfileData,
+  patchProfileData,
 } from "../../../services/user-management/Users";
-import {
-    getRolesData,
-   } from "../../../services/user-management/PermissionAndRoles";
+import { getRolesData } from "../../../services/user-management/PermissionAndRoles";
 
 const columns = [
   {
     label: "Id",
     key: "_id",
-    width:"70px",
+    width: "70px",
     sortable: false,
   },
   {
     label: "Name",
     key: "full_name",
-    width:"230px",
+    width: "230px",
     sortable: true,
   },
   {
     label: "Email",
     key: "email",
-    width:"230px",
+    width: "230px",
     sortable: true,
   },
   {
     label: "Phone",
     key: "phone",
-    width:"130px",
+    width: "130px",
     sortable: true,
   },
   {
     label: "Role",
     key: "roleName",
-    width:"130px",
+    width: "130px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
-    width:"80px",
+    width: "80px",
   },
 ];
 
 const RenderModalContent = (props: any) => {
   const usersData = props.usersData;
   const rolesData = props.rolesData;
+  const profileData = props.profileData;
   const handleCloseModal = props.handleCloseModal;
   const updateFormData = props.updateFormData;
-  const handleSaveAction = props.handleSaveAction;
+  const handleUserPatch = props.handleUserPatch;
+  const handleProfilePatch = props.handleProfilePatch;
   const variantSelectOptions = props.variantSelectOptions;
   const modalType = props.modalType;
 
   return (
     <EditUsersForm
       usersData={usersData}
+      profileData={profileData}
       rolesData={rolesData}
       handleCloseModal={handleCloseModal}
-      handleSaveAction={handleSaveAction}
+      handleUserPatch={handleUserPatch}
+      handleProfilePatch={handleProfilePatch}
       variantSelectOptions={variantSelectOptions}
       updateFormData={updateFormData}
       modalType={modalType}
@@ -81,6 +85,7 @@ function ManageUsers() {
   const [modalType, setModalType] = useState<string>("add");
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [usersData, setUsersData] = useState<any>([]);
+  const [profileData, setProfileData] = useState<any>([]);
   const [rolesData, setRolesData] = useState<any>([]);
   const [tableRowData, setTableRowData] = useState<any>([]);
 
@@ -92,6 +97,13 @@ function ManageUsers() {
     }
   };
 
+  const handleGetProfileData = async () => {
+    const response = await getProfileData();
+    if (response) {
+      setProfileData([...response]);
+    }
+  };
+
   const handleGetRolesData = async () => {
     const response = await getRolesData();
     if (response) {
@@ -99,7 +111,7 @@ function ManageUsers() {
     }
   };
 
-  const handleSaveAction = async (data: any) => {
+  const handleUserPatch = async (data: any) => {
     let payload = { ...data };
 
     if (payload && modalType === "update") {
@@ -108,6 +120,23 @@ function ManageUsers() {
         handleRefreshCalls();
         showNotification({
           title: "User updated successfully!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color: "green",
+        });
+      }
+    }
+  };
+  const handleProfilePatch = async (data: any) => {
+    let payload = { ...data };
+
+    if (payload && modalType === "update") {
+      const response = await patchProfileData(payload);
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Profile updated successfully!",
           message: "",
           autoClose: 2000,
           icon: <Check />,
@@ -155,29 +184,31 @@ function ManageUsers() {
   const handleRefreshCalls = () => {
     handleGetUsersData();
     handleGetRolesData();
+    handleGetProfileData();
   };
+
   useEffect(() => {
     handleGetUsersData();
     handleGetRolesData();
+    handleGetProfileData();
   }, []);
 
   useEffect(() => {
     if (usersData && usersData.length) {
-      const tableData = usersData.map((d:any) => {
+      const tableData = usersData.map((d: any) => {
         const obj = {
           ...d,
           activeStatus: d.active === 1 ? "Active" : "Inactive",
         };
-        const role = rolesData.find((role:any) => role._id === d.role_id);
+        const role = rolesData.find((role: any) => role._id === d.role_id);
         if (role) {
-          obj.roleName = role.role; 
+          obj.roleName = role.role;
         }
         return obj;
       });
       setTableRowData(tableData);
     }
   }, [usersData]);
-
 
   return (
     <PageWrapper
@@ -195,9 +226,11 @@ function ManageUsers() {
         return (
           <RenderModalContent
             usersData={usersData}
+            profileData={profileData}
             rolesData={rolesData}
             handleCloseModal={(bool: boolean) => setModalOpen(bool)}
-            handleSaveAction={handleSaveAction}
+            handleUserPatch={handleUserPatch}
+            handleProfilePatch={handleProfilePatch}
             updateFormData={updateFormData}
             modalType={modalType}
             modalOpen={modalOpen}
@@ -221,7 +254,7 @@ function ManageUsers() {
             full_name: obj.full_name,
             phone: obj.phone,
             role_id: obj.role_id,
-            roleName:obj.roleName,
+            roleName: obj.roleName,
           };
           setUpdateFormData(formObj);
           setModalType("update");
