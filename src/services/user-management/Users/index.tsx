@@ -7,19 +7,28 @@ export const getUsersData = async () => {
   }
 };
 export const patchUsersData = async (data: any) => {
-  console.log(data, "PATCH DATA")
-  const response = await APIRequest(
-    "user" + "/" + data._id,
-    "PATCH",
-    data
-  );
+  const response = await APIRequest("user" + "/" + data._id, "PATCH", data);
   if (response) {
     return response;
   }
 };
 export const deleteUsersData = async (data: any) => {
-    const response = await APIRequest("user" + "/" + data._id, "DELETE");
-    if (response) {
-      return response;
-    }
-  };
+  const response = await APIRequest("user" + "/" + data._id, "DELETE");
+  if (response) {
+    return response;
+  }
+};
+
+export const getProfileData = async () => {
+  const response = await APIRequest("/allprofile", "GET");
+  if (response) {
+    return response;
+  }
+};
+
+export const patchProfileData = async (data: any) => {
+  const response = await APIRequest("profile" + "/" + data._id, "PATCH", data);
+  if (response) {
+    return response;
+  }
+};
