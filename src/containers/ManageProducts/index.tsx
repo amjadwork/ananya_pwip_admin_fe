@@ -13,6 +13,12 @@ import { getChangedPropertiesFromObject } from "../../helper/helper";
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "45px",
+    fixed: true,
+  },
+  {
     label: "Code",
     key: "HSNCode",
     width: "70px",
@@ -26,13 +32,13 @@ const columns = [
   {
     label: "Category",
     key: "categoryName",
-    width: "120px",
+    width: "110px",
     sortable: true,
   },
   {
     label: "Source",
     key: "sourceName",
-    width: "130px",
+    width: "120px",
     sortable: true,
   },
   {
@@ -43,12 +49,13 @@ const columns = [
   {
     label: "Unit",
     key: "unit",
-    width: "50px",
+    width: "40px",
   },
   {
     label: "Action",
     key: "action",
-    width: "85px",
+    width: "90px",
+    fixed:true,
   },
 ];
 

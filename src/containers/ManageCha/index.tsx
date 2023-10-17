@@ -23,6 +23,12 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "70px",
+    fixed: true,
+  },
+  {
     label: "Origin",
     key: "originPort",
     width: "170px",
@@ -35,59 +41,60 @@ const columns = [
     sortable: true,
   },
   {
-    label: "CHA",
+    label: "CHA Charge",
     key: "chaCharge",
-    width: "80px",
+    width: "130px",
   },
   {
     label: "Silica Gel",
     key: "silicaGel",
-    width: "70px",
+    width: "110px",
   },
   {
     label: "Craft Paper",
     key: "craftPaper",
-    width: "70px",
+    width: "125px",
   },
   {
-    label: "Transport Charge",
+    label: "Transport",
     key: "transportCharge",
-    width: "90px",
+    width: "110px",
   },
   {
-    label: "Custom Charge",
+    label: "Custom",
     key: "customCharge",
-    width: "80px",
-  },
-  {
-    label: "Loading Charge",
-    key: "loadingCharge",
-    width: "80px",
-  },
-  {
-    label: "Service Charge",
-    key: "serviceCharge",
-    width: "80px",
-  },
-  {
-    label: "Fumigation Charge",
-    key: "fumigationCharge",
     width: "100px",
   },
   {
-    label: "PQC Charge",
-    key: "pqc",
-    width: "80px",
+    label: "Loading",
+    key: "loadingCharge",
+    width: "100px",
   },
   {
-    label: "COO Charge",
+    label: "Service",
+    key: "serviceCharge",
+    width: "100px",
+  },
+  {
+    label: "Fumigation",
+    key: "fumigationCharge",
+    width: "110px",
+  },
+  {
+    label: "PQC ",
+    key: "pqc",
+    width: "100px",
+  },
+  {
+    label: "COO ",
     key: "coo",
-    width: "80px",
+    width: "100px",
   },
   {
     label: "Action",
     key: "action",
     width: "100px",
+    fixed: true,
   },
 ];
 

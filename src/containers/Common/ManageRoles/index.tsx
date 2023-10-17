@@ -18,9 +18,15 @@ import {
 
 const columns = [
   {
-    label: "ID",
+    label: "No.",
+    key: "serialNo",
+    width: "25px",
+    fixed: true,
+  },
+  {
+    label: "Role_Id",
     key: "_id",
-    width: "50px",
+    width: "100px",
     sortable: false,
   },
   {
@@ -33,6 +39,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "40px",
+    fixed:true,
   },
 ];
 

@@ -6,6 +6,12 @@ import { getPlansData } from "../../../services/plans-management/Plans";
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "50px",
+    fixed: true,
+  },
+  {
     label: "User_ID",
     key: "user_id",
     width:"100px",
@@ -41,6 +47,7 @@ const columns = [
     label: "Payment Method",
     key: "payment_platform",
     width:"150px",
+    fixed:true,
   },
 ];
 

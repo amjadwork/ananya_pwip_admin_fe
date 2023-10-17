@@ -16,6 +16,12 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "35px",
+    fixed: true,
+  },
+  {
     label: "Container Type",
     key: "type",
     width: "200px",
@@ -40,6 +46,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "60px",
+    fixed:true,
   },
 ];
 

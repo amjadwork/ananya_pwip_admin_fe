@@ -17,6 +17,12 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "30px",
+    fixed: true,
+  },
+  {
     label: "Type of Charge",
     key: "typeOfCharge",
     width: "200px",
@@ -35,7 +41,8 @@ const columns = [
   {
     label: "Action",
     key: "action",
-    width: "45px",
+    width: "50px",
+    fixed:true,
   },
 ];
 
