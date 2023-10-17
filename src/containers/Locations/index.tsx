@@ -11,92 +11,112 @@ import {
   postLocationData,
   deleteLocationData,
   patchLocationData,
-  getDestinationData
+  getDestinationData,
 } from "../../services/export-costing/Locations";
 import DataTable from "../../components/DataTable/DataTable";
 
-
 const sourceColumns = [
+  {
+    label: "No.",
+    key: "serialNo",
+    width: "30px",
+    fixed: true,
+  },
   {
     label: "Source",
     key: "region",
-    width:"200px",
+    width: "200px",
     sortable: true,
   },
   {
     label: "State",
     key: "state",
-    width:"200px",
+    width: "200px",
     sortable: true,
   },
   {
     label: "Action",
     key: "action",
-    width:"50px",
+    width: "50px",
     sortable: false,
+    fixed: true,
   },
 ];
 const originColumns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "30px",
+    fixed: true,
+  },
+  {
     label: "Port Code",
     key: "portCode",
-    width:"70px",
+    width: "70px",
   },
   {
     label: "Port Name",
     key: "portName",
-    width:"100px",
+    width: "100px",
     sortable: true,
   },
   {
     label: "CFS Station",
     key: "cfsStation",
-    width:"100px",
+    width: "100px",
   },
   {
     label: "City",
     key: "city",
-    width:"100px",
+    width: "100px",
   },
   {
     label: "State",
     key: "state",
-    width:"100px",
+    width: "100px",
   },
   {
     label: "Action",
     key: "action",
-    width:"50px",
+    width: "50px",
     sortable: false,
+    fixed: true,
   },
 ];
 const destinationColumns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "35px",
+    fixed: true,
+  },
+  {
     label: "Port Code",
     key: "portCode",
-    width:"70px",
+    width: "70px",
   },
   {
     label: "Destination Port",
     key: "portName",
-    width:"150px",
+    width: "150px",
     sortable: true,
   },
   {
     label: "Country",
     key: "country",
-    width:"150px",
+    width: "150px",
   },
   {
     label: "Available Origin Port",
     key: "originPortName",
-    width:"200px",
+    width: "200px",
   },
   {
     label: "Action",
     key: "action",
-    width:"60px",
+    width: "60px",
     sortable: false,
+    fixed: true,
   },
 ];
 type Column = {
@@ -161,10 +181,10 @@ function LocationsContainer() {
     tableColumns = destinationColumns;
   }
 
-  //to get all Location Data from database  
+  //to get all Location Data from database
   const handleGetLocation = async () => {
-    const response= await getAllLocationData();
-    const responseDestination= await getDestinationData();
+    const response = await getAllLocationData();
+    const responseDestination = await getDestinationData();
     if (response) {
       setLocationData({
         source: response.source || [],
@@ -172,12 +192,11 @@ function LocationsContainer() {
         destination: responseDestination.destination || [],
       });
     }
- 
   };
 
-  const handleSetLocationPayload= async (form: any) => {
+  const handleSetLocationPayload = async (form: any) => {
     let data = { ...form };
-    let payload: any = {};    
+    let payload: any = {};
     data.destination = data.destination.map((p: any) => {
       const linkedOrigin = [...p.linkedOrigin];
       const newLinkedOrigin = locationData.origin
@@ -200,15 +219,15 @@ function LocationsContainer() {
     });
 
     if (data?.source?.length) {
-      payload= [...data.source]
+      payload = [...data.source];
     }
 
     if (data?.origin?.length) {
-      payload= [...data.origin];
+      payload = [...data.origin];
     }
 
     if (data?.destination?.length) {
-      payload= [...data.destination];
+      payload = [...data.destination];
     }
 
     handleSaveAction(payload); //API post request to database
@@ -216,33 +235,28 @@ function LocationsContainer() {
     const obj: any = {
       source: [...locationData.source, ...data.source],
       origin: [...locationData.origin, ...data.origin],
-      destination: [
-        ...locationData.destination,
-        ...data.destination,
-      ],
+      destination: [...locationData.destination, ...data.destination],
     };
-   
+
     setLocationData(obj);
-  }; 
- 
- //to add new location data row in the table
-  const handleSaveAction = async (data:any) => {
+  };
 
-    if (data[0] && modalType === "add"){
+  //to add new location data row in the table
+  const handleSaveAction = async (data: any) => {
+    if (data[0] && modalType === "add") {
+      const response = await postLocationData(data[0], selectedFilterValue);
 
-    const response = await postLocationData(data[0],selectedFilterValue);
-
-    if (response) {
-      handleRefreshCalls();
-      showNotification({
-        title: "Location added successfully!",
-        message: "",
-        autoClose: 2000,
-        icon: <Check />,
-        color:'green',
-      });
+      if (response) {
+        handleRefreshCalls();
+        showNotification({
+          title: "Location added successfully!",
+          message: "",
+          autoClose: 2000,
+          icon: <Check />,
+          color: "green",
+        });
+      }
     }
-  }
     if (data[0] && modalType === "update") {
       const response = await patchLocationData(data[0], selectedFilterValue);
 
@@ -253,7 +267,7 @@ function LocationsContainer() {
           message: "",
           autoClose: 2000,
           icon: <Check />,
-          color:'green',
+          color: "green",
         });
       }
     }
@@ -261,46 +275,44 @@ function LocationsContainer() {
 
   //to delete the location data of particular row in table
   const openDeleteModal = (rowData: any) =>
-  openConfirmModal({
-    title: "Delete Location",
-    centered: true,
-    children: (
-      <Text size="sm">
-        Are you sure you want to delete this location record? Note:This action
-        is destructive and you will have to contact support to restore your
-        data.
-      </Text>
-    ),
-    labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
-    confirmProps: { color: "red" },
-    onCancel: () => console.log("Cancel"),
-    onConfirm: () => handleDelete(rowData),
-  });
+    openConfirmModal({
+      title: "Delete Location",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this location record? Note:This action
+          is destructive and you will have to contact support to restore your
+          data.
+        </Text>
+      ),
+      labels: { confirm: "Delete Location", cancel: "No, don't delete it" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleDelete(rowData),
+    });
 
   const handleDelete = async (data: any) => {
-  const response = await deleteLocationData(data,selectedFilterValue);
+    const response = await deleteLocationData(data, selectedFilterValue);
 
-  if (response) {
-    handleRefreshCalls();
-    showNotification({
-      title: "Location deleted successfully!",
-      message: "",
-      autoClose: 2000,
-      icon: <Check />,
-      color:'green',
-    });
-  }  
-};
+    if (response) {
+      handleRefreshCalls();
+      showNotification({
+        title: "Location deleted successfully!",
+        message: "",
+        autoClose: 2000,
+        icon: <Check />,
+        color: "green",
+      });
+    }
+  };
 
-const handleRefreshCalls = () => {
-  handleGetLocation();
-
-};
+  const handleRefreshCalls = () => {
+    handleGetLocation();
+  };
 
   React.useEffect(() => {
     handleGetLocation();
-    console.log(tableRowData)
-    
+    console.log(tableRowData);
   }, [selectedFilterValue]);
 
   return (
@@ -312,7 +324,7 @@ const handleRefreshCalls = () => {
         modalType === "add" ? "Add a location" : "Update selected location"
       }
       onModalClose={() => {
-        setModalOpen(false)
+        setModalOpen(false);
         setUpdateFormData(null);
       }}
       ModalContent={() => (
@@ -345,36 +357,36 @@ const handleRefreshCalls = () => {
           },
         ]}
         handleRowEdit={(row: any, index: number) => {
-          setModalType('update')
+          setModalType("update");
           let obj = { ...row };
           let formObj = {};
 
-         if(selectedFilterValue==='source'){
-          formObj = {
-            _id: obj._id,
-            region: obj.region,
-            state: obj.state,
+          if (selectedFilterValue === "source") {
+            formObj = {
+              _id: obj._id,
+              region: obj.region,
+              state: obj.state,
+            };
           }
-         }
-         if(selectedFilterValue==='origin'){
-          formObj = {
-            _id: obj._id,
-            cfsStation: obj.cfsStation,
-            city: obj.city,
-            portName: obj.portName,
-            state: obj.state,
-            portCode: obj.portCode,          
+          if (selectedFilterValue === "origin") {
+            formObj = {
+              _id: obj._id,
+              cfsStation: obj.cfsStation,
+              city: obj.city,
+              portName: obj.portName,
+              state: obj.state,
+              portCode: obj.portCode,
+            };
           }
-         }
-         if(selectedFilterValue==='destination'){
-          formObj = {
-            portName: obj.portName,
-            portCode: obj.portCode,  
-            country:obj.country,
-            _id: obj._id,   
-            linkedOrigin: obj.linkedOrigin
+          if (selectedFilterValue === "destination") {
+            formObj = {
+              portName: obj.portName,
+              portCode: obj.portCode,
+              country: obj.country,
+              _id: obj._id,
+              linkedOrigin: obj.linkedOrigin,
+            };
           }
-         }
 
           setUpdateFormData(formObj);
           setModalOpen(true);

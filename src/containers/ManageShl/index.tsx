@@ -23,6 +23,12 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "70px",
+    fixed: true,
+  },
+  {
     label: "Origin",
     key: "origin",
     width: "150px",
@@ -37,42 +43,43 @@ const columns = [
   {
     label: "SHL Charge",
     key: "shlCharge",
-    width: "80px",
+    width: "125px",
   },
   {
-    label: "THC Charge",
+    label: "THC",
     key: "thc",
-    width: "80px",
+    width: "100px",
   },
   {
-    label: "B/LFee Charge",
+    label: "B/LFee",
     key: "blFee",
-    width: "80px",
+    width: "110px",
   },
   {
-    label: "Surrender Charge",
+    label: "Surrender",
     key: "surrender",
-    width: "95px",
+    width: "110px",
   },
   {
-    label: "MUC Charge",
+    label: "MUC",
     key: "muc",
-    width: "80px",
+    width: "100px",
   },
   {
-    label: "Convenience Charge",
+    label: "Convenience",
     key: "convenienceFee",
-    width: "120px",
+    width: "125px",
   },
   {
-    label: "Seal Charge",
+    label: "Seal",
     key: "seal",
-    width: "80px",
+    width: "100px",
   },
   {
     label: "Action",
     key: "action",
-    width: "85px",
+    width: "100px",
+    fixed:true,
   },
 ];
 

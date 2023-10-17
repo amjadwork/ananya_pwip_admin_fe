@@ -18,9 +18,15 @@ import { getRolesData } from "../../../services/user-management/PermissionAndRol
 
 const columns = [
   {
-    label: "Id",
-    key: "_id",
+    label: "No.",
+    key: "serialNo",
     width: "70px",
+    fixed: true,
+  },
+  {
+    label: "User_Id",
+    key: "_id",
+    width: "90px",
     sortable: false,
   },
   {
@@ -51,6 +57,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "80px",
+    fixed:true,
   },
 ];
 

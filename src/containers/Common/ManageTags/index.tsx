@@ -17,6 +17,12 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "30px",
+    fixed: true,
+  },
+  {
     label: "Tag Name",
     key: "tagName",
     width: "400px",
@@ -26,6 +32,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "50px",
+    fixed:true,
   },
 ];
 

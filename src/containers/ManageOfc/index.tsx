@@ -23,24 +23,31 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "40px",
+    fixed: true,
+  },
+  {
     label: "Origin",
     key: "origin",
-    width: "200px",
+    width: "180px",
   },
   {
     label: "Destination",
     key: "destination",
-    width: "200px",
+    width: "180px",
   },
   {
-    label: "OFC",
+    label: "OFC Charge",
     key: "ofcCharge",
     width: "100px",
   },
   {
     label: "Action",
     key: "action",
-    width: "50px",
+    width: "60px",
+    fixed:true,
   },
 ];
 

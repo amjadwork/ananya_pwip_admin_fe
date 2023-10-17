@@ -20,24 +20,31 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "35px",
+    fixed: true,
+  },
+  {
     label: "Origin",
     key: "origin",
-    width: "150px",
+    width: "130px",
   },
   {
     label: "Source",
     key: "source",
-    width: "150px",
+    width: "130px",
   },
   {
-    label: "Transportation Charges",
+    label: "Transportation Charge",
     key: "transportationCharge",
-    width: "100px",
+    width: "150px",
   },
   {
     label: "Action",
     key: "action",
-    width: "40px",
+    width: "50px",
+    fixed: true,
   },
 ];
 

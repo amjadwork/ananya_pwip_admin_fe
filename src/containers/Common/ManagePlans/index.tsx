@@ -18,41 +18,48 @@ import {
 
 const columns = [
   {
-    label: "ID",
+    label: "No.",
+    key: "serialNo",
+    width: "50px",
+    fixed: true,
+  },
+  {
+    label: "Plan_ID",
     key: "id",
-    width:"80px",
+    width:"90px",
     sortable: true,
   },
   {
     label: "Plans",
     key: "name",
-    width:"230px",
+    width:"300px",
     sortable: true,
   },
   {
     label: "Applicable Services",
     key: "servicesNames",
-    width:"200px",
+    width:"250px",
   },
   {
     label: "Price",
     key: "cost",
-    width:"130px",
+    width:"150px",
   },
   {
     label: "Valid For",
     key: "validityFor",
-    width:"130px",
+    width:"150px",
   },
   {
     label: "Refundable",
     key: "refund",
-    width:"130px",
+    width:"150px",
   },
   {
     label: "Action",
     key: "action",
     width:"90px",
+    fixed:true,
   },
 ];
 

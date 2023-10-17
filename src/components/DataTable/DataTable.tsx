@@ -32,7 +32,6 @@ import {
   InfoCircle,
 } from "tabler-icons-react";
 import { AlertCircle } from "tabler-icons-react";
-import { max } from "moment";
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -101,13 +100,34 @@ interface ThProps {
   onSort(): void;
   sortable: boolean;
   width: string;
+  fixed: boolean;
 }
 
-function Th({ children, reversed, sorted, onSort, sortable, width }: ThProps) {
+function Th({
+  children,
+  reversed,
+  sorted,
+  onSort,
+  sortable,
+  width,
+  fixed,
+}: ThProps) {
   const { classes } = useStyles();
   const Icon = sorted ? (reversed ? ChevronUp : ChevronDown) : Selector;
+  // const isActionColumn = children.toLowerCase() === "action";
   return (
-    <th className={classes.th} style={{ width }}>
+    <th
+      className={classes.th}
+      style={{
+        width,
+        textAlign: "center",
+        position: fixed ? "sticky" : "relative",
+        right: fixed ? 0 : "auto",
+        left: fixed ? 0 : "auto",
+        backgroundColor: "#E6E6E6",
+        zIndex: fixed ? 2 : 0,
+      }}
+    >
       <UnstyledButton onClick={onSort} className={classes.control}>
         <Flex
           display="inline-flex"
@@ -163,6 +183,7 @@ export function DataTable({
   const [activePage, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(7);
   const [radioValue, setRadioValue] = useState<any>(null);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
 
   useEffect(() => {
     if (selectedFilterValue) {
@@ -179,6 +200,14 @@ export function DataTable({
     setReverseSortDirection(reversed);
     setSortBy(field);
     setSortedData(sortData(data, { sortBy: field, reversed }));
+  };
+
+  const toggleRow = (index: number) => {
+    if (expandedRows.includes(index)) {
+      setExpandedRows(expandedRows.filter((rowIndex) => rowIndex !== index));
+    } else {
+      setExpandedRows([...expandedRows, index]);
+    }
   };
 
   const handleSearchChange = useCallback(
@@ -296,6 +325,7 @@ export function DataTable({
                     onSort={() => setSorting(col.key)}
                     sortable={col.sortable || false}
                     width={col.width}
+                    fixed={col.fixed || false}
                   >
                     {col.label}
                   </Th>
@@ -313,9 +343,34 @@ export function DataTable({
                   return (
                     <tr key={row._id + index * 19}>
                       {columnKeys.map((key: any, colIndex: number) => {
+                        if (key === "serialNo") {
+                          const serialNumber =
+                            (activePage - 1) * pageSize + index + 1;
+                          return (
+                            <td
+                              key={row._id + "_serialNo"}
+                              style={{
+                                position: "sticky",
+                                left: 0,
+                                backgroundColor: "#f8f9fa",
+                                zIndex: 1,
+                              }}
+                            >
+                              <div>{serialNumber}</div>
+                            </td>
+                          );
+                        }
                         if (key === "action") {
                           return (
-                            <td key={row[key] + colIndex * 137}>
+                            <td
+                              key={row[key] + colIndex * 137}
+                              style={{
+                                position: "sticky",
+                                right: 0,
+                                backgroundColor: "#f8f9fa",
+                                zIndex: 1,
+                              }}
+                            >
                               <Flex justify="flex-end" gap="sm" align="center">
                                 {showChartLineAction && (
                                   <ActionIcon
@@ -367,40 +422,134 @@ export function DataTable({
                             </td>
                           );
                         }
+
                         if (key === "servicesNames") {
+                          const servicesArray = row.servicesNames;
+                          const isEmpty = servicesArray.length === 0;
+
                           return (
-                            <td key={key + index}>
-                              {row.servicesNames.map(
-                                (service: any, serviceIndex: any) => (
-                                  <div key={serviceIndex}>
-                                    {serviceIndex + 1}. {service}
-                                  </div>
-                                )
-                              )}
+                            <td
+                              style={{
+                                marginTop: "12px",
+                                paddingLeft: "1rem",
+                              }}
+                            >
+                              <Button
+                                onClick={() => toggleRow(index)}
+                                size="sm"
+                                color={isEmpty ? "gray" : "teal"}
+                                variant="filled"
+                                fullWidth
+                                style={{
+                                  height: "2rem",
+                                }}
+                              >
+                                {isEmpty ? "No Services" : "Show Services"}
+                              </Button>
+                              <div
+                                style={{
+                                  display: expandedRows.includes(index)
+                                    ? "block"
+                                    : "none",
+                                }}
+                              >
+                                <tr key={key + index}>
+                                  {row.servicesNames.map(
+                                    (service: any, serviceIndex: any) => (
+                                      <div key={serviceIndex}>
+                                        {serviceIndex + 1}. {service}
+                                      </div>
+                                    )
+                                  )}
+                                </tr>
+                              </div>
                             </td>
                           );
                         }
                         if (key === "tagsName") {
+                          const tagsArray = row.tagsName;
+                          const isEmpty = tagsArray.length === 0;
                           return (
-                            <td key={key + index}>
-                              {row.tagsName.map((tag: any, tagIndex: any) => (
-                                <div key={tagIndex}>
-                                  {tagIndex + 1}. {tag}
-                                </div>
-                              ))}
+                            <td
+                              style={{
+                                marginTop: "12px",
+                                paddingLeft: "1rem",
+                              }}
+                            >
+                              <Button
+                                onClick={() => toggleRow(index)}
+                                size="sm"
+                                color={isEmpty ? "gray" : "teal"}
+                                variant="filled"
+                                fullWidth
+                                style={{
+                                  height: "2rem",
+                                }}
+                              >
+                                {isEmpty ? "No Tags" : "Show Tags"}
+                              </Button>
+                              <div
+                                style={{
+                                  display: expandedRows.includes(index)
+                                    ? "block"
+                                    : "none",
+                                }}
+                              >
+                                <tr key={key + index}>
+                                  {row.tagsName.map(
+                                    (tag: any, tagIndex: any) => (
+                                      <div key={tagIndex}>
+                                        {tagIndex + 1}. {tag}
+                                      </div>
+                                    )
+                                  )}
+                                </tr>
+                              </div>
                             </td>
                           );
                         }
                         if (key === "permissionName") {
+                          const permissionsArray = row.permissionName;
+                          const isEmpty = permissionsArray.length === 0;
+                          console.log(isEmpty, "here");
                           return (
-                            <td key={key + index}>
-                              {row.permissionName.map(
-                                (list: any, p_Index: any) => (
-                                  <div key={p_Index}>
-                                    {p_Index + 1}. {list}
-                                  </div>
-                                )
-                              )}
+                            <td
+                              style={{
+                                marginTop: "12px",
+                                paddingLeft: "1rem",
+                              }}
+                            >
+                              <Button
+                                onClick={() => toggleRow(index)}
+                                size="sm"
+                                color={isEmpty ? "gray" : "teal"}
+                                variant="filled"
+                                fullWidth
+                                style={{
+                                  height: "2rem",
+                                }}
+                              >
+                                {isEmpty
+                                  ? "No Permissions"
+                                  : "Show Permissions"}
+                              </Button>
+                              <div
+                                style={{
+                                  display: expandedRows.includes(index)
+                                    ? "block"
+                                    : "none",
+                                }}
+                              >
+                                <tr key={key + index}>
+                                  {row.permissionName.map(
+                                    (list: any, p_Index: any) => (
+                                      <div key={p_Index}>
+                                        {p_Index + 1}. {list}
+                                      </div>
+                                    )
+                                  )}
+                                </tr>
+                              </div>
                             </td>
                           );
                         }
@@ -480,84 +629,118 @@ export function DataTable({
                           );
                         }
                         if (key === "originPortName") {
+                          const allChargesFound = row["linkedOrigin"]?.every(
+                            (originPort: any) =>
+                              originPort.isChaFound &&
+                              originPort.isShlFound &&
+                              originPort.isOfcFound
+                          );
                           return (
-                            <table
+                            <td
                               style={{
-                                marginRight: 10,
-                                marginLeft: 10,
-                                zIndex: 1,
+                                alignItems: "center",
+                                marginTop: "10px",
+                                paddingLeft: "3rem",
                               }}
                             >
-                              {row["linkedOrigin"]?.map((originPort: any) => (
-                                <tr style={{ fontSize: 10, minWidth: "30px" }}>
-                                  <td style={{ margin: 0, padding: 0 }}>
-                                    <Tooltip.Floating
-                                      label={
-                                        originPort.isChaFound &&
-                                        originPort.isShlFound &&
-                                        originPort.isOfcFound
-                                          ? "All Charges Found."
-                                          : !originPort.isChaFound &&
-                                            !originPort.isShlFound &&
-                                            !originPort.isOfcFound
-                                          ? "All charges are Missing [CHA,SHL,OFC]"
-                                          : ` ${
-                                              originPort.isChaFound
-                                                ? ""
-                                                : "CHA : Not found"
-                                            } \n${
-                                              originPort.isShlFound
-                                                ? ""
-                                                : " SHL : Not found"
-                                            } \n  ${
-                                              originPort.isOfcFound
-                                                ? ""
-                                                : "OFC : Not found"
-                                            }`
-                                      }
-                                    >
-                                      <span
-                                        style={{
-                                          cursor: "pointer",
-                                          minWidth: "200px",
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        {originPort?.originPortName}
-                                        {originPort.isChaFound &&
-                                        originPort.isShlFound &&
-                                        originPort.isOfcFound ? (
-                                          <CircleCheck
-                                            size={22}
-                                            strokeWidth={2}
-                                            color="#4abf40"
-                                            style={{ marginLeft: 5 }}
-                                          />
-                                        ) : !originPort.isChaFound &&
-                                          !originPort.isShlFound &&
-                                          !originPort.isOfcFound ? (
-                                          <CircleX
-                                            size={22}
-                                            strokeWidth={2}
-                                            color="red"
-                                            style={{ marginLeft: 5 }}
-                                          />
-                                        ) : (
-                                          <AlertCircle
-                                            size={22}
-                                            strokeWidth={2}
-                                            color="#FFB81C"
-                                            style={{ marginLeft: 5 }}
-                                          />
-                                        )}
-                                      </span>
-                                    </Tooltip.Floating>
-                                  </td>
-                                </tr>
-                              ))}
-                            </table>
+                              <Button
+                                onClick={() => toggleRow(index)}
+                                size="sm"
+                                color={allChargesFound ? "teal" : "yellow"}
+                                variant="filled"
+                                style={{
+                                  height: "2rem",
+                                  width: "15rem",
+                                }}
+                              >
+                                Show Origin Ports
+                              </Button>
+                              <div
+                                style={{
+                                  display: expandedRows.includes(index)
+                                    ? "block"
+                                    : "none",
+                                }}
+                              >
+                                <table
+                                  style={{
+                                    marginRight: 10,
+                                    marginLeft: 10,
+                                    zIndex: 1,
+                                  }}
+                                >
+                                  {row["linkedOrigin"]?.map(
+                                    (originPort: any, index: any) => (
+                                      <tr style={{ margin: 0, padding: 0 }}>
+                                        <Tooltip.Floating
+                                          label={
+                                            originPort.isChaFound &&
+                                            originPort.isShlFound &&
+                                            originPort.isOfcFound
+                                              ? "All Charges Found."
+                                              : !originPort.isChaFound &&
+                                                !originPort.isShlFound &&
+                                                !originPort.isOfcFound
+                                              ? "All charges are Missing [CHA,SHL,OFC]"
+                                              : ` ${
+                                                  originPort.isChaFound
+                                                    ? ""
+                                                    : "CHA : Not found"
+                                                } \n${
+                                                  originPort.isShlFound
+                                                    ? ""
+                                                    : " SHL : Not found"
+                                                } \n  ${
+                                                  originPort.isOfcFound
+                                                    ? ""
+                                                    : "OFC : Not found"
+                                                }`
+                                          }
+                                        >
+                                          <span
+                                            style={{
+                                              cursor: "pointer",
+                                              minWidth: "200px",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "space-between",
+                                            }}
+                                          >
+                                            {originPort?.originPortName}
+                                            {originPort.isChaFound &&
+                                            originPort.isShlFound &&
+                                            originPort.isOfcFound ? (
+                                              <CircleCheck
+                                                size={22}
+                                                strokeWidth={2}
+                                                color="#4abf40"
+                                                style={{ marginLeft: 5 }}
+                                              />
+                                            ) : !originPort.isChaFound &&
+                                              !originPort.isShlFound &&
+                                              !originPort.isOfcFound ? (
+                                              <CircleX
+                                                size={22}
+                                                strokeWidth={2}
+                                                color="red"
+                                                style={{ marginLeft: 5 }}
+                                              />
+                                            ) : (
+                                              <AlertCircle
+                                                size={22}
+                                                strokeWidth={2}
+                                                color="#FFB81C"
+                                                style={{ marginLeft: 5 }}
+                                              />
+                                            )}
+                                          </span>
+                                        </Tooltip.Floating>
+                                      </tr>
+                                    )
+                                  )}
+                                </table>
+                              </div>
+                            </td>
                           );
                         }
 

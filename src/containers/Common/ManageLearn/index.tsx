@@ -18,46 +18,53 @@ import {
 
 const columns = [
   {
+    label: "No.",
+    key: "serialNo",
+    width: "50px",
+    fixed: true,
+  },
+  {
     label: "Title",
     key: "title",
-    width: "130px",
+    width: "200px",
   },
   {
-    label: "Link",
+    label: "Video URL",
     key: "url",
-    width: "170px",
+    width: "250px",
     sortable: false,
   },
   {
-    label: "About",
+    label: "Description",
     key: "about",
-    width: "160px",
+    width: "300px",
     sortable: false,
   },
   {
-    label: "Tags",
+    label: "Applicable Tags",
     key: "tagsName",
-    width: "160px",
+    width: "250px",
     sortable: false,
   },
   {
     label: "Author",
     key: "author",
-    width: "130px",
+    width: "200px",
   },
   {
     label: "Duration",
     key: "duration",
     sortable: false,
-    width: "100px",
+    width: "150px",
     render: (rowData: any) => formatDuration(rowData.duration),
   },
 
   {
     label: "Action",
     key: "action",
-    width: "125px",
+    width: "140px",
     sortable: false,
+    fixed: true,
   },
 ];
 
