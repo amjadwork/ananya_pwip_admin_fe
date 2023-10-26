@@ -26,14 +26,18 @@ interface Props {
 const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
   const { classes } = useStyles();
   const theme = useMantineTheme();
-  const Router = useNavigate();
+  const navigate = useNavigate();
   const { logout } = useAuth0();
+
+  console.log("Router", window.location.pathname);
 
   return (
     <header className={classes.headerContainer}>
       <div
         className={classes.logoContainer}
-        // onClick={() => window?.open("")}
+        onClick={() => {
+          window.location.href = "/admin/dashboard";
+        }}
       >
         <img
           width={36}
@@ -54,6 +58,38 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
               </Anchor>
             </div>
           ))}
+
+          {window.location.pathname === "/old-admin" ? (
+            <div
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                // window.location.href = "/admin/dashboard";
+                navigate("/admin/dashboard");
+              }}
+              className={classes.menuItemWrapper}
+            >
+              <Text size="sm" color="dark">
+                Back to new panel
+              </Text>
+            </div>
+          ) : (
+            <div
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                // window.location.href = "/old-admin";
+                navigate("/old-admin");
+              }}
+              className={classes.menuItemWrapper}
+            >
+              <Text size="sm" color="dark">
+                Old admin
+              </Text>
+            </div>
+          )}
 
           <div className={classes.menuItemWrapper}>
             <ActionIcon
