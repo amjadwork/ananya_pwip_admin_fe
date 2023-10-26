@@ -135,6 +135,7 @@ function AddOrEditProductForm(props: any) {
           required
           label="Ex-Mill"
           placeholder="Eg. 26500"
+          precision={2}
           {...form.getInputProps(`sourceRates.${index}.price`)}
         />
 
