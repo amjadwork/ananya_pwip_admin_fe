@@ -45,6 +45,7 @@ const requiredProfilePayload = {
 };
 
 const requiredUserPayload = {
+  role_id: "",
   first_name: "",
   last_name: "",
   middle_name: "",
@@ -54,7 +55,7 @@ const requiredUserPayload = {
 };
 
 const initialFormValues = {
-  roll_id: "",
+  role_id: "",
   first_name: "",
   middle_name: "",
   last_name: "",
@@ -98,11 +99,19 @@ function EditUsersForm(props: any) {
         return string.length === 10 ? null : "Phone number must be 10 digits";
       },
       gstin: (value) => {
-        return value.length === 12 ? null : "GST Number must be 12 characters";
+        return value.length !== 0 && value.length === 15
+          ? null
+          : value.length === 0
+          ? null
+          : "GST Number must be 15 characters";
       },
       zip_code: (value) => {
         const string = value.toString();
-        return string.length === 6 ? null : "zip code must be 6 digits";
+        return string.length > 1 && string.length === 6
+          ? null
+          : string.length === 0 || string.length === 1
+          ? null
+          : "zip code must be 6 digits";
       },
     },
   });
@@ -136,6 +145,7 @@ function EditUsersForm(props: any) {
             zip_code: matchingProfile.zip_code,
             gstin: matchingProfile.gstin,
             headline: matchingProfile.headline,
+            profession: matchingProfile.profession,
             companyName: matchingProfile.companyName,
             bio: matchingProfile.bio,
             website: matchingProfile.website,
