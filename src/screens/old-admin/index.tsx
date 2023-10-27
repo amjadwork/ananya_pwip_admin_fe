@@ -15,7 +15,7 @@ function OldAdminPanelScreen() {
         />
       </HeaderWrapper>
       <iframe
-        src="http://admin-old.pwip.co/login"
+        src="https://admin-old.pwip.co/login"
         frameBorder="0"
         allowFullScreen
         style={{
