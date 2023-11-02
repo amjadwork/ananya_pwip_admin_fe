@@ -565,10 +565,11 @@ export function DataTable({
                             </td>
                           );
                         }
-                        if (key === "planID") {
+                        if (key === "planID" && row.plan) {
                           return (
                             <td key="planID">
                               <Flex>
+                                <span>{row.plan.id}</span>
                                 <Tooltip
                                   width={200}
                                   withArrow={true}
@@ -585,7 +586,6 @@ export function DataTable({
                                   label={
                                     <div>
                                       <div>
-                                        {" "}
                                         <strong>Plan:</strong> {row.plan.name}
                                       </div>
                                       <div>
@@ -623,7 +623,6 @@ export function DataTable({
                                     />
                                   </span>
                                 </Tooltip>
-                                <span>{row.plan.id}</span>
                               </Flex>
                             </td>
                           );
