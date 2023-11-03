@@ -17,6 +17,7 @@ import {
   Select,
   Radio,
   Tooltip,
+  Image,
 } from "@mantine/core";
 import {
   Pencil,
@@ -30,8 +31,10 @@ import {
   CircleX,
   PlayerPlay,
   InfoCircle,
+  Loader,
 } from "tabler-icons-react";
 import { AlertCircle } from "tabler-icons-react";
+import { timeStamp } from "console";
 
 const useStyles = createStyles((theme) => ({
   th: {
@@ -192,8 +195,14 @@ export function DataTable({
   }, [selectedFilterValue]);
 
   useEffect(() => {
-    setSortedData(data);
+    const sorted = [...data].sort((a, b) => {
+      const dateA = new Date(b.createdAt || b.created_at || b.t_create);
+      const dateB = new Date(a.createdAt || a.created_at || a.t_create);
+      return dateA.getTime() - dateB.getTime();
+    });
+    setSortedData(sorted);
   }, [data]);
+
   const { classes } = useStyles();
   const setSorting = (field: any) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -760,10 +769,22 @@ export function DataTable({
                 })
             ) : (
               <tr>
-                <td colSpan={columns.length}>
-                  <Text weight={500} align="center">
-                    Nothing found
-                  </Text>
+                <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <Image
+                      src="https://i.gifer.com/ZZ5H.gif"
+                      height={40}
+                      width={40}
+                      alt="Loading"
+                    />
+                  </div>
                 </td>
               </tr>
             )}
