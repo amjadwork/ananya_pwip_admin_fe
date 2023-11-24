@@ -8,14 +8,20 @@ const APIRequest = async (
   payload?: object,
   headers?: object,
   isPublic?: boolean,
-  responseType?:string
+  responseType?: string
 ) => {
   const environment = process.env.REACT_APP_ENV;
 
   const stageApiURL = process.env.REACT_APP_API_URL_STAGE;
   const localApiURL = process.env.REACT_APP_API_URL_LOCAL;
+  const prodApiURL = process.env.REACT_APP_API_URL_PROD;
 
-  const baseURL = environment === "stage" ? stageApiURL : localApiURL;
+  const baseURL =
+    environment === "local"
+      ? localApiURL
+      : environment === "production" || environment === "prod"
+      ? prodApiURL
+      : stageApiURL;
   const url = baseURL + `/admin/api/`;
   const publicURL = baseURL + `/api/`;
 
@@ -70,10 +76,8 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
-       
+
           withCredentials: true,
-      
-          
         });
         break;
       case "GETEXCEL":
@@ -81,10 +85,9 @@ const APIRequest = async (
           headers: {
             ...authHeaders,
           },
-       
+
           withCredentials: true,
-          responseType:"blob"
-          
+          responseType: "blob",
         });
         break;
       case "POST":
