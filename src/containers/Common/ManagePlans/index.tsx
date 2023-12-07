@@ -15,6 +15,7 @@ import {
   deletePlansData,
   putPlansData,
 } from "../../../services/plans-management/Plans";
+import { getUsersData } from "../../../services/user-management/Users";
 
 const columns = [
   {
@@ -26,40 +27,50 @@ const columns = [
   {
     label: "Plan_ID",
     key: "id",
-    width:"90px",
+    width: "90px",
     sortable: true,
   },
   {
     label: "Plans",
     key: "name",
-    width:"300px",
+    width: "300px",
     sortable: true,
   },
   {
     label: "Applicable Services",
     key: "servicesNames",
-    width:"250px",
+    width: "300px",
+  },
+  {
+    label: "Applicable Users",
+    key: "applicableUsers",
+    width: "350px",
   },
   {
     label: "Price",
     key: "cost",
-    width:"150px",
+    width: "150px",
+  },
+  {
+    label: "Usage Limit",
+    key: "usage_cap",
+    width: "150px",
   },
   {
     label: "Valid For",
     key: "validityFor",
-    width:"150px",
+    width: "150px",
   },
   {
     label: "Refundable",
     key: "refund",
-    width:"150px",
+    width: "150px",
   },
   {
     label: "Action",
     key: "action",
-    width:"90px",
-    fixed:true,
+    width: "90px",
+    fixed: true,
   },
 ];
 
@@ -70,6 +81,7 @@ const RenderModalContent = (props: any) => {
   const variantSelectOptions = props.variantSelectOptions;
   const servicesData = props.servicesData;
   const modalType = props.modalType;
+  const usersData = props.usersData;
 
   return (
     <EditPlansForm
@@ -78,6 +90,7 @@ const RenderModalContent = (props: any) => {
       variantSelectOptions={variantSelectOptions}
       updateFormData={updateFormData}
       servicesData={servicesData}
+      usersData={usersData}
       modalType={modalType}
     />
   );
@@ -87,6 +100,7 @@ function ManagePlans() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
   const [plansData, setPlansData] = useState<any>([]);
+  const [usersData, setUsersData] = useState<any>([]);
   const [servicesData, setServicesData] = useState<any>([]);
   const [updateFormData, setUpdateFormData] = useState<any>(null);
   const [tableRowData, setTableRowData] = useState<any>([]);
@@ -97,6 +111,14 @@ function ManagePlans() {
 
     if (response) {
       setPlansData([...response]);
+    }
+  };
+
+  //to get User Data from database
+  const handleGetUsersData = async () => {
+    const response = await getUsersData();
+    if (response) {
+      setUsersData([...response]);
     }
   };
 
@@ -185,6 +207,7 @@ function ManagePlans() {
   useEffect(() => {
     handleGetPlansData();
     handleGetServicesData();
+    handleGetUsersData();
   }, []);
 
   useEffect(() => {
@@ -201,14 +224,33 @@ function ManagePlans() {
           })
           .filter((serviceName: any) => serviceName !== null);
 
+        const applicableUsers = (d.applicable_for_users ?? [])
+          .map((userId: any) => {
+            const user = usersData.find((u: any) => u._id === userId);
+            if (user && user.active === 1) {
+              return `${user.email}, ${user.full_name}`;
+            }
+            return null;
+          })
+          .filter((userName: any) => userName !== null);
+
+        const validityFor =
+          d.validity_type === "days" && d.validity
+            ? ` ${d.validity} ${d.validity === 1 ? "day" : "days"}`
+            : d.validity_type === "hours" && d.validity
+            ? `${d.validity} ${d.validity === 1 ? "hour" : "hours"}`
+            : null;
+
         const obj = {
           ...d,
           cost: `${d.price} ${d.currency}`,
-          validityFor: `${d.validity} ${d.validity_type}`,
+          validityFor: validityFor || "Not Applicable",
           refund: `${
             d.refund_policy ? `Yes, ${d.refund_policy_valid_day} day/s` : "No"
           }`,
           servicesNames: servicesNames,
+          applicableUsers: applicableUsers,
+          usage_cap: d.usage_cap || 0,
         };
 
         tableData.push(obj);
@@ -238,6 +280,7 @@ function ManagePlans() {
             handleSaveAction={handleSaveAction}
             updateFormData={updateFormData}
             servicesData={servicesData}
+            usersData={usersData}
             modalType={modalType}
             modalOpen={modalOpen}
           />
@@ -268,8 +311,11 @@ function ManagePlans() {
             validity_type: obj.validity_type,
             validity: obj.validity,
             applicable_services: obj.applicable_services,
+            applicable_for_users: obj.applicable_for_users,
             refund_policy: obj.refund_policy,
             refund_policy_valid_day: obj.refund_policy_valid_day,
+            show_for_user: obj.show_for_user,
+            usage_cap: obj.usage_cap,
             price: obj.price,
             currency: obj.currency,
             id: obj.id,
