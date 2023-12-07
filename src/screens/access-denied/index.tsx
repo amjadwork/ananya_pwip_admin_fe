@@ -3,6 +3,7 @@ import { Alert, Container, Card, Button, Text } from "@mantine/core";
 import { ErrorContext } from "../../context/errorContext";
 
 import { useAuth0 } from "@auth0/auth0-react";
+import withAuth from "../../hoc/withAuth";
 import { Lock } from "tabler-icons-react";
 import { deleteCookie } from "../../helper/helper";
 
@@ -82,4 +83,4 @@ function AccessDeniedScreen() {
   );
 }
 
-export default AccessDeniedScreen;
+export default withAuth(AccessDeniedScreen);

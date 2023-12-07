@@ -68,9 +68,11 @@ const LoginScreen = (props: any) => {
   const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [roleId, setRoleId] = useState<number | null>(null);
 
   const fetchTokenAndLogin = async (loginPayload: any) => {
     const { setUserData } = props;
+    console.log(props, "userData");
     setUserData({ ...loginPayload });
 
     const _tok = await getAccessTokenSilently();
@@ -80,15 +82,14 @@ const LoginScreen = (props: any) => {
       await loginUser({ ...loginPayload });
     }
   };
-
   const loginUser = async (payload: any) => {
     setIsLoading(true);
     const loginResponse = await APIRequest("login", "POST", payload, {}, true);
-
     if (loginResponse && loginResponse.message === "success") {
       setCookie("userData", JSON.stringify(loginResponse?.data), 7);
+      setRoleId(loginResponse.data.role_id);
       setIsLoading(false);
-      if (loginResponse?.data.rolesAndPermissons.role === "admin") {
+      if (loginResponse?.data.role_id === 3) {
         router("/admin/dashboard");
       } else {
         router("/access-denied");
@@ -101,6 +102,12 @@ const LoginScreen = (props: any) => {
       fetchTokenAndLogin({ ...user, auth_id: user.sub });
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchTokenAndLogin({ ...user, auth_id: user.sub });
+    }
+  }, []);
 
   if (isLoading) {
     return (

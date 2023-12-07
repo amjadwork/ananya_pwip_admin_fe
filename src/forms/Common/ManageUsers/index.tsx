@@ -219,7 +219,6 @@ function EditUsersForm(props: any) {
             <Grid gutter="sm">
               <Grid.Col span={4}>
                 <TextInput
-                  required
                   label="First Name"
                   placeholder=""
                   {...form.getInputProps("first_name")}
@@ -241,7 +240,6 @@ function EditUsersForm(props: any) {
               </Grid.Col>
               <Grid.Col span={12}>
                 <TextInput
-                  required
                   label="Email"
                   disabled={modalType === "update"}
                   placeholder="example@gmail.com"
@@ -250,7 +248,6 @@ function EditUsersForm(props: any) {
               </Grid.Col>
               <Grid.Col span={12}>
                 <TextInput
-                  required
                   label="Mobile"
                   type="number"
                   placeholder=""
@@ -261,7 +258,6 @@ function EditUsersForm(props: any) {
               </Grid.Col>
               <Grid.Col span={12}>
                 <Select
-                  required
                   hideControls
                   label="Role"
                   data={roleOptions}
