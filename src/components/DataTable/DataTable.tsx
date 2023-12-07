@@ -475,6 +475,48 @@ export function DataTable({
                             </td>
                           );
                         }
+                        if (key === "applicableUsers") {
+                          const usersArray = row.applicableUsers;
+                          const isEmpty = usersArray.length === 0;
+                          return (
+                            <td
+                              style={{
+                                marginTop: "12px",
+                                paddingLeft: "1rem",
+                              }}
+                            >
+                              <Button
+                                onClick={() => toggleRow(index)}
+                                size="sm"
+                                color={isEmpty ? "gray" : "teal"}
+                                variant="filled"
+                                fullWidth
+                                style={{
+                                  height: "2rem",
+                                }}
+                              >
+                                {isEmpty ? "No Users" : "Show Users"}
+                              </Button>
+                              <div
+                                style={{
+                                  display: expandedRows.includes(index)
+                                    ? "block"
+                                    : "none",
+                                }}
+                              >
+                                <tr key={key + index}>
+                                  {row.applicableUsers.map(
+                                    (user: any, userIndex: any) => (
+                                      <div key={userIndex}>
+                                        {userIndex + 1}. {user}
+                                      </div>
+                                    )
+                                  )}
+                                </tr>
+                              </div>
+                            </td>
+                          );
+                        }
                         if (key === "tagsName") {
                           const tagsArray = row.tagsName;
                           const isEmpty = tagsArray.length === 0;
@@ -520,7 +562,6 @@ export function DataTable({
                         if (key === "permissionName") {
                           const permissionsArray = row.permissionName;
                           const isEmpty = permissionsArray.length === 0;
-                          console.log(isEmpty, "here");
                           return (
                             <td
                               style={{

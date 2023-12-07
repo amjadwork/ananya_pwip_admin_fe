@@ -12,15 +12,19 @@ import {
 } from "@mantine/core";
 import { Button } from "../../../components/index";
 import { useForm } from "@mantine/form";
+import { applyMiddleware } from "redux";
 
 const initialFormValues = {
   name: "",
   description: "",
   validity_type: "",
-  validity: "",
+  validity: 0,
   applicable_services: [],
+  applicable_for_users: [],
   refund_policy: false,
-  refund_policy_valid_day: "",
+  show_for_user: false,
+  usage_cap: 0,
+  refund_policy_valid_day: 0,
   price: "",
   currency: "INR",
 };
@@ -30,11 +34,12 @@ function EditPlansForm(props: any) {
   const handleSaveAction = props.handleSaveAction;
   const updateFormData = props.updateFormData;
   const servicesData = props.servicesData;
+  const usersData = props.usersData;
   const modalType = props.modalType || "add";
 
   const [applicableServices, setApplicableServices] = useState<string[]>([]);
+  const [applicableUsers, setApplicableUsers] = useState<string[]>([]);
   const [refundError, setRefundError] = useState<string | null>(null);
-
   const form: any = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -57,11 +62,26 @@ function EditPlansForm(props: any) {
       label: list.name,
     }));
 
+  const usersOptions = usersData
+    .filter((option: any) => option.active === 1)
+    .map((list: any) => ({
+      value: list._id,
+      label: `${list.email} | ${list.full_name} `,
+    }));
+
   const handleServiceChange = (newServiceValues: string[]) => {
     setApplicableServices(newServiceValues);
     form.setValues((prevValues: any) => ({
       ...prevValues,
       applicable_services: newServiceValues,
+    }));
+  };
+
+  const handleUserChange = (newUserValues: string[]) => {
+    setApplicableUsers(newUserValues);
+    form.setValues((prevValues: any) => ({
+      ...prevValues,
+      applicable_for_users: newUserValues,
     }));
   };
 
@@ -73,6 +93,7 @@ function EditPlansForm(props: any) {
         price: parseFloat(updateFormData.price),
       };
       setApplicableServices(updatedFormData.applicable_services || []);
+      setApplicableUsers(updatedFormData.applicable_for_users || []);
       form.setValues(updatedFormData);
     }
   }, [updateFormData, modalType]);
@@ -101,7 +122,6 @@ function EditPlansForm(props: any) {
       form.values.refund_policy = false;
       form.values.refund_policy_valid_day = 0;
     }
-
     setRefundError(null);
     handleSaveAction(formValues);
     handleCloseModal(false);
@@ -128,6 +148,28 @@ function EditPlansForm(props: any) {
         </Grid.Col>
         <Grid.Col span={12}>
           <MultiSelect
+            data={usersOptions}
+            required
+            label="Applicable for Users"
+            placeholder="Select Applicable Users"
+            value={applicableUsers}
+            onChange={handleUserChange}
+            clearButtonLabel="Clear selection"
+            clearable
+          />
+        </Grid.Col>
+        <Grid.Col span={12} mt="sm">
+          <Checkbox
+            label="Show For Users"
+            size="sm"
+            checked={form.values.show_for_user}
+            onChange={(event) => {
+              form.getInputProps("show_for_user").onChange(event);
+            }}
+          />
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <MultiSelect
             data={servicesOptions}
             required
             label="Applicable Services"
@@ -149,7 +191,7 @@ function EditPlansForm(props: any) {
             {...form.getInputProps("price")}
           />
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={12}>
           <Select
             required
             hideControls
@@ -161,8 +203,20 @@ function EditPlansForm(props: any) {
         </Grid.Col>
         <Grid.Col span={6}>
           <NumberInput
+            label="Usage Limit"
+            required={form.values.validity_type === "usage_cap"}
+            hideControls
+            {...form.getInputProps("usage_cap")}
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <NumberInput
             required
             label="Valid for (in hours or days)"
+            disabled={
+              form.values.validity_type === "" ||
+              form.values.validity_type === "usage_cap"
+            }
             placeholder="eg. 30 days"
             hideControls
             {...form.getInputProps("validity")}
