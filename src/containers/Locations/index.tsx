@@ -198,6 +198,7 @@ function LocationsContainer() {
     let data = { ...form };
     let payload: any = {};
     data.destination = data.destination.map((p: any) => {
+      console.log(p)
       const linkedOrigin = [...p.linkedOrigin];
       const newLinkedOrigin = locationData.origin
         .filter((o: any) => {
@@ -376,15 +377,17 @@ function LocationsContainer() {
               portName: obj.portName,
               state: obj.state,
               portCode: obj.portCode,
+              imageUrl: obj?.imageUrl||null,
             };
           }
           if (selectedFilterValue === "destination") {
             formObj = {
               portName: obj.portName,
+              imageUrl: obj?.imageUrl||null,
               portCode: obj.portCode,
               country: obj.country,
               _id: obj._id,
-              linkedOrigin: obj.linkedOrigin,
+              linkedOrigin: obj?.linkedOrigin,
             };
           }
 
