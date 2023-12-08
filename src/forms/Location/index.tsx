@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Group, TextInput, Space, MultiSelect } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Select, Button } from "../../components";import { stateName } from "../../constants/state.constants";
-
+import { Select, Button } from "../../components";
+import { stateName } from "../../constants/state.constants";
 
 function AddEditLocationFormContainer(props: any) {
-  const handleSetLocationPayload= props.handleSetLocationPayload;
+  const handleSetLocationPayload = props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
   const selectedFilterValue = props.selectedFilterValue || null;
@@ -23,35 +23,34 @@ function AddEditLocationFormContainer(props: any) {
     return { label: d.portName, value: d._id };
   });
 
-    //to show previous values while editing the row
-    useEffect(() => {
-      if (updateFormData && modalType === "update") {
-        if(selectedFilterValue === "destination"){
-        const originAsStringArray = updateFormData.linkedOrigin.map((arr: any) => arr._originId);
+  //to show previous values while editing the row
+  useEffect(() => {
+    if (updateFormData && modalType === "update") {
+      if (selectedFilterValue === "destination") {
+        const originAsStringArray = updateFormData.linkedOrigin.map(
+          (arr: any) => arr._originId
+        );
         setDefaultOriginValues(originAsStringArray);
         form.setValues({
           ...updateFormData,
           linkedOrigin: [...originAsStringArray],
         });
+      } else {
+        form.setValues({
+          ...updateFormData,
+        });
       }
-      else{
-          form.setValues({
-            ...updateFormData,
-          });
-        }
-      }
-    }, [updateFormData, modalType]);
-    
+    }
+  }, [updateFormData, modalType]);
 
-    const handleLinkedOriginChange = (newOriginValues: string[]) => {
-      setDefaultOriginValues(newOriginValues);
-      form.setValues((prevValues: any) => ({
-        ...prevValues,
-        linkedOrigin: newOriginValues,
-      }));
-      
-    };
-  
+  const handleLinkedOriginChange = (newOriginValues: string[]) => {
+    setDefaultOriginValues(newOriginValues);
+    form.setValues((prevValues: any) => ({
+      ...prevValues,
+      linkedOrigin: newOriginValues,
+    }));
+  };
+
   useEffect(() => {
     if (selectedFilterValue) {
       setLocationType(selectedFilterValue);
@@ -93,10 +92,9 @@ function AddEditLocationFormContainer(props: any) {
       payload.destination = [...destinationArr];
     }
 
-     handleSetLocationPayload(payload);
-
+    handleSetLocationPayload(payload);
   };
-
+  console.log("form", form);
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Select
@@ -171,6 +169,12 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("city")}
           />
           <Space h="md" />
+          <TextInput
+            label="Image Url"
+            placeholder="http://image.test.port/india"
+            {...form.getInputProps("imageUrl")}
+          />
+          <Space h="md" />
           <Select
             required
             data={stateName}
@@ -179,6 +183,8 @@ function AddEditLocationFormContainer(props: any) {
             searchable
             {...form.getInputProps("state")}
           />
+          <Space h="md" />
+
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>
@@ -210,7 +216,7 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("country")}
           />
           <Space h="md" />
-           <MultiSelect
+          <MultiSelect
             data={originOptions}
             label="Linked Origins"
             placeholder="Select Linked Origins"
@@ -218,6 +224,11 @@ function AddEditLocationFormContainer(props: any) {
             onChange={handleLinkedOriginChange}
             clearButtonLabel="Clear selection"
             clearable
+          />
+          <TextInput
+            label="Image Url"
+            placeholder="http://image.test.port/india"
+            {...form.getInputProps("imageUrl")}
           />
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
