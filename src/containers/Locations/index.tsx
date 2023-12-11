@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Plus, Check, Download, Loader2 } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -14,6 +14,8 @@ import {
   getDestinationData,
 } from "../../services/export-costing/Locations";
 import DataTable from "../../components/DataTable/DataTable";
+import APIRequest from "../../helper/api";
+import { Loader } from "@mantine/core";
 
 const sourceColumns = [
   {
@@ -150,6 +152,7 @@ const RenderModalContent = (props: any) => {
 function LocationsContainer() {
   const [modalOpen, setModalOpen] = useState<any>(false);
   const [modalType, setModalType] = useState<string>("add");
+  const [downloadLoader, setDownloadLoader] = useState<any>(false);
   const [locationData, setLocationData] = useState<any>({
     source: [],
     origin: [],
@@ -166,7 +169,27 @@ function LocationsContainer() {
   const handleSelectRadioFilterChange = (value: any) => {
     setSelectedFilterValue(value);
   };
-
+  const handleGetCombinationSheet = async () => {
+    setDownloadLoader(true);
+    await APIRequest("location/combination/getexcel", "GETEXCEL")
+      .then((response: any) => {
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `All_combination_data` + ".xlsx";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setDownloadLoader(false);
+      })
+      .catch((error) => {
+        showNotification({
+          title: "Something went wrong !",
+          message: "please try again",
+        });
+        setDownloadLoader(false);
+      });
+  };
   let tableRowData: any[] = [];
   let tableColumns: Column[] = [];
 
@@ -198,7 +221,7 @@ function LocationsContainer() {
     let data = { ...form };
     let payload: any = {};
     data.destination = data.destination.map((p: any) => {
-      console.log(p)
+      console.log(p);
       const linkedOrigin = [...p.linkedOrigin];
       const newLinkedOrigin = locationData.origin
         .filter((o: any) => {
@@ -356,6 +379,19 @@ function LocationsContainer() {
               setModalOpen(true);
             },
           },
+          {
+            label: `${downloadLoader ? "Processing" : "Get combination sheet"}`, //,
+            icon: downloadLoader ? Loader2 : Download,
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              if (!downloadLoader) {
+                handleGetCombinationSheet();
+              }else{
+                alert("processing ..... ")
+              }
+            },
+          },
         ]}
         handleRowEdit={(row: any, index: number) => {
           setModalType("update");
@@ -377,13 +413,13 @@ function LocationsContainer() {
               portName: obj.portName,
               state: obj.state,
               portCode: obj.portCode,
-              imageUrl: obj?.imageUrl||null,
+              imageUrl: obj?.imageUrl || null,
             };
           }
           if (selectedFilterValue === "destination") {
             formObj = {
               portName: obj.portName,
-              imageUrl: obj?.imageUrl||null,
+              imageUrl: obj?.imageUrl || null,
               portCode: obj.portCode,
               country: obj.country,
               _id: obj._id,
