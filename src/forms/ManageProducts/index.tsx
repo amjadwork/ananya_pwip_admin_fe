@@ -8,7 +8,9 @@ import {
   Space,
   ActionIcon,
   Flex,
+  Grid,
   MultiSelect,
+  FileInput,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -16,7 +18,7 @@ import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
-
+import axios from "axios";
 // testing
 
 const initialFormValues: any = {
@@ -24,7 +26,8 @@ const initialFormValues: any = {
   variantName: "",
   HSNCode: "",
   brokenPercentage: "",
-  tags:"",
+  tags: "",
+  images: "",
   sourceRates: [
     {
       _sourceId: "",
@@ -41,14 +44,15 @@ function AddOrEditProductForm(props: any) {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
   const modalOpen = props.modalOpen || false;
+  const handlePictureChange=props.handlePictureChange;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
 
   const tagsOptions = [
-  { value: 'raw', label: 'Raw' },
-  { value: 'steam', label: 'Steam' },
-  { value: 'paraboiled', label: 'Paraboiled' },
+    { value: "raw", label: "Raw" },
+    { value: "steam", label: "Steam" },
+    { value: "paraboiled", label: "Paraboiled" },
   ];
 
   const form = useForm({
@@ -118,7 +122,6 @@ function AddOrEditProductForm(props: any) {
     );
     setIsBasmatiCategory(selectedCategory?.name === "Basmati");
   }, [form.values._categoryId, categoryData]);
-
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
@@ -198,14 +201,14 @@ function AddOrEditProductForm(props: any) {
       <Space h="md" />
 
       <Select
-            data={tagsOptions || []}
-            label="Tags"
-            placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-            disabled={isBasmatiCategory || modalType === "update"}
-            {...form.getInputProps("tags")}
-          />
+        data={tagsOptions || []}
+        label="Tags"
+        placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
+        disabled={isBasmatiCategory || modalType === "update"}
+        {...form.getInputProps("tags")}
+      />
 
-     <Space h="md" />
+      <Space h="md" />
 
       <TextInput
         label="HSN Code"
@@ -216,15 +219,58 @@ function AddOrEditProductForm(props: any) {
 
       <Space h="md" />
 
-         <NumberInput
-          min={0}
-          label="Broken %"
-          placeholder="eg. 5"
-          disabled={modalType === "update" ? true : false}
-          {...form.getInputProps("brokenPercentage")}
-        />
+      <NumberInput
+        min={0}
+        label="Broken %"
+        placeholder="eg. 5"
+        disabled={modalType === "update" ? true : false}
+        {...form.getInputProps("brokenPercentage")}
+      />
 
-          <Space h="md" />
+      <Space h="md" />
+      <Grid>
+        <Grid.Col span={6}>
+          {" "}
+          <FileInput
+            clearable
+            accept="image/png,image/jpeg"
+            label="Upload Image 1"
+            placeholder="Upload files"
+            onChange={(e) => {
+              handlePictureChange(e);
+            }}
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          {" "}
+          <FileInput
+            clearable
+            accept="image/png,image/jpeg"
+            label="Upload Image 2"
+            placeholder="Upload files"
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          {" "}
+          <FileInput
+            clearable
+            accept="image/png,image/jpeg"
+            label="Upload Image 3"
+            placeholder="Upload files"
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          {" "}
+          <FileInput
+            clearable
+            accept="image/png,image/jpeg"
+            label="Upload Image 4"
+            placeholder="Upload files"
+          />
+        </Grid.Col>
+      </Grid>
+
+      <Space h="md" />
 
       {fields}
 

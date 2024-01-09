@@ -55,7 +55,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "90px",
-    fixed:true,
+    fixed: true,
   },
 ];
 
@@ -68,6 +68,7 @@ const RenderModalContent = (props: any) => {
   const modalType = props.modalType;
   const modalOpen = props.modalOpen;
   const containerType = props.containerType;
+  const handlePictureChange = props.handlePictureChange;
 
   let regionCostingList: any = [];
 
@@ -93,6 +94,7 @@ const RenderModalContent = (props: any) => {
       updateFormData={updateFormData}
       modalType={modalType}
       modalOpen={modalOpen}
+      handlePictureChange={handlePictureChange}
     />
   );
 };
@@ -229,6 +231,48 @@ function ManageProductsContainer(props: any) {
       onConfirm: () => handleDeleteVariant(rowData),
     });
 
+  const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
+    console.log("clicked")
+    if (!e || !e.target || !e.target.files) {
+      console.error("Invalid event object or files property is undefined");
+      return;
+    }
+    const file = e.target.files;
+
+    APIRequest(
+      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
+      "GET"
+    )
+      .then((res: any) => {
+        if (res) {
+          const uri = res.url;
+          const publicURL = res.publicUrl;
+          console.log("publicURL", publicURL);
+
+          APIRequest(uri, "PUT", file[0]).then(() => {
+            const payload = {
+              images: publicURL,
+            };
+            console.log(payload, "payload");
+          });
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error fetching signed URL:", error);
+        // Handle the error as needed
+      });
+  };
+
+  const handlePictureChange = (e: any) => {
+    console.log("File input change event:", e);
+    const extString = e.target.files.type;
+    const extStringArr = extString.split("/");
+    const ext = extStringArr[1];
+    const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
+    console.log("extString", ext);
+    handleImagePickerChange(e, name, ext);
+  };
+
   React.useEffect(() => {
     if (variantsData.length && categoryData.length) {
       let tableData: any = [];
@@ -287,6 +331,7 @@ function ManageProductsContainer(props: any) {
             modalType={modalType}
             modalOpen={modalOpen}
             containerType={containerType}
+            handlePictureChange={handlePictureChange}
           />
         );
       }}
