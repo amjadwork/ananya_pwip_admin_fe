@@ -27,7 +27,7 @@ const initialFormValues: any = {
   HSNCode: "",
   brokenPercentage: "",
   tags: "",
-  images: "",
+  images: [],
   sourceRates: [
     {
       _sourceId: "",
@@ -44,7 +44,7 @@ function AddOrEditProductForm(props: any) {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
   const modalOpen = props.modalOpen || false;
-  const handlePictureChange=props.handlePictureChange;
+  const handlePictureChange = props.handlePictureChange;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
@@ -231,13 +231,18 @@ function AddOrEditProductForm(props: any) {
       <Grid>
         <Grid.Col span={6}>
           {" "}
-          <FileInput
-            clearable
+          <input
+            type="file"
             accept="image/png,image/jpeg"
-            label="Upload Image 1"
-            placeholder="Upload files"
+            placeholder="Upload Image 1"
             onChange={(e) => {
-              handlePictureChange(e);
+              handlePictureChange(e).then((result: any) => {
+               console.log("t",result)
+               //make change of form 
+               //push this object to image in form  {url,imageSrc}
+              }).catch((err:any)=>{
+                console.log(err)
+              });
             }}
           />
         </Grid.Col>

@@ -237,40 +237,53 @@ function ManageProductsContainer(props: any) {
       console.error("Invalid event object or files property is undefined");
       return;
     }
-    const file = e.target.files;
+    // const file = e.target.files;
 
-    APIRequest(
+   const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
       "GET"
     )
       .then((res: any) => {
         if (res) {
-          const uri = res.url;
-          const publicURL = res.publicUrl;
-          console.log("publicURL", publicURL);
+          alert(res)
 
-          APIRequest(uri, "PUT", file[0]).then(() => {
-            const payload = {
-              images: publicURL,
-            };
-            console.log(payload, "payload");
-          });
+          const uri = res.url;
+          const fileSrc = e.target.files[0]
+          const imageObject = {
+            uri,fileSrc
+          }
+          return res
+          
+          // const publicURL = res.publicUrl;
+          // console.log("publicURL", publicURL);
+
+          // APIRequest(uri, "PUT", file[0]).then(() => {
+          //   const payload = {
+          //     images: publicURL,
+          //   };
+          //   console.log(payload, "payload");
+          // });
         }
       })
       .catch((error: any) => {
         console.error("Error fetching signed URL:", error);
         // Handle the error as needed
       });
+      return c
   };
 
-  const handlePictureChange = (e: any) => {
+  const handlePictureChange = async (e: any) => {
     console.log("File input change event:", e);
-    const extString = e.target.files.type;
+    const file = e.target.files
+
+
+    const extString = file[0].type;
+    console.log(extString)
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
     const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
-    console.log("extString", ext);
-    handleImagePickerChange(e, name, ext);
+   const result =  await handleImagePickerChange(e, name, ext);
+   return result
   };
 
   React.useEffect(() => {
