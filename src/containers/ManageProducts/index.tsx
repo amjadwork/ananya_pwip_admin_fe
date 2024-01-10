@@ -232,28 +232,26 @@ function ManageProductsContainer(props: any) {
     });
 
   const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
-    console.log("clicked")
-    if (!e || !e.target || !e.target.files) {
-      console.error("Invalid event object or files property is undefined");
-      return;
-    }
-    // const file = e.target.files;
+    console.log("clicked");
+    console.log("e", e);
+    console.log("fileName", fileName);
+    console.log("ext", ext);
 
-   const c = APIRequest(
+    const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
       "GET"
     )
       .then((res: any) => {
         if (res) {
-          alert(res)
-
+          alert(res);
+          console.log("res", res);
           const uri = res.url;
-          const fileSrc = e.target.files[0]
+          const fileSrc = e;
           const imageObject = {
-            uri,fileSrc
+            uri, fileSrc
           }
-          return res
-          
+          return imageObject;
+
           // const publicURL = res.publicUrl;
           // console.log("publicURL", publicURL);
 
@@ -269,21 +267,20 @@ function ManageProductsContainer(props: any) {
         console.error("Error fetching signed URL:", error);
         // Handle the error as needed
       });
-      return c
+    return c;
   };
 
   const handlePictureChange = async (e: any) => {
     console.log("File input change event:", e);
-    const file = e.target.files
+    const file = e;
 
-
-    const extString = file[0].type;
-    console.log(extString)
+    const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
     const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
-   const result =  await handleImagePickerChange(e, name, ext);
-   return result
+    const result = await handleImagePickerChange(e, name, ext);
+    console.log("result", result);
+    return result;
   };
 
   React.useEffect(() => {
@@ -393,6 +390,7 @@ function ManageProductsContainer(props: any) {
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
+            images:[{...obj.images}],
             sourceRates: [{ ...obj }],
           };
 

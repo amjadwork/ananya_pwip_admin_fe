@@ -55,6 +55,32 @@ function AddOrEditProductForm(props: any) {
     { value: "paraboiled", label: "Paraboiled" },
   ];
 
+  const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
+
+  const fileInputs = imageFileLabels.map((label, index) => (
+    <Grid.Col key={index}>
+      <FileInput
+        accept="image/png,image/jpeg"
+        placeholder="Upload Image 1"
+        onChange={(e) => {
+          handlePictureChange(e)
+            .then((result: any) => {
+              console.log("t", result);
+              form.values.images.push({
+                url: result.uri,
+                // imageSrc: e,
+              });
+              console.log("RRRRRRR", form.values.images);
+            })
+            .catch((err: any) => {
+              console.log(err);
+            });
+        }}
+      />
+    </Grid.Col>
+  ));
+
+  console.log(updateFormData, "here here")
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -228,52 +254,8 @@ function AddOrEditProductForm(props: any) {
       />
 
       <Space h="md" />
-      <Grid>
-        <Grid.Col span={6}>
-          {" "}
-          <input
-            type="file"
-            accept="image/png,image/jpeg"
-            placeholder="Upload Image 1"
-            onChange={(e) => {
-              handlePictureChange(e).then((result: any) => {
-               console.log("t",result)
-               //make change of form 
-               //push this object to image in form  {url,imageSrc}
-              }).catch((err:any)=>{
-                console.log(err)
-              });
-            }}
-          />
-        </Grid.Col>
-        <Grid.Col span={6}>
-          {" "}
-          <FileInput
-            clearable
-            accept="image/png,image/jpeg"
-            label="Upload Image 2"
-            placeholder="Upload files"
-          />
-        </Grid.Col>
-        <Grid.Col span={6}>
-          {" "}
-          <FileInput
-            clearable
-            accept="image/png,image/jpeg"
-            label="Upload Image 3"
-            placeholder="Upload files"
-          />
-        </Grid.Col>
-        <Grid.Col span={6}>
-          {" "}
-          <FileInput
-            clearable
-            accept="image/png,image/jpeg"
-            label="Upload Image 4"
-            placeholder="Upload files"
-          />
-        </Grid.Col>
-      </Grid>
+      <label htmlFor="imageUpload">Image Upload</label>
+      <Grid>{fileInputs}</Grid>
 
       <Space h="md" />
 
