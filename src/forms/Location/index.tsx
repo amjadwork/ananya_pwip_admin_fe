@@ -12,6 +12,14 @@ import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
 import axios from "axios";
 
+
+interface ImageResult {
+  uri: string;
+  publicUri: string;
+  fileSrc: string;
+  // Add other properties if needed
+}
+
 function AddEditLocationFormContainer(props: any) {
   const handleSetLocationPayload = props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
@@ -22,7 +30,7 @@ function AddEditLocationFormContainer(props: any) {
   const modalType = props.modalType || "add";
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
-  const [imageResult, setImageResult] = useState(null);
+  const [imageResult, setImageResult] = useState<ImageResult | null>(null);
   const handleCloseModal = props.handleCloseModal;
 
   const form = useForm({
@@ -53,6 +61,28 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [updateFormData, modalType]);
 
+  const imageFileLabels = ["Image 1"];
+
+  const fileInputs = imageFileLabels.map((label, index) => (
+    <Grid.Col key={index}>
+      <FileInput
+        accept="image/png,image/jpeg"
+        placeholder="Upload Image"
+        onChange={(e) => {
+          handlePictureChange(e)
+            .then((result: any) => {
+              setImageResult(result);
+            })
+            .catch((err: any) => {
+              console.log(err);
+            });
+            form.getInputProps("image").onChange(e);
+        }}
+      />
+    </Grid.Col>
+  ));
+
+
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
     form.setValues((prevValues: any) => ({
@@ -67,7 +97,7 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [selectedFilterValue]);
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit =  async (values: typeof form.values) => {
     handleCloseModal(false);
 
     let sourceArr: any = [...locationPayload.source];
@@ -84,21 +114,31 @@ function AddEditLocationFormContainer(props: any) {
       destinationArr.push(values);
     }
 
-    // if (locationType==="destination" || locationType==="origin") {
-    //   for (const image of values.images) {
-    //     const uri = image.url;
-    //     const publicURI = image.publicUrl;
-    //     const file = image.src;
-    //     try {
-    //       const response = await axios.put(`${uri}`, file).then(() => {
-    //         form.values.images.push(publicURI);
-    //       });
-    //     } catch (error) {
-    //       console.error(`Error processing image: ${error}`);
-    //       // Handle error as needed
-    //     }
-    //   }
-    // }
+    console.log("values", values)
+    console.log("imageResult", imageResult)
+
+    if (locationType==="destination" || locationType==="origin"){
+ if(imageResult)
+     {
+      console.log("hello hello", imageResult)
+        const uri = imageResult.uri;
+        const publicURI = imageResult.publicUri;
+        const file = imageResult.fileSrc;
+        try {
+          const response =  await axios.put(`${uri}`, file).then(() => {
+            console.log("response",imageResult)
+            form.setValues((prevValues: any) => ({
+              ...prevValues,
+              image: publicURI,
+            }));
+            // form.setFieldValue = publicURI;
+          });
+        } catch (error) {
+          console.error(`Error processing image: ${error}`);
+          // Handle error as needed
+        }
+      }}
+    
 
     let payload: any = {
       source: [],
@@ -121,26 +161,7 @@ function AddEditLocationFormContainer(props: any) {
     handleSetLocationPayload(payload);
   };
 
-  const imageFileLabels = ["Image 1"];
-
-  const fileInputs = imageFileLabels.map((label, index) => (
-    <Grid.Col key={index}>
-      <FileInput
-        accept="image/png,image/jpeg"
-        placeholder="Upload Image"
-        onChange={(e) => {
-          handlePictureChange(e)
-            .then((result: any) => {
-              setImageResult(result);
-            })
-            .catch((err: any) => {
-              console.log(err);
-            });
-        }}
-      />
-    </Grid.Col>
-  ));
-
+  
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Select
