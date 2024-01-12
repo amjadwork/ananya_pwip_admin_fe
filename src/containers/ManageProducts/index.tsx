@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload } from "tabler-icons-react";
+import { Plus, Upload, Photo } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -246,9 +246,10 @@ function ManageProductsContainer(props: any) {
           alert(res);
           console.log("res", res);
           const uri = res.url;
+          const publicUri= res.publicUrl;
           const fileSrc = e;
           const imageObject = {
-            uri, fileSrc
+            uri, fileSrc, publicUri
           }
           return imageObject;
 

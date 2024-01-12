@@ -28,6 +28,7 @@ const initialFormValues: any = {
   brokenPercentage: "",
   tags: "",
   images: [],
+  imagesArray: [],
   sourceRates: [
     {
       _sourceId: "",
@@ -66,11 +67,12 @@ function AddOrEditProductForm(props: any) {
           handlePictureChange(e)
             .then((result: any) => {
               console.log("t", result);
-              form.values.images.push({
+              form.values.imagesArray.push({
                 url: result.uri,
-                // imageSrc: e,
+                src: e,
+                publicUrl: result.publicUri,
               });
-              console.log("RRRRRRR", form.values.images);
+              console.log("RRRRRRR", form.values.imagesArray);
             })
             .catch((err: any) => {
               console.log(err);
@@ -80,7 +82,7 @@ function AddOrEditProductForm(props: any) {
     </Grid.Col>
   ));
 
-  console.log(updateFormData, "here here")
+  console.log(updateFormData, "here here");
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -126,6 +128,32 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
+    console.log(formValues.imagesArray, "imagesArray");
+
+    if (formValues.imagesArray && formValues.imagesArray.length > 0) {
+      for (const image of formValues.imagesArray) {
+        const uri = image.url;
+        const publicURI = image.publicUrl;
+        const file = image.src;
+        // console.log(file, uri, publicURI, "aAMMKAD");
+        try {
+          const response = await axios.put(`${uri}`, file).then(() => {
+         
+            form.values.images.push(
+              publicURI
+            )
+          
+            console.log(formValues, "ffff");
+          });
+        
+        } catch (error) {
+          console.error(`Error processing image: ${error}`);
+          // Handle error as needed
+        }
+      }
+    }
+
+    console.log(formValues, "yahan");
     handleCloseModal(false);
     handleSaveCallback(formValues);
   };
