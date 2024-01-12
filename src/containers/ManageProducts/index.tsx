@@ -232,36 +232,21 @@ function ManageProductsContainer(props: any) {
     });
 
   const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
-    console.log("clicked");
-    console.log("e", e);
-    console.log("fileName", fileName);
-    console.log("ext", ext);
-
     const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
       "GET"
     )
       .then((res: any) => {
         if (res) {
-          alert(res);
-          console.log("res", res);
           const uri = res.url;
-          const publicUri= res.publicUrl;
+          const publicUri = res.publicUrl;
           const fileSrc = e;
           const imageObject = {
-            uri, fileSrc, publicUri
-          }
+            uri,
+            fileSrc,
+            publicUri,
+          };
           return imageObject;
-
-          // const publicURL = res.publicUrl;
-          // console.log("publicURL", publicURL);
-
-          // APIRequest(uri, "PUT", file[0]).then(() => {
-          //   const payload = {
-          //     images: publicURL,
-          //   };
-          //   console.log(payload, "payload");
-          // });
         }
       })
       .catch((error: any) => {
@@ -272,7 +257,6 @@ function ManageProductsContainer(props: any) {
   };
 
   const handlePictureChange = async (e: any) => {
-    console.log("File input change event:", e);
     const file = e;
 
     const extString = file.type;
@@ -280,7 +264,6 @@ function ManageProductsContainer(props: any) {
     const ext = extStringArr[1];
     const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
     const result = await handleImagePickerChange(e, name, ext);
-    console.log("result", result);
     return result;
   };
 
@@ -298,6 +281,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
+            images:d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -391,7 +375,7 @@ function ManageProductsContainer(props: any) {
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
-            images:[{...obj.images}],
+            images: obj.images,
             sourceRates: [{ ...obj }],
           };
 

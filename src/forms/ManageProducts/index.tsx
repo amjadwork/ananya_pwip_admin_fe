@@ -9,7 +9,6 @@ import {
   ActionIcon,
   Flex,
   Grid,
-  MultiSelect,
   FileInput,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
@@ -66,13 +65,11 @@ function AddOrEditProductForm(props: any) {
         onChange={(e) => {
           handlePictureChange(e)
             .then((result: any) => {
-              console.log("t", result);
               form.values.imagesArray.push({
                 url: result.uri,
                 src: e,
                 publicUrl: result.publicUri,
               });
-              console.log("RRRRRRR", form.values.imagesArray);
             })
             .catch((err: any) => {
               console.log(err);
@@ -81,8 +78,6 @@ function AddOrEditProductForm(props: any) {
       />
     </Grid.Col>
   ));
-
-  console.log(updateFormData, "here here");
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -128,32 +123,21 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    console.log(formValues.imagesArray, "imagesArray");
-
     if (formValues.imagesArray && formValues.imagesArray.length > 0) {
       for (const image of formValues.imagesArray) {
         const uri = image.url;
         const publicURI = image.publicUrl;
         const file = image.src;
-        // console.log(file, uri, publicURI, "aAMMKAD");
         try {
           const response = await axios.put(`${uri}`, file).then(() => {
-         
-            form.values.images.push(
-              publicURI
-            )
-          
-            console.log(formValues, "ffff");
+            form.values.images.push(publicURI);
           });
-        
         } catch (error) {
           console.error(`Error processing image: ${error}`);
           // Handle error as needed
         }
       }
     }
-
-    console.log(formValues, "yahan");
     handleCloseModal(false);
     handleSaveCallback(formValues);
   };
@@ -238,7 +222,6 @@ function AddOrEditProductForm(props: any) {
         label="Select Category"
         placeholder="Eg. Non-Basmati"
         data={categoryOptions}
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_categoryId")}
       />
 
@@ -248,7 +231,6 @@ function AddOrEditProductForm(props: any) {
         required
         label="Variant Name"
         placeholder="eg. 1509 Sella"
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("variantName")}
       />
 
@@ -258,7 +240,7 @@ function AddOrEditProductForm(props: any) {
         data={tagsOptions || []}
         label="Tags"
         placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-        disabled={isBasmatiCategory || modalType === "update"}
+        disabled={isBasmatiCategory}
         {...form.getInputProps("tags")}
       />
 
@@ -267,7 +249,6 @@ function AddOrEditProductForm(props: any) {
       <TextInput
         label="HSN Code"
         placeholder="eg. CSQ212"
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("HSNCode")}
       />
 
@@ -277,7 +258,6 @@ function AddOrEditProductForm(props: any) {
         min={0}
         label="Broken %"
         placeholder="eg. 5"
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("brokenPercentage")}
       />
 
