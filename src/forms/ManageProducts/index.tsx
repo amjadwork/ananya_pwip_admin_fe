@@ -18,6 +18,7 @@ import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
+import ImageUpload from "../../components/ImageUpload/ImageUpload";
 // testing
 
 const initialFormValues: any = {
@@ -47,7 +48,18 @@ function AddOrEditProductForm(props: any) {
   const handlePictureChange = props.handlePictureChange;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
+  const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
+
+  const form = useForm({
+    clearInputErrorOnChange: true,
+    initialValues: { ...initialFormValues },
+
+    validate: {
+      variantName: (value) =>
+        value.length < 2 ? "Name must have at least 2 letters" : null,
+    },
+  });
 
   const tagsOptions = [
     { value: "raw", label: "Raw" },
@@ -78,19 +90,17 @@ function AddOrEditProductForm(props: any) {
       />
     </Grid.Col>
   ));
-  const form = useForm({
-    clearInputErrorOnChange: true,
-    initialValues: { ...initialFormValues },
-
-    validate: {
-      variantName: (value) =>
-        value.length < 2 ? "Name must have at least 2 letters" : null,
-    },
-  });
+const existingImages = updateFormImages.map((imageUrl: any, index: any) => (
+  <ImageUpload key={index} imageUrl={imageUrl} />
+));
+const combinedFileInputs = [...existingImages, ...fileInputs.slice(updateFormImages.length)];
 
   useEffect(() => {
     if (updateFormData && modalType === "update") {
       form.setValues(updateFormData);
+
+      const images = updateFormData.images || [];
+      setUpdateFormImages([...images]);
     }
   }, [updateFormData, modalType]);
 
@@ -260,10 +270,10 @@ function AddOrEditProductForm(props: any) {
         placeholder="eg. 5"
         {...form.getInputProps("brokenPercentage")}
       />
-
       <Space h="md" />
+
       <label htmlFor="imageUpload">Image Upload</label>
-      <Grid>{fileInputs}</Grid>
+      <Grid>{combinedFileInputs}</Grid>
 
       <Space h="md" />
 
