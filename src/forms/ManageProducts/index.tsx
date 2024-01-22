@@ -8,7 +8,8 @@ import {
   Space,
   ActionIcon,
   Flex,
-  MultiSelect,
+  Grid,
+  FileInput,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -16,7 +17,7 @@ import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
-
+import axios from "axios";
 // testing
 
 const initialFormValues: any = {
@@ -24,7 +25,9 @@ const initialFormValues: any = {
   variantName: "",
   HSNCode: "",
   brokenPercentage: "",
-  tags:"",
+  tags: "",
+  images: [],
+  imagesArray: [],
   sourceRates: [
     {
       _sourceId: "",
@@ -41,16 +44,40 @@ function AddOrEditProductForm(props: any) {
   const updateFormData = props.updateFormData;
   const modalType = props.modalType || "add";
   const modalOpen = props.modalOpen || false;
+  const handlePictureChange = props.handlePictureChange;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
 
   const tagsOptions = [
-  { value: 'raw', label: 'Raw' },
-  { value: 'steam', label: 'Steam' },
-  { value: 'paraboiled', label: 'Paraboiled' },
+    { value: "raw", label: "Raw" },
+    { value: "steam", label: "Steam" },
+    { value: "paraboiled", label: "Paraboiled" },
   ];
 
+  const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
+
+  const fileInputs = imageFileLabels.map((label, index) => (
+    <Grid.Col key={index}>
+      <FileInput
+        accept="image/png,image/jpeg"
+        placeholder="Upload Image 1"
+        onChange={(e) => {
+          handlePictureChange(e)
+            .then((result: any) => {
+              form.values.imagesArray.push({
+                url: result.uri,
+                src: e,
+                publicUrl: result.publicUri,
+              });
+            })
+            .catch((err: any) => {
+              console.log(err);
+            });
+        }}
+      />
+    </Grid.Col>
+  ));
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -96,6 +123,21 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
+    if (formValues.imagesArray && formValues.imagesArray.length > 0) {
+      for (const image of formValues.imagesArray) {
+        const uri = image.url;
+        const publicURI = image.publicUrl;
+        const file = image.src;
+        try {
+          const response = await axios.put(`${uri}`, file).then(() => {
+            form.values.images.push(publicURI);
+          });
+        } catch (error) {
+          console.error(`Error processing image: ${error}`);
+          // Handle error as needed
+        }
+      }
+    }
     handleCloseModal(false);
     handleSaveCallback(formValues);
   };
@@ -118,7 +160,6 @@ function AddOrEditProductForm(props: any) {
     );
     setIsBasmatiCategory(selectedCategory?.name === "Basmati");
   }, [form.values._categoryId, categoryData]);
-
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
@@ -181,7 +222,6 @@ function AddOrEditProductForm(props: any) {
         label="Select Category"
         placeholder="Eg. Non-Basmati"
         data={categoryOptions}
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("_categoryId")}
       />
 
@@ -191,40 +231,41 @@ function AddOrEditProductForm(props: any) {
         required
         label="Variant Name"
         placeholder="eg. 1509 Sella"
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("variantName")}
       />
 
       <Space h="md" />
 
       <Select
-            data={tagsOptions || []}
-            label="Tags"
-            placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-            disabled={isBasmatiCategory || modalType === "update"}
-            {...form.getInputProps("tags")}
-          />
+        data={tagsOptions || []}
+        label="Tags"
+        placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
+        disabled={isBasmatiCategory}
+        {...form.getInputProps("tags")}
+      />
 
-     <Space h="md" />
+      <Space h="md" />
 
       <TextInput
         label="HSN Code"
         placeholder="eg. CSQ212"
-        disabled={modalType === "update" ? true : false}
         {...form.getInputProps("HSNCode")}
       />
 
       <Space h="md" />
 
-         <NumberInput
-          min={0}
-          label="Broken %"
-          placeholder="eg. 5"
-          disabled={modalType === "update" ? true : false}
-          {...form.getInputProps("brokenPercentage")}
-        />
+      <NumberInput
+        min={0}
+        label="Broken %"
+        placeholder="eg. 5"
+        {...form.getInputProps("brokenPercentage")}
+      />
 
-          <Space h="md" />
+      <Space h="md" />
+      <label htmlFor="imageUpload">Image Upload</label>
+      <Grid>{fileInputs}</Grid>
+
+      <Space h="md" />
 
       {fields}
 

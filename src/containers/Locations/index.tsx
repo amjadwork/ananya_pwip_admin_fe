@@ -134,6 +134,7 @@ const RenderModalContent = (props: any) => {
   const updateFormData = props.updateFormData;
   const locationData = props.locationData;
   const selectedFilterValue = props.selectedFilterValue;
+  const handlePictureChange = props.handlePictureChange;
   const modalType = props.modalType;
 
   return (
@@ -145,6 +146,7 @@ const RenderModalContent = (props: any) => {
       locationData={locationData}
       selectedFilterValue={selectedFilterValue}
       modalType={modalType}
+      handlePictureChange={handlePictureChange}
     />
   );
 };
@@ -330,6 +332,43 @@ function LocationsContainer() {
     }
   };
 
+  const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
+    const c = APIRequest(
+      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
+      "GET"
+    )
+      .then((res: any) => {
+        if (res) {
+          const uri = res.url;
+          const publicUri = res.publicUrl;
+          const fileSrc = e;
+          const imageObject = {
+            uri,
+            fileSrc,
+            publicUri,
+          };
+          return imageObject;
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error fetching signed URL:", error);
+        // Handle the error as needed
+      });
+    return c;
+  };
+
+  const handlePictureChange = async (e: any) => {
+    const file = e;
+
+    const extString = file.type;
+    const extStringArr = extString.split("/");
+    const ext = extStringArr[1];
+    const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
+    const result = await handleImagePickerChange(e, name, ext);
+    return result;
+  };
+
+
   const handleRefreshCalls = () => {
     handleGetLocation();
   };
@@ -361,6 +400,7 @@ function LocationsContainer() {
           modalType={modalType}
           modalOpen={modalOpen}
           selectedFilterValue={selectedFilterValue}
+          handlePictureChange={handlePictureChange}
         />
       )}
       modalSize="40%"

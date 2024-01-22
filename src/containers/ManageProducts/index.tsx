@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload } from "tabler-icons-react";
+import { Plus, Upload, Photo } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -55,7 +55,7 @@ const columns = [
     label: "Action",
     key: "action",
     width: "90px",
-    fixed:true,
+    fixed: true,
   },
 ];
 
@@ -68,6 +68,7 @@ const RenderModalContent = (props: any) => {
   const modalType = props.modalType;
   const modalOpen = props.modalOpen;
   const containerType = props.containerType;
+  const handlePictureChange = props.handlePictureChange;
 
   let regionCostingList: any = [];
 
@@ -93,6 +94,7 @@ const RenderModalContent = (props: any) => {
       updateFormData={updateFormData}
       modalType={modalType}
       modalOpen={modalOpen}
+      handlePictureChange={handlePictureChange}
     />
   );
 };
@@ -229,6 +231,42 @@ function ManageProductsContainer(props: any) {
       onConfirm: () => handleDeleteVariant(rowData),
     });
 
+  const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
+    const c = APIRequest(
+      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
+      "GET"
+    )
+      .then((res: any) => {
+        if (res) {
+          const uri = res.url;
+          const publicUri = res.publicUrl;
+          const fileSrc = e;
+          const imageObject = {
+            uri,
+            fileSrc,
+            publicUri,
+          };
+          return imageObject;
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error fetching signed URL:", error);
+        // Handle the error as needed
+      });
+    return c;
+  };
+
+  const handlePictureChange = async (e: any) => {
+    const file = e;
+
+    const extString = file.type;
+    const extStringArr = extString.split("/");
+    const ext = extStringArr[1];
+    const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
+    const result = await handleImagePickerChange(e, name, ext);
+    return result;
+  };
+
   React.useEffect(() => {
     if (variantsData.length && categoryData.length) {
       let tableData: any = [];
@@ -243,6 +281,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
+            images:d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -287,6 +326,7 @@ function ManageProductsContainer(props: any) {
             modalType={modalType}
             modalOpen={modalOpen}
             containerType={containerType}
+            handlePictureChange={handlePictureChange}
           />
         );
       }}
@@ -335,6 +375,7 @@ function ManageProductsContainer(props: any) {
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
+            images: obj.images,
             sourceRates: [{ ...obj }],
           };
 
