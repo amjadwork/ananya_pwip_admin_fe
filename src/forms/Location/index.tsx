@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Group, TextInput, Space, MultiSelect } from "@mantine/core";
+import {
+  Group,
+  TextInput,
+  Space,
+  MultiSelect,
+  Grid,
+  FileInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
+import axios from "axios";
+
+
+interface ImageResult {
+  uri: string;
+  publicUri: string;
+  fileSrc: string;
+  // Add other properties if needed
+}
 
 function AddEditLocationFormContainer(props: any) {
   const handleSetLocationPayload = props.handleSetLocationPayload;
@@ -10,9 +26,11 @@ function AddEditLocationFormContainer(props: any) {
   const locationData = props.locationData;
   const selectedFilterValue = props.selectedFilterValue || null;
   const updateFormData = props.updateFormData;
+  const handlePictureChange = props.handlePictureChange;
   const modalType = props.modalType || "add";
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
+  const [imageResult, setImageResult] = useState<ImageResult | null>(null);
   const handleCloseModal = props.handleCloseModal;
 
   const form = useForm({
@@ -43,6 +61,28 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [updateFormData, modalType]);
 
+  const imageFileLabels = ["Image 1"];
+
+  const fileInputs = imageFileLabels.map((label, index) => (
+    <Grid.Col key={index}>
+      <FileInput
+        accept="image/png,image/jpeg"
+        placeholder="Upload Image"
+        onChange={(e) => {
+          handlePictureChange(e)
+            .then((result: any) => {
+              setImageResult(result);
+            })
+            .catch((err: any) => {
+              console.log(err);
+            });
+            form.getInputProps("image").onChange(e);
+        }}
+      />
+    </Grid.Col>
+  ));
+
+
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
     form.setValues((prevValues: any) => ({
@@ -57,7 +97,7 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [selectedFilterValue]);
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit =  async (values: typeof form.values) => {
     handleCloseModal(false);
 
     let sourceArr: any = [...locationPayload.source];
@@ -73,6 +113,32 @@ function AddEditLocationFormContainer(props: any) {
     if (locationType === "destination") {
       destinationArr.push(values);
     }
+
+    console.log("values", values)
+    console.log("imageResult", imageResult)
+
+    if (locationType==="destination" || locationType==="origin"){
+ if(imageResult)
+     {
+      console.log("hello hello", imageResult)
+        const uri = imageResult.uri;
+        const publicURI = imageResult.publicUri;
+        const file = imageResult.fileSrc;
+        try {
+          const response =  await axios.put(`${uri}`, file).then(() => {
+            console.log("response",imageResult)
+            form.setValues((prevValues: any) => ({
+              ...prevValues,
+              image: publicURI,
+            }));
+            // form.setFieldValue = publicURI;
+          });
+        } catch (error) {
+          console.error(`Error processing image: ${error}`);
+          // Handle error as needed
+        }
+      }}
+    
 
     let payload: any = {
       source: [],
@@ -94,7 +160,8 @@ function AddEditLocationFormContainer(props: any) {
 
     handleSetLocationPayload(payload);
   };
-  console.log("form", form);
+
+  
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Select
@@ -169,11 +236,10 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("city")}
           />
           <Space h="md" />
-          <TextInput
-            label="Image Url"
-            placeholder="http://image.test.port/india"
-            {...form.getInputProps("imageUrl")}
-          />
+
+          <label htmlFor="imageUpload">Image Upload</label>
+          <Grid>{fileInputs}</Grid>
+
           <Space h="md" />
           <Select
             required
@@ -225,11 +291,11 @@ function AddEditLocationFormContainer(props: any) {
             clearButtonLabel="Clear selection"
             clearable
           />
-          <TextInput
-            label="Image Url"
-            placeholder="http://image.test.port/india"
-            {...form.getInputProps("imageUrl")}
-          />
+          <Space h="md" />
+
+          <label htmlFor="imageUpload">Image Upload</label>
+          <Grid>{fileInputs}</Grid>
+
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>
