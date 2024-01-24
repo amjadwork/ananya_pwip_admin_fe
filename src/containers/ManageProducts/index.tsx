@@ -10,6 +10,7 @@ import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
+import axios from "axios";
 
 const columns = [
   {
@@ -281,7 +282,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
-            images:d.images,
+            images: d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -304,10 +305,10 @@ function ManageProductsContainer(props: any) {
         modalType === "add"
           ? "Add Product Variant"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : modalType === "line-chart"
-          ? "Line Chart for Pricing Trend"
-          : "Update Variant Price and Source Location"
+            ? "Update Or Add Data by Excel Sheet"
+            : modalType === "line-chart"
+              ? "Line Chart for Pricing Trend"
+              : "Update Variant Price and Source Location"
       }
       onModalClose={() => {
         setModalOpen(false);

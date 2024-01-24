@@ -67,13 +67,20 @@ function AddOrEditProductForm(props: any) {
     { value: "paraboiled", label: "Paraboiled" },
   ];
 
+  const handleDeleteImage = (index: number) => {
+    const updatedImages = [...form.values.images];
+    updatedImages.splice(index, 1);
+    form.setFieldValue("images", updatedImages);
+    setUpdateFormImages([...updatedImages]);
+  };
+
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
   const fileInputs = imageFileLabels.map((label, index) => (
     <Grid.Col key={index}>
       <FileInput
         accept="image/png,image/jpeg"
-        placeholder="Upload Image 1"
+        label="Upload file (png/jpg)"
         onChange={(e) => {
           handlePictureChange(e)
             .then((result: any) => {
@@ -90,10 +97,19 @@ function AddOrEditProductForm(props: any) {
       />
     </Grid.Col>
   ));
-const existingImages = updateFormImages.map((imageUrl: any, index: any) => (
-  <ImageUpload key={index} imageUrl={imageUrl} />
-));
-const combinedFileInputs = [...existingImages, ...fileInputs.slice(updateFormImages.length)];
+
+  const existingImages = updateFormImages.map((imageUrl: any, index: any) => (
+    <ImageUpload
+      key={index}
+      imageUrl={imageUrl}
+      onDelete={() => handleDeleteImage(index)}
+    />
+  ));
+
+  const combinedFileInputs = [
+    ...existingImages,
+    ...fileInputs.slice(updateFormImages.length),
+  ];
 
   useEffect(() => {
     if (updateFormData && modalType === "update") {
@@ -273,6 +289,7 @@ const combinedFileInputs = [...existingImages, ...fileInputs.slice(updateFormIma
       <Space h="md" />
 
       <label htmlFor="imageUpload">Image Upload</label>
+      <Space h="sm" />
       <Grid>{combinedFileInputs}</Grid>
 
       <Space h="md" />
