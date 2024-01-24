@@ -371,15 +371,21 @@ function ManageProductsContainer(props: any) {
           setSelectedTableRowIndex(index);
 
           const formObj = {
+            _id: obj._id,
             _categoryId: obj._categoryId,
+            _variantId: obj._variantId,
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
             images: obj.images,
-            sourceRates: [{ ...obj }],
+            sourceRates: [
+              {
+                price: obj.price,
+                _sourceId: obj._sourceId,
+              },
+            ],
           };
-
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
