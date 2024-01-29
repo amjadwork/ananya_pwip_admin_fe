@@ -19,6 +19,11 @@ import APIRequest from "../../helper/api";
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
+import { resolve } from "path";
+import {
+  updateIndividualVariantSourceRate,
+  uploadingMultipleImagesToS3,
+} from "../../helper/helper";
 // testing
 
 const initialFormValues: any = {
@@ -36,6 +41,7 @@ const initialFormValues: any = {
       key: randomId(),
     },
   ],
+  updateSourceRates: false,
 };
 
 function AddOrEditProductForm(props: any) {
@@ -88,6 +94,8 @@ function AddOrEditProductForm(props: any) {
                 url: result.uri,
                 src: e,
                 publicUrl: result.publicUri,
+                index,
+                label,
               });
             })
             .catch((err: any) => {
@@ -149,23 +157,30 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    if (formValues.imagesArray && formValues.imagesArray.length > 0) {
-      for (const image of formValues.imagesArray) {
-        const uri = image.url;
-        const publicURI = image.publicUrl;
-        const file = image.src;
-        try {
-          const response = await axios.put(`${uri}`, file).then(() => {
-            form.values.images.push(publicURI);
-          });
-        } catch (error) {
-          console.error(`Error processing image: ${error}`);
-          // Handle error as needed
-        }
-      }
+    console.log(form.values);
+    console.log("initialFormValues", initialFormValues);
+
+    const payloadCommonVariantDetails = { ...form.values };
+    delete payloadCommonVariantDetails.sourceRates;
+    delete payloadCommonVariantDetails.imagesArray;
+    if (formValues.imagesArray.length !== 0) {
+      const uploadImageResponseArr = await uploadingMultipleImagesToS3(
+        form.values
+      );
+      payloadCommonVariantDetails.images = uploadImageResponseArr;
     }
-    handleCloseModal(false);
-    handleSaveCallback(formValues);
+    console.log(form.values);
+    if (formValues.updateSourceRates) {
+      const x = await updateIndividualVariantSourceRate(
+        formValues._variantId,
+        "65b21ebe0f025c38d5ea0fa9",
+        formValues.updatePrice
+      );
+      console.log("res", x);
+    }
+    handleCloseModal(true);
+    //variant common fields update
+    handleSaveCallback(payloadCommonVariantDetails);
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
@@ -196,14 +211,22 @@ function AddOrEditProductForm(props: any) {
           placeholder="Eg. Karnal"
           data={regionOptions}
           {...form.getInputProps(`sourceRates.${index}._sourceId`)}
+          // onChange={(e) => {
+          //   form.setFieldValue("updateSourceRates", true);
+          // }}
         />
 
         <NumberInput
           required
           label="Ex-Mill"
-          placeholder="Eg. 26500"
+          placeholder="Eg. 56.50"
           precision={2}
           {...form.getInputProps(`sourceRates.${index}.price`)}
+          onChange={(e) => {
+            form.setFieldValue("updateSourceRates", true);
+
+            form.setFieldValue(`updatePrice`, e);
+          }}
         />
 
         <Flex

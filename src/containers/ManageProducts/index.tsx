@@ -129,15 +129,14 @@ function ManageProductsContainer(props: any) {
     let changedProperties = {};
 
     if (modalType === "update") {
-      console.log("here 1", updateFormData, variantPayload);
       changedProperties = getChangedPropertiesFromObject(
         updateFormData,
         variantPayload
       );
-
       variantPayload = {
-        ...changedProperties,
+        ...changedProperties,images:variantPayload.images
       };
+      console.log("here 1", updateFormData, variantPayload);
 
       params = `/${payload._variantId}`;
     }
@@ -148,15 +147,15 @@ function ManageProductsContainer(props: any) {
       endpoint = "variant" + params;
     }
 
-    // const addVariantResponse = await APIRequest(
-    //   endpoint,
-    //   modalType === "add" ? "POST" : "PATCH",
-    //   modalType === "add" ? variantPayload : changedProperties
-    // );
+    const addVariantResponse = await APIRequest(
+      endpoint,
+      modalType === "add" ? "POST" : "PATCH",
+      modalType === "add" ? variantPayload : variantPayload
+    );
 
-    // if (addVariantResponse) {
-    //   handleRefreshCalls();
-    // }
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
   };
 
   const handleDeleteVariant = async (data: any) => {
