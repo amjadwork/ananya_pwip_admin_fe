@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useTable, Column, useFilters, usePagination, useSortBy, TableState } from 'react-table';
 import { SortAscending, SortDescending, Pencil, Trash } from 'tabler-icons-react';
 import {
-    ActionIcon,
+    ActionIcon, ScrollArea,
   } from "@mantine/core";
 
 interface TableColumns {
@@ -23,14 +23,15 @@ const tableStyle = {
   fontFamily: 'arial, sans-serif',
   borderCollapse: 'collapse' as const,
   width: '100%',
-  marginTop: '10px',
+  marginTop: '20px',
   overflowX: 'auto',
+  tableLayout: 'fixed'
 };
 
 const cellStyle = {
   border: '1px solid #D9E4EC',
   textAlign: 'left' as const,
-  padding: '3px',
+  padding: '7px',
 };
 
 const evenRowStyle = {
@@ -105,7 +106,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
           ))
         ))}
       </div>
-
+<ScrollArea>
       <table {...getTableProps()} style={tableStyle} className="table">
         <thead>
           {headerGroups.map((headerGroup: any) => (
@@ -178,6 +179,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
           })}
         </tbody>
       </table>
+      </ScrollArea>
 
       <div style={{ marginTop: '15px' }}>
         <button onClick={() => previousPage()} disabled={!canPreviousPage}>

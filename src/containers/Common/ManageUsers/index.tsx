@@ -42,7 +42,7 @@ const columns = [
   {
     Header: "Email",
     accessor: "email",
-    width: "230px",
+    width: "300px",
     sortable: true,
     filterable: true,
   },
@@ -63,13 +63,13 @@ const columns = [
   {
     Header: "Created",
     accessor: "t_create",
-    width: "150px",
+    width: "180px",
     sortable: true,
   },
   {
     Header: "Updated",
     accessor: "t_update",
-    width: "150px",
+    width: "180px",
     sortable: true,
   },
   {
