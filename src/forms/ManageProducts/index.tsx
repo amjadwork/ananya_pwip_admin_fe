@@ -130,21 +130,49 @@ function AddOrEditProductForm(props: any) {
 
   const handleGetSources: any = async () => {
     const regionResponse = await APIRequest("location/source", "GET");
-
+  
     if (regionResponse) {
-      const options: any = regionResponse.source.map((d: any) => ({
-        label: d.region,
-        value: d._id,
-      }));
+      const options: any = regionResponse.source
+        .filter((d: any) => {
+          // Filter out the selected source from the regionOptions
+          return !form.values.sourceRates.some(
+            (source: any) => source._sourceId === d._id
+          );
+        })
+        .map((d: any) => ({
+          label: d.region,
+          value: d._id,
+        }));
       setRegionOptions([...options]);
     }
   };
+  
 
   const handleAddRegionCost: any = () => {
-    form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
-      ...initialFormValues.sourceRates[0],
-    });
+    // Filter out the selected sources from the regionOptions
+    const filteredRegionOptions = regionOptions.filter(
+      (option: any) =>
+        !form.values.sourceRates.some(
+          (source: any) => source._sourceId === option.value
+        )
+    );
+  
+    if (filteredRegionOptions.length > 0) {
+      // Add a new source rate field
+      form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
+        ...initialFormValues.sourceRates[0],
+      });
+
+      setRegionOptions(filteredRegionOptions);
+    } else {
+      // Optionally, you can show a notification or handle the case where all sources are already selected
+      showNotification({
+        message: "All sources have been selected.",
+        color: "blue",
+      });
+    }
   };
+  
 
   const handleRemoveRegionCost = (index: number) => {
     form.removeListItem("sourceRates", index);
