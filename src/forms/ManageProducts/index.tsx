@@ -19,7 +19,6 @@ import APIRequest from "../../helper/api";
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
-import { resolve } from "path";
 import {
   updateIndividualVariantSourceRate,
   uploadingMultipleImagesToS3,
@@ -187,6 +186,7 @@ function AddOrEditProductForm(props: any) {
   const handleSubmit = async (formValues: typeof form.values) => {
     
     if(modalType==="add"){
+
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
           const uri = image.url;
@@ -216,13 +216,23 @@ function AddOrEditProductForm(props: any) {
       );
       payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
+    
+      let sourceID=formValues.sourceRates[0]._sourceId;
+      let price=formValues.sourceRates[0].price;
+      
+      if(formValues.updateSource){
+        sourceID =formValues.updateSource;
+      }
+      if(formValues.updatePrice){
+        price =formValues.updatePrice;
+      }
 
     if (formValues.updateSourceRates) {
       const x = await updateIndividualVariantSourceRate(
         formValues._variantId,
         formValues.sourceRates[0]._id,
-        formValues.updatePrice,
-        formValues.updateSource,
+        price,
+        sourceID,
       );
     }
     handleCloseModal(true);
