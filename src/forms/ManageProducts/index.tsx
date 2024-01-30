@@ -157,9 +157,6 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    console.log(form.values);
-    console.log("initialFormValues", initialFormValues);
-
     const payloadCommonVariantDetails = { ...form.values };
     delete payloadCommonVariantDetails.sourceRates;
     delete payloadCommonVariantDetails.imagesArray;
@@ -168,15 +165,13 @@ function AddOrEditProductForm(props: any) {
         form.values
       );
       payloadCommonVariantDetails.images = uploadImageResponseArr;
-    }
-    console.log(form.values);
+      }
     if (formValues.updateSourceRates) {
       const x = await updateIndividualVariantSourceRate(
         formValues._variantId,
-        "65b21ebe0f025c38d5ea0fa9",
+        formValues.sourceRates[0]._id,
         formValues.updatePrice
       );
-      console.log("res", x);
     }
     handleCloseModal(true);
     //variant common fields update

@@ -134,10 +134,9 @@ function ManageProductsContainer(props: any) {
         variantPayload
       );
       variantPayload = {
-        ...changedProperties,images:variantPayload.images
+        ...changedProperties,
+        images:variantPayload.images,
       };
-      console.log("here 1", updateFormData, variantPayload);
-
       params = `/${payload._variantId}`;
     }
 
@@ -367,9 +366,7 @@ function ManageProductsContainer(props: any) {
           let obj = { ...row };
 
           setSelectedTableRowIndex(index);
-
           const formObj = {
-            _id: obj._id,
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
@@ -379,6 +376,7 @@ function ManageProductsContainer(props: any) {
             images: obj.images,
             sourceRates: [
               {
+                _id: obj._id,
                 price: obj.price,
                 _sourceId: obj._sourceId,
               },

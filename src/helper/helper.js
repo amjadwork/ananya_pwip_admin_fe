@@ -47,7 +47,6 @@ export function getChangedPropertiesFromObject(original, updated) {
   return changedProperties;
 }
 export function uploadingMultipleImagesToS3(formValues) {
-  console.log("ddd", formValues);
   return new Promise(async (resolve, reject) => {
     if (formValues.imagesArray && formValues.imagesArray.length > 0) {
       const responseUpdate = [];
@@ -78,14 +77,14 @@ export function updateIndividualVariantSourceRate(variantId, sourceRateId,price)
     try {
       if (variantId && sourceRateId && price) {
         const endpoint =
-          'variant/'+variantId +
+          'variant/'+ variantId +
           "/" +
           sourceRateId 
          
         const updateSourceRate = await APIRequest(endpoint, "PATCH",{price});
         resolve(updateSourceRate);
       } else {
-        resolve({ success: true, msg: "nothing to Update" });
+        resolve({ success: true, msg: "nothing to update" });
       }
     } catch (error) {
       reject(error)
