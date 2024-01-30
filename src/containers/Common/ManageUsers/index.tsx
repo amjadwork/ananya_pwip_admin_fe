@@ -16,6 +16,7 @@ import {
   patchProfileData,
 } from "../../../services/user-management/Users";
 import { getRolesData } from "../../../services/user-management/PermissionAndRoles";
+import { IsoDateConverter } from "../../../helper/helper";
 
 const columns = [
   {
@@ -58,6 +59,18 @@ const columns = [
     width: "130px",
     sortable: true,
     filterable: true,
+  },
+  {
+    Header: "Created",
+    accessor: "t_create",
+    width: "150px",
+    sortable: true,
+  },
+  {
+    Header: "Updated",
+    accessor: "t_update",
+    width: "150px",
+    sortable: true,
   },
   {
     Header: "Action",
@@ -208,10 +221,13 @@ function ManageUsers() {
 
   useEffect(() => {
     if (usersData && usersData.length) {
+      console.log(usersData, "userData")
       const tableData = usersData.map((d: any) => {
         const obj = {
           ...d,
           activeStatus: d.active === 1 ? "Active" : "Inactive",
+          t_create: IsoDateConverter(d.t_create),
+          t_update: IsoDateConverter(d.t_update),
         };
         const role = rolesData.find((role: any) => role._id === d.role_id);
         if (role) {
@@ -219,6 +235,7 @@ function ManageUsers() {
         }
         return obj;
       });
+      console.log(tableData)
       setTableRowData(tableData);
     }
   }, [usersData]);

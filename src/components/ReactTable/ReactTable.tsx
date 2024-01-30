@@ -23,14 +23,14 @@ const tableStyle = {
   fontFamily: 'arial, sans-serif',
   borderCollapse: 'collapse' as const,
   width: '100%',
-  marginTop: '20px',
+  marginTop: '10px',
   overflowX: 'auto',
 };
 
 const cellStyle = {
   border: '1px solid #D9E4EC',
   textAlign: 'left' as const,
-  padding: '8px',
+  padding: '3px',
 };
 
 const evenRowStyle = {
@@ -143,7 +143,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                 {row.cells.map((cell: any) => {
                   if (cell.column.id === 'action') {
                     return (
-                        <td
+                        <th
                         {...cell.getCellProps()}
                         style={{
                           ...cellStyle,
@@ -167,7 +167,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                         >
                           <Trash size="1rem" color="red" />
                         </ActionIcon>
-                      </td>
+                      </th>
                     );
                   } else {
                     return <td {...cell.getCellProps()} style={cellStyle}>{cell.render('Cell')}</td>;
