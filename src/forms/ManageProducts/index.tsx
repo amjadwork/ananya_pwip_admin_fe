@@ -157,6 +157,26 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
+    if(modalType==="add"){
+      if (formValues.imagesArray && formValues.imagesArray.length > 0) {
+        for (const image of formValues.imagesArray) {
+          const uri = image.url;
+          const publicURI = image.publicUrl;
+          const file = image.src;
+          try {
+            const response = await axios.put(`${uri}`, file).then(() => {
+              form.values.images.push(publicURI);
+            });
+          } catch (error) {
+            console.error(`Error processing image: ${error}`);
+            // Handle error as needed
+          }
+        }
+      }
+      handleCloseModal(false);
+      handleSaveCallback(formValues);  
+    }
+    if(modalType==="update"){
     const payloadCommonVariantDetails = { ...form.values };
     delete payloadCommonVariantDetails.sourceRates;
     delete payloadCommonVariantDetails.imagesArray;
@@ -176,6 +196,8 @@ function AddOrEditProductForm(props: any) {
     handleCloseModal(true);
     //variant common fields update
     handleSaveCallback(payloadCommonVariantDetails);
+  }
+
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
@@ -219,7 +241,7 @@ function AddOrEditProductForm(props: any) {
           {...form.getInputProps(`sourceRates.${index}.price`)}
           onChange={(e) => {
             form.setFieldValue("updateSourceRates", true);
-
+            form.setFieldValue(`sourceRates.${index}.price`, e);
             form.setFieldValue(`updatePrice`, e);
           }}
         />
