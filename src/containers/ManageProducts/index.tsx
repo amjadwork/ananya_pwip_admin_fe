@@ -129,17 +129,14 @@ function ManageProductsContainer(props: any) {
 
     if (modalType === "update") {
       changedProperties = getChangedPropertiesFromObject(
-        tableRowData[selectedTableRowIndex],
-        variantPayload.sourceRates[0]
+        updateFormData,
+        variantPayload
       );
-
       variantPayload = {
         ...changedProperties,
-        _variantId: payload?.sourceRates[0]._variantId,
-        _sourceRateId: payload?.sourceRates[0]._id,
+        images:variantPayload.images,
       };
-
-      params = `/${variantPayload._variantId}/${variantPayload._sourceRateId}`;
+      params = `/${payload._variantId}`;
     }
 
     let endpoint = "variant";
@@ -151,7 +148,7 @@ function ManageProductsContainer(props: any) {
     const addVariantResponse = await APIRequest(
       endpoint,
       modalType === "add" ? "POST" : "PATCH",
-      modalType === "add" ? variantPayload : changedProperties
+      modalType === "add" ? variantPayload : variantPayload
     );
 
     if (addVariantResponse) {
@@ -281,7 +278,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
-            images:d.images,
+            images: d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -304,10 +301,10 @@ function ManageProductsContainer(props: any) {
         modalType === "add"
           ? "Add Product Variant"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : modalType === "line-chart"
-          ? "Line Chart for Pricing Trend"
-          : "Update Variant Price and Source Location"
+            ? "Update Or Add Data by Excel Sheet"
+            : modalType === "line-chart"
+              ? "Line Chart for Pricing Trend"
+              : "Update Variant Price and Source Location"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -368,17 +365,22 @@ function ManageProductsContainer(props: any) {
           let obj = { ...row };
 
           setSelectedTableRowIndex(index);
-
           const formObj = {
             _categoryId: obj._categoryId,
+            _variantId: obj._variantId,
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
             images: obj.images,
-            sourceRates: [{ ...obj }],
+            sourceRates: [
+              {
+                _id: obj._id,
+                price: obj.price,
+                _sourceId: obj._sourceId,
+              },
+            ],
           };
-
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
