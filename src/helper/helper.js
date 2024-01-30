@@ -72,16 +72,24 @@ export function uploadingMultipleImagesToS3(formValues) {
     }
   });
 }
-export function updateIndividualVariantSourceRate(variantId, sourceRateId,price) {
+export function updateIndividualVariantSourceRate(variantId, sourceRateId, price, sourceId) {
   return new Promise(async (resolve, reject) => {
     try {
-      if (variantId && sourceRateId && price) {
+      if (variantId && sourceRateId && price && sourceId) {
         const endpoint =
           'variant/'+ variantId +
           "/" +
-          sourceRateId 
-         
-        const updateSourceRate = await APIRequest(endpoint, "PATCH",{price});
+          sourceRateId;
+          const dataToUpdate = {};
+
+        if (price) {
+          dataToUpdate.price = price;
+        }
+
+        if (sourceId) {
+          dataToUpdate._sourceId = sourceId;
+        }
+        const updateSourceRate = await APIRequest(endpoint, "PATCH", dataToUpdate);
         resolve(updateSourceRate);
       } else {
         resolve({ success: true, msg: "nothing to update" });

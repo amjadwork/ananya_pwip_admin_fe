@@ -177,6 +177,7 @@ function AddOrEditProductForm(props: any) {
       handleCloseModal(false);
       handleSaveCallback(formValues);  
     }
+    
     if(modalType==="update"){
     const payloadCommonVariantDetails = { ...form.values };
     delete payloadCommonVariantDetails.sourceRates;
@@ -187,11 +188,13 @@ function AddOrEditProductForm(props: any) {
       );
       payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
+
     if (formValues.updateSourceRates) {
       const x = await updateIndividualVariantSourceRate(
         formValues._variantId,
         formValues.sourceRates[0]._id,
-        formValues.updatePrice
+        formValues.updatePrice,
+        formValues.updateSource,
       );
     }
     handleCloseModal(true);
@@ -228,11 +231,12 @@ function AddOrEditProductForm(props: any) {
           label="Select Region"
           placeholder="Eg. Karnal"
           data={regionOptions}
-          disabled={modalType==="update"}
           {...form.getInputProps(`sourceRates.${index}._sourceId`)}
-          // onChange={(e) => {
-          //   form.setFieldValue("updateSourceRates", true);
-          // }}
+          onChange={(e) => {
+            form.setFieldValue("updateSourceRates", true);
+            form.setFieldValue(`sourceRates.${index}._sourceId`, e);
+            form.setFieldValue(`updateSource`, e);
+          }}
         />
 
         <NumberInput
