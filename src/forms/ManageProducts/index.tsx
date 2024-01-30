@@ -157,6 +157,7 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
+    
     if(modalType==="add"){
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
@@ -227,6 +228,7 @@ function AddOrEditProductForm(props: any) {
           label="Select Region"
           placeholder="Eg. Karnal"
           data={regionOptions}
+          disabled={modalType==="update"}
           {...form.getInputProps(`sourceRates.${index}._sourceId`)}
           // onChange={(e) => {
           //   form.setFieldValue("updateSourceRates", true);
