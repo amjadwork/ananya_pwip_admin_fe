@@ -1,3 +1,6 @@
+import axios from "axios";
+import APIRequest from "./api";
+
 export function setCookie(name, value, days) {
   const expires = days ? `; expires=${days}` : "";
   const sameSite = "; SameSite=None";
@@ -43,7 +46,59 @@ export function getChangedPropertiesFromObject(original, updated) {
 
   return changedProperties;
 }
+export function uploadingMultipleImagesToS3(formValues) {
+  return new Promise(async (resolve, reject) => {
+    if (formValues.imagesArray && formValues.imagesArray.length > 0) {
+      const responseUpdate = [];
+      for (const image of formValues.imagesArray) {
+        const uri = image.url;
+        const publicURI = image.publicUrl;
+        const file = image.src;
 
+        try {
+          const response = await axios.put(`${uri}`, file).then((r) => {
+            return publicURI;
+          });
+          formValues.images[image.index] = response;
+        } catch (error) {
+          console.error(`Error processing image: ${error}`);
+          // Handle error as needed
+        }
+      }
+
+      resolve(formValues.images);
+    } else {
+      resolve({ success: true, msg: "nothing to Update" });
+    }
+  });
+}
+export function updateIndividualVariantSourceRate(variantId, sourceRateId, price, sourceId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (variantId && sourceRateId && price && sourceId) {
+        const endpoint =
+          'variant/'+ variantId +
+          "/" +
+          sourceRateId;
+          const dataToUpdate = {};
+
+        if (price) {
+          dataToUpdate.price = price;
+        }
+
+        if (sourceId) {
+          dataToUpdate._sourceId = sourceId;
+        }
+        const updateSourceRate = await APIRequest(endpoint, "PATCH", dataToUpdate);
+        resolve(updateSourceRate);
+      } else {
+        resolve({ success: true, msg: "nothing to update" });
+      }
+    } catch (error) {
+      reject(error)
+    }
+  });
+}
 export function intersectObjects(refPayload, formValues) {
   const result = {};
 
