@@ -281,7 +281,6 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
-            images: d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -377,13 +376,7 @@ function ManageProductsContainer(props: any) {
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
-            images: obj.images,
-            sourceRates: [
-              {
-                price: obj.price,
-                _sourceId: obj._sourceId,
-              },
-            ],
+            sourceRates: [{ ...obj }],
           };
           setUpdateFormData(formObj);
           setModalType("update");
