@@ -67,7 +67,6 @@ function AddEditLocationFormContainer(props: any) {
     <Grid.Col key={index}>
       <FileInput
         accept="image/png,image/jpeg"
-        placeholder="Upload Image"
         onChange={(e) => {
           handlePictureChange(e)
             .then((result: any) => {

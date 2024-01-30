@@ -18,6 +18,12 @@ import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
+import ImageUpload from "../../components/ImageUpload/ImageUpload";
+import { resolve } from "path";
+import {
+  updateIndividualVariantSourceRate,
+  uploadingMultipleImagesToS3,
+} from "../../helper/helper";
 // testing
 
 const initialFormValues: any = {
@@ -35,6 +41,7 @@ const initialFormValues: any = {
       key: randomId(),
     },
   ],
+  updateSourceRates: false,
 };
 
 function AddOrEditProductForm(props: any) {
@@ -47,37 +54,9 @@ function AddOrEditProductForm(props: any) {
   const handlePictureChange = props.handlePictureChange;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
+  const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
 
-  const tagsOptions = [
-    { value: "raw", label: "Raw" },
-    { value: "steam", label: "Steam" },
-    { value: "paraboiled", label: "Paraboiled" },
-  ];
-
-  const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
-
-  const fileInputs = imageFileLabels.map((label, index) => (
-    <Grid.Col key={index}>
-      <FileInput
-        accept="image/png,image/jpeg"
-        placeholder="Upload Image 1"
-        onChange={(e) => {
-          handlePictureChange(e)
-            .then((result: any) => {
-              form.values.imagesArray.push({
-                url: result.uri,
-                src: e,
-                publicUrl: result.publicUri,
-              });
-            })
-            .catch((err: any) => {
-              console.log(err);
-            });
-        }}
-      />
-    </Grid.Col>
-  ));
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -88,29 +67,112 @@ function AddOrEditProductForm(props: any) {
     },
   });
 
+  const tagsOptions = [
+    { value: "raw", label: "Raw" },
+    { value: "steam", label: "Steam" },
+    { value: "paraboiled", label: "Paraboiled" },
+  ];
+
+  const handleDeleteImage = (index: number) => {
+    const updatedImages = [...form.values.images];
+    updatedImages.splice(index, 1);
+    form.setFieldValue("images", updatedImages);
+    setUpdateFormImages([...updatedImages]);
+  };
+
+  const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
+
+  const fileInputs = imageFileLabels.map((label, index) => (
+    <Grid.Col key={index}>
+      <FileInput
+        accept="image/png,image/jpeg"
+        label="Upload file (png/jpg)"
+        onChange={(e) => {
+          handlePictureChange(e)
+            .then((result: any) => {
+              form.values.imagesArray.push({
+                url: result.uri,
+                src: e,
+                publicUrl: result.publicUri,
+                index,
+                label,
+              });
+            })
+            .catch((err: any) => {
+              console.log(err);
+            });
+        }}
+      />
+    </Grid.Col>
+  ));
+
+  const existingImages = updateFormImages.map((imageUrl: any, index: any) => (
+    <ImageUpload
+      key={index}
+      imageUrl={imageUrl}
+      onDelete={() => handleDeleteImage(index)}
+    />
+  ));
+
+  const combinedFileInputs = [
+    ...existingImages,
+    ...fileInputs.slice(updateFormImages.length),
+  ];
+
   useEffect(() => {
     if (updateFormData && modalType === "update") {
       form.setValues(updateFormData);
+
+      const images = updateFormData.images || [];
+      setUpdateFormImages([...images]);
     }
   }, [updateFormData, modalType]);
 
   const handleGetSources: any = async () => {
     const regionResponse = await APIRequest("location/source", "GET");
-
+  
     if (regionResponse) {
-      const options: any = regionResponse.source.map((d: any) => ({
-        label: d.region,
-        value: d._id,
-      }));
+      const options: any = regionResponse.source
+        .filter((d: any) => {
+          // Filter out the selected source from the regionOptions
+          return !form.values.sourceRates.some(
+            (source: any) => source._sourceId === d._id
+          );
+        })
+        .map((d: any) => ({
+          label: d.region,
+          value: d._id,
+        }));
       setRegionOptions([...options]);
     }
   };
+  
 
   const handleAddRegionCost: any = () => {
-    form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
-      ...initialFormValues.sourceRates[0],
-    });
+    // Filter out the selected sources from the regionOptions
+    const filteredRegionOptions = regionOptions.filter(
+      (option: any) =>
+        !form.values.sourceRates.some(
+          (source: any) => source._sourceId === option.value
+        )
+    );
+  
+    if (filteredRegionOptions.length > 0) {
+      // Add a new source rate field
+      form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
+        ...initialFormValues.sourceRates[0],
+      });
+
+      setRegionOptions(filteredRegionOptions);
+    } else {
+      // Optionally, you can show a notification or handle the case where all sources are already selected
+      showNotification({
+        message: "All sources have been selected.",
+        color: "blue",
+      });
+    }
   };
+  
 
   const handleRemoveRegionCost = (index: number) => {
     form.removeListItem("sourceRates", index);
@@ -123,23 +185,51 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    if (formValues.imagesArray && formValues.imagesArray.length > 0) {
-      for (const image of formValues.imagesArray) {
-        const uri = image.url;
-        const publicURI = image.publicUrl;
-        const file = image.src;
-        try {
-          const response = await axios.put(`${uri}`, file).then(() => {
-            form.values.images.push(publicURI);
-          });
-        } catch (error) {
-          console.error(`Error processing image: ${error}`);
-          // Handle error as needed
+    
+    if(modalType==="add"){
+      if (formValues.imagesArray && formValues.imagesArray.length > 0) {
+        for (const image of formValues.imagesArray) {
+          const uri = image.url;
+          const publicURI = image.publicUrl;
+          const file = image.src;
+          try {
+            const response = await axios.put(`${uri}`, file).then(() => {
+              form.values.images.push(publicURI);
+            });
+          } catch (error) {
+            console.error(`Error processing image: ${error}`);
+            // Handle error as needed
+          }
         }
       }
+      handleCloseModal(false);
+      handleSaveCallback(formValues);  
     }
-    handleCloseModal(false);
-    handleSaveCallback(formValues);
+    
+    if(modalType==="update"){
+    const payloadCommonVariantDetails = { ...form.values };
+    delete payloadCommonVariantDetails.sourceRates;
+    delete payloadCommonVariantDetails.imagesArray;
+    if (formValues.imagesArray.length !== 0) {
+      const uploadImageResponseArr = await uploadingMultipleImagesToS3(
+        form.values
+      );
+      payloadCommonVariantDetails.images = uploadImageResponseArr;
+      }
+
+    if (formValues.updateSourceRates) {
+      const x = await updateIndividualVariantSourceRate(
+        formValues._variantId,
+        formValues.sourceRates[0]._id,
+        formValues.updatePrice,
+        formValues.updateSource,
+      );
+    }
+    handleCloseModal(true);
+    //variant common fields update
+    handleSaveCallback(payloadCommonVariantDetails);
+  }
+
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
@@ -170,14 +260,24 @@ function AddOrEditProductForm(props: any) {
           placeholder="Eg. Karnal"
           data={regionOptions}
           {...form.getInputProps(`sourceRates.${index}._sourceId`)}
+          onChange={(e) => {
+            form.setFieldValue("updateSourceRates", true);
+            form.setFieldValue(`sourceRates.${index}._sourceId`, e);
+            form.setFieldValue(`updateSource`, e);
+          }}
         />
 
         <NumberInput
           required
           label="Ex-Mill"
-          placeholder="Eg. 26500"
+          placeholder="Eg. 56.50"
           precision={2}
           {...form.getInputProps(`sourceRates.${index}.price`)}
+          onChange={(e) => {
+            form.setFieldValue("updateSourceRates", true);
+            form.setFieldValue(`sourceRates.${index}.price`, e);
+            form.setFieldValue(`updatePrice`, e);
+          }}
         />
 
         <Flex
@@ -260,10 +360,11 @@ function AddOrEditProductForm(props: any) {
         placeholder="eg. 5"
         {...form.getInputProps("brokenPercentage")}
       />
-
       <Space h="md" />
+
       <label htmlFor="imageUpload">Image Upload</label>
-      <Grid>{fileInputs}</Grid>
+      <Space h="sm" />
+      <Grid>{combinedFileInputs}</Grid>
 
       <Space h="md" />
 
