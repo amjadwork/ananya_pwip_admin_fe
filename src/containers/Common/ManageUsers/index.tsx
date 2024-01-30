@@ -28,7 +28,7 @@ const columns = [
     Header: "User_Id",
     accessor: "_id",
     width: "90px",
-    sortable: false,
+    sortable: true,
     filterable: true,
   },
   {
@@ -62,9 +62,9 @@ const columns = [
   {
     Header: "Action",
     accessor: "action",
-    width: "80px",
-    fixed:true,
+    width: "100px",
   },
+
 ];
 
 const RenderModalContent = (props: any) => {
@@ -256,23 +256,23 @@ function ManageUsers() {
         data={tableRowData}
         columns={columns}
         // actionItems={[]}
-        // handleRowEdit={(row, index) => {
-        //   const formObj = {
-        //     _id: row._id,
-        //     email: row.email,
-        //     first_name: row.first_name,
-        //     middle_name: row.middle_name,
-        //     last_name: row.last_name,
-        //     full_name: row.full_name,
-        //     phone: row.phone,
-        //     role_id: row.role_id,
-        //     roleName: row.roleName,
-        //   };
-        //   setUpdateFormData(formObj);
-        //   setModalType("update");
-        //   setModalOpen(true);
-        // }}
-        // handleRowDelete={openDeleteModal}
+        onEditRow={(row: any) => {
+          const formObj = {
+            _id: row._id,
+            email: row.email,
+            first_name: row.first_name,
+            middle_name: row.middle_name,
+            last_name: row.last_name,
+            full_name: row.full_name,
+            phone: row.phone,
+            role_id: row.role_id,
+            roleName: row.roleName,
+          };
+          setUpdateFormData(formObj);
+          setModalType("update");
+          setModalOpen(true);
+        }}
+        onDeleteRow={handleDeleteRow}
       />
     </PageWrapper>
   );
