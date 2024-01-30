@@ -10,7 +10,6 @@ import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
-import axios from "axios";
 
 const columns = [
   {
@@ -129,16 +128,14 @@ function ManageProductsContainer(props: any) {
     let changedProperties = {};
 
     if (modalType === "update") {
-      console.log("here 1", updateFormData, variantPayload);
       changedProperties = getChangedPropertiesFromObject(
         updateFormData,
         variantPayload
       );
-
       variantPayload = {
         ...changedProperties,
+        images:variantPayload.images,
       };
-
       params = `/${payload._variantId}`;
     }
 
@@ -148,15 +145,15 @@ function ManageProductsContainer(props: any) {
       endpoint = "variant" + params;
     }
 
-    // const addVariantResponse = await APIRequest(
-    //   endpoint,
-    //   modalType === "add" ? "POST" : "PATCH",
-    //   modalType === "add" ? variantPayload : changedProperties
-    // );
+    const addVariantResponse = await APIRequest(
+      endpoint,
+      modalType === "add" ? "POST" : "PATCH",
+      modalType === "add" ? variantPayload : variantPayload
+    );
 
-    // if (addVariantResponse) {
-    //   handleRefreshCalls();
-    // }
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
   };
 
   const handleDeleteVariant = async (data: any) => {
@@ -281,6 +278,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: d._categoryId,
             brokenPercentage: d.brokenPercentage,
             tags: d.tags,
+            images: d.images,
             categoryName: categoryData.find(
               (cat: any) => cat._id === d._categoryId
             )?.name,
@@ -367,16 +365,21 @@ function ManageProductsContainer(props: any) {
           let obj = { ...row };
 
           setSelectedTableRowIndex(index);
-
           const formObj = {
-            _id: obj._id,
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
             tags: obj.tags,
-            sourceRates: [{ ...obj }],
+            images: obj.images,
+            sourceRates: [
+              {
+                _id: obj._id,
+                price: obj.price,
+                _sourceId: obj._sourceId,
+              },
+            ],
           };
           setUpdateFormData(formObj);
           setModalType("update");
