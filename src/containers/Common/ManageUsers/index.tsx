@@ -61,13 +61,13 @@ const columns = [
     filterable: true,
   },
   {
-    Header: "Created",
+    Header: "Created At",
     accessor: "t_create",
     width: "180px",
     sortable: true,
   },
   {
-    Header: "Updated",
+    Header: "Updated At",
     accessor: "t_update",
     width: "180px",
     sortable: true,
@@ -76,6 +76,7 @@ const columns = [
     Header: "Action",
     accessor: "action",
     width: "100px",
+    fixed: true,
   },
 
 ];

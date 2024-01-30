@@ -53,6 +53,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
     canPreviousPage,
     canNextPage,
     pageOptions,
+    state: { pageIndex: currentPage },
   } = useTable<Record<string, any>>(
     { columns, data },
     useFilters,
@@ -109,12 +110,19 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
 <ScrollArea>
       <table {...getTableProps()} style={tableStyle} className="table">
         <thead>
-          {headerGroups.map((headerGroup: any) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column: any) => (
+          {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroupIndex}>
+              {headerGroup.headers.map((column: any, columnIndex: number) => (
                 <th {...column.getHeaderProps(column.sortable ? column.getSortByToggleProps() : {})}
-                style={{ width: column.width }}>
-                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                style={{
+                    width: column.width,
+                    position: (columnIndex === 0 || columnIndex === headerGroup.headers.length - 1) ? 'sticky' : 'relative',
+                    left: (columnIndex === 0) ? 0 : 'auto',
+                    right: (columnIndex === headerGroup.headers.length - 1) ? 0 : 'auto',
+                    zIndex: (columnIndex === 0 || columnIndex === headerGroup.headers.length - 1) ? 1 : 'auto',
+                    backgroundColor: (columnIndex === 0 || columnIndex === headerGroup.headers.length - 1) ? '#f8f9fa' : 'transparent',
+                  }}  >               
+                   <span style={{ display: 'flex', alignItems: 'center' }}>
                     <span>{column.render('Header')}</span>
                     {column.sortable && (
                       <span
@@ -141,16 +149,21 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
             prepareRow(row);
             return (
               <tr {...row.getRowProps()} style={i % 2 === 0 ? evenRowStyle : {}}>
-                {row.cells.map((cell: any) => {
+                {row.cells.map((cell: any, cellIndex: number) => {
                   if (cell.column.id === 'action') {
                     return (
                         <th
                         {...cell.getCellProps()}
                         style={{
                           ...cellStyle,
+                          backgroundColor:'#f8f9fa',
                           display: 'flex',
                           alignItems: 'center', 
-                          justifyContent:'center'
+                          justifyContent:'center',
+                          position: (cellIndex === 0 || cellIndex === row.cells.length - 1) ? 'sticky' : 'relative',
+                          left: (cellIndex === 0) ? 0 : 'auto',
+                          right: (cellIndex === row.cells.length - 1) ? 0 : 'auto',
+                          zIndex: (cellIndex === 0 || cellIndex === row.cells.length - 1) ? 1 : 'auto'
                         }}
                       >
                         <ActionIcon
