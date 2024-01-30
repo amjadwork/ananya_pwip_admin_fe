@@ -7,6 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditUsersForm from "../../../forms/Common/ManageUsers";
 import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getUsersData,
   deleteUsersData,
@@ -18,44 +19,49 @@ import { getRolesData } from "../../../services/user-management/PermissionAndRol
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "70px",
     fixed: true,
   },
   {
-    label: "User_Id",
-    key: "_id",
+    Header: "User_Id",
+    accessor: "_id",
     width: "90px",
     sortable: false,
+    filterable: true,
   },
   {
-    label: "Name",
-    key: "full_name",
+    Header: "Name",
+    accessor: "full_name",
     width: "230px",
     sortable: true,
+    filterable: true,
   },
   {
-    label: "Email",
-    key: "email",
+    Header: "Email",
+    accessor: "email",
     width: "230px",
     sortable: true,
+    filterable: true,
   },
   {
-    label: "Phone",
-    key: "phone",
+    Header: "Phone",
+    accessor: "phone",
     width: "130px",
     sortable: true,
+    filterable: true,
   },
   {
-    label: "Role",
-    key: "roleName",
+    Header: "Role",
+    accessor: "roleName",
     width: "130px",
     sortable: true,
+    filterable: true,
   },
   {
-    label: "Action",
-    key: "action",
+    Header: "Action",
+    accessor: "action",
     width: "80px",
     fixed:true,
   },
@@ -246,30 +252,27 @@ function ManageUsers() {
       }}
       modalSize="60%"
     >
-      <DataTable
+       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[]}
-        handleRowEdit={(row: any, index: number) => {
-          let obj = { ...row };
-          const formObj = {
-            _id: obj._id,
-            email: obj.email,
-            first_name: obj.first_name,
-            middle_name: obj.middle_name,
-            last_name: obj.last_name,
-            full_name: obj.full_name,
-            phone: obj.phone,
-            role_id: obj.role_id,
-            roleName: obj.roleName,
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
-        }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
-        }}
+        // actionItems={[]}
+        // handleRowEdit={(row, index) => {
+        //   const formObj = {
+        //     _id: row._id,
+        //     email: row.email,
+        //     first_name: row.first_name,
+        //     middle_name: row.middle_name,
+        //     last_name: row.last_name,
+        //     full_name: row.full_name,
+        //     phone: row.phone,
+        //     role_id: row.role_id,
+        //     roleName: row.roleName,
+        //   };
+        //   setUpdateFormData(formObj);
+        //   setModalType("update");
+        //   setModalOpen(true);
+        // }}
+        // handleRowDelete={openDeleteModal}
       />
     </PageWrapper>
   );
