@@ -245,7 +245,7 @@ function ManageUsers() {
   // to delete a single row data
   const openDeleteModal = (rowData: any) =>
     openConfirmModal({
-      title: "Delete the Service Data",
+      title: "Delete the User Data",
       centered: true,
       children: (
         <Text size="sm">
@@ -262,8 +262,8 @@ function ManageUsers() {
       onConfirm: () => handleDeleteRow(rowData),
     });
 
-  const handleDeleteRow = async (data: any) => {
-    const response = await deleteUsersData(data);
+  const handleDeleteRow = async (rowData: any) => {
+    const response = await deleteUsersData(rowData);
 
     if (response) {
       handleRefreshCalls();
@@ -359,9 +359,8 @@ function ManageUsers() {
           setModalType("update");
           setModalOpen(true);
         }}
-        onDeleteRow={(row: any) => {
-          console.log("row", row)
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
 
         }}
       />

@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useTable, Column, useGlobalFilter, useFilters, usePagination, useSortBy, TableState } from 'react-table';
 import { SortAscending, SortDescending,ArrowsDownUp, Pencil, Trash } from 'tabler-icons-react';
 import { ActionIcon, ScrollArea } from "@mantine/core";
-import Checkbox from '../common/Checkbox';
 // import GlobalFilter from './GlobalFilter/GlobalFilter';
 import ColumnFilter from './ColumnFilter/ColumnFilter';
 
@@ -47,7 +46,8 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
             Filter: ColumnFilter
         } as Partial<Column<Record<string, any>>>;
     }, []);
- console.log("dateINTABLE", data)
+
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -73,7 +73,6 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
 
 //   const { globalFilter } = state;
 
-console.log( data, "data")
   return (
     <>
     {/* <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/> */}
@@ -92,8 +91,6 @@ console.log( data, "data")
   ))}
 </div>
 </div>
-
-
       <ScrollArea>
         <table {...getTableProps()} style={tableStyle} className="table">
           <thead>
@@ -168,7 +165,7 @@ console.log( data, "data")
                                 ) : (
                                   <ActionIcon
                                     variant="default"
-                                    onClick={() => onEditRow(row)}
+                                    onClick={() => onEditRow(row.original)}
                                   >
                                     <Pencil size="1rem" color="blue" />
                                   </ActionIcon>
