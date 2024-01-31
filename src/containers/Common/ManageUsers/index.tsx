@@ -6,7 +6,6 @@ import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditUsersForm from "../../../forms/Common/ManageUsers";
-import DataTable from "../../../components/DataTable/DataTable";
 import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getUsersData,
@@ -23,26 +22,27 @@ const columns = [
   {
     Header: "No.",
     accessor: "serialNo",
-    width: "70px",
+    width: "80px",
     fixed: true,
     Filter: ColumnFilter,
     disableFilters: true,
+    showCheckbox: false,
   },
   {
     Header: "User_Id",
     accessor: "_id",
-    width: "90px",
+    width: "300px",
     sortable: true,
     filterable: true,
-    Filter: ColumnFilter,
+    showCheckbox: false,
   },
   {
     Header: "Name",
     accessor: "full_name",
-    width: "230px",
+    width: "300px",
     sortable: true,
     filterable: true,
-    Filter: ColumnFilter,
+    showCheckbox: true,
   },
   {
     Header: "Email",
@@ -50,45 +50,102 @@ const columns = [
     width: "300px",
     sortable: true,
     filterable: true,
-    Filter: ColumnFilter,
+    showCheckbox: true,
   },
   {
     Header: "Phone",
     accessor: "phone",
-    width: "130px",
+    width: "300px",
     filterable: true,
-    Filter: ColumnFilter,
-    disableFilters: true,
+    showCheckbox: true,
   },
   {
     Header: "Role",
     accessor: "roleName",
-    width: "130px",
+    width: "300px",
     sortable: true,
     filterable: true,
-    Filter: ColumnFilter,
+    showCheckbox: true,
+  },
+  {
+    Header: "City",
+    accessor: "city",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Zip Code",
+    accessor: "zip_code",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "State",
+    accessor: "state",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Country",
+    accessor: "country",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Profession",
+    accessor: "profession",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Company",
+    accessor: "CompanyName",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "GST",
+    accessor: "gstin",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
     Header: "Created At",
-    accessor: "t_create",
-    width: "180px",
+    accessor: "CreatedAt",
+    width: "300px",
     sortable: true,
-    Filter: ColumnFilter,
+    filterable: true,
+    showCheckbox: true,
   },
   {
     Header: "Updated At",
-    accessor: "t_update",
-    width: "180px",
+    accessor: "UpdatedAt",
+    width: "300px",
     sortable: true,
-    Filter: ColumnFilter,
+    filterable: true,
+    showCheckbox: true,
   },
   {
     Header: "Action",
     accessor: "action",
     width: "100px",
     fixed: true,
-    Filter: ColumnFilter,
     disableFilters: true,
+    showCheckbox: false,
   },
 
 ];
@@ -233,25 +290,26 @@ function ManageUsers() {
   }, []);
 
   useEffect(() => {
-    if (usersData && usersData.length) {
-      console.log(usersData, "userData")
-      const tableData = usersData.map((d: any) => {
+    if (usersData && usersData.length && profileData && profileData.length) {
+      const tableData = usersData.map((user: any) => {
+        const userProfile = profileData.find((profile: any) => profile.user_id === user._id);
         const obj = {
-          ...d,
-          activeStatus: d.active === 1 ? "Active" : "Inactive",
-          t_create: IsoDateConverter(d.t_create),
-          t_update: IsoDateConverter(d.t_update),
+          ...user,
+          activeStatus: user.active === 1 ? "Active" : "Inactive",
+          CreatedAt: IsoDateConverter(user.t_create),
+          UpdatedAt: IsoDateConverter(user.t_update),
+          ...userProfile 
         };
-        const role = rolesData.find((role: any) => role._id === d.role_id);
+        const role = rolesData.find((role: any) => role._id === user.role_id);
         if (role) {
           obj.roleName = role.role;
         }
         return obj;
       });
-      console.log(tableData)
       setTableRowData(tableData);
     }
-  }, [usersData]);
+  }, [usersData, profileData]);
+  
 
   return (
     <PageWrapper
@@ -285,7 +343,6 @@ function ManageUsers() {
        <ReactTable
         data={tableRowData}
         columns={columns}
-        // actionItems={[]}
         onEditRow={(row: any) => {
           const formObj = {
             _id: row._id,
@@ -302,7 +359,11 @@ function ManageUsers() {
           setModalType("update");
           setModalOpen(true);
         }}
-        onDeleteRow={handleDeleteRow}
+        onDeleteRow={(row: any) => {
+          console.log("row", row)
+          openDeleteModal(row);
+
+        }}
       />
     </PageWrapper>
   );

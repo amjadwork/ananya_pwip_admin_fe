@@ -1,24 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { useTable, Column, useGlobalFilter, useFilters, usePagination, useSortBy, TableState } from 'react-table';
-import { SortAscending, SortDescending, Pencil, Trash } from 'tabler-icons-react';
+import { SortAscending, SortDescending,ArrowsDownUp, Pencil, Trash } from 'tabler-icons-react';
 import { ActionIcon, ScrollArea } from "@mantine/core";
-import GlobalFilter from '../ReactTable/GlobalFilter/GlobalFilter';
-
-interface TableColumns {
-  Header: string;
-  accessor: string;
-  width?: string;
-  sortable?: boolean;
-  fixed?: boolean;
-  filterable?: boolean;
-}
+import Checkbox from '../common/Checkbox';
+// import GlobalFilter from './GlobalFilter/GlobalFilter';
+import ColumnFilter from './ColumnFilter/ColumnFilter';
 
 const tableStyle = {
-  border: '1px solid #dddddd',
+  border: '1px solid #D9E4EC',
   fontFamily: 'arial, sans-serif',
   borderCollapse: 'collapse' as const,
   width: '100%',
-  marginTop: '20px',
+  marginTop: '10px',
   overflowX: 'auto',
   tableLayout: 'fixed'
 };
@@ -29,17 +22,32 @@ const cellStyle = {
   padding: '7px',
 };
 
+const CheckboxContainerStyle = {
+    marginTop:"2px",
+    border: '1px #D9E4EC',
+    padding: '4px',
+    fontSize:"14px",
+    fontWeight: "500"
+  };
+  
+
 const evenRowStyle = {
   backgroundColor: '#D9E4EC',
 };
 
 const searchFieldStyle ={
-    marginRight: '2px',
+    marginLeft: '8px',
     fontFamily: 'arial, sans-serif',
 }
 
 const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEditRow: (row: any) => void; onDeleteRow: (row: any) => void }> = ({ columns, data, onEditRow, onDeleteRow }) => {
 
+    const defaultColumn = useMemo(() => {
+        return {
+            Filter: ColumnFilter
+        } as Partial<Column<Record<string, any>>>;
+    }, []);
+ console.log("dateINTABLE", data)
   const {
     getTableProps,
     getTableBodyProps,
@@ -51,11 +59,12 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
     canPreviousPage,
     canNextPage,
     pageOptions,
+    allColumns,
     state: { pageIndex: currentPage },
-    state,
-    setGlobalFilter,
+    // state,
+    // setGlobalFilter,
   } = useTable<Record<string, any>>(
-    { columns, data },
+    { columns, data, defaultColumn},
     useFilters,
     useGlobalFilter,
     useSortBy,
@@ -64,16 +73,26 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
 
 //   const { globalFilter } = state;
 
+console.log( data, "data")
   return (
     <>
     {/* <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/> */}
-    <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'  }}>
-        {headerGroups.map((headerGroup: any) => (
-          headerGroup.headers.map((column: any) => (
-            <span {...getTableProps()} style={searchFieldStyle} > {column.canFilter && column.render('Filter', { placeholder: `Filter by ${column.Header}` })}</span>
-          ))
-        ))}
+    <div style={CheckboxContainerStyle}>
+     Hide/Show Columns
+    <div style={{ display: 'flex', flexDirection: 'row', justifyContent:"space-between" }}>
+  {allColumns.map((column: any) => (
+    column.showCheckbox && (
+      <div key={column.id} >
+        <label style={{fontSize:"14px"}}>
+          <input type="checkbox" {...column.getToggleHiddenProps()} />
+          {column.Header}
+        </label>
       </div>
+    )
+  ))}
+</div>
+</div>
+
 
       <ScrollArea>
         <table {...getTableProps()} style={tableStyle} className="table">
@@ -91,19 +110,25 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                        backgroundColor: (columnIndex === 0) ? '#f8f9fa' : ((columnIndex === headerGroup.headers.length - 1) ? '#f8f9fa' : 'transparent'),
                     }}  >
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                      <span>{column.render('Header')}</span>
-                      {column.sortable && (
+                    {column.sortable && (
                         <span
                           style={{
-                            marginLeft: '4px',
+                            marginRight: '4px',
                             marginTop: '4px',
                             color: 'gray',
                             cursor: 'pointer',
                           }}
                         >
-                          {column.isSorted ? (
+                          {column.isSorted ? ( 
                             column.isSortedDesc ? <SortDescending size={20} /> : <SortAscending size={20} />
-                          ) : <SortAscending size={20}/>}
+                          ) : <ArrowsDownUp size={20}/>}
+                        </span>
+                      )}
+                      <span>{column.render('Header')}</span>
+                     
+                      {column.filterable && (
+                        <span {...column.getHeaderProps()} style={searchFieldStyle}>
+                          {column.render('Filter', { placeholder: `Filter by ${column.Header}` })}
                         </span>
                       )}
                     </span>
@@ -121,6 +146,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                   {row.cells.map((cell: any, cellIndex: number) => {
 
                     if (cell.column.id === 'action') {
+                       
                       return (
                           <th
                           {...cell.getCellProps()}
@@ -135,23 +161,33 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                             zIndex: (cellIndex === row.cells.length - 1) ? 1 : 'auto'
                           }}
                         >
-                          <ActionIcon
-                            variant="default"
-                            onClick={() => onEditRow(row.original)}
-                            style={{ cursor: 'pointer', marginRight: '8px' }}
-                          >
-                            <Pencil size="1rem" color="green" />
-                          </ActionIcon>
-                        
-                          <ActionIcon
-                            variant="default"
-                            onClick={() => onDeleteRow(row.original)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <Trash size="1rem" color="red" />
-                          </ActionIcon>
+                            {row.original.active === 0 ? (
+                                  <ActionIcon variant="outline" color="gray">
+                                    <Pencil size="1rem" color="gray"/>
+                                  </ActionIcon>
+                                ) : (
+                                  <ActionIcon
+                                    variant="default"
+                                    onClick={() => onEditRow(row)}
+                                  >
+                                    <Pencil size="1rem" color="blue" />
+                                  </ActionIcon>
+                                )}
+                                {row.original.active === 0 ? (
+                                  <ActionIcon variant="outline" color="gray" >
+                                    <Trash size="1rem" color="gray" />
+                                  </ActionIcon>
+                                ) : (
+                                  <ActionIcon
+                                    variant="default"
+                                    onClick={() => onDeleteRow(row.original)}
+                                  >
+                                    <Trash size="1rem"  color="red" />
+                                  </ActionIcon>
+                                )}
                         </th>
                       );
+                                
                     } else if (cell.column.id === 'serialNo') {
                       return <td {...cell.getCellProps()}  style={{
                         ...cellStyle,
@@ -162,7 +198,8 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                       }}>
                         {(currentPage * page.length) + i + 1}
                         </td>;
-                    } else {
+                    }
+                     else {
                       return <td {...cell.getCellProps()} style={cellStyle}>{cell.render('Cell')}</td>;
                     }
                   })}
