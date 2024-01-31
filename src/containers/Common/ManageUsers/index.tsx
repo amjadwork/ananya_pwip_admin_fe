@@ -17,6 +17,7 @@ import {
 } from "../../../services/user-management/Users";
 import { getRolesData } from "../../../services/user-management/PermissionAndRoles";
 import { IsoDateConverter } from "../../../helper/helper";
+import ColumnFilter from "../../../components/ReactTable/ColumnFilter/ColumnFilter";
 
 const columns = [
   {
@@ -24,6 +25,8 @@ const columns = [
     accessor: "serialNo",
     width: "70px",
     fixed: true,
+    Filter: ColumnFilter,
+    disableFilters: true,
   },
   {
     Header: "User_Id",
@@ -31,6 +34,7 @@ const columns = [
     width: "90px",
     sortable: true,
     filterable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Name",
@@ -38,6 +42,7 @@ const columns = [
     width: "230px",
     sortable: true,
     filterable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Email",
@@ -45,13 +50,15 @@ const columns = [
     width: "300px",
     sortable: true,
     filterable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Phone",
     accessor: "phone",
     width: "130px",
-    sortable: true,
     filterable: true,
+    Filter: ColumnFilter,
+    disableFilters: true,
   },
   {
     Header: "Role",
@@ -59,24 +66,29 @@ const columns = [
     width: "130px",
     sortable: true,
     filterable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Created At",
     accessor: "t_create",
     width: "180px",
     sortable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Updated At",
     accessor: "t_update",
     width: "180px",
     sortable: true,
+    Filter: ColumnFilter,
   },
   {
     Header: "Action",
     accessor: "action",
     width: "100px",
     fixed: true,
+    Filter: ColumnFilter,
+    disableFilters: true,
   },
 
 ];

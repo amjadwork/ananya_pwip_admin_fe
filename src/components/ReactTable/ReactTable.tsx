@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { useTable, Column, useFilters, usePagination, useSortBy, TableState } from 'react-table';
+import { useTable, Column, useGlobalFilter, useFilters, usePagination, useSortBy, TableState } from 'react-table';
 import { SortAscending, SortDescending, Pencil, Trash } from 'tabler-icons-react';
 import { ActionIcon, ScrollArea } from "@mantine/core";
+import GlobalFilter from '../ReactTable/GlobalFilter/GlobalFilter';
 
 interface TableColumns {
   Header: string;
@@ -10,10 +11,6 @@ interface TableColumns {
   sortable?: boolean;
   fixed?: boolean;
   filterable?: boolean;
-}
-
-interface CustomTableState<T extends object> extends TableState<T> {
-  filters?: Record<string, any>[];
 }
 
 const tableStyle = {
@@ -36,8 +33,12 @@ const evenRowStyle = {
   backgroundColor: '#D9E4EC',
 };
 
+const searchFieldStyle ={
+    marginRight: '2px',
+    fontFamily: 'arial, sans-serif',
+}
+
 const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEditRow: (row: any) => void; onDeleteRow: (row: any) => void }> = ({ columns, data, onEditRow, onDeleteRow }) => {
-  const [filters, setFilters] = useState<Record<string, any>[]>([]);
 
   const {
     getTableProps,
@@ -51,59 +52,29 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
     canNextPage,
     pageOptions,
     state: { pageIndex: currentPage },
+    state,
+    setGlobalFilter,
   } = useTable<Record<string, any>>(
     { columns, data },
     useFilters,
+    useGlobalFilter,
     useSortBy,
     usePagination
   ) as any;
 
-  const handleFilterChange = (columnId: string, value: string) => {
-    setFilters((oldFilters) => {
-      const existingFilterIndex = oldFilters.findIndex((filter) => filter.id === columnId);
-      const newFilters = [...oldFilters];
-
-      if (existingFilterIndex !== -1) {
-        newFilters[existingFilterIndex].value = value;
-      } else {
-        newFilters.push({ id: columnId, value });
-      }
-
-      return newFilters;
-    });
-  };
-
-  const filteredRows = useMemo(() => {
-    return page.filter((row: any) => {
-      return filters.every((filter) => {
-        const accessorValue = row.values[filter.id];
-        if (accessorValue === undefined || accessorValue === null) return true;
-        if (typeof accessorValue === 'string') {
-          return accessorValue.toLowerCase().includes(filter.value.toLowerCase());
-        }
-        return accessorValue === filter.value;
-      });
-    });
-  }, [page, filters]);
+//   const { globalFilter } = state;
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+    {/* <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/> */}
+    <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'  }}>
         {headerGroups.map((headerGroup: any) => (
           headerGroup.headers.map((column: any) => (
-            column.filterable ? (
-              <div key={column.id}>
-                <input
-                  id={column.id}
-                  value={(filters.find((filter: any) => filter.id === column.id) || {}).value || ''}
-                  onChange={(e) => handleFilterChange(column.id, e.target.value)}
-                  placeholder={`Filter by ${column.Header}`}
-                />
-              </div>
-            ) : null
+            <span {...getTableProps()} style={searchFieldStyle} > {column.canFilter && column.render('Filter', { placeholder: `Filter by ${column.Header}` })}</span>
           ))
         ))}
       </div>
+
       <ScrollArea>
         <table {...getTableProps()} style={tableStyle} className="table">
           <thead>
@@ -136,13 +107,14 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                         </span>
                       )}
                     </span>
+
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {filteredRows.map((row: any, i: any) => {
+            {page.map((row: any, i: any) => {
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()} style={i % 2 === 0 ? evenRowStyle : {}}>
