@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
 import { getSubscriptionsData } from "../../../services/plans-management/SubscriptionsAndServices";
 import { getPlansData } from "../../../services/plans-management/Plans";
+import { getUsersData } from "../../../services/user-management/Users";
 import ReactTable from "../../../components/ReactTable/ReactTable";
-import ColumnFilter from "../../../components/ReactTable/ColumnFilter/ColumnFilter";
 import { IsoDateConverter } from "../../../helper/helper";
 
 const columns = [
@@ -94,6 +93,7 @@ function ManageSubscriptions() {
   const [subscriptionsData, setSubscriptionsData] = useState<any>([]);
   const [plansData, setPlansData] = useState<any>([]);
   const [tableRowData, setTableRowData] = useState<any>([]);
+  const [usersData, setUsersData] = useState<any>([]);
 
   //to get Subscription Data from database
   const handleGetSubscriptionsData = async () => {
@@ -113,39 +113,47 @@ function ManageSubscriptions() {
     }
   };
 
-  console.log(subscriptionsData, "subscription")
-  console.log(plansData, "plans")
+  //to get User Data from database
+  const handleGetUsersData = async () => {
+    const response = await getUsersData();
+    if (response) {
+      setUsersData([...response]);
+    }
+  };
 
   useEffect(() => {
     handleGetSubscriptionsData();
     handleGetPlansData();
+    handleGetUsersData();
   }, []);
-console.log(subscriptionsData, "hello")
 
-useEffect(() => {
-  if (subscriptionsData && subscriptionsData.length && plansData && plansData.length) {
-    let tableData = subscriptionsData
-      .filter((item:any) => item.active === 1)
-      .map((subscription:any) => {
-        const matchedPlan = plansData.find((plan:any) => plan.id === subscription.plan_id);
-        return {
-          ...subscription,
-          planID: matchedPlan ? matchedPlan.id : subscription.plan_id,
-          plan: matchedPlan ? matchedPlan : "",
-          PaymentDate: IsoDateConverter(subscription.amount_paid_date),
-          CreatedAt: IsoDateConverter(subscription.created_at),
-          UpdatedAt: IsoDateConverter(subscription.updated_at),
-        };
-      });
-     
-    console.log(tableData, "tableData");
-    setTableRowData(tableData);
-  }
-}, [subscriptionsData, plansData]);
+  useEffect(() => {
+    if (subscriptionsData.length && plansData.length && usersData.length) {
+      let tableData = subscriptionsData
+        .filter((item: any) => item.active === 1)
+        .map((subscription: any) => {
+          const matchedPlan = plansData.find(
+            (plan: any) => plan.id === subscription.plan_id
+          );
+          const matchedUser = usersData.find(
+            (user: any) => user._id === subscription.user_id
+          ); // Match user by user_id
+          return {
+            ...subscription,
+            planID: matchedPlan ? matchedPlan.id : subscription.plan_id,
+            plan: matchedPlan ? matchedPlan : "", //Add plans data
+            user: matchedUser ? matchedUser : "", // Add users data
+            PaymentDate: IsoDateConverter(subscription.amount_paid_date),
+            CreatedAt: IsoDateConverter(subscription.created_at),
+            UpdatedAt: IsoDateConverter(subscription.updated_at),
+          };
+        });
+      setTableRowData(tableData);
+    }
+  }, [subscriptionsData, plansData, usersData]);
 
   return (
     <PageWrapper PageHeader={() => null} PageAction={() => null}>
-      {/* <DataTable data={tableRowData} columns={columns} actionItems={[]} /> */}
       <ReactTable
         data={tableRowData}
         columns={columns}
