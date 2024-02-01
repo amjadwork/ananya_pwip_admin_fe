@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 
 import { Text } from "../../../components/index";
 import { openConfirmModal } from "@mantine/modals";
@@ -8,7 +8,7 @@ import { showNotification } from "@mantine/notifications";
 import EditRolesForm from "../../../forms/Common/ManageRoles";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getRolesData,
   postRolesData,
@@ -18,28 +18,36 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "25px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "30px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Role_Id",
-    key: "_id",
-    width: "100px",
-    sortable: false,
-  },
-  {
-    label: "Role",
-    key: "role",
-    width: "300px",
+    Header: "Role_Id",
+    accessor: "_id",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "40px",
-    fixed:true,
+    Header: "Role",
+    accessor: "role",
+    width: "250px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
+    width: "60px",
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -189,13 +197,12 @@ function ManageRoles() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -204,7 +211,7 @@ function ManageRoles() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             _id: obj._id,
@@ -214,7 +221,7 @@ function ManageRoles() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
