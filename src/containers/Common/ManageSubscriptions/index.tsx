@@ -113,6 +113,9 @@ function ManageSubscriptions() {
     }
   };
 
+  console.log(subscriptionsData, "subscription")
+  console.log(plansData, "plans")
+
   useEffect(() => {
     handleGetSubscriptionsData();
     handleGetPlansData();
@@ -134,7 +137,7 @@ useEffect(() => {
           UpdatedAt: IsoDateConverter(subscription.updated_at),
         };
       });
-
+     
     console.log(tableData, "tableData");
     setTableRowData(tableData);
   }

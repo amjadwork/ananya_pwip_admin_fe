@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTable, Column, useGlobalFilter, useFilters, usePagination, useSortBy, TableState } from 'react-table';
-import { SortAscending, SortDescending,ArrowsDownUp, Pencil, Trash } from 'tabler-icons-react';
-import { ActionIcon, ScrollArea } from "@mantine/core";
+import { SortAscending, SortDescending,ArrowsDownUp, Pencil, Trash, InfoCircle, InfoSquare } from 'tabler-icons-react';
+import { ActionIcon, ScrollArea, Tooltip } from "@mantine/core";
 // import GlobalFilter from './GlobalFilter/GlobalFilter';
 import ColumnFilter from './ColumnFilter/ColumnFilter';
 
@@ -136,29 +136,29 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row: any, i: any) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} style={i % 2 === 0 ? evenRowStyle : {}}>
-                  {row.cells.map((cell: any, cellIndex: number) => {
-
-                    if (cell.column.id === 'action') {
-                       
-                      return (
-                          <th
-                          {...cell.getCellProps()}
-                          style={{
-                            ...cellStyle,
-                            backgroundColor:'#f8f9fa',
-                            display: 'flex',
-                            alignItems: 'center', 
-                            justifyContent:'center',
-                            position: (cellIndex === row.cells.length - 1) ? 'sticky' : 'relative',
-                            right: (cellIndex === row.cells.length - 1) ? 0 : 'auto',
-                            zIndex: (cellIndex === row.cells.length - 1) ? 1 : 'auto'
-                          }}
-                        >
-                            {row.original.active === 0 ? (
+  {page.map((row: any, i: any) => {
+    console.log(row, "row")
+    prepareRow(row);
+    return (
+      <tr {...row.getRowProps()} style={i % 2 === 0 ? evenRowStyle : {}}>
+        {row.cells.map((cell: any, cellIndex: number) => (
+          <React.Fragment key={cellIndex}>
+            {cell.column.id === 'action' ? (
+              // Rendering action icons
+              <th
+                {...cell.getCellProps()}
+                style={{
+                  ...cellStyle,
+                  backgroundColor: '#f8f9fa',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: cellIndex === row.cells.length - 1 ? 'sticky' : 'relative',
+                  right: cellIndex === row.cells.length - 1 ? 0 : 'auto',
+                  zIndex: cellIndex === row.cells.length - 1 ? 1 : 'auto',
+                }}
+              >
+                    {row.original.active === 0 ? (
                                   <ActionIcon variant="outline" color="gray">
                                     <Pencil size="1rem" color="gray"/>
                                   </ActionIcon>
@@ -182,28 +182,113 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                                     <Trash size="1rem"  color="red" />
                                   </ActionIcon>
                                 )}
-                        </th>
-                      );
-                                
-                    } else if (cell.column.id === 'serialNo') {
-                      return <td {...cell.getCellProps()}  style={{
-                        ...cellStyle,
-                        backgroundColor:'#f8f9fa',
-                        position: (cellIndex === 0) ? 'sticky' : 'relative',
-                        left: (cellIndex === 0) ? 0 : 'auto',
-                        zIndex: (cellIndex === 0) ? 1 : 'auto'
-                      }}>
-                        {(currentPage * pageSize) + i + 1}
-                        </td>;
-                    }
-                     else {
-                      return <td {...cell.getCellProps()} style={cellStyle}>{cell.render('Cell')}</td>;
-                    }
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
+              </th>
+            ) : cell.column.id === 'serialNo' ? (
+              // Rendering serial number column
+              <td
+                {...cell.getCellProps()}
+                style={{
+                  ...cellStyle,
+                  backgroundColor: '#f8f9fa',
+                  position: cellIndex === 0 ? 'sticky' : 'relative',
+                  left: cellIndex === 0 ? 0 : 'auto',
+                  zIndex: cellIndex === 0 ? 1 : 'auto',
+                }}
+              >
+                {(currentPage * pageSize) + i + 1}
+              </td>
+            ) : (
+              // Rendering other columns
+              <td {...cell.getCellProps()} style={cellStyle}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                {cell.column.id === 'planID' ? (
+  row.original.plan ? ( // Check if plan data exists
+    <span style={{ marginRight: '10px' }}>
+      <Tooltip
+        width={200}
+        withArrow={true}
+        arrowSize={5}
+        position="top"
+        color={'#407bbf'}
+        transition="pop"
+        transitionDuration={200}
+        events={{
+          hover: true,
+          focus: false,
+          touch: false,
+        }}
+        label={
+          <div>
+            <div>
+              <strong>Plan:</strong> {row.original.plan?.name}
+            </div>
+            <div>
+              <strong>Price:</strong> {row.original.plan?.price}{" "}
+              {row.original.plan?.currency || "null"} 
+            </div>
+            <div>
+              <strong>Validity:</strong>{" "}
+              {row.original.plan?.validity}{" "}
+              {row.original.plan?.validity_type || "null"}
+            </div>
+            <div>
+              <strong>Refundable:</strong>{" "}
+              {row.original.plan?.refund_policy === 1
+                ? `Yes, ${row.original.plan?.refund_policy_valid_day} day/s`
+                : "No"}
+            </div>
+          </div>
+        }
+        multiline={true}
+        style={{ marginTop: 5, marginLeft: 2 }}
+      >
+        <span
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "left",
+          }}
+        >
+          <InfoCircle
+            size={18}
+            strokeWidth={2}
+            color={'#407bbf'}
+            style={{ marginInline: 3, marginTop: 3 }}
+          />
+        </span>
+      </Tooltip>
+    </span>
+  ) : ( // If plan data does not exist, render InfoCircle icon in gray with no functionality
+    <span style={{ marginRight: '10px' }}>
+      <InfoCircle
+        size={18}
+        strokeWidth={2}
+        color={'gray'}
+        style={{ marginInline: 3, marginTop: 3, cursor: 'default' }}
+      />
+    </span>
+  )
+) : null}
+                  {cell.column.id === 'user_id' && (
+                    <span style={{ marginRight: '10px' }}>
+                        <InfoCircle
+                           size={20}
+                           color={'#407bbf'}
+                            // onClick={() => handleUserIdInfo(row.original)}
+                        />   
+                    </span>
+                    
+                  )}
+                  {cell.render('Cell')}
+                </div>
+              </td>
+            )}
+          </React.Fragment>
+        ))}
+      </tr>
+    );
+  })}
+</tbody>
         </table>
       </ScrollArea>
 
