@@ -112,6 +112,10 @@ export function intersectObjects(refPayload, formValues) {
 }
 
 export function IsoDateConverter(dateTimeString) {
+  if (!dateTimeString) {
+    return ""; // or return some default value, depending on your requirements
+  }
   const date = new Date(dateTimeString);
   return date.toLocaleString(); 
 };
+
