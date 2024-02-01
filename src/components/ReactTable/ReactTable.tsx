@@ -60,7 +60,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
     canNextPage,
     pageOptions,
     allColumns,
-    state: { pageIndex: currentPage },
+    state: { pageIndex: currentPage, pageSize },
     // state,
     // setGlobalFilter,
   } = useTable<Record<string, any>>(
@@ -193,7 +193,7 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
                         left: (cellIndex === 0) ? 0 : 'auto',
                         zIndex: (cellIndex === 0) ? 1 : 'auto'
                       }}>
-                        {(currentPage * page.length) + i + 1}
+                        {(currentPage * pageSize) + i + 1}
                         </td>;
                     }
                      else {
