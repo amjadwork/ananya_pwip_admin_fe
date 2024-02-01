@@ -3,51 +3,74 @@ import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
 import { getSubscriptionsData } from "../../../services/plans-management/SubscriptionsAndServices";
 import { getPlansData } from "../../../services/plans-management/Plans";
+import ReactTable from "../../../components/ReactTable/ReactTable";
+import ColumnFilter from "../../../components/ReactTable/ColumnFilter/ColumnFilter";
+import { IsoDateConverter } from "../../../helper/helper";
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "User_ID",
-    key: "user_id",
-    width: "100px",
-  },
-  {
-    label: "Plan_ID",
-    key: "planID",
-    width: "100px",
+    Header: "User_ID",
+    accessor: "user_id",
+    width: "300px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Payment_ID",
-    key: "payment_id",
-    width: "150px",
+    Header: "Plan_ID",
+    accessor: "planID",
+    width: "300px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Amount",
-    key: "amount_paid",
-    width: "130px",
+    Header: "Payment_ID",
+    accessor: "payment_id",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Payment Status",
-    key: "payment_status",
-    width: "150px",
+    Header: "Amount",
+    accessor: "amount_paid",
+    width: "300px",
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Payment Date",
-    key: "amount_paid_date",
-    width: "130px",
+    Header: "Status",
+    accessor: "payment_status",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Payment Method",
-    key: "payment_platform",
-    width: "150px",
-    fixed: true,
+    Header: "Date",
+    accessor: "PaymentDate",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Method",
+    accessor: "payment_platform",
+    width: "300px",
+    fixed: false,
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
 ];
 
@@ -78,36 +101,38 @@ function ManageSubscriptions() {
     handleGetSubscriptionsData();
     handleGetPlansData();
   }, []);
+console.log(subscriptionsData, "hello")
 
-  useEffect(() => {
-    if (
-      subscriptionsData &&
-      subscriptionsData.length &&
-      plansData &&
-      plansData.length
-    ) {
-      let tableData: any = [];
-      const activeSubscriptionData = subscriptionsData.filter(
-        (item: any) => item.active === 1
-      );
-      activeSubscriptionData.forEach((subscription: any) => {
-        const matchedId = plansData.find(
-          (plan: any) => plan.id === subscription.plan_id
-        );
-        const obj = {
+useEffect(() => {
+  if (subscriptionsData && subscriptionsData.length && plansData && plansData.length) {
+    let tableData = subscriptionsData
+      .filter((item:any) => item.active === 1)
+      .map((subscription:any) => {
+        const matchedPlan = plansData.find((plan:any) => plan.id === subscription.plan_id);
+        return {
           ...subscription,
-          planID: matchedId ? matchedId.id : subscription.plan_id,
-          plan: matchedId ? matchedId : "",
+          planID: matchedPlan ? matchedPlan.id : subscription.plan_id,
+          plan: matchedPlan ? matchedPlan : "",
+          PaymentDate: IsoDateConverter(subscription.amount_paid_date),
+          CreatedAt: IsoDateConverter(subscription.created_at),
+          UpdatedAt: IsoDateConverter(subscription.updated_at),
         };
-        tableData.push(obj);
       });
-      setTableRowData(tableData);
-    }
-  }, [subscriptionsData, plansData]);
+
+    console.log(tableData, "tableData");
+    setTableRowData(tableData);
+  }
+}, [subscriptionsData, plansData]);
 
   return (
     <PageWrapper PageHeader={() => null} PageAction={() => null}>
-      <DataTable data={tableRowData} columns={columns} actionItems={[]} />
+      {/* <DataTable data={tableRowData} columns={columns} actionItems={[]} /> */}
+      <ReactTable
+        data={tableRowData}
+        columns={columns}
+        onEditRow={() => {}}
+        onDeleteRow={() => {}}
+      />
     </PageWrapper>
   );
 }

@@ -98,14 +98,14 @@ const ReactTable: React.FC<{ columns: readonly Column<any>[]; data: any[]; onEdi
               <tr {...headerGroup.getHeaderGroupProps()} key={headerGroupIndex}>
                 {headerGroup.headers.map((column: any, columnIndex: number) => (
                   <th {...column.getHeaderProps(column.sortable ? column.getSortByToggleProps() : {})}
-                    style={{
-                      width: column.width,
-                      position: (columnIndex === 0 || columnIndex === headerGroup.headers.length - 1) ? 'sticky' : 'relative',
-                      left: (columnIndex === 0) ? 0 : 'auto',
-                      right: (columnIndex === headerGroup.headers.length - 1) ? 0 : 'auto',
-                      zIndex: (columnIndex === 0 || columnIndex === headerGroup.headers.length - 1) ? 1 : 'auto',
-                       backgroundColor: (columnIndex === 0) ? '#f8f9fa' : ((columnIndex === headerGroup.headers.length - 1) ? '#f8f9fa' : 'transparent'),
-                    }}  >
+                  style={{
+                    width: column.width,
+                    position: ((columnIndex === 0 || column.id === 'action') ? 'sticky' : 'relative'),
+                    left: (columnIndex === 0 ? 0 : 'auto'),
+                    right: ((columnIndex === headerGroup.headers.length - 1 || column.id === 'action') ? 0 : 'auto'),
+                    zIndex: ((columnIndex === 0 || column.id === 'action') ? 1 : 'auto'),
+                    backgroundColor: (columnIndex === 0) ? '#f8f9fa' : ((columnIndex === headerGroup.headers.length - 1 || column.id === 'action') ? '#f8f9fa' : 'transparent'),
+                  }} >
                     <span style={{ display: 'flex', alignItems: 'center' }}>
                     {column.sortable && (
                         <span
