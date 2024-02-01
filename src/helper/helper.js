@@ -110,3 +110,8 @@ export function intersectObjects(refPayload, formValues) {
 
   return result;
 }
+
+export function IsoDateConverter(dateTimeString) {
+  const date = new Date(dateTimeString);
+  return date.toLocaleString(); 
+};
