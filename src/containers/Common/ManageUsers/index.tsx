@@ -24,7 +24,6 @@ const columns = [
     accessor: "serialNo",
     width: "80px",
     fixed: true,
-    Filter: ColumnFilter,
     disableFilters: true,
     showCheckbox: false,
   },
@@ -343,6 +342,7 @@ function ManageUsers() {
        <ReactTable
         data={tableRowData}
         columns={columns}
+        actionButtons={[]}
         onEditRow={(row: any) => {
           const formObj = {
             _id: row._id,

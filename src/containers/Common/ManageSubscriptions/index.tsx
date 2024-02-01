@@ -157,6 +157,7 @@ function ManageSubscriptions() {
       <ReactTable
         data={tableRowData}
         columns={columns}
+        actionButtons={[]}
         onEditRow={() => {}}
         onDeleteRow={() => {}}
       />

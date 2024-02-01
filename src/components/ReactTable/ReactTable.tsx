@@ -14,10 +14,10 @@ import {
   Pencil,
   Trash,
 } from "tabler-icons-react";
-import { ActionIcon, ScrollArea } from "@mantine/core";
-// import GlobalFilter from './GlobalFilter/GlobalFilter';
+import { ActionIcon, ScrollArea, Button, Flex, Checkbox } from "@mantine/core";
 import ColumnFilter from "./ColumnFilter/ColumnFilter";
 import CustomTooltip from "../CustomTooltip/CustomTooltip";
+
 
 const tableStyle = {
   border: "1px solid #D9E4EC",
@@ -52,12 +52,19 @@ const searchFieldStyle = {
   fontFamily: "arial, sans-serif",
 };
 
+
 const ReactTable: React.FC<{
   columns: readonly Column<any>[];
   data: any[];
   onEditRow: (row: any) => void;
   onDeleteRow: (row: any) => void;
-}> = ({ columns, data, onEditRow, onDeleteRow }) => {
+  actionButtons: {
+    label: string;
+    onClickAction: (row: any) => void;
+    type: string;
+    color: string;
+  }[];
+}> = ({ columns, data, onEditRow, onDeleteRow, actionButtons }) => {
   const defaultColumn = useMemo(() => {
     return {
       Filter: ColumnFilter,
@@ -77,8 +84,6 @@ const ReactTable: React.FC<{
     pageOptions,
     allColumns,
     state: { pageIndex: currentPage, pageSize },
-    // state,
-    // setGlobalFilter,
   } = useTable<Record<string, any>>(
     { columns, data, defaultColumn },
     useFilters,
@@ -87,33 +92,51 @@ const ReactTable: React.FC<{
     usePagination
   ) as any;
 
-  //   const { globalFilter } = state;
-
   return (
     <>
-      {/* <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/> */}
-      <div style={CheckboxContainerStyle}>
-        Hide/Show Columns
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          {allColumns.map(
-            (column: any) =>
-              column.showCheckbox && (
-                <div key={column.id}>
-                  <label style={{ fontSize: "14px" }}>
-                    <input type="checkbox" {...column.getToggleHiddenProps()} />
-                    {column.Header}
-                  </label>
-                </div>
-              )
-          )}
+      {allColumns.some((column: any) => column.showCheckbox) && (
+        <div style={CheckboxContainerStyle}>
+          Hide/Show Columns
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            {allColumns.map(
+              (column: any) =>
+                column.showCheckbox && (
+                  <div key={column.id}>
+                    <label style={{ fontSize: "14px" }}>
+                      <input
+                        type="checkbox"
+                        {...column.getToggleHiddenProps()}
+                      />
+                      {column.Header}
+                    </label>
+                  </div>
+                )
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      <Flex align="right" justify="end" gap="md">
+        {actionButtons.map((item: any, index: number) => {
+          return (
+            <Button
+              key={item.text + index * 27}
+              type={item.type}
+              onClick={item.onClickAction}
+              variant="default"
+            >
+              {item.label}
+            </Button>
+          );
+        })}
+      </Flex>
+
       <ScrollArea>
         <table {...getTableProps()} style={tableStyle} className="table">
           <thead>
@@ -299,12 +322,20 @@ const ReactTable: React.FC<{
       </ScrollArea>
 
       <div style={{ marginTop: "15px" }}>
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+        <Button
+          variant="default"
+          onClick={() => previousPage()}
+          disabled={!canPreviousPage}
+        >
           Previous Page
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
+        </Button>{" "}
+        <Button
+          variant="default"
+          onClick={() => nextPage()}
+          disabled={!canNextPage}
+        >
           Next Page
-        </button>{" "}
+        </Button>{" "}
         <span>
           Page{" "}
           <strong>

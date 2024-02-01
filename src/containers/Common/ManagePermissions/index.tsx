@@ -6,7 +6,7 @@ import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditPermissionsForm from "../../../forms/Common/ManagePermissions";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getPermissionsData,
   postPermissionsData,
@@ -16,28 +16,36 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "25px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "30px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Permission_Id",
-    key: "_id",
-    width: "100px",
-    sortable: false,
-  },
-  {
-    label: "Permission",
-    key: "permission",
-    width: "300px",
+    Header: "Permission_Id",
+    accessor: "_id",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "40px",
-    fixed:true,
+    Header: "Permission",
+    accessor: "permission",
+    width: "250px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
+    width: "60px",
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -183,13 +191,12 @@ function ManagePermissions() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -198,7 +205,7 @@ function ManagePermissions() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             _id: obj._id,
@@ -208,7 +215,7 @@ function ManagePermissions() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
