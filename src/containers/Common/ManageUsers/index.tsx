@@ -6,7 +6,7 @@ import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditUsersForm from "../../../forms/Common/ManageUsers";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getUsersData,
   deleteUsersData,
@@ -15,50 +15,139 @@ import {
   patchProfileData,
 } from "../../../services/user-management/Users";
 import { getRolesData } from "../../../services/user-management/PermissionAndRoles";
+import { IsoDateConverter } from "../../../helper/helper";
+import ColumnFilter from "../../../components/ReactTable/ColumnFilter/ColumnFilter";
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "70px",
-    fixed: true,
-  },
-  {
-    label: "User_Id",
-    key: "_id",
-    width: "90px",
-    sortable: false,
-  },
-  {
-    label: "Name",
-    key: "full_name",
-    width: "230px",
-    sortable: true,
-  },
-  {
-    label: "Email",
-    key: "email",
-    width: "230px",
-    sortable: true,
-  },
-  {
-    label: "Phone",
-    key: "phone",
-    width: "130px",
-    sortable: true,
-  },
-  {
-    label: "Role",
-    key: "roleName",
-    width: "130px",
-    sortable: true,
-  },
-  {
-    label: "Action",
-    key: "action",
+    Header: "No.",
+    accessor: "serialNo",
     width: "80px",
-    fixed:true,
+    fixed: true,
+    Filter: ColumnFilter,
+    disableFilters: true,
+    showCheckbox: false,
   },
+  {
+    Header: "User_Id",
+    accessor: "_id",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Name",
+    accessor: "full_name",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Email",
+    accessor: "email",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Phone",
+    accessor: "phone",
+    width: "300px",
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Role",
+    accessor: "roleName",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "City",
+    accessor: "city",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Zip Code",
+    accessor: "zip_code",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "State",
+    accessor: "state",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Country",
+    accessor: "country",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Profession",
+    accessor: "profession",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Company",
+    accessor: "CompanyName",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "GST",
+    accessor: "gstin",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Created At",
+    accessor: "CreatedAt",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Updated At",
+    accessor: "UpdatedAt",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
+    width: "100px",
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
+  },
+
 ];
 
 const RenderModalContent = (props: any) => {
@@ -156,7 +245,7 @@ function ManageUsers() {
   // to delete a single row data
   const openDeleteModal = (rowData: any) =>
     openConfirmModal({
-      title: "Delete the Service Data",
+      title: "Delete the User Data",
       centered: true,
       children: (
         <Text size="sm">
@@ -173,8 +262,8 @@ function ManageUsers() {
       onConfirm: () => handleDeleteRow(rowData),
     });
 
-  const handleDeleteRow = async (data: any) => {
-    const response = await deleteUsersData(data);
+  const handleDeleteRow = async (rowData: any) => {
+    const response = await deleteUsersData(rowData);
 
     if (response) {
       handleRefreshCalls();
@@ -201,13 +290,17 @@ function ManageUsers() {
   }, []);
 
   useEffect(() => {
-    if (usersData && usersData.length) {
-      const tableData = usersData.map((d: any) => {
+    if (usersData && usersData.length && profileData && profileData.length) {
+      const tableData = usersData.map((user: any) => {
+        const userProfile = profileData.find((profile: any) => profile.user_id === user._id);
         const obj = {
-          ...d,
-          activeStatus: d.active === 1 ? "Active" : "Inactive",
+          ...user,
+          activeStatus: user.active === 1 ? "Active" : "Inactive",
+          CreatedAt: IsoDateConverter(user.t_create),
+          UpdatedAt: IsoDateConverter(user.t_update),
+          ...userProfile 
         };
-        const role = rolesData.find((role: any) => role._id === d.role_id);
+        const role = rolesData.find((role: any) => role._id === user.role_id);
         if (role) {
           obj.roleName = role.role;
         }
@@ -215,7 +308,8 @@ function ManageUsers() {
       });
       setTableRowData(tableData);
     }
-  }, [usersData]);
+  }, [usersData, profileData]);
+  
 
   return (
     <PageWrapper
@@ -246,29 +340,28 @@ function ManageUsers() {
       }}
       modalSize="60%"
     >
-      <DataTable
+       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[]}
-        handleRowEdit={(row: any, index: number) => {
-          let obj = { ...row };
+        onEditRow={(row: any) => {
           const formObj = {
-            _id: obj._id,
-            email: obj.email,
-            first_name: obj.first_name,
-            middle_name: obj.middle_name,
-            last_name: obj.last_name,
-            full_name: obj.full_name,
-            phone: obj.phone,
-            role_id: obj.role_id,
-            roleName: obj.roleName,
+            _id: row._id,
+            email: row.email,
+            first_name: row.first_name,
+            middle_name: row.middle_name,
+            last_name: row.last_name,
+            full_name: row.full_name,
+            phone: row.phone,
+            role_id: row.role_id,
+            roleName: row.roleName,
           };
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
+
         }}
       />
     </PageWrapper>
