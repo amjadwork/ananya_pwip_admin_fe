@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import EditPermissionAndRoleForm from "../../../forms/Common/ManagePermissionAndRole";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getRolesData,
   getPermissionsData,
@@ -19,33 +19,44 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "30px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Role Name",
-    key: "role",
-    width: "100px",
+    Header: "Role",
+    accessor: "role",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Role_Id",
-    key: "_id",
-    width: "60px",
+    Header: "Role Id",
+    accessor: "_id",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Permissions",
-    key: "permissionName",
-    width: "200px",
+    Header: "Permissions",
+    accessor: "permissionName",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "40px",
-    fixed:true,
+    Header: "Action",
+    accessor: "action",
+    width: "70px",
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -182,6 +193,7 @@ function ManagePermissionAndRole() {
           permissionName: permissionNames,
         };
       });
+      console.log("newcombined", newCombinedData)
       setTableRowData(newCombinedData);
     }
   }, [rolesData, rolePermissionsData, permissionsData]);
@@ -215,14 +227,12 @@ function ManagePermissionAndRole() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        showRowDeleteAction={false}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -231,7 +241,7 @@ function ManagePermissionAndRole() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             roleId: obj._id,
