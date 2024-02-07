@@ -365,7 +365,7 @@ const handleToggleButton = (rowIndex: number) => {
                                 )
                               ) : null}
 
-                              {cell.column.id === "user_id" ? (
+                              {cell.column.id === "userID" ? (
                                 row.original.user ? (
                                   <CustomTooltip
                                     data={row.original.user}
