@@ -7,13 +7,13 @@ export const getUsersData = async () => {
   }
 };
 export const patchUsersData = async (data: any) => {
-  const response = await APIRequest("user" + "/" + data._id, "PATCH", data);
+  const response = await APIRequest("user" + "/" + data.user_id, "PATCH", data);
   if (response) {
     return response;
   }
 };
 export const deleteUsersData = async (data: any) => {
-  const response = await APIRequest("user" + "/" + data._id, "DELETE");
+  const response = await APIRequest("user" + "/" + data.user_id, "DELETE");
   if (response) {
     return response;
   }
@@ -27,7 +27,7 @@ export const getProfileData = async () => {
 };
 
 export const patchProfileData = async (data: any) => {
-  const response = await APIRequest("profile" + "/" + data._id, "PATCH", data);
+  const response = await APIRequest("profile" + "/" + data.user_id, "PATCH", data);
   if (response) {
     return response;
   }

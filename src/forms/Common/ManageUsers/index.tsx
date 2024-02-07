@@ -131,9 +131,9 @@ function EditUsersForm(props: any) {
   useEffect(() => {
     if (updateFormData && modalType === "update") {
       setUserObject(updateFormData);
-      if (updateFormData._id) {
+      if (updateFormData.user_id) {
         const matchingProfile = profileData.find(
-          (profile: any) => profile.user_id === updateFormData._id
+          (profile: any) => profile.user_id === updateFormData.user_id
         );
         setProfileObject(matchingProfile);
         if (matchingProfile) {
@@ -190,14 +190,14 @@ function EditUsersForm(props: any) {
     if (Object.keys(userPayload).length > 0) {
       const payload = {
         ...userPayload,
-        _id: formValues._id,
+        user_id: formValues.user_id,
       };
       handleUserPatch(payload);
     }
     if (Object.keys(profilePayload).length > 0) {
       const payload = {
         ...profilePayload,
-        _id: formValues._id,
+        user_id: formValues.user_id,
       };
       handleProfilePatch(payload);
     }
