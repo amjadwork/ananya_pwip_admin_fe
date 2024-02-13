@@ -67,6 +67,16 @@ const columns = [
     width: "150px",
   },
   {
+    label: "Is Free?",
+    key: "is_free",
+    width: "150px",
+  },
+  {
+    label: "Is Unlimited?",
+    key: "is_unlimited",
+    width: "150px",
+  },
+  {
     label: "Action",
     key: "action",
     width: "90px",
@@ -238,8 +248,8 @@ function ManagePlans() {
           d.validity_type === "days" && d.validity
             ? ` ${d.validity} ${d.validity === 1 ? "day" : "days"}`
             : d.validity_type === "hours" && d.validity
-            ? `${d.validity} ${d.validity === 1 ? "hour" : "hours"}`
-            : null;
+              ? `${d.validity} ${d.validity === 1 ? "hour" : "hours"}`
+              : null;
 
         const obj = {
           ...d,
@@ -305,6 +315,7 @@ function ManagePlans() {
         ]}
         handleRowEdit={(row: any, index: number) => {
           let obj = { ...row };
+          console.log(obj, "obj");
           const formObj = {
             name: obj.name,
             description: obj.description,
@@ -314,7 +325,9 @@ function ManagePlans() {
             applicable_for_users: obj.applicable_for_users,
             refund_policy: obj.refund_policy,
             refund_policy_valid_day: obj.refund_policy_valid_day,
-            show_for_user: obj.show_for_user,
+            show_to_user: obj.show_to_user,
+            is_free: obj.is_free,
+            is_unlimited: obj.is_unlimited,
             usage_cap: obj.usage_cap,
             price: obj.price,
             currency: obj.currency,
