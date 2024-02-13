@@ -12,7 +12,6 @@ import {
 } from "@mantine/core";
 import { Button } from "../../../components/index";
 import { useForm } from "@mantine/form";
-import { applyMiddleware } from "redux";
 
 const initialFormValues = {
   name: "",
@@ -22,7 +21,7 @@ const initialFormValues = {
   applicable_services: [],
   applicable_for_users: [],
   refund_policy: false,
-  show_to_user: false,
+  show_for_user: false,
   usage_cap: 0,
   refund_policy_valid_day: 0,
   price: "",
@@ -119,25 +118,16 @@ function EditPlansForm(props: any) {
     }
   }, [form.values]);
 
-  console.log(form.values, "values")
+
   const handleFormSubmit = (formValues: typeof form.values) => {
     if (formValues.price === 0) {
       form.values.refund_policy = false;
       form.values.refund_policy_valid_day = 0;
     }
-    if (formValues.is_free === true)
-    {
-      formValues.is_free = 1;
+
+    if (!formValues.refund_policy) {
+      formValues.refund_policy_valid_day = false;
     }
-    if (formValues.is_unlimited === true) {
-          formValues.is_unlimited = 1;
-    }
-    else {
-      formValues.is_unlimited = 0;
-        formValues.is_free = 0;
-    }
-    
-    console.log(formValues, "formValues")
     setRefundError(null);
     handleSaveAction(formValues);
     handleCloseModal(false);
@@ -186,9 +176,9 @@ function EditPlansForm(props: any) {
           <Checkbox
             label="Show To Users"
             size="sm"
-            checked={form.values.show_to_user}
+            checked={form.values.show_for_user}
             onChange={(event) => {
-              form.getInputProps("show_to_user").onChange(event);
+              form.getInputProps("show_for_user").onChange(event);
             }}
           />
         </Grid.Col>

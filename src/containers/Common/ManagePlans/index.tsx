@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,7 +7,6 @@ import { showNotification } from "@mantine/notifications";
 import EditPlansForm from "../../../forms/Common/ManagePlans";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
 import ReactTable from "../../../components/ReactTable/ReactTable";
 import { getServicesData } from "../../../services/plans-management/SubscriptionsAndServices";
 import {
@@ -28,76 +27,90 @@ const columns = [
     showCheckbox: false,
   },
   {
-    Header: "Plan_ID",
+    Header: "Plan Id",
     accessor: "id",
-    width: "300px",
+    width: "270px",
     sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
-    Header: "Plans",
+    Header: "Name",
     accessor: "name",
     width: "300px",
     sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Services",
     accessor: "servicesNames",
     width: "300px",
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Users",
     accessor: "applicableUsers",
     width: "300px",
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Price",
     accessor: "cost",
     width: "300px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Usage Limit",
     accessor: "usage_cap",
-    width: "300px",
+    width: "310px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
-    Header: "Valid For",
+    Header: "Validity",
     accessor: "validityFor",
-    width: "300px",
+    width: "280px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Refundable?",
     accessor: "refund",
-    width: "300px",
+    width: "320px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Free?",
-    accessor: "is_free",
+    accessor: "isFree",
     width: "300px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
   },
   {
     Header: "Unlimited?",
-    accessor: "is_unlimited",
-    width: "300px",
+    accessor: "isUnlimited",
+    width: "310px",
+    sortable: true,
     filterable: true,
-    showCheckbox: false,
+    showCheckbox: true,
+  },
+  {
+    Header: "Show User?",
+    accessor: "showToUser",
+    width: "310px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
     Header: "Action",
@@ -263,7 +276,7 @@ function ManagePlans() {
           .map((userId: any) => {
             const user = usersData.find((u: any) => u._id === userId);
             if (user && user.active === 1) {
-              return `${user.email}, ${user.full_name}`;
+              return `${user.email}`;
             }
             return null;
           })
@@ -281,13 +294,17 @@ function ManagePlans() {
           cost: `${d.price} ${d.currency}`,
           validityFor: validityFor || "Not Applicable",
           refund: `${
-            d.refund_policy ? `Yes, ${d.refund_policy_valid_day} day/s` : "No"
+            d.refund_policy === 1
+              ? `Yes, ${d.refund_policy_valid_day} day/s`
+              : "No"
           }`,
           servicesNames: servicesNames,
           applicableUsers: applicableUsers,
           usage_cap: d.usage_cap || 0,
+          isFree: d.is_free === 1 ? "Yes" : "No",
+          isUnlimited: d.is_unlimited === 1 ? "Yes" : "No",
+          showToUser: d.show_for_user === 1 ? "Yes" : "No",
         };
-
         tableData.push(obj);
       });
       setTableRowData(tableData);
@@ -339,7 +356,6 @@ function ManagePlans() {
         ]}
         onEditRow={(row: any) => {
           let obj = { ...row };
-          console.log(obj, "obj");
           const formObj = {
             name: obj.name,
             description: obj.description,
@@ -349,7 +365,7 @@ function ManagePlans() {
             applicable_for_users: obj.applicable_for_users,
             refund_policy: obj.refund_policy,
             refund_policy_valid_day: obj.refund_policy_valid_day,
-            show_to_user: obj.show_to_user,
+            show_for_user: obj.show_for_user,
             is_free: obj.is_free,
             is_unlimited: obj.is_unlimited,
             usage_cap: obj.usage_cap,
