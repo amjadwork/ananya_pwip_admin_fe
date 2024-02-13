@@ -18,6 +18,7 @@ import { ActionIcon, ScrollArea, Button, Flex, Checkbox } from "@mantine/core";
 import ColumnFilter from "./ColumnFilter/ColumnFilter";
 import CustomTooltip from "../CustomTooltip/CustomTooltip";
 
+
 const tableStyle = {
   border: "1px solid #D9E4EC",
   fontFamily: "arial, sans-serif",
@@ -69,15 +70,7 @@ const ReactTable: React.FC<{
     } as Partial<Column<Record<string, any>>>;
   }, []);
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: number]: boolean }>(
-    {}
-  );
-  const [expandedServicesRows, setExpandedServicesRows] = useState<{
-    [key: number]: boolean;
-  }>({});
-  const [expandedUsersRows, setExpandedUsersRows] = useState<{
-    [key: number]: boolean;
-  }>({});
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
   const {
     getTableProps,
@@ -100,30 +93,20 @@ const ReactTable: React.FC<{
     usePagination
   ) as any;
 
-  const handleToggleButton = (rowIndex: number, column: any) => {
-    const setExpandedRowsState = (stateToUpdate: any) => {
-      stateToUpdate((prevExpandedRows: any) => {
-        const newExpandedRows = { ...prevExpandedRows };
-        if (newExpandedRows[rowIndex]) {
-          delete newExpandedRows[rowIndex];
-        } else {
-          // Close previously opened toggle button
-          Object.keys(newExpandedRows).forEach((key: any) => {
-            delete newExpandedRows[key];
-          });
-          newExpandedRows[rowIndex] = true;
-        }
-        return newExpandedRows;
-      });
-    };
-    if (column === "servicesNames") {
-      setExpandedRowsState(setExpandedServicesRows);
-    } else if (column === "applicableUsers") {
-      setExpandedRowsState(setExpandedUsersRows);
+const handleToggleButton = (rowIndex: number) => {
+  setExpandedRows((prevExpandedRows) => {
+    const newExpandedRows = new Set(prevExpandedRows);
+    if (newExpandedRows.has(rowIndex)) {
+      newExpandedRows.delete(rowIndex);
     } else {
-      setExpandedRowsState(setExpandedRows);
+      // Close previously opened toggle button
+      newExpandedRows.clear();
+      newExpandedRows.add(rowIndex);
     }
-  };
+    return newExpandedRows;
+  });
+};
+
 
   return (
     <>
@@ -255,247 +238,148 @@ const ReactTable: React.FC<{
                   >
                     {row.cells.map((cell: any, cellIndex: number) => (
                       <React.Fragment key={cellIndex}>
-                        {(() => {
-                          if (cell.column.id === "servicesNames") {
-                            return (
-                              <td
-                                style={{
-                                  marginTop: "12px",
-                                  paddingLeft: "1rem",
-                                }}
-                              >
-                                <Button
-                                  onClick={() =>
-                                    handleToggleButton(i, "servicesNames")
-                                  }
-                                  size="sm"
-                                  disabled={
-                                    row.original.servicesNames.length === 0
-                                  }
+                        {cell.column.id === "permissionName" ? (
+                          <td
+                            style={{
+                              marginTop: "12px",
+                              paddingLeft: "1rem",
+                            }}
+                          >
+                            <Button
+                              onClick={() => handleToggleButton(i)}
+                              size="sm"
+                              disabled={
+                                row.original.permissionName.length === 0
+                              }
+                              variant="default"
+                              fullWidth
+                              style={{
+                                height: "2rem",
+                              }}
+                            >
+                              {row.original.permissionName.length === 0
+                                ? "No Permissions"
+                                : expandedRows.has(i)
+                                  ? "Hide Permissions"
+                                  : "Show Permissions"}
+                            </Button>
+                            <div
+                              style={{
+                                display: expandedRows.has(i) ? "block" : "none",
+                              }}
+                            >
+                              {row.original.permissionName.map(
+                                (list: any, p_Index: any) => (
+                                  <div key={p_Index}>
+                                    {p_Index + 1}. {list}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </td>
+                        ) : cell.column.id === "action" ? (
+                          // Rendering action icons
+                          <td
+                            {...cell.getCellProps()}
+                            style={{
+                              ...cellStyle,
+                              backgroundColor: "#f8f9fa",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              position:
+                                cellIndex === row.cells.length - 1
+                                  ? "sticky"
+                                  : "relative",
+                              right:
+                                cellIndex === row.cells.length - 1 ? 0 : "auto",
+                              zIndex:
+                                cellIndex === row.cells.length - 1 ? 1 : "auto",
+                            }}
+                          >
+                            {onEditRow &&
+                              (row.original.active === 0 ? (
+                                <ActionIcon
+                                  variant="outline"
+                                  color="gray"
+                                  style={{ marginRight: "6px" }}
+                                >
+                                  <Pencil size="1rem" color="gray" />
+                                </ActionIcon>
+                              ) : (
+                                <ActionIcon
                                   variant="default"
-                                  fullWidth
-                                  style={{
-                                    height: "2rem",
-                                  }}
+                                  onClick={() => onEditRow(row.original)}
+                                  style={{ marginRight: "6px" }}
                                 >
-                                  {row.original.servicesNames.length === 0
-                                    ? "No Services"
-                                    : expandedServicesRows[i]
-                                      ? "Hide Services"
-                                      : "Show Services"}
-                                </Button>
-                                <div
-                                  style={{
-                                    display: expandedServicesRows[i]
-                                      ? "block"
-                                      : "none",
-                                  }}
-                                >
-                                  {row.original.servicesNames.map(
-                                    (list: any, p_Index: any) => (
-                                      <div key={p_Index}>
-                                        {p_Index + 1}. {list}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </td>
-                            );
-                          } else if (cell.column.id === "permissionName") {
-                            return (
-                              <td
-                                style={{
-                                  marginTop: "12px",
-                                  paddingLeft: "1rem",
-                                }}
-                              >
-                                <Button
-                                  onClick={() =>
-                                    handleToggleButton(i, "common")
-                                  }
-                                  size="sm"
-                                  disabled={
-                                    row.original.permissionName.length === 0
-                                  }
+                                  <Pencil size="1rem" color="blue" />
+                                </ActionIcon>
+                              ))}
+                            {onDeleteRow ? (
+                              row.original.active === 0 ? (
+                                <ActionIcon variant="outline" color="gray">
+                                  <Trash size="1rem" color="gray" />
+                                </ActionIcon>
+                              ) : (
+                                <ActionIcon
                                   variant="default"
-                                  fullWidth
-                                  style={{
-                                    height: "2rem",
-                                  }}
+                                  onClick={() => onDeleteRow(row.original)}
                                 >
-                                  {row.original.permissionName.length === 0
-                                    ? "No Permissions"
-                                    : expandedRows[i]
-                                      ? "Hide Permissions"
-                                      : "Show Permissions"}
-                                </Button>
-                                <div
-                                  style={{
-                                    display: expandedRows[i] ? "block" : "none",
-                                  }}
-                                >
-                                  {row.original.permissionName.map(
-                                    (list: any, p_Index: any) => (
-                                      <div key={p_Index}>
-                                        {p_Index + 1}. {list}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </td>
-                            );
-                          } else if (cell.column.id === "applicableUsers") {
-                            return (
-                              <td
-                                style={{
-                                  marginTop: "12px",
-                                  paddingLeft: "1rem",
-                                }}
-                              >
-                                <Button
-                                  onClick={() =>
-                                    handleToggleButton(i, "applicableUsers")
-                                  }
-                                  size="sm"
-                                  disabled={
-                                    row.original.applicableUsers.length === 0
-                                  }
-                                  variant="default"
-                                  fullWidth
-                                  style={{
-                                    height: "2rem",
-                                  }}
-                                >
-                                  {row.original.applicableUsers.length === 0
-                                    ? "No Users"
-                                    : expandedUsersRows[i]
-                                      ? "Hide Users"
-                                      : "Show Users"}
-                                </Button>
-                                <div
-                                  style={{
-                                    display: expandedUsersRows[i]
-                                      ? "block"
-                                      : "none",
-                                  }}
-                                >
-                                  {row.original.applicableUsers.map(
-                                    (list: any, p_Index: any) => (
-                                      <div key={p_Index}>
-                                        {p_Index + 1}. {list}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </td>
-                            );
-                          } else if (cell.column.id === "action") {
-                            return (
-                              <td
-                                {...cell.getCellProps()}
-                                style={{
-                                  ...cellStyle,
-                                  backgroundColor: "#f8f9fa",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  position:
-                                    cellIndex === row.cells.length - 1
-                                      ? "sticky"
-                                      : "relative",
-                                  right:
-                                    cellIndex === row.cells.length - 1
-                                      ? 0
-                                      : "auto",
-                                  zIndex:
-                                    cellIndex === row.cells.length - 1
-                                      ? 1
-                                      : "auto",
-                                }}
-                              >
-                                {onEditRow &&
-                                  (row.original.active === 0 ? (
-                                    <ActionIcon
-                                      variant="outline"
-                                      color="gray"
-                                      style={{ marginRight: "6px" }}
-                                    >
-                                      <Pencil size="1rem" color="gray" />
-                                    </ActionIcon>
-                                  ) : (
-                                    <ActionIcon
-                                      variant="default"
-                                      onClick={() => onEditRow(row.original)}
-                                      style={{ marginRight: "6px" }}
-                                    >
-                                      <Pencil size="1rem" color="blue" />
-                                    </ActionIcon>
-                                  ))}
-                                {onDeleteRow ? (
-                                  row.original.active === 0 ? (
-                                    <ActionIcon variant="outline" color="gray">
-                                      <Trash size="1rem" color="gray" />
-                                    </ActionIcon>
-                                  ) : (
-                                    <ActionIcon
-                                      variant="default"
-                                      onClick={() => onDeleteRow(row.original)}
-                                    >
-                                      <Trash size="1rem" color="red" />
-                                    </ActionIcon>
-                                  )
+                                  <Trash size="1rem" color="red" />
+                                </ActionIcon>
+                              )
+                            ) : (
+                              <ActionIcon variant="outline" color="gray">
+                                <Trash size="1rem" color="gray" />
+                              </ActionIcon>
+                            )}
+                          </td>
+                        ) : cell.column.id === "serialNo" ? (
+                          // Rendering serial number column
+                          <td
+                            {...cell.getCellProps()}
+                            style={{
+                              ...cellStyle,
+                              backgroundColor: "#f8f9fa",
+                              position: cellIndex === 0 ? "sticky" : "relative",
+                              left: cellIndex === 0 ? 0 : "auto",
+                              zIndex: cellIndex === 0 ? 1 : "auto",
+                            }}
+                          >
+                            {currentPage * pageSize + i + 1}
+                          </td>
+                        ) : (
+                          // Rendering other columns
+                          <td {...cell.getCellProps()} style={cellStyle}>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              {cell.column.id === "planID" ? (
+                                row.original.plan ? (
+                                  <CustomTooltip
+                                    data={row.original.plan}
+                                    type="plan"
+                                  />
                                 ) : (
-                                  <ActionIcon variant="outline" color="gray">
-                                    <Trash size="1rem" color="gray" />
-                                  </ActionIcon>
-                                )}
-                              </td>
-                            );
-                          } else if (cell.column.id === "serialNo") {
-                            return (
-                              <td
-                                {...cell.getCellProps()}
-                                style={{
-                                  ...cellStyle,
-                                  backgroundColor: "#f8f9fa",
-                                  position:
-                                    cellIndex === 0 ? "sticky" : "relative",
-                                  left: cellIndex === 0 ? 0 : "auto",
-                                  zIndex: cellIndex === 0 ? 1 : "auto",
-                                }}
-                              >
-                                {currentPage * pageSize + i + 1}
-                              </td>
-                            );
-                          } else {
-                            return (
-                              <td {...cell.getCellProps()} style={cellStyle}>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  {cell.column.id === "planID" &&
-                                  row.original.plan ? (
-                                    <CustomTooltip
-                                      data={row.original.plan}
-                                      type="plan"
-                                    />
-                                  ) : null}
-                                  {cell.column.id === "userID" &&
-                                  row.original.user ? (
-                                    <CustomTooltip
-                                      data={row.original.user}
-                                      type="user"
-                                    />
-                                  ) : null}
-                                  {cell.render("Cell")}
-                                </div>
-                              </td>
-                            );
-                          }
-                        })()}
+                                  <CustomTooltip type="plan" />
+                                )
+                              ) : null}
+
+                              {cell.column.id === "userID" ? (
+                                row.original.user ? (
+                                  <CustomTooltip
+                                    data={row.original.user}
+                                    type="user"
+                                  />
+                                ) : (
+                                  <CustomTooltip type="user" />
+                                )
+                              ) : null}
+
+                              {cell.render("Cell")}
+                            </div>
+                          </td>
+                        )}
                       </React.Fragment>
                     ))}
                   </tr>

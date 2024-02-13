@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { Button } from "../../../components/index";
 import { useForm } from "@mantine/form";
+import { applyMiddleware } from "redux";
 
 const initialFormValues = {
   name: "",
@@ -26,8 +27,6 @@ const initialFormValues = {
   refund_policy_valid_day: 0,
   price: "",
   currency: "INR",
-  is_free: false,
-  is_unlimited: false,
 };
 
 function EditPlansForm(props: any) {
@@ -118,15 +117,10 @@ function EditPlansForm(props: any) {
     }
   }, [form.values]);
 
-
   const handleFormSubmit = (formValues: typeof form.values) => {
     if (formValues.price === 0) {
       form.values.refund_policy = false;
       form.values.refund_policy_valid_day = 0;
-    }
-
-    if (!formValues.refund_policy) {
-      formValues.refund_policy_valid_day = false;
     }
     setRefundError(null);
     handleSaveAction(formValues);
@@ -152,36 +146,6 @@ function EditPlansForm(props: any) {
             {...form.getInputProps("description")}
           />
         </Grid.Col>
-        <Grid.Col span={4} mt="sm">
-          <Checkbox
-            label="Is Free?"
-            size="sm"
-            checked={form.values.is_free}
-            onChange={(event) => {
-              form.getInputProps("is_free").onChange(event);
-            }}
-          />
-        </Grid.Col>
-        <Grid.Col span={4} mt="sm">
-          <Checkbox
-            label="Is Unlimited?"
-            size="sm"
-            checked={form.values.is_unlimited}
-            onChange={(event) => {
-              form.getInputProps("is_unlimited").onChange(event);
-            }}
-          />
-        </Grid.Col>
-        <Grid.Col span={4} mt="sm">
-          <Checkbox
-            label="Show To Users"
-            size="sm"
-            checked={form.values.show_for_user}
-            onChange={(event) => {
-              form.getInputProps("show_for_user").onChange(event);
-            }}
-          />
-        </Grid.Col>
         <Grid.Col span={12}>
           <MultiSelect
             data={usersOptions}
@@ -194,7 +158,16 @@ function EditPlansForm(props: any) {
             clearable
           />
         </Grid.Col>
-
+        <Grid.Col span={12} mt="sm">
+          <Checkbox
+            label="Show For Users"
+            size="sm"
+            checked={form.values.show_for_user}
+            onChange={(event) => {
+              form.getInputProps("show_for_user").onChange(event);
+            }}
+          />
+        </Grid.Col>
         <Grid.Col span={12}>
           <MultiSelect
             data={servicesOptions}
