@@ -8,6 +8,7 @@ import EditPlansForm from "../../../forms/Common/ManagePlans";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import { getServicesData } from "../../../services/plans-management/SubscriptionsAndServices";
 import {
   getPlansData,
@@ -19,68 +20,92 @@ import { getUsersData } from "../../../services/user-management/Users";
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Plan_ID",
-    key: "id",
-    width: "90px",
-    sortable: true,
-  },
-  {
-    label: "Plans",
-    key: "name",
+    Header: "Plan_ID",
+    accessor: "id",
     width: "300px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Applicable Services",
-    key: "servicesNames",
+    Header: "Plans",
+    accessor: "name",
     width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Applicable Users",
-    key: "applicableUsers",
-    width: "350px",
+    Header: "Services",
+    accessor: "servicesNames",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Price",
-    key: "cost",
-    width: "150px",
+    Header: "Users",
+    accessor: "applicableUsers",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Usage Limit",
-    key: "usage_cap",
-    width: "150px",
+    Header: "Price",
+    accessor: "cost",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Valid For",
-    key: "validityFor",
-    width: "150px",
+    Header: "Usage Limit",
+    accessor: "usage_cap",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Refundable",
-    key: "refund",
-    width: "150px",
+    Header: "Valid For",
+    accessor: "validityFor",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Is Free?",
-    key: "is_free",
-    width: "150px",
+    Header: "Refundable?",
+    accessor: "refund",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Is Unlimited?",
-    key: "is_unlimited",
-    width: "150px",
+    Header: "Free?",
+    accessor: "is_free",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
+    Header: "Unlimited?",
+    accessor: "is_unlimited",
+    width: "300px",
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
     width: "90px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -298,13 +323,12 @@ function ManagePlans() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -313,7 +337,7 @@ function ManagePlans() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           console.log(obj, "obj");
           const formObj = {
@@ -337,7 +361,7 @@ function ManagePlans() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
