@@ -69,7 +69,15 @@ const ReactTable: React.FC<{
     } as Partial<Column<Record<string, any>>>;
   }, []);
 
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<{ [key: number]: boolean }>(
+    {}
+  );
+  const [expandedServicesRows, setExpandedServicesRows] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [expandedUsersRows, setExpandedUsersRows] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const {
     getTableProps,
@@ -92,18 +100,29 @@ const ReactTable: React.FC<{
     usePagination
   ) as any;
 
-  const handleToggleButton = (rowIndex: number) => {
-    setExpandedRows((prevExpandedRows) => {
-      const newExpandedRows = new Set(prevExpandedRows);
-      if (newExpandedRows.has(rowIndex)) {
-        newExpandedRows.delete(rowIndex);
-      } else {
-        // Close previously opened toggle button
-        newExpandedRows.clear();
-        newExpandedRows.add(rowIndex);
-      }
-      return newExpandedRows;
-    });
+  const handleToggleButton = (rowIndex: number, column: any) => {
+    const setExpandedRowsState = (stateToUpdate: any) => {
+      stateToUpdate((prevExpandedRows: any) => {
+        const newExpandedRows = { ...prevExpandedRows };
+        if (newExpandedRows[rowIndex]) {
+          delete newExpandedRows[rowIndex];
+        } else {
+          // Close previously opened toggle button
+          Object.keys(newExpandedRows).forEach((key: any) => {
+            delete newExpandedRows[key];
+          });
+          newExpandedRows[rowIndex] = true;
+        }
+        return newExpandedRows;
+      });
+    };
+    if (column === "servicesNames") {
+      setExpandedRowsState(setExpandedServicesRows);
+    } else if (column === "applicableUsers") {
+      setExpandedRowsState(setExpandedUsersRows);
+    } else {
+      setExpandedRowsState(setExpandedRows);
+    }
   };
 
   return (
@@ -246,7 +265,9 @@ const ReactTable: React.FC<{
                                 }}
                               >
                                 <Button
-                                  onClick={() => handleToggleButton(i)}
+                                  onClick={() =>
+                                    handleToggleButton(i, "servicesNames")
+                                  }
                                   size="sm"
                                   disabled={
                                     row.original.servicesNames.length === 0
@@ -259,13 +280,13 @@ const ReactTable: React.FC<{
                                 >
                                   {row.original.servicesNames.length === 0
                                     ? "No Services"
-                                    : expandedRows.has(i)
+                                    : expandedServicesRows[i]
                                       ? "Hide Services"
                                       : "Show Services"}
                                 </Button>
                                 <div
                                   style={{
-                                    display: expandedRows.has(i)
+                                    display: expandedServicesRows[i]
                                       ? "block"
                                       : "none",
                                   }}
@@ -289,7 +310,9 @@ const ReactTable: React.FC<{
                                 }}
                               >
                                 <Button
-                                  onClick={() => handleToggleButton(i)}
+                                  onClick={() =>
+                                    handleToggleButton(i, "common")
+                                  }
                                   size="sm"
                                   disabled={
                                     row.original.permissionName.length === 0
@@ -302,15 +325,13 @@ const ReactTable: React.FC<{
                                 >
                                   {row.original.permissionName.length === 0
                                     ? "No Permissions"
-                                    : expandedRows.has(i)
+                                    : expandedRows[i]
                                       ? "Hide Permissions"
                                       : "Show Permissions"}
                                 </Button>
                                 <div
                                   style={{
-                                    display: expandedRows.has(i)
-                                      ? "block"
-                                      : "none",
+                                    display: expandedRows[i] ? "block" : "none",
                                   }}
                                 >
                                   {row.original.permissionName.map(
@@ -332,7 +353,9 @@ const ReactTable: React.FC<{
                                 }}
                               >
                                 <Button
-                                  onClick={() => handleToggleButton(i)}
+                                  onClick={() =>
+                                    handleToggleButton(i, "applicableUsers")
+                                  }
                                   size="sm"
                                   disabled={
                                     row.original.applicableUsers.length === 0
@@ -345,13 +368,13 @@ const ReactTable: React.FC<{
                                 >
                                   {row.original.applicableUsers.length === 0
                                     ? "No Users"
-                                    : expandedRows.has(i)
+                                    : expandedUsersRows[i]
                                       ? "Hide Users"
                                       : "Show Users"}
                                 </Button>
                                 <div
                                   style={{
-                                    display: expandedRows.has(i)
+                                    display: expandedUsersRows[i]
                                       ? "block"
                                       : "none",
                                   }}
