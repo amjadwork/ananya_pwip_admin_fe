@@ -129,7 +129,7 @@ function AddOrEditProductForm(props: any) {
 
   const handleGetSources: any = async () => {
     const regionResponse = await APIRequest("location/source", "GET");
-  
+
     if (regionResponse) {
       const options: any = regionResponse.source
         .filter((d: any) => {
@@ -145,7 +145,6 @@ function AddOrEditProductForm(props: any) {
       setRegionOptions([...options]);
     }
   };
-  
 
   const handleAddRegionCost: any = () => {
     // Filter out the selected sources from the regionOptions
@@ -155,7 +154,7 @@ function AddOrEditProductForm(props: any) {
           (source: any) => source._sourceId === option.value
         )
     );
-  
+
     if (filteredRegionOptions.length > 0) {
       // Add a new source rate field
       form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
@@ -171,7 +170,6 @@ function AddOrEditProductForm(props: any) {
       });
     }
   };
-  
 
   const handleRemoveRegionCost = (index: number) => {
     form.removeListItem("sourceRates", index);
@@ -184,9 +182,7 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    
-    if(modalType==="add"){
-
+    if (modalType === "add") {
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
           const uri = image.url;
@@ -203,43 +199,42 @@ function AddOrEditProductForm(props: any) {
         }
       }
       handleCloseModal(false);
-      handleSaveCallback(formValues);  
+      handleSaveCallback(formValues);
     }
-    
-    if(modalType==="update"){
-    const payloadCommonVariantDetails = { ...form.values };
-    delete payloadCommonVariantDetails.sourceRates;
-    delete payloadCommonVariantDetails.imagesArray;
-    if (formValues.imagesArray.length !== 0) {
-      const uploadImageResponseArr = await uploadingMultipleImagesToS3(
-        form.values
-      );
-      payloadCommonVariantDetails.images = uploadImageResponseArr;
-      }
-    
-      let sourceID=formValues.sourceRates[0]._sourceId;
-      let price=formValues.sourceRates[0].price;
-      
-      if(formValues.updateSource){
-        sourceID =formValues.updateSource;
-      }
-      if(formValues.updatePrice){
-        price =formValues.updatePrice;
+
+    if (modalType === "update") {
+      const payloadCommonVariantDetails = { ...form.values };
+      delete payloadCommonVariantDetails.sourceRates;
+      delete payloadCommonVariantDetails.imagesArray;
+      if (formValues.imagesArray.length !== 0) {
+        const uploadImageResponseArr = await uploadingMultipleImagesToS3(
+          form.values
+        );
+        payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
 
-    if (formValues.updateSourceRates) {
-      const x = await updateIndividualVariantSourceRate(
-        formValues._variantId,
-        formValues.sourceRates[0]._id,
-        price,
-        sourceID,
-      );
-    }
-    handleCloseModal(true);
-    //variant common fields update
-    handleSaveCallback(payloadCommonVariantDetails);
-  }
+      let sourceID = formValues.sourceRates[0]._sourceId;
+      let price = formValues.sourceRates[0].price;
 
+      if (formValues.updateSource) {
+        sourceID = formValues.updateSource;
+      }
+      if (formValues.updatePrice) {
+        price = formValues.updatePrice;
+      }
+
+      if (formValues.updateSourceRates) {
+        const x = await updateIndividualVariantSourceRate(
+          formValues._variantId,
+          formValues.sourceRates[0]._id,
+          price,
+          sourceID
+        );
+      }
+      handleCloseModal(true);
+      //variant common fields update
+      handleSaveCallback(payloadCommonVariantDetails);
+    }
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
@@ -363,13 +358,84 @@ function AddOrEditProductForm(props: any) {
       />
 
       <Space h="md" />
-
-      <NumberInput
-        min={0}
-        label="Broken %"
-        placeholder="eg. 5"
-        {...form.getInputProps("brokenPercentage")}
-      />
+      <Grid columns={12}>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Broken %"
+            placeholder="5%"
+            {...form.getInputProps("brokenPercentage")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <TextInput
+            min={0}
+            label="Color"
+            placeholder="Off-white"
+            {...form.getInputProps("color")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <TextInput
+            min={0}
+            label="Type"
+            placeholder="Medium Grain"
+            {...form.getInputProps("type")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Grain Length"
+            placeholder="5.7"
+            {...form.getInputProps("size")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Moisture %"
+            placeholder="13%"
+            {...form.getInputProps("moisture")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Chalky %"
+            placeholder="5.4%"
+            {...form.getInputProps("chalky")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Damaged and Discolored %"
+            placeholder="1.05%"
+            {...form.getInputProps("damaged_discolored")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Whitness (avg)"
+            placeholder="39.4"
+            {...form.getInputProps("whitness")}
+          />
+        </Grid.Col>
+      </Grid>
       <Space h="md" />
 
       <label htmlFor="imageUpload">Image Upload</label>
