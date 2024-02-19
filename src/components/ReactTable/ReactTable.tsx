@@ -31,7 +31,7 @@ const tableStyle = {
 const cellStyle = {
   border: "1px solid #D9E4EC",
   textAlign: "left" as const,
-  padding: "7px",
+  padding: "4px",
 };
 
 const CheckboxContainerStyle = {
@@ -47,7 +47,6 @@ const evenRowStyle = {
 };
 
 const searchFieldStyle = {
-  marginLeft: "8px",
   fontFamily: "arial, sans-serif",
 };
 
@@ -170,79 +169,161 @@ const ReactTable: React.FC<{
         })}
       </Flex>
 
-      <ScrollArea>
+      <ScrollArea scrollbarSize={4} offsetScrollbars>
         <table {...getTableProps()} style={tableStyle} className="table">
           <thead>
-            {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroupIndex}>
-                {headerGroup.headers.map((column: any, columnIndex: number) => (
-                  <th
-                    {...column.getHeaderProps(
-                      column.sortable ? column.getSortByToggleProps() : {}
-                    )}
-                    style={{
-                      width: column.width,
-                      position:
-                        columnIndex === 0 || column.id === "action"
-                          ? "sticky"
-                          : "relative",
-                      left: columnIndex === 0 ? 0 : "auto",
-                      right:
-                        columnIndex === headerGroup.headers.length - 1 ||
-                        column.id === "action"
-                          ? 0
-                          : "auto",
-                      zIndex:
-                        columnIndex === 0 || column.id === "action"
-                          ? 1
-                          : "auto",
-                      backgroundColor:
-                        columnIndex === 0
-                          ? "#f8f9fa"
-                          : columnIndex === headerGroup.headers.length - 1 ||
-                              column.id === "action"
-                            ? "#f8f9fa"
-                            : "transparent",
-                    }}
-                  >
-                    <span style={{ display: "flex", alignItems: "center" }}>
-                      {column.sortable && (
-                        <span
+            <tr>
+              {headerGroups.map(
+                (headerGroup: any, headerGroupIndex: number) => (
+                  <React.Fragment key={headerGroupIndex}>
+                    {headerGroup.headers.map(
+                      (column: any, columnIndex: number) => (
+                        <th
+                          key={column.id}
+                          {...column.getHeaderProps(
+                            column.sortable ? column.getSortByToggleProps() : {}
+                          )}
                           style={{
-                            marginRight: "4px",
-                            marginTop: "4px",
-                            color: "gray",
-                            cursor: "pointer",
+                            width: column.width,
+                            position:
+                              columnIndex === 0 || column.id === "action"
+                                ? "sticky"
+                                : "relative",
+                            left: columnIndex === 0 ? 0 : "auto",
+                            right:
+                              columnIndex === headerGroup.headers.length - 1 ||
+                              column.id === "action"
+                                ? 0
+                                : "auto",
+                            zIndex:
+                              columnIndex === 0 || column.id === "action"
+                                ? 1
+                                : "auto",
+                            backgroundColor:
+                              columnIndex === 0
+                                ? "#f8f9fa"
+                                : columnIndex ===
+                                      headerGroup.headers.length - 1 ||
+                                    column.id === "action"
+                                  ? "#f8f9fa"
+                                  : "transparent",
                           }}
                         >
-                          {column.isSorted ? (
-                            column.isSortedDesc ? (
-                              <SortDescending size={20} />
-                            ) : (
-                              <SortAscending size={20} />
-                            )
-                          ) : (
-                            <ArrowsDownUp size={20} />
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "left",
+                                alignItems: "center",
+                              }}
+                            >
+                              <span>{column.render("Header")}</span>
+                            </div>
+                          </div>
+                        </th>
+                      )
+                    )}
+                  </React.Fragment>
+                )
+              )}
+            </tr>
+            <tr>
+              {headerGroups.map(
+                (headerGroup: any, headerGroupIndex: number) => (
+                  <React.Fragment key={headerGroupIndex}>
+                    {headerGroup.headers.map(
+                      (column: any, columnIndex: number) => (
+                        <th
+                          key={column.id}
+                          {...column.getHeaderProps(
+                            column.sortable ? column.getSortByToggleProps() : {}
                           )}
-                        </span>
-                      )}
-                      <span>{column.render("Header")}</span>
-
-                      {column.filterable && (
-                        <span
-                          {...column.getHeaderProps()}
-                          style={searchFieldStyle}
+                          style={{
+                            width: column.width,
+                            position:
+                              columnIndex === 0 || column.id === "action"
+                                ? "sticky"
+                                : "relative",
+                            left: columnIndex === 0 ? 0 : "auto",
+                            right:
+                              columnIndex === headerGroup.headers.length - 1 ||
+                              column.id === "action"
+                                ? 0
+                                : "auto",
+                            zIndex:
+                              columnIndex === 0 || column.id === "action"
+                                ? 1
+                                : "auto",
+                            backgroundColor:
+                              columnIndex === 0
+                                ? "#f8f9fa"
+                                : columnIndex ===
+                                      headerGroup.headers.length - 1 ||
+                                    column.id === "action"
+                                  ? "#f8f9fa"
+                                  : "transparent",
+                          }}
                         >
-                          {column.render("Filter", {
-                            placeholder: `Filter by ${column.Header}`,
-                          })}
-                        </span>
-                      )}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            ))}
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "left",
+                              }}
+                            >
+                              {column.sortable && (
+                                <span
+                                  style={{
+                                    marginRight: "4px",
+                                    color: "gray",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {column.isSorted ? (
+                                    column.isSortedDesc ? (
+                                      <SortDescending size={20} />
+                                    ) : (
+                                      <SortAscending size={20} />
+                                    )
+                                  ) : (
+                                    <ArrowsDownUp size={20} />
+                                  )}
+                                </span>
+                              )}
+                              {column.filterable && (
+                                <div
+                                  {...column.getHeaderProps()}
+                                  style={{
+                                    ...searchFieldStyle,
+                                    marginLeft: "4px",
+                                    marginTop: "0",
+                                    width: `${column.width}px`, // Set the width to 100%
+                                  }}
+                                >
+                                  {column.render("Filter", {
+                                    placeholder: `Filter by ${column.Header}`,
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </th>
+                      )
+                    )}
+                  </React.Fragment>
+                )
+              )}
+            </tr>
           </thead>
           <tbody {...getTableBodyProps()}>
             {page.map((row: any, i: any) => {
