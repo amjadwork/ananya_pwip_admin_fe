@@ -30,6 +30,13 @@ const initialFormValues: any = {
   variantName: "",
   HSNCode: "",
   brokenPercentage: "",
+  variantColor: "",
+  variantType: "",
+  variantSize: "",
+  moisturePercentage: "",
+  chalkyPercentage: "",
+  damagedPercentage: "",
+  variantWhiteness: "",
   tags: "",
   images: [],
   imagesArray: [],
@@ -374,7 +381,7 @@ function AddOrEditProductForm(props: any) {
             min={0}
             label="Color"
             placeholder="Off-white"
-            {...form.getInputProps("color")}
+            {...form.getInputProps("variantColor")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -382,7 +389,7 @@ function AddOrEditProductForm(props: any) {
             min={0}
             label="Type"
             placeholder="Medium Grain"
-            {...form.getInputProps("type")}
+            {...form.getInputProps("variantType")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -392,7 +399,7 @@ function AddOrEditProductForm(props: any) {
             hideControls
             label="Grain Length"
             placeholder="5.7"
-            {...form.getInputProps("size")}
+            {...form.getInputProps("variantSize")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -402,7 +409,7 @@ function AddOrEditProductForm(props: any) {
             hideControls
             label="Moisture %"
             placeholder="13%"
-            {...form.getInputProps("moisture")}
+            {...form.getInputProps("moisturePercentage")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -412,7 +419,7 @@ function AddOrEditProductForm(props: any) {
             hideControls
             label="Chalky %"
             placeholder="5.4%"
-            {...form.getInputProps("chalky")}
+            {...form.getInputProps("chalkyPercentage")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -422,7 +429,7 @@ function AddOrEditProductForm(props: any) {
             hideControls
             label="Damaged and Discolored %"
             placeholder="1.05%"
-            {...form.getInputProps("damaged_discolored")}
+            {...form.getInputProps("damagedPercentage")}
           />
         </Grid.Col>
         <Grid.Col span={3}>
@@ -430,9 +437,9 @@ function AddOrEditProductForm(props: any) {
             min={0}
             precision={2}
             hideControls
-            label="Whitness (avg)"
+            label="Whiteness (avg)"
             placeholder="39.4"
-            {...form.getInputProps("whitness")}
+            {...form.getInputProps("variantWhiteness")}
           />
         </Grid.Col>
       </Grid>
