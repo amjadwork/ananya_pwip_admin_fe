@@ -86,6 +86,8 @@ function AddOrEditProductForm(props: any) {
     setUpdateFormImages([...updatedImages]);
   };
 
+  console.log(updateFormData, "here")
+
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
   const fileInputs = imageFileLabels.map((label, index) => (
@@ -265,7 +267,7 @@ function AddOrEditProductForm(props: any) {
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
-      <Group spacing="md">
+      <Group spacing="xl">
         <Select
           required
           label="Select Region"
@@ -329,43 +331,46 @@ function AddOrEditProductForm(props: any) {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-      <Select
-        required
-        label="Select Category"
-        placeholder="Eg. Non-Basmati"
-        data={categoryOptions}
-        {...form.getInputProps("_categoryId")}
-      />
+      <Grid>
+        <Grid.Col span={6}>
+          <Select
+            required
+            label="Select Category"
+            placeholder="Eg. Non-Basmati"
+            data={categoryOptions}
+            {...form.getInputProps("_categoryId")}
+          />
+        </Grid.Col>
+        <Space h="md" />
+        <Grid.Col span={6}>
+          <Select
+            data={tagsOptions || []}
+            label="Tags"
+            placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
+            disabled={isBasmatiCategory || !form.values._categoryId}
+            {...form.getInputProps("tags")}
+          />
+        </Grid.Col>
 
-      <Space h="md" />
+        <Space h="md" />
+        <Grid.Col span={8}>
+          <TextInput
+            required
+            label="Variant Name"
+            placeholder="eg. 1509 Sella"
+            {...form.getInputProps("variantName")}
+          />
+        </Grid.Col>
+        <Space h="md" />
+        <Grid.Col span={4}>
+          <TextInput
+            label="HSN Code"
+            placeholder="eg. CSQ212"
+            {...form.getInputProps("HSNCode")}
+          />
+        </Grid.Col>
 
-      <TextInput
-        required
-        label="Variant Name"
-        placeholder="eg. 1509 Sella"
-        {...form.getInputProps("variantName")}
-      />
-
-      <Space h="md" />
-
-      <Select
-        data={tagsOptions || []}
-        label="Tags"
-        placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-        disabled={isBasmatiCategory}
-        {...form.getInputProps("tags")}
-      />
-
-      <Space h="md" />
-
-      <TextInput
-        label="HSN Code"
-        placeholder="eg. CSQ212"
-        {...form.getInputProps("HSNCode")}
-      />
-
-      <Space h="md" />
-      <Grid columns={12}>
+        <Space h="md" />
         <Grid.Col span={3}>
           <NumberInput
             min={0}
