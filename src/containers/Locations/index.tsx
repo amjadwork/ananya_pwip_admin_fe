@@ -223,7 +223,6 @@ function LocationsContainer() {
     let data = { ...form };
     let payload: any = {};
     data.destination = data.destination.map((p: any) => {
-      console.log(p);
       const linkedOrigin = [...p.linkedOrigin];
       const newLinkedOrigin = locationData.origin
         .filter((o: any) => {
@@ -332,9 +331,18 @@ function LocationsContainer() {
     }
   };
 
-  const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
+  const handleGenerateSignedUrl = (
+    e: any,
+    fileName: any,
+    ext: any,
+    form: any,
+    locationType: any
+  ) => {
+    const portName = form.portName.replace(/\s+/g, "_");
+    const FileName = fileName.replace(/\s+/g, "_");
+    const directory = `location/${locationType}/${portName}/${FileName}.${ext}`; // Constructing the directory parameter
     const c = APIRequest(
-      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
+      `generate-signed-url?fileName=${FileName}&extension=${ext}&mediaType=image&directory=${directory}`,
       "GET"
     )
       .then((res: any) => {
@@ -357,17 +365,21 @@ function LocationsContainer() {
     return c;
   };
 
-  const handlePictureChange = async (e: any) => {
+  const handlePictureChange = async (e: any, form: any, locationType: any) => {
     const file = e;
-
     const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
-    const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
-    const result = await handleImagePickerChange(e, name, ext);
+    const fileName = `${Math.floor(Date.now() / 1000)}`;
+    const result = await handleGenerateSignedUrl(
+      e,
+      fileName,
+      ext,
+      form,
+      locationType
+    );
     return result;
   };
-
 
   const handleRefreshCalls = () => {
     handleGetLocation();
@@ -375,7 +387,6 @@ function LocationsContainer() {
 
   React.useEffect(() => {
     handleGetLocation();
-    console.log(tableRowData);
   }, [selectedFilterValue]);
 
   return (
@@ -427,8 +438,8 @@ function LocationsContainer() {
             onClickAction: () => {
               if (!downloadLoader) {
                 handleGetCombinationSheet();
-              }else{
-                alert("processing ..... ")
+              } else {
+                alert("processing ..... ");
               }
             },
           },

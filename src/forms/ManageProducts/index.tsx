@@ -86,7 +86,26 @@ function AddOrEditProductForm(props: any) {
     setUpdateFormImages([...updatedImages]);
   };
 
-  console.log(updateFormData, "here")
+  const handlePictureInputChange = (e: any) => {
+    const variant = form.values.variantName.replace(/\s+/g, "_");
+    const categoryId = form.values._categoryId;
+    const category = categoryData
+      .find((cat: any) => cat._id === categoryId)
+      ?.name?.replace(/\s+/g, "_");
+
+    console.log(form.values, "here in form");
+    return handlePictureChange(e, variant, category)
+      .then((result: any) => {
+        form.values.imagesArray.push({
+          url: result.uri,
+          src: e,
+          publicUrl: result.publicUri,
+        });
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
 
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
@@ -96,19 +115,7 @@ function AddOrEditProductForm(props: any) {
         accept="image/png,image/jpeg"
         label="Upload file (png/jpg)"
         onChange={(e) => {
-          handlePictureChange(e)
-            .then((result: any) => {
-              form.values.imagesArray.push({
-                url: result.uri,
-                src: e,
-                publicUrl: result.publicUri,
-                index,
-                label,
-              });
-            })
-            .catch((err: any) => {
-              console.log(err);
-            });
+          handlePictureInputChange(e);
         }}
       />
     </Grid.Col>
@@ -197,10 +204,20 @@ function AddOrEditProductForm(props: any) {
           const uri = image.url;
           const publicURI = image.publicUrl;
           const file = image.src;
+          const match = publicURI.match(/\/product\/.*/);
+          const imagePath = match ? match[0] : null;
+
           try {
-            const response = await axios.put(`${uri}`, file).then(() => {
-              form.values.images.push(publicURI);
-            });
+            const response = await axios
+              .put(uri, file, {
+                headers: {
+                  "x-amz-acl": "public-read",
+                  "Content-Type": "image",
+                },
+              })
+              .then(() => {
+                form.values.images.push(imagePath);
+              });
           } catch (error) {
             console.error(`Error processing image: ${error}`);
             // Handle error as needed

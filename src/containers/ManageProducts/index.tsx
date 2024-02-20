@@ -228,9 +228,18 @@ function ManageProductsContainer(props: any) {
       onConfirm: () => handleDeleteVariant(rowData),
     });
 
-  const handleImagePickerChange = (e: any, fileName: any, ext: any) => {
+  const handleGenerateSignedUrl = (
+    e: any,
+    fileName: any,
+    ext: any,
+    variantName: any,
+    categoryName: any
+  ) => {
+    fileName = fileName.replace(/\s/g, "_");
+    const directory = `product/${categoryName}/${variantName}/${fileName}`; // Constructing the directory parameter
+
     const c = APIRequest(
-      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image`,
+      `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image&directory=${directory}`,
       "GET"
     )
       .then((res: any) => {
@@ -243,6 +252,7 @@ function ManageProductsContainer(props: any) {
             fileSrc,
             publicUri,
           };
+
           return imageObject;
         }
       })
@@ -253,14 +263,24 @@ function ManageProductsContainer(props: any) {
     return c;
   };
 
-  const handlePictureChange = async (e: any) => {
+  const handlePictureChange = async (
+    e: any,
+    variantName: any,
+    categoryName: any
+  ) => {
     const file = e;
 
     const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
     const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
-    const result = await handleImagePickerChange(e, name, ext);
+    const result = await handleGenerateSignedUrl(
+      e,
+      name,
+      ext,
+      variantName,
+      categoryName
+    );
     return result;
   };
 
