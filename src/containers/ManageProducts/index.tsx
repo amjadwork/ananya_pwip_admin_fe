@@ -323,7 +323,7 @@ function ManageProductsContainer(props: any) {
           : modalType === "upload"
             ? "Update Or Add Data by Excel Sheet"
             : modalType === "line-chart"
-              ? "Line Chart for Pricing Trend"
+              ? ""
               : "Update Variant Price and Source Location"
       }
       onModalClose={() => {
@@ -348,6 +348,7 @@ function ManageProductsContainer(props: any) {
         );
       }}
       modalSize="70%"
+      isVariantProfile={modalType === "line-chart" ? true : false}
     >
       <Space h="sm" />
       <DataTable
