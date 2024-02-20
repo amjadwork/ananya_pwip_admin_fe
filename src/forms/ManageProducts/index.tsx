@@ -93,7 +93,6 @@ function AddOrEditProductForm(props: any) {
       .find((cat: any) => cat._id === categoryId)
       ?.name?.replace(/\s+/g, "_");
 
-    console.log(form.values, "here in form");
     return handlePictureChange(e, variant, category)
       .then((result: any) => {
         form.values.imagesArray.push({
@@ -110,7 +109,7 @@ function AddOrEditProductForm(props: any) {
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
   const fileInputs = imageFileLabels.map((label, index) => (
-    <Grid.Col key={index}>
+    <Grid.Col span={6} key={index}>
       <FileInput
         accept="image/png,image/jpeg"
         label="Upload file (png/jpg)"
@@ -472,7 +471,6 @@ function AddOrEditProductForm(props: any) {
       <Grid>{combinedFileInputs}</Grid>
 
       <Space h="md" />
-
       {fields}
 
       <Group position="right" mt="md">
