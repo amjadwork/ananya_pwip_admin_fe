@@ -12,7 +12,6 @@ import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
 import axios from "axios";
 
-
 interface ImageResult {
   uri: string;
   publicUri: string;
@@ -68,19 +67,18 @@ function AddEditLocationFormContainer(props: any) {
       <FileInput
         accept="image/png,image/jpeg"
         onChange={(e) => {
-          handlePictureChange(e)
+          handlePictureChange(e, form.values, locationType)
             .then((result: any) => {
               setImageResult(result);
             })
             .catch((err: any) => {
               console.log(err);
             });
-            form.getInputProps("image").onChange(e);
+          form.getInputProps("image").onChange(e);
         }}
       />
     </Grid.Col>
   ));
-
 
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
@@ -96,7 +94,7 @@ function AddEditLocationFormContainer(props: any) {
     }
   }, [selectedFilterValue]);
 
-  const handleSubmit =  async (values: typeof form.values) => {
+  const handleSubmit = async (values: typeof form.values) => {
     handleCloseModal(false);
 
     let sourceArr: any = [...locationPayload.source];
@@ -113,31 +111,31 @@ function AddEditLocationFormContainer(props: any) {
       destinationArr.push(values);
     }
 
-    console.log("values", values)
-    console.log("imageResult", imageResult)
-
-    if (locationType==="destination" || locationType==="origin"){
- if(imageResult)
-     {
-      console.log("hello hello", imageResult)
+    if (locationType === "destination" || locationType === "origin") {
+      if (imageResult) {
         const uri = imageResult.uri;
         const publicURI = imageResult.publicUri;
         const file = imageResult.fileSrc;
         try {
-          const response =  await axios.put(`${uri}`, file).then(() => {
-            console.log("response",imageResult)
-            form.setValues((prevValues: any) => ({
-              ...prevValues,
-              image: publicURI,
-            }));
-            // form.setFieldValue = publicURI;
-          });
+          const response = await axios
+            .put(uri, file, {
+              headers: {
+                "x-amz-acl": "public-read",
+                "Content-Type": "image",
+              },
+            })
+            .then(() => {
+              form.setValues((prevValues: any) => ({
+                ...prevValues,
+                image: publicURI,
+              }));
+            });
         } catch (error) {
           console.error(`Error processing image: ${error}`);
           // Handle error as needed
         }
-      }}
-    
+      }
+    }
 
     let payload: any = {
       source: [],
@@ -160,7 +158,6 @@ function AddEditLocationFormContainer(props: any) {
     handleSetLocationPayload(payload);
   };
 
-  
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Select

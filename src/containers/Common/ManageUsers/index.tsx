@@ -16,7 +16,6 @@ import {
 } from "../../../services/user-management/Users";
 import { getRolesData } from "../../../services/user-management/PermissionAndRoles";
 import { IsoDateConverter } from "../../../helper/helper";
-import ColumnFilter from "../../../components/ReactTable/ColumnFilter/ColumnFilter";
 
 const columns = [
   {
@@ -29,7 +28,7 @@ const columns = [
   },
   {
     Header: "User_Id",
-    accessor: "_id",
+    accessor: "user_id",
     width: "300px",
     sortable: true,
     filterable: true,
@@ -146,7 +145,6 @@ const columns = [
     disableFilters: true,
     showCheckbox: false,
   },
-
 ];
 
 const RenderModalContent = (props: any) => {
@@ -291,13 +289,15 @@ function ManageUsers() {
   useEffect(() => {
     if (usersData && usersData.length && profileData && profileData.length) {
       const tableData = usersData.map((user: any) => {
-        const userProfile = profileData.find((profile: any) => profile.user_id === user._id);
+        const userProfile = profileData.find(
+          (profile: any) => profile.user_id === user._id
+        );
         const obj = {
           ...user,
           activeStatus: user.active === 1 ? "Active" : "Inactive",
           CreatedAt: IsoDateConverter(user.t_create),
           UpdatedAt: IsoDateConverter(user.t_update),
-          ...userProfile 
+          ...userProfile,
         };
         const role = rolesData.find((role: any) => role._id === user.role_id);
         if (role) {
@@ -308,7 +308,6 @@ function ManageUsers() {
       setTableRowData(tableData);
     }
   }, [usersData, profileData]);
-  
 
   return (
     <PageWrapper
@@ -339,21 +338,22 @@ function ManageUsers() {
       }}
       modalSize="60%"
     >
-       <ReactTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
         actionButtons={[]}
-        onEditRow={(row: any) => {
+        onEditRow={(rowData: any) => {
           const formObj = {
-            _id: row._id,
-            email: row.email,
-            first_name: row.first_name,
-            middle_name: row.middle_name,
-            last_name: row.last_name,
-            full_name: row.full_name,
-            phone: row.phone,
-            role_id: row.role_id,
-            roleName: row.roleName,
+            profile_id:rowData._id,
+            user_id: rowData.user_id,
+            email: rowData.email,
+            first_name: rowData.first_name,
+            middle_name: rowData.middle_name,
+            last_name: rowData.last_name,
+            full_name: rowData.full_name,
+            phone: rowData.phone,
+            role_id: rowData.role_id,
+            roleName: rowData.roleName,
           };
           setUpdateFormData(formObj);
           setModalType("update");
@@ -361,7 +361,6 @@ function ManageUsers() {
         }}
         onDeleteRow={(rowData: any) => {
           openDeleteModal(rowData);
-
         }}
       />
     </PageWrapper>

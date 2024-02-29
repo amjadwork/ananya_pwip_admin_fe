@@ -79,6 +79,27 @@ function AddOrEditProductForm(props: any) {
     setUpdateFormImages([...updatedImages]);
   };
 
+  const handlePictureInputChange = (e: any) => {
+    const variant = form.values.variantName.replace(/\s+/g, "_");
+    const categoryId = form.values._categoryId;
+    const category = categoryData
+      .find((cat: any) => cat._id === categoryId)
+      ?.name?.replace(/\s+/g, "_");
+
+    console.log(form.values, "here in form");
+    return handlePictureChange(e, variant, category)
+      .then((result: any) => {
+        form.values.imagesArray.push({
+          url: result.uri,
+          src: e,
+          publicUrl: result.publicUri,
+        });
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
   const fileInputs = imageFileLabels.map((label, index) => (
@@ -87,19 +108,7 @@ function AddOrEditProductForm(props: any) {
         accept="image/png,image/jpeg"
         label="Upload file (png/jpg)"
         onChange={(e) => {
-          handlePictureChange(e)
-            .then((result: any) => {
-              form.values.imagesArray.push({
-                url: result.uri,
-                src: e,
-                publicUrl: result.publicUri,
-                index,
-                label,
-              });
-            })
-            .catch((err: any) => {
-              console.log(err);
-            });
+          handlePictureInputChange(e);
         }}
       />
     </Grid.Col>
@@ -129,7 +138,7 @@ function AddOrEditProductForm(props: any) {
 
   const handleGetSources: any = async () => {
     const regionResponse = await APIRequest("location/source", "GET");
-  
+
     if (regionResponse) {
       const options: any = regionResponse.source
         .filter((d: any) => {
@@ -145,7 +154,6 @@ function AddOrEditProductForm(props: any) {
       setRegionOptions([...options]);
     }
   };
-  
 
   const handleAddRegionCost: any = () => {
     // Filter out the selected sources from the regionOptions
@@ -155,7 +163,7 @@ function AddOrEditProductForm(props: any) {
           (source: any) => source._sourceId === option.value
         )
     );
-  
+
     if (filteredRegionOptions.length > 0) {
       // Add a new source rate field
       form.insertListItem("sourceRates", initialFormValues.sourceRates[0], {
@@ -171,7 +179,6 @@ function AddOrEditProductForm(props: any) {
       });
     }
   };
-  
 
   const handleRemoveRegionCost = (index: number) => {
     form.removeListItem("sourceRates", index);
@@ -184,18 +191,26 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    
-    if(modalType==="add"){
-
+    if (modalType === "add") {
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
           const uri = image.url;
           const publicURI = image.publicUrl;
           const file = image.src;
+          const match = publicURI.match(/\/product\/.*/);
+          const imagePath = match ? match[0] : null;
+
           try {
-            const response = await axios.put(`${uri}`, file).then(() => {
-              form.values.images.push(publicURI);
-            });
+            const response = await axios
+              .put(uri, file, {
+                headers: {
+                  "x-amz-acl": "public-read",
+                  "Content-Type": "image",
+                },
+              })
+              .then(() => {
+                form.values.images.push(imagePath);
+              });
           } catch (error) {
             console.error(`Error processing image: ${error}`);
             // Handle error as needed
@@ -203,43 +218,42 @@ function AddOrEditProductForm(props: any) {
         }
       }
       handleCloseModal(false);
-      handleSaveCallback(formValues);  
+      handleSaveCallback(formValues);
     }
-    
-    if(modalType==="update"){
-    const payloadCommonVariantDetails = { ...form.values };
-    delete payloadCommonVariantDetails.sourceRates;
-    delete payloadCommonVariantDetails.imagesArray;
-    if (formValues.imagesArray.length !== 0) {
-      const uploadImageResponseArr = await uploadingMultipleImagesToS3(
-        form.values
-      );
-      payloadCommonVariantDetails.images = uploadImageResponseArr;
-      }
-    
-      let sourceID=formValues.sourceRates[0]._sourceId;
-      let price=formValues.sourceRates[0].price;
-      
-      if(formValues.updateSource){
-        sourceID =formValues.updateSource;
-      }
-      if(formValues.updatePrice){
-        price =formValues.updatePrice;
+
+    if (modalType === "update") {
+      const payloadCommonVariantDetails = { ...form.values };
+      delete payloadCommonVariantDetails.sourceRates;
+      delete payloadCommonVariantDetails.imagesArray;
+      if (formValues.imagesArray.length !== 0) {
+        const uploadImageResponseArr = await uploadingMultipleImagesToS3(
+          form.values
+        );
+        payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
 
-    if (formValues.updateSourceRates) {
-      const x = await updateIndividualVariantSourceRate(
-        formValues._variantId,
-        formValues.sourceRates[0]._id,
-        price,
-        sourceID,
-      );
-    }
-    handleCloseModal(true);
-    //variant common fields update
-    handleSaveCallback(payloadCommonVariantDetails);
-  }
+      let sourceID = formValues.sourceRates[0]._sourceId;
+      let price = formValues.sourceRates[0].price;
 
+      if (formValues.updateSource) {
+        sourceID = formValues.updateSource;
+      }
+      if (formValues.updatePrice) {
+        price = formValues.updatePrice;
+      }
+
+      if (formValues.updateSourceRates) {
+        const x = await updateIndividualVariantSourceRate(
+          formValues._variantId,
+          formValues.sourceRates[0]._id,
+          price,
+          sourceID
+        );
+      }
+      handleCloseModal(true);
+      //variant common fields update
+      handleSaveCallback(payloadCommonVariantDetails);
+    }
   };
 
   const categoryOptions = categoryData.map((cat: any) => ({
