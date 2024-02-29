@@ -17,7 +17,7 @@ const columns = [
   },
   {
     Header: "User_ID",
-    accessor: "user_id",
+    accessor: "userID",
     width: "300px",
     sortable: true,
     filterable: true,
@@ -141,6 +141,7 @@ function ManageSubscriptions() {
           return {
             ...subscription,
             planID: matchedPlan ? matchedPlan.id : subscription.plan_id,
+            userID: matchedUser? matchedUser._id: subscription.user_id,
             plan: matchedPlan ? matchedPlan : "", //Add plans data
             user: matchedUser ? matchedUser : "", // Add users data
             PaymentDate: IsoDateConverter(subscription.amount_paid_date),

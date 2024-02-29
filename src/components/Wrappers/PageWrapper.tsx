@@ -17,6 +17,7 @@ const PageWrapper = (props: any) => {
   const onModalClose = props.onModalClose;
   const modalOpen = props.modalOpen;
   const modalSize = props.modalSize || "sm";
+  const isVariantProfile = props.isVariantProfile;
 
   return (
     <Box
@@ -70,6 +71,7 @@ const PageWrapper = (props: any) => {
           opened={modalOpen}
           onClose={onModalClose}
           title={modalTitle}
+          fullScreen={isVariantProfile}
         >
           <ModalContent />
         </Modal>

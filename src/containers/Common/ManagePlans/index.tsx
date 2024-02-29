@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 import EditPlansForm from "../../../forms/Common/ManagePlans";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import { getServicesData } from "../../../services/plans-management/SubscriptionsAndServices";
 import {
   getPlansData,
@@ -19,58 +19,108 @@ import { getUsersData } from "../../../services/user-management/Users";
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Plan_ID",
-    key: "id",
-    width: "90px",
+    Header: "Plan Id",
+    accessor: "id",
+    width: "270px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Plans",
-    key: "name",
+    Header: "Name",
+    accessor: "name",
     width: "300px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Applicable Services",
-    key: "servicesNames",
+    Header: "Services",
+    accessor: "servicesNames",
     width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Applicable Users",
-    key: "applicableUsers",
-    width: "350px",
+    Header: "Price",
+    accessor: "cost",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Price",
-    key: "cost",
-    width: "150px",
+    Header: "Usage Limit",
+    accessor: "usage_cap",
+    width: "310px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Usage Limit",
-    key: "usage_cap",
-    width: "150px",
+    Header: "Validity",
+    accessor: "validityFor",
+    width: "280px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Valid For",
-    key: "validityFor",
-    width: "150px",
+    Header: "Refundable?",
+    accessor: "refund",
+    width: "320px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Refundable",
-    key: "refund",
-    width: "150px",
+    Header: "Users",
+    accessor: "applicableUsers",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Action",
-    key: "action",
+    Header: "Free?",
+    accessor: "isFree",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Unlimited?",
+    accessor: "isUnlimited",
+    width: "310px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Show User?",
+    accessor: "showToUser",
+    width: "310px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
     width: "90px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -228,7 +278,7 @@ function ManagePlans() {
           .map((userId: any) => {
             const user = usersData.find((u: any) => u._id === userId);
             if (user && user.active === 1) {
-              return `${user.email}, ${user.full_name}`;
+              return `${user.email}`;
             }
             return null;
           })
@@ -238,21 +288,24 @@ function ManagePlans() {
           d.validity_type === "days" && d.validity
             ? ` ${d.validity} ${d.validity === 1 ? "day" : "days"}`
             : d.validity_type === "hours" && d.validity
-            ? `${d.validity} ${d.validity === 1 ? "hour" : "hours"}`
-            : null;
-
+              ? `${d.validity} ${d.validity === 1 ? "hour" : "hours"}`
+              : null;
         const obj = {
           ...d,
           cost: `${d.price} ${d.currency}`,
           validityFor: validityFor || "Not Applicable",
           refund: `${
-            d.refund_policy ? `Yes, ${d.refund_policy_valid_day} day/s` : "No"
+            d.refund_policy === 1
+              ? `Yes, ${d.refund_policy_valid_day} day/s`
+              : "No"
           }`,
           servicesNames: servicesNames,
           applicableUsers: applicableUsers,
           usage_cap: d.usage_cap || 0,
+          isFree: d.is_free === 1 ? "Yes" : "No",
+          isUnlimited: d.is_unlimited === 1 ? "Yes" : "No",
+          showToUser: d.show_for_user === 1 ? "Yes" : "No",
         };
-
         tableData.push(obj);
       });
       setTableRowData(tableData);
@@ -288,13 +341,12 @@ function ManagePlans() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -303,7 +355,7 @@ function ManagePlans() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             name: obj.name,
@@ -315,6 +367,8 @@ function ManagePlans() {
             refund_policy: obj.refund_policy,
             refund_policy_valid_day: obj.refund_policy_valid_day,
             show_for_user: obj.show_for_user,
+            is_free: obj.is_free,
+            is_unlimited: obj.is_unlimited,
             usage_cap: obj.usage_cap,
             price: obj.price,
             currency: obj.currency,
@@ -324,7 +378,7 @@ function ManagePlans() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
