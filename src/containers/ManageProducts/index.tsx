@@ -245,12 +245,12 @@ function ManageProductsContainer(props: any) {
       .then((res: any) => {
         if (res) {
           const uri = res.url;
-          const publicUri = res.publicUrl;
+          const path = res.key;
           const fileSrc = e;
           const imageObject = {
             uri,
             fileSrc,
-            publicUri,
+            path,
           };
 
           return imageObject;
