@@ -229,6 +229,7 @@ function AddOrEditProductForm(props: any) {
         const uploadImageResponseArr = await uploadingMultipleImagesToS3(
           form.values
         );
+        console.log("uploadImageResponseArr", uploadImageResponseArr);
         payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
 

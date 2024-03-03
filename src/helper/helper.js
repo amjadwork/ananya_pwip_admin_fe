@@ -56,9 +56,23 @@ export function uploadingMultipleImagesToS3(formValues) {
         const file = image.src;
 
         try {
-          const response = await axios.put(`${uri}`, file).then((r) => {
-            return publicURI;
-          });
+          const response = await axios
+            .put(`${uri}`, file, {
+              headers: {
+                "Content-Type": "image",
+                "x-amz-acl": "public-read",
+              },
+              transformRequest: [
+                function (data, headers) {
+                  console.log("headers", headers);
+                  delete headers.Accept;
+                  return data;
+                },
+              ],
+            })
+            .then((r) => {
+              return publicURI;
+            });
           formValues.images[image.index] = response;
         } catch (error) {
           console.error(`Error processing image: ${error}`);
@@ -72,15 +86,17 @@ export function uploadingMultipleImagesToS3(formValues) {
     }
   });
 }
-export function updateIndividualVariantSourceRate(variantId, sourceRateId, price, sourceId) {
+export function updateIndividualVariantSourceRate(
+  variantId,
+  sourceRateId,
+  price,
+  sourceId
+) {
   return new Promise(async (resolve, reject) => {
     try {
       if (variantId && sourceRateId && price && sourceId) {
-        const endpoint =
-          'variant/'+ variantId +
-          "/" +
-          sourceRateId;
-          const dataToUpdate = {};
+        const endpoint = "variant/" + variantId + "/" + sourceRateId;
+        const dataToUpdate = {};
 
         if (price) {
           dataToUpdate.price = price;
@@ -89,13 +105,17 @@ export function updateIndividualVariantSourceRate(variantId, sourceRateId, price
         if (sourceId) {
           dataToUpdate._sourceId = sourceId;
         }
-        const updateSourceRate = await APIRequest(endpoint, "PATCH", dataToUpdate);
+        const updateSourceRate = await APIRequest(
+          endpoint,
+          "PATCH",
+          dataToUpdate
+        );
         resolve(updateSourceRate);
       } else {
         resolve({ success: true, msg: "nothing to update" });
       }
     } catch (error) {
-      reject(error)
+      reject(error);
     }
   });
 }
@@ -116,6 +136,5 @@ export function IsoDateConverter(dateTimeString) {
     return ""; // or return some default value, depending on your requirements
   }
   const date = new Date(dateTimeString);
-  return date.toLocaleString(); 
-};
-
+  return date.toLocaleString();
+}
