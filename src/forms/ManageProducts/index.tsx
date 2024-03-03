@@ -80,19 +80,20 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handlePictureInputChange = (e: any) => {
-    const variant = form.values.variantName.replace(/\s+/g, "_");
+    const variant = form.values.variantName
+      .replace(/[^_\w\s]/g, "")
+      .replace(/\s+/g, "_");
     const categoryId = form.values._categoryId;
     const category = categoryData
       .find((cat: any) => cat._id === categoryId)
       ?.name?.replace(/\s+/g, "_");
 
-    console.log(form.values, "here in form");
     return handlePictureChange(e, variant, category)
       .then((result: any) => {
         form.values.imagesArray.push({
           url: result.uri,
           src: e,
-          publicUrl: result.publicUri,
+          path: result.path,
         });
       })
       .catch((err: any) => {
@@ -195,10 +196,8 @@ function AddOrEditProductForm(props: any) {
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
           const uri = image.url;
-          const publicURI = image.publicUrl;
+          const path = image.path;
           const file = image.src;
-          const match = publicURI.match(/\/product\/.*/);
-          const imagePath = match ? match[0] : null;
 
           try {
             const response = await axios
@@ -209,7 +208,7 @@ function AddOrEditProductForm(props: any) {
                 },
               })
               .then(() => {
-                form.values.images.push(imagePath);
+                form.values.images.push(path);
               });
           } catch (error) {
             console.error(`Error processing image: ${error}`);
@@ -229,7 +228,6 @@ function AddOrEditProductForm(props: any) {
         const uploadImageResponseArr = await uploadingMultipleImagesToS3(
           form.values
         );
-        console.log("uploadImageResponseArr", uploadImageResponseArr);
         payloadCommonVariantDetails.images = uploadImageResponseArr;
       }
 
