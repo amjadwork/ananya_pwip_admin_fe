@@ -52,9 +52,8 @@ export function uploadingMultipleImagesToS3(formValues) {
       const responseUpdate = [];
       for (const image of formValues.imagesArray) {
         const uri = image.url;
-        const publicURI = image.publicUrl;
+        const path = image.path;
         const file = image.src;
-
         try {
           const response = await axios
             .put(`${uri}`, file, {
@@ -64,16 +63,15 @@ export function uploadingMultipleImagesToS3(formValues) {
               },
               transformRequest: [
                 function (data, headers) {
-                  console.log("headers", headers);
                   delete headers.Accept;
                   return data;
                 },
               ],
             })
             .then((r) => {
-              return publicURI;
+              return path;
             });
-          formValues.images[image.index] = response;
+          formValues.images.push(response);
         } catch (error) {
           console.error(`Error processing image: ${error}`);
           // Handle error as needed
