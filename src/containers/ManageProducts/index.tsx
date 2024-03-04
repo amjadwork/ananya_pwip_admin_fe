@@ -6,7 +6,6 @@ import { openConfirmModal } from "@mantine/modals";
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
@@ -374,65 +373,6 @@ function ManageProductsContainer(props: any) {
       isVariantProfile={modalType === "line-chart" ? true : false}
     >
       <Space h="sm" />
-      {/* <DataTable
-        data={tableRowData}
-        columns={columns}
-        showChartLineAction={true}
-        actionItems={[
-          {
-            label: "Upload",
-            icon: Upload,
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalType("upload");
-              setModalOpen(true);
-            },
-          },
-          {
-            label: "Add",
-            icon: Plus,
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalType("add");
-              setModalOpen(true);
-            },
-          },
-        ]}
-        handleLineChart={(row: any) => {
-          setModalType("line-chart");
-          setSelectedVariantData(row);
-          setModalOpen(true);
-        }}
-        handleRowEdit={(row: any, index: number) => {
-          let obj = { ...row };
-
-          setSelectedTableRowIndex(index);
-          const formObj = {
-            _categoryId: obj._categoryId,
-            _variantId: obj._variantId,
-            variantName: obj.variantName,
-            HSNCode: obj.HSNCode,
-            brokenPercentage: obj.brokenPercentage,
-            tags: obj.tags,
-            images: obj.images,
-            sourceRates: [
-              {
-                _id: obj._id,
-                price: obj.price,
-                _sourceId: obj._sourceId,
-              },
-            ],
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
-        }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
-        }}
-      /> */}
       <ReactTable
         data={tableRowData}
         columns={columns}
