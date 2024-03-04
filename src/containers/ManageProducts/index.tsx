@@ -6,56 +6,79 @@ import { openConfirmModal } from "@mantine/modals";
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "45px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Code",
-    key: "HSNCode",
-    width: "70px",
-  },
-  {
-    label: "Variant",
-    key: "variantName",
-    width: "180px",
+    Header: "HSN Code",
+    accessor: "HSNCode",
+    width: "200px",
     sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Category",
-    key: "categoryName",
+    Header: "Variant Name",
+    accessor: "variantName",
+    width: "300px",
+    sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Category",
+    accessor: "categoryName",
+    width: "200px",
+    sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Source Location",
+    accessor: "sourceName",
+    width: "200px",
+    sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Price(per kg)",
+    accessor: "price",
+    width: "200px",
+    sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
     width: "110px",
-    sortable: true,
-  },
-  {
-    label: "Source",
-    key: "sourceName",
-    width: "120px",
-    sortable: true,
-  },
-  {
-    label: "Price",
-    key: "price",
-    width: "60px",
-  },
-  {
-    label: "Unit",
-    key: "unit",
-    width: "40px",
-  },
-  {
-    label: "Action",
-    key: "action",
-    width: "90px",
+    sortable: false,
     fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -236,7 +259,7 @@ function ManageProductsContainer(props: any) {
     categoryName: any
   ) => {
     fileName = fileName.replace(/\s/g, "_");
-    const directory = `product/${categoryName}/${variantName}/`;// Constructing the directory parameter
+    const directory = `product/${categoryName}/${variantName}/`; // Constructing the directory parameter
 
     const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image&directory=${directory}`,
@@ -350,14 +373,12 @@ function ManageProductsContainer(props: any) {
       isVariantProfile={modalType === "line-chart" ? true : false}
     >
       <Space h="sm" />
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        showChartLineAction={true}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Upload",
-            icon: Upload,
+            label: "Upload Excel Sheet",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -366,22 +387,16 @@ function ManageProductsContainer(props: any) {
             },
           },
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
-              setModalType("add");
               setModalOpen(true);
+              setModalType("add");
             },
           },
         ]}
-        handleLineChart={(row: any) => {
-          setModalType("line-chart");
-          setSelectedVariantData(row);
-          setModalOpen(true);
-        }}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
 
           setSelectedTableRowIndex(index);
@@ -405,8 +420,13 @@ function ManageProductsContainer(props: any) {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
+        }}
+        handleLineChart={(row: any) => {
+          setModalType("line-chart");
+          setSelectedVariantData(row);
+          setModalOpen(true);
         }}
       />
     </PageWrapper>
