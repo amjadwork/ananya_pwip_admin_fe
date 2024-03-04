@@ -237,7 +237,7 @@ function ManageProductsContainer(props: any) {
   ) => {
     fileName = fileName.replace(/\s/g, "_");
     const directory = `product/${categoryName}/${variantName}/`;// Constructing the directory parameter
-  
+
     const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image&directory=${directory}`,
       "GET"
@@ -272,7 +272,7 @@ function ManageProductsContainer(props: any) {
     const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
-    const name = `${Math.floor(Date.now() / 1000)}.${ext}`;
+    const name = `${Math.floor(Date.now() / 1000)}`;
     const result = await handleGenerateSignedUrl(
       e,
       name,
