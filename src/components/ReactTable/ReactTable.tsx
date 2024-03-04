@@ -231,6 +231,26 @@ const ReactTable: React.FC<{
                                 alignItems: "center",
                               }}
                             >
+                              {column.sortable && (
+                                <span
+                                  style={{
+                                    marginTop: "2px",
+                                    marginRight: "4px",
+                                    color: "gray",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {column.isSorted ? (
+                                    column.isSortedDesc ? (
+                                      <SortDescending size={15} />
+                                    ) : (
+                                      <SortAscending size={15} />
+                                    )
+                                  ) : (
+                                    <ArrowsDownUp size={15} />
+                                  )}
+                                </span>
+                              )}
                               <span>{column.render("Header")}</span>
                             </div>
                           </div>
@@ -290,25 +310,6 @@ const ReactTable: React.FC<{
                                 justifyContent: "left",
                               }}
                             >
-                              {column.sortable && (
-                                <span
-                                  style={{
-                                    marginRight: "4px",
-                                    color: "gray",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  {column.isSorted ? (
-                                    column.isSortedDesc ? (
-                                      <SortDescending size={20} />
-                                    ) : (
-                                      <SortAscending size={20} />
-                                    )
-                                  ) : (
-                                    <ArrowsDownUp size={20} />
-                                  )}
-                                </span>
-                              )}
                               {column.filterable && (
                                 <div
                                   {...column.getHeaderProps()}
@@ -316,6 +317,7 @@ const ReactTable: React.FC<{
                                     ...searchFieldStyle,
                                     marginLeft: "4px",
                                     marginTop: "0",
+                                    marginBottom: "4px",
                                     width: `${column.width}px`, // Set the width to 100%
                                   }}
                                 >

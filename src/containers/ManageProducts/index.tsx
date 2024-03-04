@@ -16,68 +16,69 @@ const columns = [
   {
     Header: "No.",
     accessor: "serialNo",
-    width: "80px",
+    width: "50px",
     fixed: true,
     disableFilters: true,
     showCheckbox: false,
   },
   {
-    Header: "Code",
+    Header: "HSN Code",
     accessor: "HSNCode",
-    width: "70px",
-    fixed: false,
-    disableFilters: true,
-    showCheckbox: false,
-  },
-  {
-    Header: "Variant",
-    accessor: "variantName",
-    width: "180px",
+    width: "200px",
     sortable: true,
     fixed: false,
     disableFilters: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Variant Name",
+    accessor: "variantName",
+    width: "300px",
+    sortable: true,
+    fixed: false,
+    disableFilters: true,
+    filterable: true,
     showCheckbox: false,
   },
   {
     Header: "Category",
     accessor: "categoryName",
-    width: "110px",
+    width: "200px",
     sortable: true,
     fixed: false,
     disableFilters: true,
+    filterable: true,
     showCheckbox: false,
   },
   {
-    Header: "Source",
+    Header: "Source Location",
     accessor: "sourceName",
-    width: "120px",
+    width: "200px",
     sortable: true,
     fixed: false,
     disableFilters: true,
+    filterable: true,
     showCheckbox: false,
   },
   {
-    Header: "Price",
-    accerssor: "price",
-    width: "60px",
+    Header: "Price(per kg)",
+    accessor: "price",
+    width: "200px",
+    sortable: true,
     fixed: false,
     disableFilters: true,
-    showCheckbox: false,
-  },
-  {
-    Header: "Unit",
-    accessor: "unit",
-    width: "40px",
-    fixed: false,
-    disableFilters: true,
+    filterable: true,
     showCheckbox: false,
   },
   {
     Header: "Action",
     accessor: "action",
-    width: "90px",
+    width: "110px",
+    sortable: false,
     fixed: true,
     disableFilters: true,
+    filterable: false,
     showCheckbox: false,
   },
 ];
@@ -435,7 +436,26 @@ function ManageProductsContainer(props: any) {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[]}
+        actionButtons={[
+          {
+            label: "Upload Excel Sheet",
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalType("upload");
+              setModalOpen(true);
+            },
+          },
+          {
+            label: "Add New",
+            color: "gray",
+            type: "button",
+            onClickAction: () => {
+              setModalOpen(true);
+              setModalType("add");
+            },
+          },
+        ]}
         onEditRow={(row: any, index: any) => {
           let obj = { ...row };
 
