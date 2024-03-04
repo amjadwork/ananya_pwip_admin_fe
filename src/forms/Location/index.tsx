@@ -167,7 +167,6 @@ function AddEditLocationFormContainer(props: any) {
 
               return { ...o };
             });
-            console.log("here destinationArr inside", destinationArr);
           }
         } catch (error) {
           console.error(`Error processing image: ${error}`);
