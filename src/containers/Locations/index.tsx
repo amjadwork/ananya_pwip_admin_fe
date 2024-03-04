@@ -355,7 +355,7 @@ function LocationsContainer() {
             fileSrc,
             path,
           };
-          console.log(res, "res")
+          console.log(res, "res");
           return imageObject;
         }
       })
@@ -371,7 +371,7 @@ function LocationsContainer() {
     const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
-    const name= `${Math.floor(Date.now() / 1000)}`;
+    const name = `${Math.floor(Date.now() / 1000)}`;
     const result = await handleGenerateSignedUrl(
       e,
       name,
@@ -465,13 +465,13 @@ function LocationsContainer() {
               portName: obj.portName,
               state: obj.state,
               portCode: obj.portCode,
-              imageUrl: obj?.imageUrl || null,
+              imageUrl: obj.imageUrl || null,
             };
           }
           if (selectedFilterValue === "destination") {
             formObj = {
               portName: obj.portName,
-              imageUrl: obj?.imageUrl || null,
+              imageUrl: obj.imageUrl || null,
               portCode: obj.portCode,
               country: obj.country,
               _id: obj._id,

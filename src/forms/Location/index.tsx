@@ -10,13 +10,17 @@ import {
 import { useForm } from "@mantine/form";
 import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
+import ImageUpload from "../../components/ImageUpload/ImageUpload";
 import axios from "axios";
 
 interface ImageResult {
   uri: string;
-  publicUri: string;
+  path: string;
   fileSrc: string;
   // Add other properties if needed
+}
+interface FormValues {
+  imageUrl: string; 
 }
 
 function AddEditLocationFormContainer(props: any) {
@@ -30,16 +34,18 @@ function AddEditLocationFormContainer(props: any) {
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
   const [imageResult, setImageResult] = useState<ImageResult | null>(null);
+  const [updateFormImages, setUpdateFormImages] = useState("");
   const handleCloseModal = props.handleCloseModal;
 
-  const form = useForm({
-    clearInputErrorOnChange: true,
-    initialValues: {},
-  });
+   const form = useForm<FormValues>({
+     clearInputErrorOnChange: true,
+     initialValues: { imageUrl:'' },
+   });
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
 
+  console.log(updateFormData, "update");
   //to show previous values while editing the row
   useEffect(() => {
     if (updateFormData && modalType === "update") {
@@ -52,33 +58,51 @@ function AddEditLocationFormContainer(props: any) {
           ...updateFormData,
           linkedOrigin: [...originAsStringArray],
         });
+        const image = updateFormData.imageUrl || null;
+        setUpdateFormImages(image);
       } else {
         form.setValues({
           ...updateFormData,
         });
+        const image = updateFormData.imageUrl || null;
+        setUpdateFormImages(image);
       }
     }
   }, [updateFormData, modalType]);
 
   const imageFileLabels = ["Image 1"];
-
   const fileInputs = imageFileLabels.map((label, index) => (
+    // updateFormData.imageUrl ? (
+    //   <ImageUpload
+    //     key={index}
+    //     imageUrl={updateFormData.imageUrl}
+    //     onDelete={() => handleDeleteImage(index)}
+    //   />
+    // ) :
     <Grid.Col key={index}>
       <FileInput
         accept="image/png,image/jpeg"
         onChange={(e) => {
           handlePictureChange(e, form.values, locationType)
             .then((result: any) => {
+              console.log(result, "result");
               setImageResult(result);
             })
             .catch((err: any) => {
               console.log(err);
             });
-          form.getInputProps("image").onChange(e);
+          // form.getInputProps("image").onChange(e);
         }}
       />
     </Grid.Col>
   ));
+
+  // const handleDeleteImage = (index: number) => {
+  //   const updatedImages = [...form.values.imageUrl];
+  //   updatedImages.splice(index, 1);
+  //   form.setFieldValue("images", updatedImages);
+  //   setUpdateFormImages(updatedImages);
+  // };
 
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
@@ -114,7 +138,7 @@ function AddEditLocationFormContainer(props: any) {
     if (locationType === "destination" || locationType === "origin") {
       if (imageResult) {
         const uri = imageResult.uri;
-        const publicURI = imageResult.publicUri;
+        const path = imageResult.path;
         const file = imageResult.fileSrc;
         try {
           const response = await axios
@@ -125,10 +149,11 @@ function AddEditLocationFormContainer(props: any) {
               },
             })
             .then(() => {
-              form.setValues((prevValues: any) => ({
-                ...prevValues,
-                image: publicURI,
-              }));
+              console.log(path, "path")
+               form.setValues({
+                 imageUrl: path,
+               });
+              console.log(form.values, "herer ");
             });
         } catch (error) {
           console.error(`Error processing image: ${error}`);
@@ -136,6 +161,8 @@ function AddEditLocationFormContainer(props: any) {
         }
       }
     }
+
+    console.log(form.values, "form");
 
     let payload: any = {
       source: [],
@@ -154,7 +181,9 @@ function AddEditLocationFormContainer(props: any) {
     if (destinationArr.length) {
       payload.destination = [...destinationArr];
     }
+ 
 
+    console.log(payload, "payload")
     handleSetLocationPayload(payload);
   };
 
@@ -288,10 +317,9 @@ function AddEditLocationFormContainer(props: any) {
             clearable
           />
           <Space h="md" />
-
           <label htmlFor="imageUpload">Image Upload</label>
-          <Grid>{fileInputs}</Grid>
 
+          <Grid>{fileInputs}</Grid>
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>
