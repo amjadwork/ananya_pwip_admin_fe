@@ -13,6 +13,7 @@ import {
   ArrowsDownUp,
   Pencil,
   Trash,
+  ChartDots,
 } from "tabler-icons-react";
 import { ActionIcon, ScrollArea, Button, Flex, Checkbox } from "@mantine/core";
 import ColumnFilter from "./ColumnFilter/ColumnFilter";
@@ -53,15 +54,23 @@ const searchFieldStyle = {
 const ReactTable: React.FC<{
   columns: readonly Column<any>[];
   data: any[];
-  onEditRow?: (row: any) => void;
+  onEditRow?: (row: any, index: any) => void;
   onDeleteRow?: (row: any) => void;
+  handleLineChart?: (row: any) => void;
   actionButtons: {
     label: string;
     onClickAction: (row: any) => void;
     type: string;
     color: string;
   }[];
-}> = ({ columns, data, onEditRow, onDeleteRow, actionButtons }) => {
+}> = ({
+  columns,
+  data,
+  onEditRow,
+  onDeleteRow,
+  handleLineChart,
+  actionButtons,
+}) => {
   const defaultColumn = useMemo(() => {
     return {
       Filter: ColumnFilter,
@@ -222,6 +231,26 @@ const ReactTable: React.FC<{
                                 alignItems: "center",
                               }}
                             >
+                              {column.sortable && (
+                                <span
+                                  style={{
+                                    marginTop: "2px",
+                                    marginRight: "4px",
+                                    color: "gray",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {column.isSorted ? (
+                                    column.isSortedDesc ? (
+                                      <SortDescending size={15} />
+                                    ) : (
+                                      <SortAscending size={15} />
+                                    )
+                                  ) : (
+                                    <ArrowsDownUp size={15} />
+                                  )}
+                                </span>
+                              )}
                               <span>{column.render("Header")}</span>
                             </div>
                           </div>
@@ -281,25 +310,6 @@ const ReactTable: React.FC<{
                                 justifyContent: "left",
                               }}
                             >
-                              {column.sortable && (
-                                <span
-                                  style={{
-                                    marginRight: "4px",
-                                    color: "gray",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  {column.isSorted ? (
-                                    column.isSortedDesc ? (
-                                      <SortDescending size={20} />
-                                    ) : (
-                                      <SortAscending size={20} />
-                                    )
-                                  ) : (
-                                    <ArrowsDownUp size={20} />
-                                  )}
-                                </span>
-                              )}
                               {column.filterable && (
                                 <div
                                   {...column.getHeaderProps()}
@@ -307,6 +317,7 @@ const ReactTable: React.FC<{
                                     ...searchFieldStyle,
                                     marginLeft: "4px",
                                     marginTop: "0",
+                                    marginBottom: "4px",
                                     width: `${column.width}px`, // Set the width to 100%
                                   }}
                                 >
@@ -494,6 +505,26 @@ const ReactTable: React.FC<{
                                       : "auto",
                                 }}
                               >
+                                {handleLineChart &&
+                                  (row.original.active === 0 ? (
+                                    <ActionIcon
+                                      variant="outline"
+                                      color="gray"
+                                      style={{ marginRight: "6px" }}
+                                    >
+                                      <ChartDots size="1rem" color="gray" />
+                                    </ActionIcon>
+                                  ) : (
+                                    <ActionIcon
+                                      variant="default"
+                                      onClick={() =>
+                                        handleLineChart(row.original)
+                                      }
+                                      style={{ marginRight: "6px" }}
+                                    >
+                                      <ChartDots size="1rem" color="green" />
+                                    </ActionIcon>
+                                  ))}
                                 {onEditRow &&
                                   (row.original.active === 0 ? (
                                     <ActionIcon
@@ -506,7 +537,9 @@ const ReactTable: React.FC<{
                                   ) : (
                                     <ActionIcon
                                       variant="default"
-                                      onClick={() => onEditRow(row.original)}
+                                      onClick={() =>
+                                        onEditRow(row.original, cellIndex)
+                                      }
                                       style={{ marginRight: "6px" }}
                                     >
                                       <Pencil size="1rem" color="blue" />
