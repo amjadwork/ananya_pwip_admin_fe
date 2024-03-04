@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload, Photo } from "tabler-icons-react";
+import { Plus, Upload } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -236,8 +236,8 @@ function ManageProductsContainer(props: any) {
     categoryName: any
   ) => {
     fileName = fileName.replace(/\s/g, "_");
-    const directory = `product/${categoryName}/${variantName}/${fileName}`; // Constructing the directory parameter
-
+    const directory = `product/${categoryName}/${variantName}/`;// Constructing the directory parameter
+  
     const c = APIRequest(
       `generate-signed-url?fileName=${fileName}&extension=${ext}&mediaType=image&directory=${directory}`,
       "GET"
@@ -252,7 +252,6 @@ function ManageProductsContainer(props: any) {
             fileSrc,
             path,
           };
-
           return imageObject;
         }
       })
