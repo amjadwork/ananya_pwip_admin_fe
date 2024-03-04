@@ -141,11 +141,12 @@ function AddEditLocationFormContainer(props: any) {
         const file = imageResult.fileSrc;
 
         try {
-          // ### this is not required because this sets form data in async manner, means handleSetLocationPayload will never get updated value as payload ### //
-          // form.setValues((prevValues: any) => ({
-          //   ...prevValues,
-          //   imageUrl: path,
-          // }));
+          // ### this is just formality, and not required because this sets form data in async manner, means handleSetLocationPayload will never get updated value as payload ### //
+          form.setValues((prevValues: any) => ({
+            ...prevValues,
+            imageUrl: path,
+          }));
+
           const resImageUpload = await axios.put(uri, file, {
             headers: {
               "x-amz-acl": "public-read",
