@@ -17,7 +17,6 @@ import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
-import axios from "axios";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
 import {
   updateIndividualVariantSourceRate,
@@ -56,6 +55,7 @@ function AddOrEditProductForm(props: any) {
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
+  const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false); // Track if required fields are filled
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -72,6 +72,11 @@ function AddOrEditProductForm(props: any) {
     { value: "steam", label: "Steam" },
     { value: "paraboiled", label: "Paraboiled" },
   ];
+
+  useEffect(() => {
+    const filled = form.values.variantName && form.values._categoryId;
+    setRequiredFieldsFilled(!!filled);
+  }, [form.values]);
 
   const handleDeleteImage = (index: number) => {
     const updatedImages = [...form.values.images];
@@ -107,6 +112,7 @@ function AddOrEditProductForm(props: any) {
   const fileInputs = imageFileLabels.map((label, index) => (
     <Grid.Col key={index}>
       <FileInput
+        disabled={!requiredFieldsFilled}
         accept="image/png,image/jpeg"
         label="Upload file (png/jpg)"
         onChange={(e) => {
