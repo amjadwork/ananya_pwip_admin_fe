@@ -29,8 +29,6 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
   const navigate = useNavigate();
   const { logout } = useAuth0();
 
-  console.log("Router", window.location.pathname);
-
   return (
     <header className={classes.headerContainer}>
       <div

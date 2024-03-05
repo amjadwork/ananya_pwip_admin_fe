@@ -30,7 +30,6 @@ export const putPackagingData = async (data: any) => {
     "PUT", data);
     
   if (response) {
-    console.log(response)
     return response;
   }
 };

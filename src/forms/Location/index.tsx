@@ -10,16 +10,38 @@ import {
 import { useForm } from "@mantine/form";
 import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
-import axios from "axios";
+import ImageUpload from "../../components/ImageUpload/ImageUpload";
+import { uploadImageToS3 } from "../../helper/helper";
 
 interface ImageResult {
   uri: string;
-  publicUri: string;
+  path: string;
   fileSrc: string;
   // Add other properties if needed
 }
+interface FormValues {
+  _id?: any;
+  imageUrl?: string;
+  cfsStation?: string;
+  city?: string;
+  portCode?: string;
+  portName?: string;
+  country?: string;
+}
 
 function AddEditLocationFormContainer(props: any) {
+  const form = useForm<FormValues>({
+    clearInputErrorOnChange: true,
+    initialValues: {
+      imageUrl: "",
+      cfsStation: "",
+      city: "",
+      portCode: "",
+      portName: "",
+      country:"",
+    },
+  });
+
   const handleSetLocationPayload = props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
@@ -30,19 +52,34 @@ function AddEditLocationFormContainer(props: any) {
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
   const [imageResult, setImageResult] = useState<ImageResult | null>(null);
+  const [updateFormImages, setUpdateFormImages] = useState("");
+  const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false); // Track if required fields are filled
   const handleCloseModal = props.handleCloseModal;
+  const modalOpen = props.modalOpen;
 
-  const form = useForm({
-    clearInputErrorOnChange: true,
-    initialValues: {},
-  });
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
 
+  useEffect(() => {
+    if (locationType === "origin") {
+      const filled =
+        form.values.portName && form.values.cfsStation && form.values.city;
+      setRequiredFieldsFilled(!!filled);
+    }
+     else if (locationType === "destination") {
+       const filled =
+         form.values.portName && form.values.country;
+       setRequiredFieldsFilled(!!filled);
+    }
+    else {
+      setRequiredFieldsFilled(false);
+    }
+  }, [form.values, locationType]);
+
   //to show previous values while editing the row
   useEffect(() => {
-    if (updateFormData && modalType === "update") {
+    if (updateFormData && modalType === "update" && modalOpen) {
       if (selectedFilterValue === "destination") {
         const originAsStringArray = updateFormData.linkedOrigin.map(
           (arr: any) => arr._originId
@@ -52,19 +89,23 @@ function AddEditLocationFormContainer(props: any) {
           ...updateFormData,
           linkedOrigin: [...originAsStringArray],
         });
+        // const image = updateFormData.imageUrl || null;
+        // setUpdateFormImages(image);
       } else {
         form.setValues({
           ...updateFormData,
         });
+        // const image = updateFormData.imageUrl || null;
+        // setUpdateFormImages(image);
       }
     }
-  }, [updateFormData, modalType]);
+  }, [updateFormData, modalType, modalOpen]);
 
   const imageFileLabels = ["Image 1"];
-
   const fileInputs = imageFileLabels.map((label, index) => (
     <Grid.Col key={index}>
       <FileInput
+        disabled={!requiredFieldsFilled}
         accept="image/png,image/jpeg"
         onChange={(e) => {
           handlePictureChange(e, form.values, locationType)
@@ -72,13 +113,20 @@ function AddEditLocationFormContainer(props: any) {
               setImageResult(result);
             })
             .catch((err: any) => {
-              console.log(err);
+              console.error(err);
             });
-          form.getInputProps("image").onChange(e);
+          // form.getInputProps("image").onChange(e);
         }}
       />
     </Grid.Col>
   ));
+
+  const handleDeleteImage = () => {
+    // Remove the image
+    setImageResult(null);
+    // Clear form.values.imageUrl
+    form.setFieldValue("imageUrl", "");
+  };
 
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
@@ -95,8 +143,6 @@ function AddEditLocationFormContainer(props: any) {
   }, [selectedFilterValue]);
 
   const handleSubmit = async (values: typeof form.values) => {
-    handleCloseModal(false);
-
     let sourceArr: any = [...locationPayload.source];
     let originArr: any = [...locationPayload.origin];
     let destinationArr: any = [...locationPayload.destination];
@@ -114,22 +160,34 @@ function AddEditLocationFormContainer(props: any) {
     if (locationType === "destination" || locationType === "origin") {
       if (imageResult) {
         const uri = imageResult.uri;
-        const publicURI = imageResult.publicUri;
+        const path = imageResult.path;
         const file = imageResult.fileSrc;
+
         try {
-          const response = await axios
-            .put(uri, file, {
-              headers: {
-                "x-amz-acl": "public-read",
-                "Content-Type": "image",
-              },
-            })
-            .then(() => {
-              form.setValues((prevValues: any) => ({
-                ...prevValues,
-                image: publicURI,
-              }));
-            });
+          const resImageUpload = await uploadImageToS3(uri, file);
+          if (resImageUpload) {
+            if (locationType === "origin") {
+              originArr = originArr.map((o: any) => {
+                if (o._id === values._id) {
+                  return {
+                    ...o,
+                    imageUrl: path,
+                  };
+                }
+                return o;
+              });
+            } else if (locationType === "destination") {
+              destinationArr = destinationArr.map((d: any) => {
+                if (d._id === values._id) {
+                  return {
+                    ...d,
+                    imageUrl: path,
+                  };
+                }
+                return d;
+              });
+            }
+          }
         } catch (error) {
           console.error(`Error processing image: ${error}`);
           // Handle error as needed
@@ -154,8 +212,8 @@ function AddEditLocationFormContainer(props: any) {
     if (destinationArr.length) {
       payload.destination = [...destinationArr];
     }
-
-    handleSetLocationPayload(payload);
+    await handleSetLocationPayload(payload);
+    handleCloseModal(false);
   };
 
   return (
@@ -232,10 +290,18 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("city")}
           />
           <Space h="md" />
-
-          <label htmlFor="imageUpload">Image Upload</label>
-          <Grid>{fileInputs}</Grid>
-
+          {modalType === "update" && form.values.imageUrl ? (
+            <ImageUpload
+              key="update-image-upload"
+              imageUrl={form.values.imageUrl}
+              onDelete={handleDeleteImage}
+            />
+          ) : (
+            <>
+              <label htmlFor="imageUpload">Image Upload</label>
+              <Grid>{fileInputs}</Grid>
+            </>
+          )}
           <Space h="md" />
           <Select
             required
@@ -288,10 +354,18 @@ function AddEditLocationFormContainer(props: any) {
             clearable
           />
           <Space h="md" />
-
-          <label htmlFor="imageUpload">Image Upload</label>
-          <Grid>{fileInputs}</Grid>
-
+          {modalType === "update" && form.values.imageUrl ? (
+            <ImageUpload
+              key="update-image-upload"
+              imageUrl={form.values.imageUrl}
+              onDelete={handleDeleteImage}
+            />
+          ) : (
+            <>
+              <label htmlFor="imageUpload">Image Upload</label>
+              <Grid>{fileInputs}</Grid>
+            </>
+          )}
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>

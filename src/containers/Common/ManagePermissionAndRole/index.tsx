@@ -193,7 +193,6 @@ function ManagePermissionAndRole() {
           permissionName: permissionNames,
         };
       });
-      console.log("newcombined", newCombinedData)
       setTableRowData(newCombinedData);
     }
   }, [rolesData, rolePermissionsData, permissionsData]);

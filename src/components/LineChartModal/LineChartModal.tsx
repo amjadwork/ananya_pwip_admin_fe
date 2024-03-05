@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, ScrollArea, Grid, Table } from "@mantine/core";
+import { Button, Grid, Table } from "@mantine/core";
 import {
   LineChart,
   Line,
@@ -37,8 +37,6 @@ const LineChartModal = (props: any) => {
     return [pastSixMonths, endOfMonth];
   });
 
-  console.log(variantsData, "variantData");
-
   const handleGetVariantPriceTrend = async () => {
     if (variantsData && selectedRange[0] && selectedRange[1]) {
       const start = moment(selectedRange[0]).startOf("day").toISOString();
@@ -54,11 +52,17 @@ const LineChartModal = (props: any) => {
       const response = await APIRequest(url, "GET");
 
       if (response) {
-        const filteredResponse: { price: number; createdAt: any }[] =
-          response.map((item: { price: number; createdAt: string }) => ({
+        const filteredResponse: { price: number; date: any }[] = response.map(
+          (item: { price: number; createdAt: string }) => ({
             price: item.price,
-            date: new Date(item.createdAt),
-          }));
+            date: new Date(item.createdAt)
+          })
+        );
+        filteredResponse.push({
+          price: variantsData.price,
+          date: new Date(variantsData.updatedAt),
+        });
+
         setGraphData(filteredResponse);
       }
     }
@@ -220,7 +224,6 @@ const LineChartModal = (props: any) => {
                   />
                   <YAxis
                     dataKey="price"
-                    // label={{ value: 'Price', position: 'left', dy: 10 }}
                     domain={["dataMin", "dataMax"]}
                     tickCount={10}
                     tick={{
@@ -231,9 +234,25 @@ const LineChartModal = (props: any) => {
                   <Tooltip
                     wrapperStyle={{ backgroundColor: "white" }}
                     labelFormatter={(label) =>
-                      moment(label).format("hh:mm:ss, DD-MM-YYYY")
+                      `date: ${moment(label).format("DD-MM-YYYY")}`
                     }
-                    formatter={(value) => `${value} INR`}
+                    formatter={(value, name, props) => {
+                      if (
+                        props?.payload?.date ===
+                        graphData[graphData.length - 1].date
+                      ) {
+                        return (
+                          <span>
+                            {value} INR{" "}
+                            <div style={{ color: "green", fontSize: "13px" }}>
+                              current price
+                            </div>
+                          </span>
+                        );
+                      } else {
+                        return [`price: ${value} INR`];
+                      }
+                    }}
                   />
                   <Line
                     connectNulls
@@ -241,6 +260,7 @@ const LineChartModal = (props: any) => {
                     dataKey="price"
                     stroke="#006EB4"
                     fill="#006EB4"
+                    activeDot={{ r: 6, fill: "green" }}
                   />
                 </LineChart>
               </ResponsiveContainer>

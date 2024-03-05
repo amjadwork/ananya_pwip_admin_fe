@@ -25,12 +25,10 @@ export const deleteOfcData = async (data: any) => {
 };
 
 export const patchOfcData = async (data: any) => {
-  console.log("here", data)
   const response = await APIRequest(
     "ofc" + "/" + data._originPortId + "/" + data._ofcObjectId,
     "PATCH", data);
   if (response) {
-    console.log(response)
     return response;
   }
 };
