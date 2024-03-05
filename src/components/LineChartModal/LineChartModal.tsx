@@ -55,12 +55,12 @@ const LineChartModal = (props: any) => {
         const filteredResponse: { price: number; date: any }[] = response.map(
           (item: { price: number; createdAt: string }) => ({
             price: item.price,
-            date: item.createdAt.slice(0, 10),
+            date: new Date(item.createdAt)
           })
         );
         filteredResponse.push({
           price: variantsData.price,
-          date: variantsData.createdAt.slice(0, 10),
+          date: new Date(variantsData.updatedAt),
         });
 
         setGraphData(filteredResponse);
