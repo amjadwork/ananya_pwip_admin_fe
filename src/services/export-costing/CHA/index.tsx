@@ -10,7 +10,6 @@ export const getChaData = async () => {
 };
 
 export const postChaData = async (data: any) => {
-  console.log("post", data)
   const response = await APIRequest("cha", "POST", data);
   if (response) {
     return response;

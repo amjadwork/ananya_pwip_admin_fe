@@ -212,7 +212,6 @@ function ManageOfcContainer() {
       _originPortId: data._originPortId,
       ...destination,
     }));
-    console.log("payload", payload);
 
     if (payload[0] && modalType === "update") {
       const response = await patchOfcData(payload[0]);

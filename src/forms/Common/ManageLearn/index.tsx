@@ -70,7 +70,6 @@ function EditLearnForm(props: any) {
 
   const handleFormSubmit = (formValues: typeof form.values) => {
     // const duration = playerRef.current? playerRef.current.getDuration(): "0";
-    // console.log("Video duration:", duration);
     handleSaveAction(formValues);
     handleCloseModal(false);
     form.setValues(initialFormValues);
@@ -80,7 +79,6 @@ function EditLearnForm(props: any) {
   useEffect(() => {
     if (inputURL && playerRef.current) {
       const duration = playerRef.current.getDuration();
-      console.log("Duration:", duration);
     }
   }, [inputURL]);
 
@@ -116,7 +114,6 @@ function EditLearnForm(props: any) {
               }}
               onDuration={(duration) => {
                 setDuration(duration);
-                console.log("duration: ****", duration);
               }}
             />
             <p>Duration: {duration !== null ? duration.toFixed(2) : "N/A"}</p>

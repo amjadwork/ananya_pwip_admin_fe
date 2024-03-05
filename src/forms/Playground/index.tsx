@@ -364,8 +364,6 @@ const EceForm: any = (props: any) => {
       bookingType: values?.bookingType,
     };
 
-    console.log(values, displayData);
-
     handleExportPlayground({ ...displayData, total: totalsum });
   };
 

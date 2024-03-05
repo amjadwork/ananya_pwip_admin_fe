@@ -79,7 +79,6 @@ function SheetUpload(props:any) {
   };
 
   useEffect(() => {
-    console.log(jsonData);
   }, [jsonData]);
 
   let END_POINT_TO_GET = "";
@@ -185,7 +184,6 @@ function SheetUpload(props:any) {
           message: "please try again",
         });
       });
-    // console.log(response);
   };
 
   const mockdata = [
@@ -341,7 +339,6 @@ function SheetUpload(props:any) {
             borderRadius: "10px",
           }}
           onClick={() => {
-            console.log("object");
             if (hiddenFileInput.current !== null) {
               hiddenFileInput.current.click();
             }
@@ -462,7 +459,6 @@ function SheetUpload(props:any) {
             borderRadius: "10px",
           }}
           onClick={() => {
-            console.log("object");
             if (hiddenFileInput.current !== null) {
               hiddenFileInput.current.click();
             }
