@@ -11,8 +11,7 @@ import { useForm } from "@mantine/form";
 import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
-import axios from "axios";
-import { updateIndividualVariantSourceRate } from "helper/helper";
+import { uploadImageToS3 } from "../../helper/helper";
 
 interface ImageResult {
   uri: string;
@@ -135,18 +134,7 @@ function AddEditLocationFormContainer(props: any) {
         const file = imageResult.fileSrc;
 
         try {
-          const resImageUpload = await axios.put(uri, file, {
-            headers: {
-              "x-amz-acl": "public-read",
-              "Content-Type": "image",
-            },
-            transformRequest: [
-              function (data, headers) {
-                delete headers.Accept; // Removing the Accept header
-                return data; // Returning the modified data
-              },
-            ],
-          });
+          const resImageUpload = await uploadImageToS3(uri, file); 
           if (resImageUpload) {
             if (locationType === "origin") {
               originArr = originArr.map((o: any) => {

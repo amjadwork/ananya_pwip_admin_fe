@@ -136,3 +136,24 @@ export function IsoDateConverter(dateTimeString) {
   const date = new Date(dateTimeString);
   return date.toLocaleString();
 }
+
+export const uploadImageToS3 = async (url, file) => {
+  try {
+    const resImageUpload = await axios.put(url, file, {
+      headers: {
+        "x-amz-acl": "public-read",
+        "Content-Type": "image",
+      },
+      transformRequest: [
+        function (data, headers) {
+          delete headers.Accept; // Removing the Accept header
+          return data; // Returning the modified data
+        },
+      ],
+    });
+    return resImageUpload;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
