@@ -12,6 +12,7 @@ import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
 import axios from "axios";
+import { updateIndividualVariantSourceRate } from "helper/helper";
 
 interface ImageResult {
   uri: string;
@@ -40,7 +41,7 @@ function AddEditLocationFormContainer(props: any) {
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
   const [imageResult, setImageResult] = useState<ImageResult | null>(null);
-  // const [updateFormImages, setUpdateFormImages] = useState("");
+  const [updateFormImages, setUpdateFormImages] = useState("");
   const handleCloseModal = props.handleCloseModal;
   const modalOpen = props.modalOpen;
 
@@ -74,13 +75,6 @@ function AddEditLocationFormContainer(props: any) {
 
   const imageFileLabels = ["Image 1"];
   const fileInputs = imageFileLabels.map((label, index) => (
-    // updateFormData.imageUrl ? (
-    //   <ImageUpload
-    //     key={index}
-    //     imageUrl={updateFormData.imageUrl}
-    //     onDelete={() => handleDeleteImage(index)}
-    //   />
-    // ) :
     <Grid.Col key={index}>
       <FileInput
         accept="image/png,image/jpeg"
@@ -98,12 +92,12 @@ function AddEditLocationFormContainer(props: any) {
     </Grid.Col>
   ));
 
-  // const handleDeleteImage = (index: number) => {
-  //   const updatedImages = [...form.values.imageUrl];
-  //   updatedImages.splice(index, 1);
-  //   form.setFieldValue("images", updatedImages);
-  //   setUpdateFormImages(updatedImages);
-  // };
+  const handleDeleteImage = () => {
+    // Remove the image
+    setImageResult(null);
+    // Clear form.values.imageUrl
+    form.setFieldValue("imageUrl", "");
+  };
 
   const handleLinkedOriginChange = (newOriginValues: string[]) => {
     setDefaultOriginValues(newOriginValues);
@@ -273,10 +267,18 @@ function AddEditLocationFormContainer(props: any) {
             {...form.getInputProps("city")}
           />
           <Space h="md" />
-
-          <label htmlFor="imageUpload">Image Upload</label>
-          <Grid>{fileInputs}</Grid>
-
+          {modalType === "update" && form.values.imageUrl ? (
+            <ImageUpload
+              key="update-image-upload"
+              imageUrl={form.values.imageUrl}
+              onDelete={handleDeleteImage}
+            />
+          ) : (
+            <>
+              <label htmlFor="imageUpload">Image Upload</label>
+              <Grid>{fileInputs}</Grid>
+            </>
+          )}
           <Space h="md" />
           <Select
             required
@@ -329,9 +331,18 @@ function AddEditLocationFormContainer(props: any) {
             clearable
           />
           <Space h="md" />
-          <label htmlFor="imageUpload">Image Upload</label>
-
-          <Grid>{fileInputs}</Grid>
+          {modalType === "update" && form.values.imageUrl ? (
+            <ImageUpload
+              key="update-image-upload"
+              imageUrl={form.values.imageUrl}
+              onDelete={handleDeleteImage}
+            />
+          ) : (
+            <>
+              <label htmlFor="imageUpload">Image Upload</label>
+              <Grid>{fileInputs}</Grid>
+            </>
+          )}
           <Space h="md" />
           <Group position="right" mt="md" spacing="md">
             <Button type="submit">Submit</Button>
