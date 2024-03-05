@@ -22,6 +22,7 @@ import ImageUpload from "../../components/ImageUpload/ImageUpload";
 import {
   updateIndividualVariantSourceRate,
   uploadingMultipleImagesToS3,
+  uploadImageToS3,
 } from "../../helper/helper";
 // testing
 
@@ -200,16 +201,10 @@ function AddOrEditProductForm(props: any) {
           const file = image.src;
 
           try {
-            const response = await axios
-              .put(uri, file, {
-                headers: {
-                  "x-amz-acl": "public-read",
-                  "Content-Type": "image",
-                },
-              })
-              .then(() => {
-                form.values.images.push(path);
-              });
+            // Upload image to S3
+            await uploadImageToS3(uri, file);
+            // After successful upload, push the image path to form.values.images
+            form.values.images.push(path);
           } catch (error) {
             console.error(`Error processing image: ${error}`);
             // Handle error as needed
