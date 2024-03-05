@@ -141,12 +141,6 @@ function AddEditLocationFormContainer(props: any) {
         const file = imageResult.fileSrc;
 
         try {
-          // ### this is just formality, and not required because this sets form data in async manner, means handleSetLocationPayload will never get updated value as payload ### //
-          form.setValues((prevValues: any) => ({
-            ...prevValues,
-            imageUrl: path,
-          }));
-
           const resImageUpload = await axios.put(uri, file, {
             headers: {
               "x-amz-acl": "public-read",
@@ -155,18 +149,27 @@ function AddEditLocationFormContainer(props: any) {
           });
 
           if (resImageUpload) {
-            destinationArr = destinationArr.map((d: any) => {
-              let o = { ...d };
-
-              if (d?._id === values?._id) {
-                o = {
-                  ...o,
-                  imageUrl: path,
-                };
-              }
-
-              return { ...o };
-            });
+            if (locationType === "origin") {
+              originArr = originArr.map((o: any) => {
+                if (o._id === values._id) {
+                  return {
+                    ...o,
+                    imageUrl: path,
+                  };
+                }
+                return o;
+              });
+            } else if (locationType === "destination") {
+              destinationArr = destinationArr.map((d: any) => {
+                if (d._id === values._id) {
+                  return {
+                    ...d,
+                    imageUrl: path,
+                  };
+                }
+                return d;
+              });
+            }
           }
         } catch (error) {
           console.error(`Error processing image: ${error}`);
@@ -192,9 +195,7 @@ function AddEditLocationFormContainer(props: any) {
     if (destinationArr.length) {
       payload.destination = [...destinationArr];
     }
-
     await handleSetLocationPayload(payload);
-
     handleCloseModal(false);
   };
 
