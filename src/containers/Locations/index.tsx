@@ -136,6 +136,7 @@ const RenderModalContent = (props: any) => {
   const selectedFilterValue = props.selectedFilterValue;
   const handlePictureChange = props.handlePictureChange;
   const modalType = props.modalType;
+  const modalOpen = props.modalOpen;
 
   return (
     <AddEditLocationFormContainer
@@ -147,6 +148,7 @@ const RenderModalContent = (props: any) => {
       selectedFilterValue={selectedFilterValue}
       modalType={modalType}
       handlePictureChange={handlePictureChange}
+      modalOpen={modalOpen}
     />
   );
 };
@@ -404,7 +406,9 @@ function LocationsContainer() {
       }}
       ModalContent={() => (
         <RenderModalContent
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+          handleCloseModal={(bool: boolean) =>
+            bool ? setModalOpen(bool) : setModalOpen(false)
+          }
           handleSetLocationPayload={handleSetLocationPayload}
           locationPayload={locationPayload}
           updateFormData={updateFormData}

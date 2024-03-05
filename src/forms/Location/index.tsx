@@ -20,10 +20,16 @@ interface ImageResult {
   // Add other properties if needed
 }
 interface FormValues {
-  imageUrl: string; 
+  _id?: any;
+  imageUrl?: string;
 }
 
 function AddEditLocationFormContainer(props: any) {
+  const form = useForm<FormValues>({
+    clearInputErrorOnChange: true,
+    initialValues: { imageUrl: "" },
+  });
+
   const handleSetLocationPayload = props.handleSetLocationPayload;
   const locationPayload = props.locationPayload;
   const locationData = props.locationData;
@@ -34,21 +40,17 @@ function AddEditLocationFormContainer(props: any) {
   const [locationType, setLocationType] = useState("");
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
   const [imageResult, setImageResult] = useState<ImageResult | null>(null);
-  const [updateFormImages, setUpdateFormImages] = useState("");
+  // const [updateFormImages, setUpdateFormImages] = useState("");
   const handleCloseModal = props.handleCloseModal;
+  const modalOpen = props.modalOpen;
 
-   const form = useForm<FormValues>({
-     clearInputErrorOnChange: true,
-     initialValues: { imageUrl:'' },
-   });
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
 
-  console.log(updateFormData, "update");
   //to show previous values while editing the row
   useEffect(() => {
-    if (updateFormData && modalType === "update") {
+    if (updateFormData && modalType === "update" && modalOpen) {
       if (selectedFilterValue === "destination") {
         const originAsStringArray = updateFormData.linkedOrigin.map(
           (arr: any) => arr._originId
@@ -58,17 +60,17 @@ function AddEditLocationFormContainer(props: any) {
           ...updateFormData,
           linkedOrigin: [...originAsStringArray],
         });
-        const image = updateFormData.imageUrl || null;
-        setUpdateFormImages(image);
+        // const image = updateFormData.imageUrl || null;
+        // setUpdateFormImages(image);
       } else {
         form.setValues({
           ...updateFormData,
         });
-        const image = updateFormData.imageUrl || null;
-        setUpdateFormImages(image);
+        // const image = updateFormData.imageUrl || null;
+        // setUpdateFormImages(image);
       }
     }
-  }, [updateFormData, modalType]);
+  }, [updateFormData, modalType, modalOpen]);
 
   const imageFileLabels = ["Image 1"];
   const fileInputs = imageFileLabels.map((label, index) => (
@@ -85,11 +87,10 @@ function AddEditLocationFormContainer(props: any) {
         onChange={(e) => {
           handlePictureChange(e, form.values, locationType)
             .then((result: any) => {
-              console.log(result, "result");
               setImageResult(result);
             })
             .catch((err: any) => {
-              console.log(err);
+              console.error(err);
             });
           // form.getInputProps("image").onChange(e);
         }}
@@ -119,8 +120,6 @@ function AddEditLocationFormContainer(props: any) {
   }, [selectedFilterValue]);
 
   const handleSubmit = async (values: typeof form.values) => {
-    handleCloseModal(false);
-
     let sourceArr: any = [...locationPayload.source];
     let originArr: any = [...locationPayload.origin];
     let destinationArr: any = [...locationPayload.destination];
@@ -140,29 +139,41 @@ function AddEditLocationFormContainer(props: any) {
         const uri = imageResult.uri;
         const path = imageResult.path;
         const file = imageResult.fileSrc;
+
         try {
-          const response = await axios
-            .put(uri, file, {
-              headers: {
-                "x-amz-acl": "public-read",
-                "Content-Type": "image",
-              },
-            })
-            .then(() => {
-              console.log(path, "path")
-               form.setValues({
-                 imageUrl: path,
-               });
-              console.log(form.values, "herer ");
+          // ### this is just formality, and not required because this sets form data in async manner, means handleSetLocationPayload will never get updated value as payload ### //
+          form.setValues((prevValues: any) => ({
+            ...prevValues,
+            imageUrl: path,
+          }));
+
+          const resImageUpload = await axios.put(uri, file, {
+            headers: {
+              "x-amz-acl": "public-read",
+              "Content-Type": "image",
+            },
+          });
+
+          if (resImageUpload) {
+            destinationArr = destinationArr.map((d: any) => {
+              let o = { ...d };
+
+              if (d?._id === values?._id) {
+                o = {
+                  ...o,
+                  imageUrl: path,
+                };
+              }
+
+              return { ...o };
             });
+          }
         } catch (error) {
           console.error(`Error processing image: ${error}`);
           // Handle error as needed
         }
       }
     }
-
-    console.log(form.values, "form");
 
     let payload: any = {
       source: [],
@@ -181,10 +192,10 @@ function AddEditLocationFormContainer(props: any) {
     if (destinationArr.length) {
       payload.destination = [...destinationArr];
     }
- 
 
-    console.log(payload, "payload")
-    handleSetLocationPayload(payload);
+    await handleSetLocationPayload(payload);
+
+    handleCloseModal(false);
   };
 
   return (
