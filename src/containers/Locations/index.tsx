@@ -11,7 +11,6 @@ import {
   postLocationData,
   deleteLocationData,
   patchLocationData,
-  getDestinationData,
 } from "../../services/export-costing/Locations";
 import DataTable from "../../components/DataTable/DataTable";
 import APIRequest from "../../helper/api";
@@ -211,12 +210,11 @@ function LocationsContainer() {
   //to get all Location Data from database
   const handleGetLocation = async () => {
     const response = await getAllLocationData();
-    const responseDestination = await getDestinationData();
     if (response) {
       setLocationData({
         source: response.source || [],
         origin: response.origin || [],
-        destination: responseDestination.destination || [],
+        destination: response.destination || [],
       });
     }
   };
