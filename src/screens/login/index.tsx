@@ -72,7 +72,6 @@ const LoginScreen = (props: any) => {
 
   const fetchTokenAndLogin = async (loginPayload: any) => {
     const { setUserData } = props;
-    console.log(props, "userData");
     setUserData({ ...loginPayload });
 
     const _tok = await getAccessTokenSilently();

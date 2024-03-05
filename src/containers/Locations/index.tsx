@@ -355,7 +355,6 @@ function LocationsContainer() {
             fileSrc,
             path,
           };
-          console.log(res, "res");
           return imageObject;
         }
       })

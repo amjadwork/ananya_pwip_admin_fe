@@ -118,7 +118,6 @@ function ManagePackageContainer() {
   const handleSaveAction = async (data: any) => {
     let payload = { ...data };
     payload.currency = "INR";
-    console.log("data here", payload);
 
     if (payload && modalType === "add") {
       const response = await postPackagingData(payload);
