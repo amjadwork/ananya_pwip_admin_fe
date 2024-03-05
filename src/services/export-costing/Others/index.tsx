@@ -16,7 +16,6 @@ export const postOtherChargesData = async (data: any) => {
 
 
 export const deleteOtherChargesData = async (data:any) => {
-    console.log("data", data)
   const response = await APIRequest ("othercharges" + "/" + data._id, "DELETE");
   if (response) {
     return response;

@@ -47,7 +47,6 @@ function EditPermissionsForm(props: any) {
       };
     }
 
-    console.log("payload", payload);
     handleSaveAction(payload);
     handleCloseModal(false);
     form.setValues(initialFormValues);

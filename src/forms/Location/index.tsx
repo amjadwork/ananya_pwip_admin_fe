@@ -11,8 +11,7 @@ import { useForm } from "@mantine/form";
 import { Select, Button } from "../../components";
 import { stateName } from "../../constants/state.constants";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
-import axios from "axios";
-import { updateIndividualVariantSourceRate } from "helper/helper";
+import { uploadImageToS3 } from "../../helper/helper";
 
 interface ImageResult {
   uri: string;
@@ -23,12 +22,24 @@ interface ImageResult {
 interface FormValues {
   _id?: any;
   imageUrl?: string;
+  cfsStation?: string;
+  city?: string;
+  portCode?: string;
+  portName?: string;
+  country?: string;
 }
 
 function AddEditLocationFormContainer(props: any) {
   const form = useForm<FormValues>({
     clearInputErrorOnChange: true,
-    initialValues: { imageUrl: "" },
+    initialValues: {
+      imageUrl: "",
+      cfsStation: "",
+      city: "",
+      portCode: "",
+      portName: "",
+      country:"",
+    },
   });
 
   const handleSetLocationPayload = props.handleSetLocationPayload;
@@ -42,12 +53,29 @@ function AddEditLocationFormContainer(props: any) {
   const [defaultOriginValues, setDefaultOriginValues] = useState<string[]>([]);
   const [imageResult, setImageResult] = useState<ImageResult | null>(null);
   const [updateFormImages, setUpdateFormImages] = useState("");
+  const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false); // Track if required fields are filled
   const handleCloseModal = props.handleCloseModal;
   const modalOpen = props.modalOpen;
 
   const originOptions = locationData?.origin?.map((d: any) => {
     return { label: d.portName, value: d._id };
   });
+
+  useEffect(() => {
+    if (locationType === "origin") {
+      const filled =
+        form.values.portName && form.values.cfsStation && form.values.city;
+      setRequiredFieldsFilled(!!filled);
+    }
+     else if (locationType === "destination") {
+       const filled =
+         form.values.portName && form.values.country;
+       setRequiredFieldsFilled(!!filled);
+    }
+    else {
+      setRequiredFieldsFilled(false);
+    }
+  }, [form.values, locationType]);
 
   //to show previous values while editing the row
   useEffect(() => {
@@ -77,6 +105,7 @@ function AddEditLocationFormContainer(props: any) {
   const fileInputs = imageFileLabels.map((label, index) => (
     <Grid.Col key={index}>
       <FileInput
+        disabled={!requiredFieldsFilled}
         accept="image/png,image/jpeg"
         onChange={(e) => {
           handlePictureChange(e, form.values, locationType)
@@ -135,13 +164,7 @@ function AddEditLocationFormContainer(props: any) {
         const file = imageResult.fileSrc;
 
         try {
-          const resImageUpload = await axios.put(uri, file, {
-            headers: {
-              "x-amz-acl": "public-read",
-              "Content-Type": "image",
-            },
-          });
-
+          const resImageUpload = await uploadImageToS3(uri, file);
           if (resImageUpload) {
             if (locationType === "origin") {
               originArr = originArr.map((o: any) => {
