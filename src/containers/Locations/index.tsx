@@ -136,6 +136,7 @@ const RenderModalContent = (props: any) => {
   const selectedFilterValue = props.selectedFilterValue;
   const handlePictureChange = props.handlePictureChange;
   const modalType = props.modalType;
+  const modalOpen = props.modalOpen;
 
   return (
     <AddEditLocationFormContainer
@@ -147,6 +148,7 @@ const RenderModalContent = (props: any) => {
       selectedFilterValue={selectedFilterValue}
       modalType={modalType}
       handlePictureChange={handlePictureChange}
+      modalOpen={modalOpen}
     />
   );
 };
@@ -333,14 +335,14 @@ function LocationsContainer() {
 
   const handleGenerateSignedUrl = (
     e: any,
-    fileName: any,
+    name: any,
     ext: any,
     form: any,
     locationType: any
   ) => {
     const portName = form.portName.replace(/\s+/g, "_");
-    const FileName = fileName.replace(/\s+/g, "_");
-    const directory = `location/${locationType}/${portName}/${FileName}.${ext}`; // Constructing the directory parameter
+    const FileName = name.replace(/\s+/g, "_");
+    const directory = `location/${locationType}/${portName}/`; // Constructing the directory parameter
     const c = APIRequest(
       `generate-signed-url?fileName=${FileName}&extension=${ext}&mediaType=image&directory=${directory}`,
       "GET"
@@ -348,13 +350,14 @@ function LocationsContainer() {
       .then((res: any) => {
         if (res) {
           const uri = res.url;
-          const publicUri = res.publicUrl;
+          const path = res.key;
           const fileSrc = e;
           const imageObject = {
             uri,
             fileSrc,
-            publicUri,
+            path,
           };
+          console.log(res, "res");
           return imageObject;
         }
       })
@@ -370,10 +373,10 @@ function LocationsContainer() {
     const extString = file.type;
     const extStringArr = extString.split("/");
     const ext = extStringArr[1];
-    const fileName = `${Math.floor(Date.now() / 1000)}`;
+    const name = `${Math.floor(Date.now() / 1000)}`;
     const result = await handleGenerateSignedUrl(
       e,
-      fileName,
+      name,
       ext,
       form,
       locationType
@@ -403,7 +406,9 @@ function LocationsContainer() {
       }}
       ModalContent={() => (
         <RenderModalContent
-          handleCloseModal={(bool: boolean) => setModalOpen(bool)}
+          handleCloseModal={(bool: boolean) =>
+            bool ? setModalOpen(bool) : setModalOpen(false)
+          }
           handleSetLocationPayload={handleSetLocationPayload}
           locationPayload={locationPayload}
           updateFormData={updateFormData}
@@ -464,13 +469,13 @@ function LocationsContainer() {
               portName: obj.portName,
               state: obj.state,
               portCode: obj.portCode,
-              imageUrl: obj?.imageUrl || null,
+              imageUrl: obj.imageUrl || null,
             };
           }
           if (selectedFilterValue === "destination") {
             formObj = {
               portName: obj.portName,
-              imageUrl: obj?.imageUrl || null,
+              imageUrl: obj.imageUrl || null,
               portCode: obj.portCode,
               country: obj.country,
               _id: obj._id,
