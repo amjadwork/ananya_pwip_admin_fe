@@ -140,8 +140,13 @@ function AddEditLocationFormContainer(props: any) {
               "x-amz-acl": "public-read",
               "Content-Type": "image",
             },
+            transformRequest: [
+              function (data, headers) {
+                delete headers.Accept; // Removing the Accept header
+                return data; // Returning the modified data
+              },
+            ],
           });
-
           if (resImageUpload) {
             if (locationType === "origin") {
               originArr = originArr.map((o: any) => {
