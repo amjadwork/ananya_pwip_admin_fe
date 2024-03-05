@@ -7,7 +7,7 @@ import { showNotification } from "@mantine/notifications";
 
 import EditTagsForm from "../../../forms/Common/ManageTags";
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getTagsData,
   postTagsData,
@@ -17,22 +17,28 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "30px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Tag Name",
-    key: "tagName",
-    width: "400px",
+    Header: "Tag Name",
+    accessor: "tagName",
+    width: "500px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
+    Header: "Action",
+    accessor: "action",
     width: "50px",
-    fixed:true,
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -182,13 +188,12 @@ function ManageTags() {
       }}
       modalSize="50%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -197,7 +202,7 @@ function ManageTags() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             tagName: obj.tagName,
@@ -207,7 +212,7 @@ function ManageTags() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
