@@ -6,7 +6,7 @@ import { showNotification } from "@mantine/notifications";
 
 import EditTransportationForm from "../../forms/ManageTransport/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 
 import {
@@ -20,31 +20,46 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "35px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "70px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Origin",
-    key: "origin",
-    width: "130px",
+    Header: "Origin",
+    accessor: "origin",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Source",
-    key: "source",
-    width: "130px",
+    Header: "Source",
+    accessor: "source",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Transportation Charge",
-    key: "transportationCharge",
-    width: "150px",
+    Header: "Transportation Charge",
+    accessor: "transportationCharge",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "50px",
+    Header: "Action",
+    accessor: "action",
+    width: "90px",
+    sortable: false,
     fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -271,8 +286,8 @@ function ManageTransportContainer() {
         modalType === "add"
           ? "Add Transportation Charges"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : "Update Transportation Charges"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update Transportation Charges"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -294,13 +309,12 @@ function ManageTransportContainer() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Upload",
-            icon: Upload,
+            label: "Upload Excel Sheet",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -309,8 +323,7 @@ function ManageTransportContainer() {
             },
           },
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -319,9 +332,9 @@ function ManageTransportContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
-          setModalType("update");
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
+
           const formObj = {
             _originPortId: obj._originPortId,
             sourceLocations: [
@@ -336,8 +349,8 @@ function ManageTransportContainer() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>
