@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
 import EditOtherChargesForm from "../../forms/ManageOthers/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import { getVariantData } from "../../services/export-costing/Products";
 import {
   getOtherChargesData,
@@ -17,32 +17,46 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "30px",
-    fixed: true,
-  },
-  {
-    label: "Type of Charge",
-    key: "typeOfCharge",
-    width: "200px",
-    sortable: true,
-  },
-  {
-    label: "Type of Value",
-    key: "typeOfValue",
-    width: "150px",
-  },
-  {
-    label: "Value",
-    key: "value",
-    width: "100px",
-  },
-  {
-    label: "Action",
-    key: "action",
+    Header: "No.",
+    accessor: "serialNo",
     width: "50px",
-    fixed:true,
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Type of Charge",
+    accessor: "typeOfCharge",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Type of Value",
+    accessor: "typeOfValue",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Value",
+    accessor: "value",
+    width: "300px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
+    width: "80px",
+    sortable: false,
+    fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -214,13 +228,12 @@ function ManageOthers() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -229,7 +242,7 @@ function ManageOthers() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
           const formObj = {
             typeOfCharge: obj.typeOfCharge,
@@ -242,8 +255,8 @@ function ManageOthers() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>
