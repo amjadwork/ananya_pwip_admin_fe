@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
 import EditContainerForm from "../../forms/ManageContainer/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import {
   getContainerData,
   postContainerData,
@@ -16,37 +16,54 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "35px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "40px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Container Type",
-    key: "type",
-    width: "200px",
+    Header: "Container Type",
+    accessor: "type",
+    width: "180px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Container Size",
-    key: "size",
+    Header: "Container Size",
+    accessor: "size",
+    width: "180px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Weight(in Tons)",
+    accessor: "weight",
+    width: "180px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
+  },
+  {
+    Header: "Units",
+    accessor: "unit",
     width: "150px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Weight(in Tons)",
-    key: "weight",
-    width: "150px",
-  },
-  {
-    label: "Units",
-    key: "unit",
-    width: "100px",
-  },
-  {
-    label: "Action",
-    key: "action",
-    width: "60px",
-    fixed:true,
+    Header: "Action",
+    accessor: "action",
+    width: "70px",
+    sortable: false,
+    fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -197,13 +214,12 @@ function ManageContainer() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -212,7 +228,7 @@ function ManageContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
           setSelectedTableRowIndex(index);
           const formObj = {
@@ -226,8 +242,8 @@ function ManageContainer() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>

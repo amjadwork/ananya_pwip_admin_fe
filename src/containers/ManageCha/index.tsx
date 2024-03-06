@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check, Upload } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
 import EditChaForm from "../../forms/ManageCha/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
 import {
@@ -23,78 +23,118 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "70px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "80px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Origin",
-    key: "originPort",
-    width: "170px",
+    Header: "Origin",
+    accessor: "originPort",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Destination",
-    key: "destinationPort",
-    width: "170px",
+    Header: "Destination",
+    accessor: "destinationPort",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "CHA Charge",
-    key: "chaCharge",
-    width: "130px",
+    Header: "CHA Charge",
+    accessor: "chaCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Silica Gel",
-    key: "silicaGel",
-    width: "110px",
+    Header: "Silica Gel",
+    accessor: "silicaGel",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Craft Paper",
-    key: "craftPaper",
-    width: "125px",
+    Header: "Craft Paper",
+    accessor: "craftPaper",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Transport",
-    key: "transportCharge",
-    width: "110px",
+    Header: "Transport",
+    accessor: "transportCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Custom",
-    key: "customCharge",
+    Header: "Custom",
+    accessor: "customCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Loading",
+    accessor: "loadingCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Service",
+    accessor: "serviceCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Fumigation",
+    accessor: "fumigationCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "PQC ",
+    accessor: "pqc",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "COO ",
+    accessor: "coo",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
+  },
+  {
+    Header: "Action",
+    accessor: "action",
     width: "100px",
-  },
-  {
-    label: "Loading",
-    key: "loadingCharge",
-    width: "100px",
-  },
-  {
-    label: "Service",
-    key: "serviceCharge",
-    width: "100px",
-  },
-  {
-    label: "Fumigation",
-    key: "fumigationCharge",
-    width: "110px",
-  },
-  {
-    label: "PQC ",
-    key: "pqc",
-    width: "100px",
-  },
-  {
-    label: "COO ",
-    key: "coo",
-    width: "100px",
-  },
-  {
-    label: "Action",
-    key: "action",
-    width: "100px",
+    sortable: false,
     fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -344,8 +384,8 @@ function ManageChaContainer() {
         modalType === "add"
           ? "Add CHA Charges"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : "Update CHA CHarges"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update CHA CHarges"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -369,13 +409,12 @@ function ManageChaContainer() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Upload",
-            icon: Upload,
+            label: "Upload Excel Sheet",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -384,8 +423,7 @@ function ManageChaContainer() {
             },
           },
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -394,9 +432,8 @@ function ManageChaContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
-
           const formObj = {
             _originPortId: obj._originPortId,
             _id: obj._id,
@@ -417,13 +454,12 @@ function ManageChaContainer() {
               },
             ],
           };
-
           setUpdateFormData(formObj);
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>

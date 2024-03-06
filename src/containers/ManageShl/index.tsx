@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Check, Upload } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { Text } from "../../components/index";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 
 import EditShlForm from "../../forms/ManageShl/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import { getContainerData } from "../../services/export-costing/Container";
 import {
@@ -23,63 +23,94 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "70px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "80px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Origin",
-    key: "origin",
-    width: "150px",
+    Header: "Origin Port",
+    accessor: "origin",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Destination",
-    key: "destination",
-    width: "160px",
+    Header: "Destination Port",
+    accessor: "destination",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "SHL Charge",
-    key: "shlCharge",
-    width: "125px",
+    Header: "SHL Charge",
+    accessor: "shlCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "THC",
-    key: "thc",
-    width: "100px",
+    Header: "THC",
+    accessor: "thc",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "B/LFee",
-    key: "blFee",
-    width: "110px",
+    Header: "B/LFee",
+    accessor: "blFee",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Surrender",
-    key: "surrender",
-    width: "110px",
+    Header: "Surrender",
+    accessor: "surrender",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "MUC",
-    key: "muc",
-    width: "100px",
+    Header: "MUC",
+    accessor: "muc",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Convenience",
-    key: "convenienceFee",
-    width: "125px",
+    Header: "Convenience",
+    accessor: "convenienceFee",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Seal",
-    key: "seal",
-    width: "100px",
+    Header: "Seal",
+    accessor: "seal",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: true,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "100px",
-    fixed:true,
+    Header: "Action",
+    accessor: "action",
+    width: "90px",
+    sortable: false,
+    fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -328,8 +359,8 @@ function ManageShlContainer() {
         modalType === "add"
           ? "Add SHL Charges"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : "Update SHL Charges"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update SHL Charges"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -352,13 +383,12 @@ function ManageShlContainer() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Upload",
-            icon: Upload,
+            label: "Upload Excel Sheet",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -367,8 +397,7 @@ function ManageShlContainer() {
             },
           },
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -377,7 +406,7 @@ function ManageShlContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
 
           const formObj = {
@@ -401,8 +430,8 @@ function ManageShlContainer() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>
