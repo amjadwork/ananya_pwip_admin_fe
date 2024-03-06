@@ -22,7 +22,7 @@ const columns = [
   {
     Header: "No.",
     accessor: "serialNo",
-    width: "70px",
+    width: "60px",
     fixed: true,
     disableFilters: true,
     showCheckbox: false,
@@ -46,7 +46,7 @@ const columns = [
   {
     Header: "Transportation Charge",
     accessor: "transportationCharge",
-    width: "300px",
+    width: "250px",
     sortable: true,
     filterable: true,
     showCheckbox: false,
