@@ -135,34 +135,6 @@ const ReactTable: React.FC<{
 
   return (
     <>
-      {allColumns.some((column: any) => column.showCheckbox) && (
-        <div style={CheckboxContainerStyle}>
-          Hide/Show Columns
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            {allColumns.map(
-              (column: any) =>
-                column.showCheckbox && (
-                  <div key={column.id}>
-                    <label style={{ fontSize: "14px" }}>
-                      <input
-                        type="checkbox"
-                        {...column.getToggleHiddenProps()}
-                      />
-                      {column.Header}
-                    </label>
-                  </div>
-                )
-            )}
-          </div>
-        </div>
-      )}
-
       <Flex align="right" justify="end" gap="md">
         {actionButtons.map((item: any, index: number) => {
           return (
@@ -177,6 +149,38 @@ const ReactTable: React.FC<{
           );
         })}
       </Flex>
+
+      {allColumns.some((column: any) => column.showCheckbox) && (
+        <div style={CheckboxContainerStyle}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              border: "2px solid #D9E4EC",
+              paddingInline: "4px",
+              marginTop: "4px",
+            }}
+          >
+            {allColumns.map(
+              (column: any) =>
+                column.showCheckbox && (
+                  <div key={column.id}>
+                    <input type="checkbox" {...column.getToggleHiddenProps()} />
+                    <label
+                      style={{
+                        fontSize: "14px",
+                        marginLeft: "2px",
+                      }}
+                    >
+                      {column.Header}
+                    </label>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+      )}
 
       <ScrollArea scrollbarSize={4} offsetScrollbars>
         <table {...getTableProps()} style={tableStyle} className="table">

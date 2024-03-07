@@ -8,7 +8,7 @@ import { showNotification } from "@mantine/notifications";
 import EditServicesForm from "../../../forms/Common/ManageServices";
 
 import PageWrapper from "../../../components/Wrappers/PageWrapper";
-import DataTable from "../../../components/DataTable/DataTable";
+import ReactTable from "../../../components/ReactTable/ReactTable";
 import {
   getServicesData,
   postServicesData,
@@ -18,34 +18,44 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
+    Header: "No.",
+    accessor: "serialNo",
     width: "40px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Name",
-    key: "name",
+    Header: "Name",
+    accessor: "name",
     width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Type",
-    key: "type",
-    width: "130px",
+    Header: "Type",
+    accessor: "type",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Status",
-    key: "activeStatus",
-    width: "130px",
+    Header: "Status",
+    accessor: "activeStatus",
+    width: "250px",
     sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
-    width: "50px",
-    fixed:true,
+    Header: "Action",
+    accessor: "action",
+    width: "60px",
+    fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
 ];
 
@@ -196,13 +206,12 @@ function ManageServices() {
       }}
       modalSize="60%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -211,7 +220,7 @@ function ManageServices() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
+        onEditRow={(row: any) => {
           let obj = { ...row };
           const formObj = {
             id: obj.id,
@@ -222,7 +231,7 @@ function ManageServices() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
+        onDeleteRow={(row: any) => {
           openDeleteModal(row);
         }}
       />
