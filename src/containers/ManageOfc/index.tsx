@@ -6,8 +6,8 @@ import { showNotification } from "@mantine/notifications";
 
 import EditOfcForm from "../../forms/ManageOfc/index";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
-import DataTable from "../../components/DataTable/DataTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
+import ReactTable from "../../components/ReactTable/ReactTable";
 import { getContainerData } from "../../services/export-costing/Container";
 import {
   getDestinationDataByOrigin,
@@ -23,31 +23,46 @@ import {
 
 const columns = [
   {
-    label: "No.",
-    key: "serialNo",
-    width: "40px",
+    Header: "No.",
+    accessor: "serialNo",
+    width: "50px",
     fixed: true,
+    disableFilters: true,
+    showCheckbox: false,
   },
   {
-    label: "Origin",
-    key: "origin",
-    width: "180px",
+    Header: "Origin",
+    accessor: "origin",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Destination",
-    key: "destination",
-    width: "180px",
+    Header: "Destination",
+    accessor: "destination",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "OFC Charge",
-    key: "ofcCharge",
-    width: "100px",
+    Header: "OFC Charge",
+    accessor: "ofcCharge",
+    width: "200px",
+    sortable: true,
+    filterable: true,
+    showCheckbox: false,
   },
   {
-    label: "Action",
-    key: "action",
+    Header: "Action",
+    accessor: "action",
     width: "60px",
-    fixed:true,
+    sortable: false,
+    fixed: true,
+    disableFilters: true,
+    filterable: false,
+    showCheckbox: false,
   },
 ];
 
@@ -300,8 +315,8 @@ function ManageOfcContainer() {
         modalType === "add"
           ? "Add OFC Charges"
           : modalType === "upload"
-          ? "Update Or Add Data by Excel Sheet"
-          : "Update OFC Charges"
+            ? "Update Or Add Data by Excel Sheet"
+            : "Update OFC Charges"
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -324,13 +339,12 @@ function ManageOfcContainer() {
       }}
       modalSize="70%"
     >
-      <DataTable
+      <ReactTable
         data={tableRowData}
         columns={columns}
-        actionItems={[
+        actionButtons={[
           {
-            label: "Upload",
-            icon: Upload,
+            label: "Upload Excel Sheet",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -339,8 +353,7 @@ function ManageOfcContainer() {
             },
           },
           {
-            label: "Add",
-            icon: Plus,
+            label: "Add New",
             color: "gray",
             type: "button",
             onClickAction: () => {
@@ -349,8 +362,7 @@ function ManageOfcContainer() {
             },
           },
         ]}
-        handleRowEdit={(row: any, index: number) => {
-          setModalType("update");
+        onEditRow={(row: any, index: any) => {
           let obj = { ...row };
           const formObj = {
             _originPortId: obj._originPortId,
@@ -367,8 +379,8 @@ function ManageOfcContainer() {
           setModalType("update");
           setModalOpen(true);
         }}
-        handleRowDelete={(row: any) => {
-          openDeleteModal(row);
+        onDeleteRow={(rowData: any) => {
+          openDeleteModal(rowData);
         }}
       />
     </PageWrapper>
