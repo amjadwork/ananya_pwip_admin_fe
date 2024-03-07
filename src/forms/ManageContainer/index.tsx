@@ -59,7 +59,7 @@ function EditContainerForm(props: any) {
     handleCloseModal(false);
     handleSaveAction(formValues);
   };
-console.log(form.values, "form")
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
       <Select

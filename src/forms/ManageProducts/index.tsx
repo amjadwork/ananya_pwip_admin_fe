@@ -17,11 +17,11 @@ import { showNotification } from "@mantine/notifications";
 import APIRequest from "../../helper/api";
 
 import { randomId } from "@mantine/hooks";
-import axios from "axios";
 import ImageUpload from "../../components/ImageUpload/ImageUpload";
 import {
   updateIndividualVariantSourceRate,
   uploadingMultipleImagesToS3,
+  uploadImageToS3,
 } from "../../helper/helper";
 // testing
 
@@ -55,6 +55,7 @@ function AddOrEditProductForm(props: any) {
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
+  const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false); // Track if required fields are filled
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -71,6 +72,11 @@ function AddOrEditProductForm(props: any) {
     { value: "steam", label: "Steam" },
     { value: "paraboiled", label: "Paraboiled" },
   ];
+
+  useEffect(() => {
+    const filled = form.values.variantName && form.values._categoryId;
+    setRequiredFieldsFilled(!!filled);
+  }, [form.values]);
 
   const handleDeleteImage = (index: number) => {
     const updatedImages = [...form.values.images];
@@ -106,6 +112,7 @@ function AddOrEditProductForm(props: any) {
   const fileInputs = imageFileLabels.map((label, index) => (
     <Grid.Col key={index}>
       <FileInput
+        disabled={!requiredFieldsFilled}
         accept="image/png,image/jpeg"
         label="Upload file (png/jpg)"
         onChange={(e) => {
@@ -200,16 +207,10 @@ function AddOrEditProductForm(props: any) {
           const file = image.src;
 
           try {
-            const response = await axios
-              .put(uri, file, {
-                headers: {
-                  "x-amz-acl": "public-read",
-                  "Content-Type": "image",
-                },
-              })
-              .then(() => {
-                form.values.images.push(path);
-              });
+            // Upload image to S3
+            await uploadImageToS3(uri, file);
+            // After successful upload, push the image path to form.values.images
+            form.values.images.push(path);
           } catch (error) {
             console.error(`Error processing image: ${error}`);
             // Handle error as needed
