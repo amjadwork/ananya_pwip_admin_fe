@@ -395,6 +395,58 @@ const ReactTable: React.FC<{
                                 </div>
                               </td>
                             );
+                          } // Inside the cell.render function for the request body column
+                          else if (cell.column.id === "requestBody") {
+                            return (
+                              <td
+                                style={{
+                                  marginTop: "12px",
+                                  paddingLeft: "0.5rem",
+                                  paddingRight: "0.5rem",
+                                }}
+                              >
+                                <Button
+                                  onClick={() =>
+                                    handleToggleButton(i, "requestBody")
+                                  }
+                                  size="sm"
+                                  variant="default"
+                                  fullWidth
+                                  style={{
+                                    height: "2rem",
+                                  }}
+                                >
+                                  {Array.isArray(row.original.requestBody) &&
+                                  row.original.requestBody.length === 0
+                                    ? "No Request Body"
+                                    : expandedRows[i]
+                                      ? "Hide Request Body"
+                                      : "Show Request Body"}
+                                </Button>
+                                <div
+                                  style={{
+                                    display: expandedRows[i] ? "block" : "none",
+                                  }}
+                                >
+                                  {row.original.requestBody &&
+                                  typeof row.original.requestBody ===
+                                    "object" ? (
+                                    Object.entries(
+                                      row.original.requestBody
+                                    ).map(([key, value], index) => (
+                                      <div key={index}>
+                                        <span style={{ fontWeight: "bold" }}>
+                                          {key}
+                                        </span>
+                                        : {String(value)}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <div>No Request Body</div>
+                                  )}
+                                </div>
+                              </td>
+                            );
                           } else if (cell.column.id === "permissionName") {
                             return (
                               <td
