@@ -1,0 +1,70 @@
+import React from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import ManageLogs from "../containers/Common/ManageLogs";
+import { MantineProvider, Container, createStyles } from "@mantine/core";
+
+const useStyles = createStyles((theme) => ({
+  tabs: {
+    [theme.fn.smallerThan("sm")]: {
+      display: "none",
+    },
+  },
+
+  tabsList: {
+    borderBottom: "0 !important",
+  },
+
+  tab: {
+    fontWeight: 600,
+    height: "38px",
+    backgroundColor: "transparent",
+
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[5]
+          : theme.colors.gray[1],
+    },
+
+    "&[data-active]": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[7]
+          : theme.colors.gray[0],
+      borderColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[7]
+          : theme.colors.gray[1],
+    },
+  },
+}));
+
+const LogManagementLayout: React.FC<any> = () => {
+  const { classes } = useStyles();
+
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path, { replace: true });
+  };
+
+  return (
+    <MantineProvider
+      withGlobalStyles
+      withNormalizeCSS
+      theme={{
+        colors: {
+          white: ["#FFFFFF"],
+        },
+      }}
+    >
+      <Container size={1200}>
+        <Routes>
+          <Route path="/" element={<ManageLogs />} />
+        </Routes>
+      </Container>
+    </MantineProvider>
+  );
+};
+
+export default LogManagementLayout;
