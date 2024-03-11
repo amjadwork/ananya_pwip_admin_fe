@@ -1,5 +1,6 @@
 import {
   PresentationAnalytics,
+  ListDetails,
   Help,
   Apps,
   User,
@@ -43,7 +44,7 @@ export const NavbarOptions = [
   { label: "Plans & Subscription", icon: Article, link: "/plans-management" },
   { label: "Learn", icon: Video, link: "/learn-management" },
   { label: "Tags", icon: Tags, link: "/tags-management" },
+  { label: "Logs", icon: ListDetails, link: "/logs-management" },
   { label: "Reporting", icon: PresentationAnalytics, link: "/reports" },
   { label: "Support", icon: Help, link: "/customer-support" },
-
 ];
