@@ -16,6 +16,7 @@ import PlansManagementLayout from "./PlansManagementLayout";
 import LearnManagementLayout from "./LearnManagementLayout";
 import TagsManagementLayout from "./TagsManagementLayout";
 import UserManagementLayout from "./UserManagementLayout";
+import LogManagementLayout from "./LogManagementLayout";
 
 const AdminAppLayout: React.FC<any> = () => {
   const [opened, setOpened] = useState(false);
@@ -95,10 +96,26 @@ const AdminAppLayout: React.FC<any> = () => {
           <Routes>
             <Route path="/" element={<div></div>} />
             <Route path="/export-costing/*" element={<ExportCostingLayout />} />
-            <Route path="/user-management/*" element={<UserManagementLayout />} />
-            <Route path="/plans-management/*" element={<PlansManagementLayout />} />
-            <Route path="/learn-management/*" element={<LearnManagementLayout />} />
-            <Route path="/tags-management/*" element={<TagsManagementLayout />} />
+            <Route
+              path="/user-management/*"
+              element={<UserManagementLayout />}
+            />
+            <Route
+              path="/plans-management/*"
+              element={<PlansManagementLayout />}
+            />
+            <Route
+              path="/learn-management/*"
+              element={<LearnManagementLayout />}
+            />
+            <Route
+              path="/tags-management/*"
+              element={<TagsManagementLayout />}
+            />
+            <Route
+              path="/logs-management/*"
+              element={<LogManagementLayout />}
+            />
           </Routes>
         </Box>
       </AppShell>
