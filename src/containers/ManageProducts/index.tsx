@@ -406,6 +406,13 @@ function ManageProductsContainer(props: any) {
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
+            variantColor: obj.variantColor,
+            variantType: obj.variantType,
+            variantSize: obj.variantSize,
+            moisturePercentage: obj.moisturePercentage,
+            chalkyPercentage: obj.chalkyPercentage,
+            damagedPercentage: obj.damagedPercentage,
+            variantWhiteness: obj.variantWhiteness,
             tags: obj.tags,
             images: obj.images,
             sourceRates: [

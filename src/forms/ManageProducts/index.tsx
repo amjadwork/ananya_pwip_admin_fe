@@ -30,6 +30,13 @@ const initialFormValues: any = {
   variantName: "",
   HSNCode: "",
   brokenPercentage: "",
+  variantColor: "",
+  variantType: "",
+  variantSize: "",
+  moisturePercentage: "",
+  chalkyPercentage: "",
+  damagedPercentage: "",
+  variantWhiteness: "",
   tags: "",
   images: [],
   imagesArray: [],
@@ -110,7 +117,7 @@ function AddOrEditProductForm(props: any) {
   const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
 
   const fileInputs = imageFileLabels.map((label, index) => (
-    <Grid.Col key={index}>
+    <Grid.Col span={6} key={index}>
       <FileInput
         disabled={!requiredFieldsFilled}
         accept="image/png,image/jpeg"
@@ -277,7 +284,7 @@ function AddOrEditProductForm(props: any) {
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
-      <Group spacing="md">
+      <Group spacing="xl">
         <Select
           required
           label="Select Region"
@@ -341,49 +348,123 @@ function AddOrEditProductForm(props: any) {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-      <Select
-        required
-        label="Select Category"
-        placeholder="Eg. Non-Basmati"
-        data={categoryOptions}
-        {...form.getInputProps("_categoryId")}
-      />
+      <Grid>
+        <Grid.Col span={6}>
+          <Select
+            required
+            label="Select Category"
+            placeholder="Eg. Non-Basmati"
+            data={categoryOptions}
+            {...form.getInputProps("_categoryId")}
+          />
+        </Grid.Col>
+        <Space h="md" />
+        <Grid.Col span={6}>
+          <Select
+            data={tagsOptions || []}
+            label="Tags"
+            placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
+            disabled={isBasmatiCategory || !form.values._categoryId}
+            {...form.getInputProps("tags")}
+          />
+        </Grid.Col>
 
-      <Space h="md" />
+        <Space h="md" />
+        <Grid.Col span={8}>
+          <TextInput
+            required
+            label="Variant Name"
+            placeholder="eg. 1509 Sella"
+            {...form.getInputProps("variantName")}
+          />
+        </Grid.Col>
+        <Space h="md" />
+        <Grid.Col span={4}>
+          <TextInput
+            label="HSN Code"
+            placeholder="eg. CSQ212"
+            {...form.getInputProps("HSNCode")}
+          />
+        </Grid.Col>
 
-      <TextInput
-        required
-        label="Variant Name"
-        placeholder="eg. 1509 Sella"
-        {...form.getInputProps("variantName")}
-      />
-
-      <Space h="md" />
-
-      <Select
-        data={tagsOptions || []}
-        label="Tags"
-        placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-        disabled={isBasmatiCategory}
-        {...form.getInputProps("tags")}
-      />
-
-      <Space h="md" />
-
-      <TextInput
-        label="HSN Code"
-        placeholder="eg. CSQ212"
-        {...form.getInputProps("HSNCode")}
-      />
-
-      <Space h="md" />
-
-      <NumberInput
-        min={0}
-        label="Broken %"
-        placeholder="eg. 5"
-        {...form.getInputProps("brokenPercentage")}
-      />
+        <Space h="md" />
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Broken %"
+            placeholder="5%"
+            {...form.getInputProps("brokenPercentage")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <TextInput
+            min={0}
+            label="Color"
+            placeholder="Off-white"
+            {...form.getInputProps("variantColor")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <TextInput
+            min={0}
+            label="Type"
+            placeholder="Medium Grain"
+            {...form.getInputProps("variantType")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Grain Length"
+            placeholder="5.7"
+            {...form.getInputProps("variantSize")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Moisture %"
+            placeholder="13%"
+            {...form.getInputProps("moisturePercentage")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Chalky %"
+            placeholder="5.4%"
+            {...form.getInputProps("chalkyPercentage")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Damaged and Discolored %"
+            placeholder="1.05%"
+            {...form.getInputProps("damagedPercentage")}
+          />
+        </Grid.Col>
+        <Grid.Col span={3}>
+          <NumberInput
+            min={0}
+            precision={2}
+            hideControls
+            label="Whiteness (avg)"
+            placeholder="39.4"
+            {...form.getInputProps("variantWhiteness")}
+          />
+        </Grid.Col>
+      </Grid>
       <Space h="md" />
 
       <label htmlFor="imageUpload">Image Upload</label>
@@ -391,7 +472,6 @@ function AddOrEditProductForm(props: any) {
       <Grid>{combinedFileInputs}</Grid>
 
       <Space h="md" />
-
       {fields}
 
       <Group position="right" mt="md">
