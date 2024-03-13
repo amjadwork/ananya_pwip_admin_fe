@@ -441,6 +441,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
+            brokenPercentage:obj.brokenPercentage,
             HSNCode: obj.HSNCode,
             tags: obj.tags,
             images: obj.images,
