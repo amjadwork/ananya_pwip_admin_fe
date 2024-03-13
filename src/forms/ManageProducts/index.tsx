@@ -10,6 +10,7 @@ import {
   Flex,
   Grid,
   FileInput,
+  Alert,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -66,12 +67,6 @@ const initialFormValues: any = {
     note: "",
     unit: "mm",
   },
-  brokenPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
-    note: "",
-    unit: "mm",
-  },
   damagedAndDiscoloredPercentage: {
     rangeFrom: 0,
     rangeTo: 0,
@@ -120,12 +115,6 @@ const requiredRiceProfilePayload = {
     note: "",
     unit: "mm",
   },
-  brokenPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
-    note: "",
-    unit: "mm",
-  },
   damagedAndDiscoloredPercentage: {
     rangeFrom: 0,
     rangeTo: 0,
@@ -159,6 +148,7 @@ function AddOrEditProductForm(props: any) {
   const modalOpen = props.modalOpen || false;
   const handlePictureChange = props.handlePictureChange;
   const handleRiceProfilePatch = props.handleRiceProfilePatch;
+  const handleRiceProfilePost = props.handleRiceProfilePost;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
@@ -200,21 +190,18 @@ function AddOrEditProductForm(props: any) {
     const response = await getSpecificVariantProfileData(
       updateFormData._variantId
     );
-    console.log(response, "here here")
     if (response) {
       const matchingVariant = response.find(
         (variant: any) => variant.variantId === updateFormData._variantId
       );
       setRiceProfileObject(matchingVariant || []);
-      setRiceProfileObjID(matchingVariant._id) 
-      console.log(matchingVariant, "matcing variant");
+      setRiceProfileObjID(matchingVariant?._id || null);
       if (matchingVariant) {
         form.setValues({
           grainType: matchingVariant.grainType || "",
           grainColour: matchingVariant.grainColour || "",
           grainLength: matchingVariant.grainLength || {},
           grainWidth: matchingVariant.grainWidth || {},
-          brokenPercentage: matchingVariant.brokenPercentage || {},
           moisturePercentage: matchingVariant.moisturePercentage || {},
           whitenessReadingAverage:
             matchingVariant.whitenessReadingAverage || {},
@@ -225,11 +212,7 @@ function AddOrEditProductForm(props: any) {
       }
     }
   };
-
-  console.log(form.values, "foem");
   useEffect(() => {});
-
-  console.log("updatedFormDate", updateFormData);
 
   const handlePictureInputChange = (e: any) => {
     const variant = form.values.variantName
@@ -347,6 +330,25 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
+    const variantFormValues = intersectObjects(
+      requiredVariantPayload,
+      formValues
+    );
+    const riceProfileFormValues = intersectObjects(
+      requiredRiceProfilePayload,
+      formValues
+    );
+
+    const variantPayload = getChangedPropertiesFromObject(
+      variantObject,
+      variantFormValues
+    );
+
+    const riceProfilePayload = getChangedPropertiesFromObject(
+      riceProfileObject,
+      riceProfileFormValues
+    );
+
     if (modalType === "add") {
       if (formValues.imagesArray && formValues.imagesArray.length > 0) {
         for (const image of formValues.imagesArray) {
@@ -398,44 +400,24 @@ function AddOrEditProductForm(props: any) {
           sourceID
         );
       }
-
-      const variantFormValues = intersectObjects(
-        requiredVariantPayload,
-        formValues
-      );
-      const riceProfileFormValues = intersectObjects(
-        requiredRiceProfilePayload,
-        formValues
-      );
-
-      const variantPayload = getChangedPropertiesFromObject(
-        variantObject,
-        variantFormValues
-      );
-
-      const riceProfilePayload = getChangedPropertiesFromObject(
-        riceProfileObject,
-        riceProfileFormValues
-      );
-
-      // if (Object.keys(variantPayload).length > 0) {
-      //   const payload = {
-      //     ...variantPayload,
-      //     user_id: formValues.user_id,
-      //   };
-      //   handleSaveCallback(payload);
-      // }
       if (Object.keys(riceProfilePayload).length > 0) {
-        const payload = {
-          ...riceProfilePayload,
-          _id: riceProfileObjID,
-        };
-        console.log("payload here here", payload )
-        handleRiceProfilePatch(payload);
+        if (riceProfileObjID) {
+          const patchPayload = {
+            ...riceProfilePayload,
+            _id: riceProfileObjID,
+          };
+          handleRiceProfilePatch(patchPayload);
+        } else {
+          const postPayload = {
+            ...riceProfilePayload,
+            variantId: updateFormData._variantId,
+          };
+          handleRiceProfilePost(postPayload);
+        }
       }
       handleCloseModal(false);
       //variant common fields update
-      // handleSaveCallback(payloadCommonVariantDetails);
+      handleSaveCallback(payloadCommonVariantDetails);
     }
   };
 
@@ -565,178 +547,152 @@ function AddOrEditProductForm(props: any) {
       </Grid>
       <Space h="md" />
 
-      {modalType === "update" && (
-        <>
-          <div
-            style={{
-              backgroundColor: "#F5F5F5",
-              padding: "10px",
-              fontWeight: "600",
-            }}
-          >
-            Variant Properties
-            <Space h="sm" />
-            <Grid>
-              <Grid.Col span={6}>
-                <TextInput
-                  label="Grain Color"
-                  placeholder="white"
-                  {...form.getInputProps("grainColour")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <TextInput
-                  label="Grain Type"
-                  placeholder="long grain"
-                  {...form.getInputProps("grainType")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Grain Length (mm)"
-                  description="Range From"
-                  placeholder="8.3 mm"
-                  {...form.getInputProps("grainLength.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="8.7 mm"
-                  {...form.getInputProps("grainLength.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Grain Width (mm)"
-                  description="Range From"
-                  placeholder="1.7 mm"
-                  {...form.getInputProps("grainWidth.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="1.8 mm"
-                  {...form.getInputProps("grainWidth.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Broken Percentage (%)"
-                  description="Range From"
-                  placeholder="0"
-                  {...form.getInputProps("brokenPercentage.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="2%"
-                  {...form.getInputProps("brokenPercentage.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Moisture (%)"
-                  description="Range From"
-                  placeholder="0"
-                  {...form.getInputProps("moisturePercentage.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="2%"
-                  {...form.getInputProps("moisturePercentage.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Whiteness Reading (%)"
-                  description="Range From"
-                  placeholder="27%"
-                  {...form.getInputProps("whitenessReadingAverage.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="28%"
-                  {...form.getInputProps("whitenessReadingAverage.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Chalky (%)"
-                  description="Range From"
-                  placeholder="0"
-                  {...form.getInputProps("chalkyPercentage.rangeFrom")}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="2%"
-                  {...form.getInputProps("chalkyPercentage.rangeTo")}
-                />
-              </Grid.Col>
-            </Grid>
-            <Grid>
-              <Grid.Col span={6}>
-                <NumberInput
-                  hideControls
-                  label="Damaged and Discolored (%)"
-                  description="Range From"
-                  placeholder="0"
-                  {...form.getInputProps(
-                    "damagedAndDiscoloredPercentage.rangeFrom"
-                  )}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <NumberInput
-                  label=" "
-                  hideControls
-                  description="Range To"
-                  placeholder="2%"
-                  {...form.getInputProps(
-                    "damagedAndDiscoloredPercentage.rangeTo"
-                  )}
-                />
-              </Grid.Col>
-            </Grid>
-          </div>
-        </>
-      )}
+      <div
+        style={{
+          backgroundColor: "#F5F5F5",
+          padding: "10px",
+          fontWeight: "600",
+        }}
+      >
+        Variant Properties
+        <Space h="sm" />
+        <Grid>
+          <Grid.Col span={6}>
+            <TextInput
+              label="Grain Color"
+              placeholder="white"
+              {...form.getInputProps("grainColour")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <TextInput
+              label="Grain Type"
+              placeholder="long grain"
+              {...form.getInputProps("grainType")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Grain Length (mm)"
+              description="Range From"
+              placeholder="8.3 mm"
+              {...form.getInputProps("grainLength.rangeFrom")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="8.7 mm"
+              {...form.getInputProps("grainLength.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Grain Width (mm)"
+              description="Range From"
+              placeholder="1.7 mm"
+              {...form.getInputProps("grainWidth.rangeFrom")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="1.8 mm"
+              {...form.getInputProps("grainWidth.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Moisture (%)"
+              description="Range From"
+              placeholder="0"
+              {...form.getInputProps("moisturePercentage.rangeFrom")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="2%"
+              {...form.getInputProps("moisturePercentage.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Whiteness Reading (%)"
+              description="Range From"
+              placeholder="27%"
+              {...form.getInputProps("whitenessReadingAverage.rangeFrom")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="28%"
+              {...form.getInputProps("whitenessReadingAverage.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Chalky (%)"
+              description="Range From"
+              placeholder="0"
+              {...form.getInputProps("chalkyPercentage.rangeFrom")}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="2%"
+              {...form.getInputProps("chalkyPercentage.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              hideControls
+              label="Damaged and Discolored (%)"
+              description="Range From"
+              placeholder="0"
+              {...form.getInputProps(
+                "damagedAndDiscoloredPercentage.rangeFrom"
+              )}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label=" "
+              hideControls
+              description="Range To"
+              placeholder="2%"
+              {...form.getInputProps("damagedAndDiscoloredPercentage.rangeTo")}
+            />
+          </Grid.Col>
+        </Grid>
+      </div>
 
       <Space h="md" />
       <div

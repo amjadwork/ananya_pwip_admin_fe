@@ -92,6 +92,7 @@ const RenderModalContent = (props: any) => {
   const containerType = props.containerType;
   const handlePictureChange = props.handlePictureChange;
   const handleRiceProfilePatch = props.handleRiceProfilePatch;
+  const handleRiceProfilePost = props.handleRiceProfilePost;
 
   let regionCostingList: any = [];
 
@@ -113,6 +114,7 @@ const RenderModalContent = (props: any) => {
       categoryData={categoryData}
       handleSaveCallback={handleSaveCallback}
       handleRiceProfilePatch={handleRiceProfilePatch}
+      handleRiceProfilePost={handleRiceProfilePost}
       regionCostingList={regionCostingList}
       variantsData={variantsData}
       updateFormData={updateFormData}
@@ -162,7 +164,6 @@ function ManageProductsContainer(props: any) {
       };
       params = `/${payload._variantId}`;
     }
-
     let endpoint = "variant";
 
     if (params) {
@@ -176,31 +177,42 @@ function ManageProductsContainer(props: any) {
     );
 
     if (addVariantResponse) {
+      if (modalType === "add") {
+        const postRiceProfilePayload = {
+          ...payload,
+          variantId: addVariantResponse._id,
+        };
+        handleRiceProfilePost(postRiceProfilePayload);
+      }
       handleRefreshCalls();
     }
   };
 
-    const handleRiceProfilePatch = async (payload: any) => {
-      let params = "";
-      params = `/${payload._id}`;
-      console.log(payload, "payload inside container")
-      
-      let endpoint = "service/rice-price/variant-profiles";
+  const handleRiceProfilePatch = async (payload: any) => {
+    let params = "";
+    params = `/${payload._id}`;
+    let endpoint = "service/rice-price/variant-profiles";
 
-      if (params) {
-        endpoint = "service/rice-price/variant-profiles" + params;
-      }
+    if (params) {
+      endpoint = "service/rice-price/variant-profiles" + params;
+    }
 
-      const addVariantResponse = await APIRequest(
-        endpoint, "PATCH",
-        payload
-      );
+    const addVariantResponse = await APIRequest(endpoint, "PATCH", payload);
 
-      if (addVariantResponse) {
-        handleRefreshCalls();
-      }
-    };
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
+  };
 
+  const handleRiceProfilePost = async (payload: any) => {
+    let endpoint = "service/rice-price/variant-profiles";
+
+    const postRiceProfileResponse = await APIRequest(endpoint, "POST", payload);
+
+    if (postRiceProfileResponse) {
+      handleRefreshCalls();
+    }
+  };
 
   const handleDeleteVariant = async (data: any) => {
     const deleteVariantResponse = await APIRequest(
@@ -390,6 +402,7 @@ function ManageProductsContainer(props: any) {
             containerType={containerType}
             handlePictureChange={handlePictureChange}
             handleRiceProfilePatch={handleRiceProfilePatch}
+            handleRiceProfilePost={handleRiceProfilePost}
           />
         );
       }}
@@ -422,7 +435,6 @@ function ManageProductsContainer(props: any) {
         ]}
         onEditRow={(row: any, index: any) => {
           let obj = { ...row };
-          console.log(obj, "obj")
 
           setSelectedTableRowIndex(index);
           const formObj = {
