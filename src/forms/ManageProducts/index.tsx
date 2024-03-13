@@ -39,38 +39,38 @@ const initialFormValues: any = {
   grainType: "",
   grainColour: "",
   grainLength: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   grainWidth: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   whitenessReadingAverage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   moisturePercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   chalkyPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   damagedAndDiscoloredPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
@@ -87,38 +87,38 @@ const requiredRiceProfilePayload = {
   grainType: "",
   grainColour: "",
   grainLength: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   grainWidth: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   whitenessReadingAverage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   moisturePercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   chalkyPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
   damagedAndDiscoloredPercentage: {
-    rangeFrom: 0,
-    rangeTo: 0,
+    rangeFrom: null,
+    rangeTo: null,
     note: "",
     unit: "mm",
   },
@@ -589,6 +589,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Grain Length (mm)"
                 description="Range From"
                 placeholder="8.3 mm"
@@ -599,6 +600,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="8.7 mm"
                 {...form.getInputProps("grainLength.rangeTo")}
@@ -609,6 +611,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Grain Width (mm)"
                 description="Range From"
                 placeholder="1.7 mm"
@@ -619,6 +622,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="1.8 mm"
                 {...form.getInputProps("grainWidth.rangeTo")}
@@ -629,6 +633,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Moisture (%)"
                 description="Range From"
                 placeholder="0"
@@ -639,6 +644,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps("moisturePercentage.rangeTo")}
@@ -649,6 +655,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Whiteness Reading (%)"
                 description="Range From"
                 placeholder="27%"
@@ -659,6 +666,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="28%"
                 {...form.getInputProps("whitenessReadingAverage.rangeTo")}
@@ -669,6 +677,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Chalky (%)"
                 description="Range From"
                 placeholder="0"
@@ -679,6 +688,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps("chalkyPercentage.rangeTo")}
@@ -689,6 +699,7 @@ function AddOrEditProductForm(props: any) {
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
+                precision={2}
                 label="Damaged and Discolored (%)"
                 description="Range From"
                 placeholder="0"
@@ -701,6 +712,7 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 label=" "
                 hideControls
+                precision={2}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps(
