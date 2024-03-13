@@ -128,6 +128,7 @@ const requiredVariantPayload = {
   _categoryId: "",
   variantName: "",
   HSNCode: "",
+  brokenPercentage: "",
   tags: "",
   images: [],
   sourceRates: [
@@ -338,11 +339,6 @@ function AddOrEditProductForm(props: any) {
     const riceProfileFormValues = intersectObjects(
       requiredRiceProfilePayload,
       formValues
-    );
-
-    const variantPayload = getChangedPropertiesFromObject(
-      variantObject,
-      variantFormValues
     );
 
     const riceProfilePayload = getChangedPropertiesFromObject(

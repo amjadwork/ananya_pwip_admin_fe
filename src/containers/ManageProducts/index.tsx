@@ -178,10 +178,19 @@ function ManageProductsContainer(props: any) {
 
     if (addVariantResponse) {
       if (modalType === "add") {
-        const postRiceProfilePayload = {
-          ...payload,
-          variantId: addVariantResponse._id,
-        };
+        for (const key in addVariantResponse) {
+          delete payload[key];
+        }
+       const postRiceProfilePayload = {
+         ...payload,
+         brokenPercentage: {
+           rangeFrom: 0,
+           rangeTo: addVariantResponse?.brokenPercentage || 0,
+           note: "",
+           unit: "%",
+         },
+         variantId: addVariantResponse._id,
+       };
         handleRiceProfilePost(postRiceProfilePayload);
       }
       handleRefreshCalls();
@@ -441,7 +450,7 @@ function ManageProductsContainer(props: any) {
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
-            brokenPercentage:obj.brokenPercentage,
+            brokenPercentage: obj.brokenPercentage,
             HSNCode: obj.HSNCode,
             tags: obj.tags,
             images: obj.images,
