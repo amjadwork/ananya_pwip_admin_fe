@@ -23,23 +23,66 @@ import {
   uploadingMultipleImagesToS3,
   uploadImageToS3,
 } from "../../helper/helper";
-// testing
+import { getVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const initialFormValues: any = {
   _categoryId: "",
   variantName: "",
   HSNCode: "",
-  brokenPercentage: "",
-  variantColor: "",
-  variantType: "",
-  variantSize: "",
-  moisturePercentage: "",
-  chalkyPercentage: "",
-  damagedPercentage: "",
-  variantWhiteness: "",
   tags: "",
   images: [],
   imagesArray: [],
+  grainType: "",
+  grainColour: "",
+  grainLength: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  grainWidth: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  whitenessReadingAverage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  moisturePercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  chalkyPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  brokenPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
+  damagedAndDiscoloredPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+    key: randomId(),
+  },
   sourceRates: [
     {
       _sourceId: "",
@@ -80,6 +123,8 @@ function AddOrEditProductForm(props: any) {
     { value: "paraboiled", label: "Paraboiled" },
   ];
 
+  
+
   useEffect(() => {
     const filled = form.values.variantName && form.values._categoryId;
     setRequiredFieldsFilled(!!filled);
@@ -91,6 +136,36 @@ function AddOrEditProductForm(props: any) {
     form.setFieldValue("images", updatedImages);
     setUpdateFormImages([...updatedImages]);
   };
+
+  const handleGetVariantProfileData = async () => {
+    const response = await getVariantProfileData();
+    if (response) {
+      console.log("response", response);
+      const matchingVariant = response.find(
+        (variant: any) => variant.variantId === updateFormData._variantId
+      );
+      if (matchingVariant) {
+        form.setValues({
+          grainType: matchingVariant.grainType || "",
+          grainColour: matchingVariant.grainColour || "",
+          grainLength: matchingVariant.grainLength || {},
+          grainWidth: matchingVariant.grainWidth || {},
+          brokenPercentage: matchingVariant.brokenPercentage || {},
+          moisturePercentage: matchingVariant.moisturePercentage || {},
+          whitenessReadingAverage:
+            matchingVariant.whitenessReadingAverage || {},
+          damagedAndDiscoloredPercentage:
+            matchingVariant.damagedAndDiscoloredPercentage || {},
+          chalkyPercentage: matchingVariant.chalkyPercentage || {},
+        });
+      }
+    }
+  };
+
+  console.log(form.values, "foem");
+  useEffect(() => {});
+
+  console.log("updatedFormDate", updateFormData);
 
   const handlePictureInputChange = (e: any) => {
     const variant = form.values.variantName
@@ -145,6 +220,7 @@ function AddOrEditProductForm(props: any) {
   useEffect(() => {
     if (updateFormData && modalType === "update") {
       form.setValues(updateFormData);
+      handleGetVariantProfileData();
 
       const images = updateFormData.images || [];
       setUpdateFormImages([...images]);
@@ -370,7 +446,7 @@ function AddOrEditProductForm(props: any) {
         </Grid.Col>
 
         <Space h="md" />
-        <Grid.Col span={8}>
+        <Grid.Col span={12}>
           <TextInput
             required
             label="Variant Name"
@@ -379,97 +455,201 @@ function AddOrEditProductForm(props: any) {
           />
         </Grid.Col>
         <Space h="md" />
-        <Grid.Col span={4}>
+        <Grid.Col span={12}>
           <TextInput
             label="HSN Code"
             placeholder="eg. CSQ212"
             {...form.getInputProps("HSNCode")}
           />
         </Grid.Col>
-
-        <Space h="md" />
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Broken %"
-            placeholder="5%"
-            {...form.getInputProps("brokenPercentage")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <TextInput
-            min={0}
-            label="Color"
-            placeholder="Off-white"
-            {...form.getInputProps("variantColor")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <TextInput
-            min={0}
-            label="Type"
-            placeholder="Medium Grain"
-            {...form.getInputProps("variantType")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Grain Length"
-            placeholder="5.7"
-            {...form.getInputProps("variantSize")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Moisture %"
-            placeholder="13%"
-            {...form.getInputProps("moisturePercentage")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Chalky %"
-            placeholder="5.4%"
-            {...form.getInputProps("chalkyPercentage")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Damaged and Discolored %"
-            placeholder="1.05%"
-            {...form.getInputProps("damagedPercentage")}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <NumberInput
-            min={0}
-            precision={2}
-            hideControls
-            label="Whiteness (avg)"
-            placeholder="39.4"
-            {...form.getInputProps("variantWhiteness")}
-          />
-        </Grid.Col>
       </Grid>
       <Space h="md" />
 
-      <label htmlFor="imageUpload">Image Upload</label>
-      <Space h="sm" />
-      <Grid>{combinedFileInputs}</Grid>
+      {modalType === "update" && (
+        <>
+          <div
+            style={{
+              backgroundColor: "#F5F5F5",
+              padding: "10px",
+              fontWeight: "600",
+            }}
+          >
+            Variant Properties
+            <Space h="sm" />
+            <Grid>
+              <Grid.Col span={6}>
+                <TextInput
+                  label="Grain Color"
+                  placeholder="white"
+                  {...form.getInputProps("grainColour")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <TextInput
+                  label="Grain Type"
+                  placeholder="long grain"
+                  {...form.getInputProps("grainType")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Grain Length (mm)"
+                  description="Range From"
+                  placeholder="8.3 mm"
+                  {...form.getInputProps("grainLength.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="8.7 mm"
+                  {...form.getInputProps("grainLength.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Grain Width (mm)"
+                  description="Range From"
+                  placeholder="1.7 mm"
+                  {...form.getInputProps("grainWidth.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="1.8 mm"
+                  {...form.getInputProps("grainWidth.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Broken Percentage (%)"
+                  description="Range From"
+                  placeholder="0"
+                  {...form.getInputProps("brokenPercentage.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="2%"
+                  {...form.getInputProps("brokenPercentage.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Moisture (%)"
+                  description="Range From"
+                  placeholder="0"
+                  {...form.getInputProps("moisturePercentage.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="2%"
+                  {...form.getInputProps("moisturePercentage.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Whiteness Reading (%)"
+                  description="Range From"
+                  placeholder="27%"
+                  {...form.getInputProps("whitenessReadingAverage.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="28%"
+                  {...form.getInputProps("whitenessReadingAverage.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Chalky (%)"
+                  description="Range From"
+                  placeholder="0"
+                  {...form.getInputProps("chalkyPercentage.rangeFrom")}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="2%"
+                  {...form.getInputProps("chalkyPercentage.rangeTo")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <NumberInput
+                  hideControls
+                  label="Damaged and Discolored (%)"
+                  description="Range From"
+                  placeholder="0"
+                  {...form.getInputProps(
+                    "damagedAndDiscoloredPercentage.rangeFrom"
+                  )}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <NumberInput
+                  label=" "
+                  hideControls
+                  description="Range To"
+                  placeholder="2%"
+                  {...form.getInputProps(
+                    "damagedAndDiscoloredPercentage.rangeTo"
+                  )}
+                />
+              </Grid.Col>
+            </Grid>
+          </div>
+        </>
+      )}
+
+      <Space h="md" />
+      <div
+        style={{
+          backgroundColor: "#F5F5F5",
+          padding: "10px",
+          fontWeight: "600",
+        }}
+      >
+        Variant Images
+        <Space h="sm" />
+        <Grid>{combinedFileInputs}</Grid>
+      </div>
 
       <Space h="md" />
       {fields}

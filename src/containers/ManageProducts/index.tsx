@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -334,6 +333,8 @@ function ManageProductsContainer(props: any) {
     }
   }, [variantsData, categoryData]);
 
+  console.log("variantData", variantsData)
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -406,8 +407,8 @@ function ManageProductsContainer(props: any) {
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
-            variantColor: obj.variantColor,
-            variantType: obj.variantType,
+            grainColor: obj.grainColour,
+            grainType: obj.graintType,
             variantSize: obj.variantSize,
             moisturePercentage: obj.moisturePercentage,
             chalkyPercentage: obj.chalkyPercentage,
