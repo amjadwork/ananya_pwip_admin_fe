@@ -91,6 +91,7 @@ const RenderModalContent = (props: any) => {
   const modalOpen = props.modalOpen;
   const containerType = props.containerType;
   const handlePictureChange = props.handlePictureChange;
+  const handleRiceProfilePatch = props.handleRiceProfilePatch;
 
   let regionCostingList: any = [];
 
@@ -111,6 +112,7 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       categoryData={categoryData}
       handleSaveCallback={handleSaveCallback}
+      handleRiceProfilePatch={handleRiceProfilePatch}
       regionCostingList={regionCostingList}
       variantsData={variantsData}
       updateFormData={updateFormData}
@@ -177,6 +179,28 @@ function ManageProductsContainer(props: any) {
       handleRefreshCalls();
     }
   };
+
+    const handleRiceProfilePatch = async (payload: any) => {
+      let params = "";
+      params = `/${payload._id}`;
+      console.log(payload, "payload inside container")
+      
+      let endpoint = "service/rice-price/variant-profiles";
+
+      if (params) {
+        endpoint = "service/rice-price/variant-profiles" + params;
+      }
+
+      const addVariantResponse = await APIRequest(
+        endpoint, "PATCH",
+        payload
+      );
+
+      if (addVariantResponse) {
+        handleRefreshCalls();
+      }
+    };
+
 
   const handleDeleteVariant = async (data: any) => {
     const deleteVariantResponse = await APIRequest(
@@ -365,6 +389,7 @@ function ManageProductsContainer(props: any) {
             modalOpen={modalOpen}
             containerType={containerType}
             handlePictureChange={handlePictureChange}
+            handleRiceProfilePatch={handleRiceProfilePatch}
           />
         );
       }}
@@ -397,6 +422,7 @@ function ManageProductsContainer(props: any) {
         ]}
         onEditRow={(row: any, index: any) => {
           let obj = { ...row };
+          console.log(obj, "obj")
 
           setSelectedTableRowIndex(index);
           const formObj = {

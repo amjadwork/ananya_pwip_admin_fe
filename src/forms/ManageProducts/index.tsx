@@ -22,8 +22,10 @@ import {
   updateIndividualVariantSourceRate,
   uploadingMultipleImagesToS3,
   uploadImageToS3,
+  getChangedPropertiesFromObject,
+  intersectObjects,
 } from "../../helper/helper";
-import { getVariantProfileData } from "../../services/rice-price/variant-profile";
+import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const initialFormValues: any = {
   _categoryId: "",
@@ -39,50 +41,105 @@ const initialFormValues: any = {
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   grainWidth: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   whitenessReadingAverage: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   moisturePercentage: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   chalkyPercentage: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   brokenPercentage: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
   damagedAndDiscoloredPercentage: {
     rangeFrom: 0,
     rangeTo: 0,
     note: "",
     unit: "mm",
-    key: randomId(),
   },
+  sourceRates: [
+    {
+      _sourceId: "",
+      price: "",
+    },
+  ],
+  updateSourceRates: false,
+};
+
+const requiredRiceProfilePayload = {
+  grainType: "",
+  grainColour: "",
+  grainLength: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  grainWidth: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  whitenessReadingAverage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  moisturePercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  chalkyPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  brokenPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+  damagedAndDiscoloredPercentage: {
+    rangeFrom: 0,
+    rangeTo: 0,
+    note: "",
+    unit: "mm",
+  },
+};
+
+const requiredVariantPayload = {
+  _categoryId: "",
+  variantName: "",
+  HSNCode: "",
+  tags: "",
+  images: [],
   sourceRates: [
     {
       _sourceId: "",
@@ -101,11 +158,15 @@ function AddOrEditProductForm(props: any) {
   const modalType = props.modalType || "add";
   const modalOpen = props.modalOpen || false;
   const handlePictureChange = props.handlePictureChange;
+  const handleRiceProfilePatch = props.handleRiceProfilePatch;
 
   const [regionOptions, setRegionOptions] = useState<any>([]);
   const [updateFormImages, setUpdateFormImages] = useState<string[]>([]);
   const [isBasmatiCategory, setIsBasmatiCategory] = useState<boolean>(false);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false); // Track if required fields are filled
+  const [variantObject, setVariantObject] = useState<any>([]);
+  const [riceProfileObject, setRiceProfileObject] = useState<any>([]);
+  const [riceProfileObjID, setRiceProfileObjID] = useState<any>(null);
 
   const form = useForm({
     clearInputErrorOnChange: true,
@@ -123,8 +184,6 @@ function AddOrEditProductForm(props: any) {
     { value: "paraboiled", label: "Paraboiled" },
   ];
 
-  
-
   useEffect(() => {
     const filled = form.values.variantName && form.values._categoryId;
     setRequiredFieldsFilled(!!filled);
@@ -138,12 +197,17 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleGetVariantProfileData = async () => {
-    const response = await getVariantProfileData();
+    const response = await getSpecificVariantProfileData(
+      updateFormData._variantId
+    );
+    console.log(response, "here here")
     if (response) {
-      console.log("response", response);
       const matchingVariant = response.find(
         (variant: any) => variant.variantId === updateFormData._variantId
       );
+      setRiceProfileObject(matchingVariant || []);
+      setRiceProfileObjID(matchingVariant._id) 
+      console.log(matchingVariant, "matcing variant");
       if (matchingVariant) {
         form.setValues({
           grainType: matchingVariant.grainType || "",
@@ -219,6 +283,7 @@ function AddOrEditProductForm(props: any) {
 
   useEffect(() => {
     if (updateFormData && modalType === "update") {
+      setVariantObject(updateFormData);
       form.setValues(updateFormData);
       handleGetVariantProfileData();
 
@@ -333,9 +398,44 @@ function AddOrEditProductForm(props: any) {
           sourceID
         );
       }
-      handleCloseModal(true);
+
+      const variantFormValues = intersectObjects(
+        requiredVariantPayload,
+        formValues
+      );
+      const riceProfileFormValues = intersectObjects(
+        requiredRiceProfilePayload,
+        formValues
+      );
+
+      const variantPayload = getChangedPropertiesFromObject(
+        variantObject,
+        variantFormValues
+      );
+
+      const riceProfilePayload = getChangedPropertiesFromObject(
+        riceProfileObject,
+        riceProfileFormValues
+      );
+
+      // if (Object.keys(variantPayload).length > 0) {
+      //   const payload = {
+      //     ...variantPayload,
+      //     user_id: formValues.user_id,
+      //   };
+      //   handleSaveCallback(payload);
+      // }
+      if (Object.keys(riceProfilePayload).length > 0) {
+        const payload = {
+          ...riceProfilePayload,
+          _id: riceProfileObjID,
+        };
+        console.log("payload here here", payload )
+        handleRiceProfilePatch(payload);
+      }
+      handleCloseModal(false);
       //variant common fields update
-      handleSaveCallback(payloadCommonVariantDetails);
+      // handleSaveCallback(payloadCommonVariantDetails);
     }
   };
 

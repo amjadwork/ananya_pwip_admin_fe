@@ -7,3 +7,13 @@ export const getVariantProfileData = async () => {
   );
   return response;
 };
+
+
+export const getSpecificVariantProfileData = async (id:any) => {
+  const response: any = await APIRequest(
+    `service/rice-price/variant-profiles?variantId=${id}` ,
+    "GET"
+  );
+  return response;
+};
+
