@@ -333,8 +333,6 @@ function ManageProductsContainer(props: any) {
     }
   }, [variantsData, categoryData]);
 
-  console.log("variantData", variantsData)
-
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -406,14 +404,6 @@ function ManageProductsContainer(props: any) {
             _variantId: obj._variantId,
             variantName: obj.variantName,
             HSNCode: obj.HSNCode,
-            brokenPercentage: obj.brokenPercentage,
-            grainColor: obj.grainColour,
-            grainType: obj.graintType,
-            variantSize: obj.variantSize,
-            moisturePercentage: obj.moisturePercentage,
-            chalkyPercentage: obj.chalkyPercentage,
-            damagedPercentage: obj.damagedPercentage,
-            variantWhiteness: obj.variantWhiteness,
             tags: obj.tags,
             images: obj.images,
             sourceRates: [
