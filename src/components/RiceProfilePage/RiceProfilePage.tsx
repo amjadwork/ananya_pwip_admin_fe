@@ -13,11 +13,11 @@ import { DateRangePicker } from "@mantine/dates";
 import APIRequest from "../../helper/api";
 import { eximColumn } from "../../constants/eximColumn.constants";
 import { dummyEximData } from "../../constants/dummyEximData.constants";
-import ReactTable from "../../components/ReactTable/ReactTable";
+import ReactTable from "../ReactTable/ReactTable";
 import { camelCaseToTitleCase } from "../../helper/helper";
 import moment from "moment";
 
-const LineChartModal = (props: any) => {
+const RiceProfilePage = (props: any) => {
   const variantsData = props.variantsData;
   const variantProperties = props.variantProperties;
   const [graphData, setGraphData] = useState<any>([]);
@@ -394,4 +394,4 @@ const LineChartModal = (props: any) => {
   );
 };
 
-export default LineChartModal;
+export default RiceProfilePage;

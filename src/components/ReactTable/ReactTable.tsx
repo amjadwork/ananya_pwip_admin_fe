@@ -56,7 +56,7 @@ const ReactTable: React.FC<{
   data: any[];
   onEditRow?: (row: any, index: any) => void;
   onDeleteRow?: (row: any) => void;
-  handleLineChart?: (row: any) => void;
+  handleRiceProfile?: (row: any) => void;
   actionButtons: {
     label: string;
     onClickAction: (row: any) => void;
@@ -68,7 +68,7 @@ const ReactTable: React.FC<{
   data,
   onEditRow,
   onDeleteRow,
-  handleLineChart,
+  handleRiceProfile,
   actionButtons,
 }) => {
   const defaultColumn = useMemo(() => {
@@ -561,7 +561,7 @@ const ReactTable: React.FC<{
                                       : "auto",
                                 }}
                               >
-                                {handleLineChart &&
+                                {handleRiceProfile &&
                                   (row.original.active === 0 ? (
                                     <ActionIcon
                                       variant="outline"
@@ -574,7 +574,7 @@ const ReactTable: React.FC<{
                                     <ActionIcon
                                       variant="default"
                                       onClick={() =>
-                                        handleLineChart(row.original)
+                                        handleRiceProfile(row.original)
                                       }
                                       style={{ marginRight: "6px" }}
                                     >

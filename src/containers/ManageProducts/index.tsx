@@ -7,7 +7,7 @@ import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
-import LineChartModal from "../../components/LineChartModal/LineChartModal";
+import RiceProfilePage from "../../components/RiceProfilePage/RiceProfilePage";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
 import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
@@ -103,9 +103,9 @@ const RenderModalContent = (props: any) => {
     return <SheetUpload containerType={containerType} />;
   }
 
-  if (modalType === "line-chart") {
+  if (modalType === "rice-profile-page") {
     return (
-      <LineChartModal
+      <RiceProfilePage
         variantsData={variantsData}
         variantProperties={variantProperties}
       />
@@ -163,7 +163,7 @@ function ManageProductsContainer(props: any) {
     if (response) {
       setSelectedVariantProperties(response[0]);
     }
-    setModalType("line-chart");
+    setModalType("rice-profile-page");
     setModalOpen(true);
   };
 
@@ -407,7 +407,7 @@ function ManageProductsContainer(props: any) {
           ? "Add Product Variant"
           : modalType === "upload"
             ? "Update Or Add Data by Excel Sheet"
-            : modalType === "line-chart"
+            : modalType === "rice-profile-page"
               ? ""
               : "Update Variant Price and Source Location"
       }
@@ -436,7 +436,7 @@ function ManageProductsContainer(props: any) {
         );
       }}
       modalSize="70%"
-      isVariantProfile={modalType === "line-chart" ? true : false}
+      isVariantProfile={modalType === "rice-profile-page" ? true : false}
     >
       <Space h="sm" />
       <ReactTable
@@ -489,7 +489,7 @@ function ManageProductsContainer(props: any) {
         onDeleteRow={(rowData: any) => {
           openDeleteModal(rowData);
         }}
-        handleLineChart={(row: any) => {
+        handleRiceProfile={(row: any) => {
           handleGetVariantProfileData(row._variantId);
           setSelectedVariantData(row);
         }}
