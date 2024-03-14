@@ -54,25 +54,25 @@ const initialFormValues: any = {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   moisturePercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   chalkyPercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   damagedAndDiscoloredPercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   sourceRates: [
     {
@@ -102,25 +102,25 @@ const requiredRiceProfilePayload = {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   moisturePercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   chalkyPercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
   damagedAndDiscoloredPercentage: {
     rangeFrom: null,
     rangeTo: null,
     note: "",
-    unit: "mm",
+    unit: "%",
   },
 };
 
