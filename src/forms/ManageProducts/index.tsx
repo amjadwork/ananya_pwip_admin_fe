@@ -552,8 +552,12 @@ function AddOrEditProductForm(props: any) {
           </Grid.Col>
           <Space h="sm" />
           <Grid.Col span={6}>
-            <TextInput
+            <NumberInput
               label="Broken Percentage (%)"
+              hideControls
+              precision={2}
+              min={0}
+              max={100}
               placeholder="5%"
               {...form.getInputProps("brokenPercentage")}
             />
@@ -590,6 +594,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Grain Length (mm)"
                 description="Range From"
                 placeholder="8.3 mm"
@@ -601,6 +607,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="8.7 mm"
                 {...form.getInputProps("grainLength.rangeTo")}
@@ -612,6 +620,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Grain Width (mm)"
                 description="Range From"
                 placeholder="1.7 mm"
@@ -623,6 +633,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="1.8 mm"
                 {...form.getInputProps("grainWidth.rangeTo")}
@@ -634,6 +646,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Moisture (%)"
                 description="Range From"
                 placeholder="0"
@@ -645,6 +659,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps("moisturePercentage.rangeTo")}
@@ -656,6 +672,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Whiteness Reading (%)"
                 description="Range From"
                 placeholder="27%"
@@ -667,6 +685,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="28%"
                 {...form.getInputProps("whitenessReadingAverage.rangeTo")}
@@ -678,6 +698,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Chalky (%)"
                 description="Range From"
                 placeholder="0"
@@ -689,6 +711,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps("chalkyPercentage.rangeTo")}
@@ -700,6 +724,8 @@ function AddOrEditProductForm(props: any) {
               <NumberInput
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 label="Damaged and Discolored (%)"
                 description="Range From"
                 placeholder="0"
@@ -713,6 +739,8 @@ function AddOrEditProductForm(props: any) {
                 label=" "
                 hideControls
                 precision={2}
+                min={0}
+                max={100}
                 description="Range To"
                 placeholder="2%"
                 {...form.getInputProps(
