@@ -302,10 +302,28 @@ function ManageProductsContainer(props: any) {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the variant record for{" "}
-          {rowData.variantName || null} from {rowData._sourceId || null}? This
-          action is destructive and you will have to contact support to restore
-          your data.
+          Are you sure you want to delete the variant record{" "}
+          <span
+            style={{
+              fontSize: "14px",
+              fontWeight: "600",
+              textDecorationLine: "underline",
+            }}
+          >
+            {rowData.variantName || null}
+          </span>{" "}
+          ?
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "red",
+              marginTop: "10px",
+            }}
+          >
+            This action is destructive and you will have to contact support to
+            restore your data.
+          </div>
         </Text>
       ),
       labels: { confirm: "Delete variant", cancel: "No don't delete it" },
@@ -403,13 +421,36 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add"
-          ? "Add Product Variant"
-          : modalType === "upload"
-            ? "Update Or Add Data by Excel Sheet"
-            : modalType === "rice-profile-page"
-              ? ""
-              : "Update Variant Price and Source Location"
+        modalType === "add" ? (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Add New Variant Details
+          </span>
+        ) : modalType === "upload" ? (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Update Or Add Data by Excel Sheet
+          </span>
+        ) : modalType === "rice-profile-page" ? (
+          ""
+        ) : (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Update Variant Details
+          </span>
+        )
       }
       onModalClose={() => {
         setModalOpen(false);
