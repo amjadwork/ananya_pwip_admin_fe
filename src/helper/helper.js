@@ -157,3 +157,12 @@ export const uploadImageToS3 = async (url, file) => {
     throw error;
   }
 };
+
+export function camelCaseToTitleCase(str) {
+  // If the string is empty, return an empty string
+  if (!str) return "";
+  // Add space before the uppercase letters preceded by a lowercase letter
+  const titleCaseStr = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+  // Capitalize the first letter of each word
+  return titleCaseStr.replace(/\b\w/g, (char) => char.toUpperCase());
+}
