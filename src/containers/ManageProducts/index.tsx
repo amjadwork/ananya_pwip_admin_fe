@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -92,6 +91,8 @@ const RenderModalContent = (props: any) => {
   const modalOpen = props.modalOpen;
   const containerType = props.containerType;
   const handlePictureChange = props.handlePictureChange;
+  const handleRiceProfilePatch = props.handleRiceProfilePatch;
+  const handleRiceProfilePost = props.handleRiceProfilePost;
 
   let regionCostingList: any = [];
 
@@ -112,6 +113,8 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       categoryData={categoryData}
       handleSaveCallback={handleSaveCallback}
+      handleRiceProfilePatch={handleRiceProfilePatch}
+      handleRiceProfilePost={handleRiceProfilePost}
       regionCostingList={regionCostingList}
       variantsData={variantsData}
       updateFormData={updateFormData}
@@ -161,7 +164,6 @@ function ManageProductsContainer(props: any) {
       };
       params = `/${payload._variantId}`;
     }
-
     let endpoint = "variant";
 
     if (params) {
@@ -175,6 +177,48 @@ function ManageProductsContainer(props: any) {
     );
 
     if (addVariantResponse) {
+      if (modalType === "add") {
+        for (const key in addVariantResponse) {
+          delete payload[key];
+        }
+       const postRiceProfilePayload = {
+         ...payload,
+         brokenPercentage: {
+           rangeFrom: 0,
+           rangeTo: addVariantResponse?.brokenPercentage || 0,
+           note: "",
+           unit: "%",
+         },
+         variantId: addVariantResponse._id,
+       };
+        handleRiceProfilePost(postRiceProfilePayload);
+      }
+      handleRefreshCalls();
+    }
+  };
+
+  const handleRiceProfilePatch = async (payload: any) => {
+    let params = "";
+    params = `/${payload._id}`;
+    let endpoint = "service/rice-price/variant-profiles";
+
+    if (params) {
+      endpoint = "service/rice-price/variant-profiles" + params;
+    }
+
+    const addVariantResponse = await APIRequest(endpoint, "PATCH", payload);
+
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
+  };
+
+  const handleRiceProfilePost = async (payload: any) => {
+    let endpoint = "service/rice-price/variant-profiles";
+
+    const postRiceProfileResponse = await APIRequest(endpoint, "POST", payload);
+
+    if (postRiceProfileResponse) {
       handleRefreshCalls();
     }
   };
@@ -366,6 +410,8 @@ function ManageProductsContainer(props: any) {
             modalOpen={modalOpen}
             containerType={containerType}
             handlePictureChange={handlePictureChange}
+            handleRiceProfilePatch={handleRiceProfilePatch}
+            handleRiceProfilePost={handleRiceProfilePost}
           />
         );
       }}
@@ -404,8 +450,8 @@ function ManageProductsContainer(props: any) {
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
-            HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
+            HSNCode: obj.HSNCode,
             tags: obj.tags,
             images: obj.images,
             sourceRates: [
