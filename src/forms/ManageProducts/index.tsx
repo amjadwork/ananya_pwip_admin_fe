@@ -41,37 +41,37 @@ const initialFormValues: any = {
   grainLength: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "mm",
   },
   grainWidth: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "mm",
   },
   whitenessReadingAverage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   moisturePercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   chalkyPercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   damagedAndDiscoloredPercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   sourceRates: [
@@ -89,37 +89,37 @@ const requiredRiceProfilePayload = {
   grainLength: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "mm",
   },
   grainWidth: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "mm",
   },
   whitenessReadingAverage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   moisturePercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   chalkyPercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
   damagedAndDiscoloredPercentage: {
     rangeFrom: null,
     rangeTo: null,
-    note: "",
+    notes: "",
     unit: "%",
   },
 };
@@ -695,7 +695,7 @@ function AddOrEditProductForm(props: any) {
                 label="Chalky (%)"
                 autosize
                 description="Notes"
-                {...form.getInputProps("chalkyPercentage.note")}
+                {...form.getInputProps("chalkyPercentage.notes")}
               />
             </Grid.Col>
             <Grid.Col span={6}>

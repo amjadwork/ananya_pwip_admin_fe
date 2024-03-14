@@ -48,11 +48,22 @@ const LineChartModal = (props: any) => {
           value: camelCaseToTitleCase(variantProperties[key]) || " N/A",
         };
       } else {
-        const { rangeFrom, rangeTo, unit } = variantProperties[key];
+        const { rangeFrom, rangeTo, unit, notes } = variantProperties[key];
+        let value;
+        if (key === "chalkyPercentage") {
+          value =
+            rangeFrom || rangeTo
+              ? `${rangeFrom}-${rangeTo} ${unit}`
+              : notes
+                ? `${notes}`
+                : "N/A";
+        } else {
+          value =
+            rangeFrom || rangeTo ? `${rangeFrom}-${rangeTo} ${unit}` : "N/A";
+        }
         return {
           name: camelCaseToTitleCase(key),
-          value:
-            rangeTo || rangeFrom ? `${rangeFrom}-${rangeTo} ${unit}` : "N/A",
+          value,
         };
       }
     });
