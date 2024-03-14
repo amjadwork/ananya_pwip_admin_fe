@@ -9,6 +9,7 @@ import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import LineChartModal from "../../components/LineChartModal/LineChartModal";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
+import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const columns = [
   {
@@ -93,6 +94,8 @@ const RenderModalContent = (props: any) => {
   const handlePictureChange = props.handlePictureChange;
   const handleRiceProfilePatch = props.handleRiceProfilePatch;
   const handleRiceProfilePost = props.handleRiceProfilePost;
+  const variantProperties = props.variantProperties;
+  console.log(variantProperties, "inside render");
 
   let regionCostingList: any = [];
 
@@ -101,7 +104,12 @@ const RenderModalContent = (props: any) => {
   }
 
   if (modalType === "line-chart") {
-    return <LineChartModal variantsData={variantsData} />;
+    return (
+      <LineChartModal
+        variantsData={variantsData}
+        variantProperties={variantProperties}
+      />
+    );
   }
 
   if (variantsData) {
@@ -137,6 +145,8 @@ function ManageProductsContainer(props: any) {
     React.useState<any>(null);
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
+  const [selectedVariantProperties, setSelectedVariantProperties] =
+    React.useState<any>(null);
   const containerType: any = "variant";
 
   const handleSaveCallback = (payload: any) => {
@@ -147,6 +157,15 @@ function ManageProductsContainer(props: any) {
   useEffect(() => {
     handleGetProductData();
   }, []);
+
+  const handleGetVariantProfileData = async (id: any) => {
+    const response = await getSpecificVariantProfileData(id);
+    if (response) {
+      setSelectedVariantProperties(response[0]);
+    }
+    setModalType("line-chart");
+    setModalOpen(true);
+  };
 
   const handleSave = async (payload: any) => {
     let variantPayload = { ...payload, _productId: productId };
@@ -181,16 +200,16 @@ function ManageProductsContainer(props: any) {
         for (const key in addVariantResponse) {
           delete payload[key];
         }
-       const postRiceProfilePayload = {
-         ...payload,
-         brokenPercentage: {
-           rangeFrom: 0,
-           rangeTo: addVariantResponse?.brokenPercentage || 0,
-           note: "",
-           unit: "%",
-         },
-         variantId: addVariantResponse._id,
-       };
+        const postRiceProfilePayload = {
+          ...payload,
+          brokenPercentage: {
+            rangeFrom: 0,
+            rangeTo: addVariantResponse?.brokenPercentage || 0,
+            note: "",
+            unit: "%",
+          },
+          variantId: addVariantResponse._id,
+        };
         handleRiceProfilePost(postRiceProfilePayload);
       }
       handleRefreshCalls();
@@ -405,6 +424,7 @@ function ManageProductsContainer(props: any) {
             categoryData={categoryData}
             handleSaveCallback={handleSaveCallback}
             variantsData={selectedVariantData}
+            variantProperties={selectedVariantProperties}
             updateFormData={updateFormData}
             modalType={modalType}
             modalOpen={modalOpen}
@@ -470,9 +490,8 @@ function ManageProductsContainer(props: any) {
           openDeleteModal(rowData);
         }}
         handleLineChart={(row: any) => {
-          setModalType("line-chart");
+          handleGetVariantProfileData(row._variantId);
           setSelectedVariantData(row);
-          setModalOpen(true);
         }}
       />
     </PageWrapper>
