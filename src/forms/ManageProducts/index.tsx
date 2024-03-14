@@ -10,7 +10,7 @@ import {
   Flex,
   Grid,
   FileInput,
-  Alert,
+  Textarea,
 } from "@mantine/core";
 import { Trash, Plus } from "tabler-icons-react";
 import { useForm } from "@mantine/form";
@@ -614,8 +614,7 @@ function AddOrEditProductForm(props: any) {
                 {...form.getInputProps("grainLength.rangeTo")}
               />
             </Grid.Col>
-          </Grid>
-          <Grid>
+            <Space h="sm" />
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
@@ -640,8 +639,7 @@ function AddOrEditProductForm(props: any) {
                 {...form.getInputProps("grainWidth.rangeTo")}
               />
             </Grid.Col>
-          </Grid>
-          <Grid>
+            <Space h="sm" />
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
@@ -666,8 +664,7 @@ function AddOrEditProductForm(props: any) {
                 {...form.getInputProps("moisturePercentage.rangeTo")}
               />
             </Grid.Col>
-          </Grid>
-          <Grid>
+            <Space h="sm" />
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
@@ -692,15 +689,21 @@ function AddOrEditProductForm(props: any) {
                 {...form.getInputProps("whitenessReadingAverage.rangeTo")}
               />
             </Grid.Col>
-          </Grid>
-          <Grid>
+            <Space h="sm" />
+            <Grid.Col span={12}>
+              <Textarea
+                label="Chalky (%)"
+                autosize
+                description="Notes"
+                {...form.getInputProps("chalkyPercentage.note")}
+              />
+            </Grid.Col>
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
                 precision={2}
                 min={0}
                 max={100}
-                label="Chalky (%)"
                 description="Range From"
                 placeholder="0"
                 {...form.getInputProps("chalkyPercentage.rangeFrom")}
@@ -708,7 +711,6 @@ function AddOrEditProductForm(props: any) {
             </Grid.Col>
             <Grid.Col span={6}>
               <NumberInput
-                label=" "
                 hideControls
                 precision={2}
                 min={0}
@@ -718,8 +720,7 @@ function AddOrEditProductForm(props: any) {
                 {...form.getInputProps("chalkyPercentage.rangeTo")}
               />
             </Grid.Col>
-          </Grid>
-          <Grid>
+            <Space h="sm" />
             <Grid.Col span={6}>
               <NumberInput
                 hideControls
