@@ -27,6 +27,7 @@ import {
   intersectObjects,
 } from "../../helper/helper";
 import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
+import { takeLatest } from "redux-saga/effects";
 
 const initialFormValues: any = {
   _categoryId: "",
@@ -249,15 +250,29 @@ function AddOrEditProductForm(props: any) {
 
     return handlePictureChange(e, variant, category)
       .then((result: any) => {
+        let latestImages = [];
         // Update the images array with the latest four images
-        const latestImages = [
-          ...form.values.imagesArray,
-          {
-            url: result.uri,
-            src: e,
-            path: result.path,
-          },
-        ].slice(-4);
+        if (modalType === "add") {
+          latestImages = [
+            ...form.values.imagesArray,
+            {
+              url: result.uri,
+              src: e,
+              path: result.path,
+            },
+          ].slice(-4);
+        } else {
+          // only n uploads will be considered, n=4-existingImages
+          const remainingImages = 4 - updateFormImages.length;
+          latestImages = [
+            ...form.values.imagesArray,
+            {
+              url: result.uri,
+              src: e,
+              path: result.path,
+            },
+          ].slice(-remainingImages);
+        }
         form.setFieldValue("imagesArray", latestImages);
       })
       .catch((err: any) => {
