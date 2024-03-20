@@ -160,6 +160,17 @@ function AddOrEditProductForm(props: any) {
   const [riceProfileObject, setRiceProfileObject] = useState<any>([]);
   const [riceProfileObjID, setRiceProfileObjID] = useState<any>(null);
 
+  const tagsOptions = [
+    { value: "raw", label: "Raw" },
+    { value: "steam", label: "Steam" },
+    { value: "paraboiled", label: "Paraboiled" },
+  ];
+
+  const categoryOptions = categoryData.map((cat: any) => ({
+    value: cat._id,
+    label: cat.name,
+  }));
+
   const form = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
@@ -170,23 +181,35 @@ function AddOrEditProductForm(props: any) {
     },
   });
 
-  const tagsOptions = [
-    { value: "raw", label: "Raw" },
-    { value: "steam", label: "Steam" },
-    { value: "paraboiled", label: "Paraboiled" },
-  ];
-
   useEffect(() => {
     const filled = form.values.variantName && form.values._categoryId;
     setRequiredFieldsFilled(!!filled);
   }, [form.values]);
 
-  const handleDeleteImage = (index: number) => {
-    const updatedImages = [...form.values.images];
-    updatedImages.splice(index, 1);
-    form.setFieldValue("images", updatedImages);
-    setUpdateFormImages([...updatedImages]);
-  };
+  useEffect(() => {
+    if (updateFormData && modalType === "update") {
+      setVariantObject(updateFormData);
+      form.setValues(updateFormData);
+      handleGetVariantProfileData();
+
+      const images = updateFormData.images || [];
+      setUpdateFormImages([...images]);
+    }
+  }, [updateFormData, modalType]);
+
+  useEffect(() => {
+    if (modalOpen) {
+      handleGetSources();
+    }
+  }, [modalOpen]);
+
+  //to set if the category selected is Basmati, if yes Tags field will be disabled
+  useEffect(() => {
+    const selectedCategory = categoryData.find(
+      (cat: any) => cat._id === form.values._categoryId
+    );
+    setIsBasmatiCategory(selectedCategory?.name === "Basmati");
+  }, [form.values._categoryId, categoryData]);
 
   const handleGetVariantProfileData = async () => {
     const response = await getSpecificVariantProfileData(
@@ -214,7 +237,6 @@ function AddOrEditProductForm(props: any) {
       }
     }
   };
-  useEffect(() => {});
 
   const handlePictureInputChange = (e: any) => {
     const variant = form.values.variantName
@@ -227,32 +249,31 @@ function AddOrEditProductForm(props: any) {
 
     return handlePictureChange(e, variant, category)
       .then((result: any) => {
-        form.values.imagesArray.push({
-          url: result.uri,
-          src: e,
-          path: result.path,
-        });
+        // Update the images array with the latest four images
+        const latestImages = [
+          ...form.values.imagesArray,
+          {
+            url: result.uri,
+            src: e,
+            path: result.path,
+          },
+        ].slice(-4);
+        form.setFieldValue("imagesArray", latestImages);
       })
       .catch((err: any) => {
         console.log(err);
       });
   };
 
-  const imageFileLabels = ["Image 1", "Image 2", "Image 3", "Image 4"];
+  //deleting the images from the array and setting state
+  const handleDeleteImage = (index: number) => {
+    const updatedImages = [...form.values.images];
+    updatedImages.splice(index, 1); // Remove the image at the specified index
+    form.setFieldValue("images", updatedImages);
+    setUpdateFormImages([...updatedImages]); // Update state if necessary
+  };
 
-  const fileInputs = imageFileLabels.map((label, index) => (
-    <Grid.Col span={6} key={index}>
-      <FileInput
-        disabled={!requiredFieldsFilled}
-        accept="image/png,image/jpeg"
-        label="Upload file (png/jpg)"
-        onChange={(e) => {
-          handlePictureInputChange(e);
-        }}
-      />
-    </Grid.Col>
-  ));
-
+  //the existing image preview
   const existingImages = updateFormImages.map((imageUrl: any, index: any) => (
     <ImageUpload
       key={index}
@@ -261,22 +282,7 @@ function AddOrEditProductForm(props: any) {
     />
   ));
 
-  const combinedFileInputs = [
-    ...existingImages,
-    ...fileInputs.slice(updateFormImages.length),
-  ];
-
-  useEffect(() => {
-    if (updateFormData && modalType === "update") {
-      setVariantObject(updateFormData);
-      form.setValues(updateFormData);
-      handleGetVariantProfileData();
-
-      const images = updateFormData.images || [];
-      setUpdateFormImages([...images]);
-    }
-  }, [updateFormData, modalType]);
-
+  //getting source to display in the dropdown select menu
   const handleGetSources: any = async () => {
     const regionResponse = await APIRequest("location/source", "GET");
 
@@ -332,10 +338,10 @@ function AddOrEditProductForm(props: any) {
   };
 
   const handleSubmit = async (formValues: typeof form.values) => {
-    const variantFormValues = intersectObjects(
-      requiredVariantPayload,
-      formValues
-    );
+    // const variantFormValues = intersectObjects(
+    //   requiredVariantPayload,
+    //   formValues
+    // );
     const riceProfileFormValues = intersectObjects(
       requiredRiceProfilePayload,
       formValues
@@ -352,7 +358,6 @@ function AddOrEditProductForm(props: any) {
           const uri = image.url;
           const path = image.path;
           const file = image.src;
-
           try {
             // Upload image to S3
             await uploadImageToS3(uri, file);
@@ -417,25 +422,6 @@ function AddOrEditProductForm(props: any) {
       handleSaveCallback(payloadCommonVariantDetails);
     }
   };
-
-  const categoryOptions = categoryData.map((cat: any) => ({
-    value: cat._id,
-    label: cat.name,
-  }));
-
-  useEffect(() => {
-    if (modalOpen) {
-      handleGetSources();
-    }
-  }, [modalOpen]);
-
-  //to set if the category selected is Basmati, if yes Tags field will be disabled
-  useEffect(() => {
-    const selectedCategory = categoryData.find(
-      (cat: any) => cat._id === form.values._categoryId
-    );
-    setIsBasmatiCategory(selectedCategory?.name === "Basmati");
-  }, [form.values._categoryId, categoryData]);
 
   const fields = form.values.sourceRates.map((item: any, index: number) => (
     <React.Fragment key={item?.key + index * 12}>
@@ -761,9 +747,31 @@ function AddOrEditProductForm(props: any) {
             fontWeight: "600",
           }}
         >
-          Variant Images
-          <Space h="sm" />
-          <Grid>{combinedFileInputs}</Grid>
+          Variant Images <Space h="sm" />
+          <Grid>
+            {existingImages}
+            {updateFormImages.length < 4 && (
+              <Grid.Col span={12}>
+                <FileInput
+                  disabled={!requiredFieldsFilled}
+                  accept="image/png,image/jpeg"
+                  label="Upload files (png/jpg)*"
+                  onChange={(e) => {
+                    handlePictureInputChange(e);
+                  }}
+                />
+              </Grid.Col>
+            )}
+            <div
+              style={{
+                fontWeight: "200",
+                fontSize: "11px",
+                marginBottom: "0px",
+              }}
+            >
+              * Note: only the last 4 file uploads will be considered
+            </div>
+          </Grid>
         </div>
 
         <Space h="sm" />
