@@ -747,7 +747,17 @@ function AddOrEditProductForm(props: any) {
             fontWeight: "600",
           }}
         >
-          Variant Images <Space h="sm" />
+          Variant Images
+          <div
+            style={{
+              fontWeight: "200",
+              fontSize: "11px",
+              marginBottom: "0px",
+            }}
+          >
+            * Important: only the lastest 4 files will be considered
+          </div>
+          <Space h="xs" />
           <Grid>
             {existingImages}
             {updateFormImages.length < 4 && (
@@ -762,15 +772,6 @@ function AddOrEditProductForm(props: any) {
                 />
               </Grid.Col>
             )}
-            <div
-              style={{
-                fontWeight: "200",
-                fontSize: "11px",
-                marginBottom: "0px",
-              }}
-            >
-              * Note: only the last 4 file uploads will be considered
-            </div>
           </Grid>
         </div>
 
