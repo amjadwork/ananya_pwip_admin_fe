@@ -89,11 +89,6 @@ const RiceProfilePage = (props: any) => {
             date: new Date(item.createdAt),
           })
         );
-        filteredResponse.push({
-          price: variantsData.price,
-          date: new Date(variantsData.updatedAt),
-        });
-
         setGraphData(filteredResponse);
       }
     }
