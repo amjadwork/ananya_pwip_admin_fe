@@ -401,9 +401,9 @@ const ReactTable: React.FC<{
                               <td
                                 style={{
                                   marginTop: "12px",
-                                  paddingLeft: "0.5rem",
-                                  paddingRight: "0.5rem",
-                                  overflow: "auto",
+                                  paddingLeft: "1rem",
+                                  paddingRight: "1rem",
+                                  overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   position: "relative",
                                 }}
@@ -431,7 +431,6 @@ const ReactTable: React.FC<{
                                 </Button>
                                 <div
                                   style={{
-                                    paddingTop: "2px",
                                     maxHeight: "250px",
                                     overflowY: "auto",
                                     display: expandedRows[i] ? "block" : "none",
@@ -657,7 +656,16 @@ const ReactTable: React.FC<{
                             );
                           } else {
                             return (
-                              <td {...cell.getCellProps()} style={cellStyle}>
+                              <td
+                                {...cell.getCellProps()}
+                                style={{
+                                  ...cellStyle,
+                                  width: "100%",
+                                  overflow: "auto", // Enable scrolling within the cell
+                                  maxHeight: "50px", // Limit the height of the cell
+                                  cursor: "default",
+                                }}
+                              >
                                 <div
                                   style={{
                                     display: "flex",
