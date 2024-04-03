@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
-import { Plus, Upload } from "tabler-icons-react";
 import { openConfirmModal } from "@mantine/modals";
 
 import APIRequest from "./../../helper/api";
@@ -8,8 +7,9 @@ import AddOrEditProductForm from "../../forms/ManageProducts";
 import PageWrapper from "../../components/Wrappers/PageWrapper";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
-import LineChartModal from "../../components/LineChartModal/LineChartModal";
+import RiceProfilePage from "../../components/RiceProfilePage/RiceProfilePage";
 import { getChangedPropertiesFromObject } from "../../helper/helper";
+import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const columns = [
   {
@@ -92,6 +92,10 @@ const RenderModalContent = (props: any) => {
   const modalOpen = props.modalOpen;
   const containerType = props.containerType;
   const handlePictureChange = props.handlePictureChange;
+  const handleRiceProfilePatch = props.handleRiceProfilePatch;
+  const handleRiceProfilePost = props.handleRiceProfilePost;
+  const variantProperties = props.variantProperties;
+  console.log(variantProperties, "inside render");
 
   let regionCostingList: any = [];
 
@@ -99,8 +103,13 @@ const RenderModalContent = (props: any) => {
     return <SheetUpload containerType={containerType} />;
   }
 
-  if (modalType === "line-chart") {
-    return <LineChartModal variantsData={variantsData} />;
+  if (modalType === "rice-profile-page") {
+    return (
+      <RiceProfilePage
+        variantsData={variantsData}
+        variantProperties={variantProperties}
+      />
+    );
   }
 
   if (variantsData) {
@@ -112,6 +121,8 @@ const RenderModalContent = (props: any) => {
       handleCloseModal={handleCloseModal}
       categoryData={categoryData}
       handleSaveCallback={handleSaveCallback}
+      handleRiceProfilePatch={handleRiceProfilePatch}
+      handleRiceProfilePost={handleRiceProfilePost}
       regionCostingList={regionCostingList}
       variantsData={variantsData}
       updateFormData={updateFormData}
@@ -134,6 +145,8 @@ function ManageProductsContainer(props: any) {
     React.useState<any>(null);
   const [selectedVariantData, setSelectedVariantData] =
     React.useState<any>(null);
+  const [selectedVariantProperties, setSelectedVariantProperties] =
+    React.useState<any>(null);
   const containerType: any = "variant";
 
   const handleSaveCallback = (payload: any) => {
@@ -144,6 +157,15 @@ function ManageProductsContainer(props: any) {
   useEffect(() => {
     handleGetProductData();
   }, []);
+
+  const handleGetVariantProfileData = async (id: any) => {
+    const response = await getSpecificVariantProfileData(id);
+    if (response) {
+      setSelectedVariantProperties(response[0]);
+    }
+    setModalType("rice-profile-page");
+    setModalOpen(true);
+  };
 
   const handleSave = async (payload: any) => {
     let variantPayload = { ...payload, _productId: productId };
@@ -161,7 +183,6 @@ function ManageProductsContainer(props: any) {
       };
       params = `/${payload._variantId}`;
     }
-
     let endpoint = "variant";
 
     if (params) {
@@ -175,6 +196,48 @@ function ManageProductsContainer(props: any) {
     );
 
     if (addVariantResponse) {
+      if (modalType === "add") {
+        for (const key in addVariantResponse) {
+          delete payload[key];
+        }
+        const postRiceProfilePayload = {
+          ...payload,
+          brokenPercentage: {
+            rangeFrom: 0,
+            rangeTo: addVariantResponse?.brokenPercentage || 0,
+            note: "",
+            unit: "%",
+          },
+          variantId: addVariantResponse._id,
+        };
+        handleRiceProfilePost(postRiceProfilePayload);
+      }
+      handleRefreshCalls();
+    }
+  };
+
+  const handleRiceProfilePatch = async (payload: any) => {
+    let params = "";
+    params = `/${payload._id}`;
+    let endpoint = "service/rice-price/variant-profiles";
+
+    if (params) {
+      endpoint = "service/rice-price/variant-profiles" + params;
+    }
+
+    const addVariantResponse = await APIRequest(endpoint, "PATCH", payload);
+
+    if (addVariantResponse) {
+      handleRefreshCalls();
+    }
+  };
+
+  const handleRiceProfilePost = async (payload: any) => {
+    let endpoint = "service/rice-price/variant-profiles";
+
+    const postRiceProfileResponse = await APIRequest(endpoint, "POST", payload);
+
+    if (postRiceProfileResponse) {
       handleRefreshCalls();
     }
   };
@@ -239,10 +302,28 @@ function ManageProductsContainer(props: any) {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete the variant record for{" "}
-          {rowData.variantName || null} from {rowData._sourceId || null}? This
-          action is destructive and you will have to contact support to restore
-          your data.
+          Are you sure you want to delete the variant record{" "}
+          <span
+            style={{
+              fontSize: "14px",
+              fontWeight: "600",
+              textDecorationLine: "underline",
+            }}
+          >
+            {rowData.variantName || null}
+          </span>{" "}
+          ?
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "red",
+              marginTop: "10px",
+            }}
+          >
+            This action is destructive and you will have to contact support to
+            restore your data.
+          </div>
         </Text>
       ),
       labels: { confirm: "Delete variant", cancel: "No don't delete it" },
@@ -340,13 +421,36 @@ function ManageProductsContainer(props: any) {
       PageAction={() => null}
       modalOpen={modalOpen}
       modalTitle={
-        modalType === "add"
-          ? "Add Product Variant"
-          : modalType === "upload"
-            ? "Update Or Add Data by Excel Sheet"
-            : modalType === "line-chart"
-              ? ""
-              : "Update Variant Price and Source Location"
+        modalType === "add" ? (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Add New Variant Details
+          </span>
+        ) : modalType === "upload" ? (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Update Or Add Data by Excel Sheet
+          </span>
+        ) : modalType === "rice-profile-page" ? (
+          ""
+        ) : (
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+            }}
+          >
+            Update Variant Details
+          </span>
+        )
       }
       onModalClose={() => {
         setModalOpen(false);
@@ -361,16 +465,19 @@ function ManageProductsContainer(props: any) {
             categoryData={categoryData}
             handleSaveCallback={handleSaveCallback}
             variantsData={selectedVariantData}
+            variantProperties={selectedVariantProperties}
             updateFormData={updateFormData}
             modalType={modalType}
             modalOpen={modalOpen}
             containerType={containerType}
             handlePictureChange={handlePictureChange}
+            handleRiceProfilePatch={handleRiceProfilePatch}
+            handleRiceProfilePost={handleRiceProfilePost}
           />
         );
       }}
       modalSize="70%"
-      isVariantProfile={modalType === "line-chart" ? true : false}
+      isVariantProfile={modalType === "rice-profile-page" ? true : false}
     >
       <Space h="sm" />
       <ReactTable
@@ -404,8 +511,8 @@ function ManageProductsContainer(props: any) {
             _categoryId: obj._categoryId,
             _variantId: obj._variantId,
             variantName: obj.variantName,
-            HSNCode: obj.HSNCode,
             brokenPercentage: obj.brokenPercentage,
+            HSNCode: obj.HSNCode,
             tags: obj.tags,
             images: obj.images,
             sourceRates: [
@@ -423,10 +530,9 @@ function ManageProductsContainer(props: any) {
         onDeleteRow={(rowData: any) => {
           openDeleteModal(rowData);
         }}
-        handleLineChart={(row: any) => {
-          setModalType("line-chart");
+        handleRiceProfile={(row: any) => {
+          handleGetVariantProfileData(row._variantId);
           setSelectedVariantData(row);
-          setModalOpen(true);
         }}
       />
     </PageWrapper>
