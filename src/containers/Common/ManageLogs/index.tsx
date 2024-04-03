@@ -3,6 +3,7 @@ import PageWrapper from "../../../components/Wrappers/PageWrapper";
 import { getUsersData } from "../../../services/user-management/Users";
 import { getLogsData } from "../../../services/logs-management/Logs";
 import ReactTable from "../../../components/ReactTable/ReactTable";
+import { IsoDateConverter } from "../../../helper/helper";
 
 const columns = [
   {
@@ -16,7 +17,7 @@ const columns = [
   {
     Header: "User_ID",
     accessor: "userID",
-    width: "250px",
+    width: "200px",
     sortable: true,
     filterable: true,
     showCheckbox: false,
@@ -24,7 +25,7 @@ const columns = [
   {
     Header: "Method",
     accessor: "method",
-    width: "200px",
+    width: "190px",
     sortable: true,
     filterable: true,
     showCheckbox: false,
@@ -32,7 +33,7 @@ const columns = [
   {
     Header: "Endpoint",
     accessor: "endpoint",
-    width: "300px",
+    width: "400px",
     sortable: true,
     filterable: true,
     showCheckbox: false,
@@ -40,9 +41,17 @@ const columns = [
   {
     Header: "Request Body",
     accessor: "requestBody",
-    width: "450px",
+    width: "400px",
     sortable: true,
     filterable: false,
+    showCheckbox: false,
+  },
+  {
+    Header: "Time Stamp",
+    accessor: "timeStamp",
+    width: "250px",
+    sortable: true,
+    filterable: true,
     showCheckbox: false,
   },
 ];
@@ -86,9 +95,9 @@ function ManageLogs() {
           requestBody: log.requestBody || [],
           userID: matchedUser ? matchedUser._id : log.user_id,
           user: matchedUser ? matchedUser : "", // Add users data
+          timeStamp: IsoDateConverter(log.timestamp),
         };
       });
-      console.log(tableData, "table");
       setTableRowData(tableData);
     }
   }, [logsData, usersData]);
