@@ -403,6 +403,9 @@ const ReactTable: React.FC<{
                                   marginTop: "12px",
                                   paddingLeft: "0.5rem",
                                   paddingRight: "0.5rem",
+                                  overflow: "auto",
+                                  textOverflow: "ellipsis",
+                                  position: "relative",
                                 }}
                               >
                                 <Button
@@ -414,6 +417,9 @@ const ReactTable: React.FC<{
                                   fullWidth
                                   style={{
                                     height: "2rem",
+                                    position: "absolute",
+                                    top: "0",
+                                    right: "0",
                                   }}
                                 >
                                   {Array.isArray(row.original.requestBody) &&
@@ -425,6 +431,9 @@ const ReactTable: React.FC<{
                                 </Button>
                                 <div
                                   style={{
+                                    paddingTop: "2px",
+                                    maxHeight: "250px",
+                                    overflowY: "auto",
                                     display: expandedRows[i] ? "block" : "none",
                                   }}
                                 >
@@ -559,7 +568,12 @@ const ReactTable: React.FC<{
                                     cellIndex === row.cells.length - 1
                                       ? 1
                                       : "auto",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  cursor: "default",
                                 }}
+                                className="ellipsis"
                               >
                                 {handleRiceProfile &&
                                   (row.original.active === 0 ? (
@@ -632,6 +646,10 @@ const ReactTable: React.FC<{
                                     cellIndex === 0 ? "sticky" : "relative",
                                   left: cellIndex === 0 ? 0 : "auto",
                                   zIndex: cellIndex === 0 ? 1 : "auto",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  cursor: "default",
                                 }}
                               >
                                 {currentPage * pageSize + i + 1}
