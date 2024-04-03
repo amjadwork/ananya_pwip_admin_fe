@@ -401,8 +401,11 @@ const ReactTable: React.FC<{
                               <td
                                 style={{
                                   marginTop: "12px",
-                                  paddingLeft: "0.5rem",
-                                  paddingRight: "0.5rem",
+                                  paddingLeft: "1rem",
+                                  paddingRight: "1rem",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  position: "relative",
                                 }}
                               >
                                 <Button
@@ -414,6 +417,9 @@ const ReactTable: React.FC<{
                                   fullWidth
                                   style={{
                                     height: "2rem",
+                                    position: "absolute",
+                                    top: "0",
+                                    right: "0",
                                   }}
                                 >
                                   {Array.isArray(row.original.requestBody) &&
@@ -425,6 +431,8 @@ const ReactTable: React.FC<{
                                 </Button>
                                 <div
                                   style={{
+                                    maxHeight: "250px",
+                                    overflowY: "auto",
                                     display: expandedRows[i] ? "block" : "none",
                                   }}
                                 >
@@ -559,7 +567,12 @@ const ReactTable: React.FC<{
                                     cellIndex === row.cells.length - 1
                                       ? 1
                                       : "auto",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  cursor: "default",
                                 }}
+                                className="ellipsis"
                               >
                                 {handleRiceProfile &&
                                   (row.original.active === 0 ? (
@@ -632,6 +645,10 @@ const ReactTable: React.FC<{
                                     cellIndex === 0 ? "sticky" : "relative",
                                   left: cellIndex === 0 ? 0 : "auto",
                                   zIndex: cellIndex === 0 ? 1 : "auto",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  cursor: "default",
                                 }}
                               >
                                 {currentPage * pageSize + i + 1}
@@ -639,7 +656,16 @@ const ReactTable: React.FC<{
                             );
                           } else {
                             return (
-                              <td {...cell.getCellProps()} style={cellStyle}>
+                              <td
+                                {...cell.getCellProps()}
+                                style={{
+                                  ...cellStyle,
+                                  width: "100%",
+                                  overflow: "auto", // Enable scrolling within the cell
+                                  maxHeight: "50px", // Limit the height of the cell
+                                  cursor: "default",
+                                }}
+                              >
                                 <div
                                   style={{
                                     display: "flex",
