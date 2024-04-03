@@ -51,7 +51,7 @@ const columns = [
     accessor: "timeStamp",
     width: "250px",
     sortable: true,
-    filterable: false,
+    filterable: true,
     showCheckbox: false,
   },
 ];
