@@ -11,14 +11,15 @@ import {
 } from "recharts";
 import { DateRangePicker } from "@mantine/dates";
 import APIRequest from "../../helper/api";
-import { properties } from "../../constants/properties.constants";
 import { eximColumn } from "../../constants/eximColumn.constants";
 import { dummyEximData } from "../../constants/dummyEximData.constants";
-import ReactTable from "../../components/ReactTable/ReactTable";
+import ReactTable from "../ReactTable/ReactTable";
+import { camelCaseToTitleCase } from "../../helper/helper";
 import moment from "moment";
 
-const LineChartModal = (props: any) => {
+const RiceProfilePage = (props: any) => {
   const variantsData = props.variantsData;
+  const variantProperties = props.variantProperties;
   const [graphData, setGraphData] = useState<any>([]);
   const [selectedRange, setSelectedRange] = useState<
     [Date | null, Date | null]
@@ -36,6 +37,36 @@ const LineChartModal = (props: any) => {
     );
     return [pastSixMonths, endOfMonth];
   });
+
+  // Extract keys with rangeFrom and rangeTo properties
+  const properties = Object.keys(variantProperties)
+    .filter((key) => key !== "_id" && key !== "variantId" && key !== "__v")
+    .map((key) => {
+      if (key === "grainType" || key === "grainColour") {
+        return {
+          name: camelCaseToTitleCase(key),
+          value: camelCaseToTitleCase(variantProperties[key]) || " N/A",
+        };
+      } else {
+        const { rangeFrom, rangeTo, unit, notes } = variantProperties[key];
+        let value;
+        if (key === "chalkyPercentage") {
+          value =
+            rangeFrom || rangeTo
+              ? `${rangeFrom}-${rangeTo} ${unit}`
+              : notes
+                ? `${notes}`
+                : "N/A";
+        } else {
+          value =
+            rangeFrom || rangeTo ? `${rangeFrom}-${rangeTo} ${unit}` : "N/A";
+        }
+        return {
+          name: camelCaseToTitleCase(key),
+          value,
+        };
+      }
+    });
 
   const handleGetVariantPriceTrend = async () => {
     if (variantsData && selectedRange[0] && selectedRange[1]) {
@@ -55,14 +86,9 @@ const LineChartModal = (props: any) => {
         const filteredResponse: { price: number; date: any }[] = response.map(
           (item: { price: number; createdAt: string }) => ({
             price: item.price,
-            date: new Date(item.createdAt)
+            date: new Date(item.createdAt),
           })
         );
-        filteredResponse.push({
-          price: variantsData.price,
-          date: new Date(variantsData.updatedAt),
-        });
-
         setGraphData(filteredResponse);
       }
     }
@@ -320,7 +346,7 @@ const LineChartModal = (props: any) => {
           <Grid.Col
             span={7}
             style={{
-              paddingTop: "80px",
+              paddingTop: "40px",
             }}
           >
             <Table
@@ -363,4 +389,4 @@ const LineChartModal = (props: any) => {
   );
 };
 
-export default LineChartModal;
+export default RiceProfilePage;
