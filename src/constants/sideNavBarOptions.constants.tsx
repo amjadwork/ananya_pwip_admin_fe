@@ -30,7 +30,7 @@ export const NavbarOptions = [
   //   ],
   // },
 
-  { label: "Dashboard", icon: Dashboard, link: "/" },
+  { label: "Dashboard", icon: Dashboard, link: "/dashboard" },
   {
     label: "Apps",
     icon: Apps,
