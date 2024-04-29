@@ -18,14 +18,31 @@ const withAuth = (WrappedComponent) => {
     const handleGetUserData = async () => {
       const userResponse = await APIRequest("user", "GET", {}, {}, true);
       if (userResponse) {
-        if (userResponse[0]?.role_id === 3) {
+        let roleID = userResponse[0]?.role_id;
+
+        if (roleID === 3) {
           router("/admin/dashboard");
+          handleGetPermissionData(roleID);
+
+        } else if (roleID) {
+          handleGetPermissionData(roleID);
         } else {
           router("/access-denied");
         }
       }
     };
 
+  const handleGetPermissionData = async (roleID) => {
+    const permissionResponse = await APIRequest(
+      `rolepermission?role_id=${roleID}`,
+      "GET",
+      {},
+      {},
+      false
+    );
+    console.log(permissionResponse, "permissiion");
+  };
+    
     useEffect(() => {
       handleGetUserData();
     }, []);
