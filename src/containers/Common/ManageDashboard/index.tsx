@@ -70,7 +70,7 @@ function ManageDashboard() {
              </Text>
              <Image
                radius="md"
-               src={`/assets/images/${key}.png`} // Assuming image filenames correspond to keys
+               src={`/assets/images/dashboard/${key}.png`}
                alt=""
                style={{
                  width: 70, // Set width of the image
