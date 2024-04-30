@@ -8,7 +8,7 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import RiceProfilePage from "../../components/RiceProfilePage/RiceProfilePage";
-import { getChangedPropertiesFromObject } from "../../helper/helper";
+import { getChangedPropertiesFromObject, hasEditPermission, hasAddNewPermission, hasDeletePermission } from "../../helper/helper";
 import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const columns = [
@@ -148,6 +148,10 @@ function ManageProductsContainer(props: any) {
   const [selectedVariantProperties, setSelectedVariantProperties] =
     React.useState<any>(null);
   const containerType: any = "variant";
+
+ 
+  console.log(hasEditPermission, hasAddNewPermission)
+
 
   const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
@@ -415,6 +419,32 @@ function ManageProductsContainer(props: any) {
     }
   }, [variantsData, categoryData]);
 
+  const actionButtons = [
+    {
+      label: "Upload Excel Sheet",
+      color: "gray",
+      type: "button",
+      onClickAction: () => {
+        setModalType("upload");
+        setModalOpen(true);
+      },
+    },
+    {
+      label: "Add New",
+      color: "gray",
+      type: "button",
+      onClickAction: () => {
+        setModalOpen(true);
+        setModalType("add");
+      },
+    },
+  ];
+  
+  const conditionalActionButtons = hasAddNewPermission()
+    ? actionButtons
+    : actionButtons.slice(0, 1);
+  
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -483,53 +513,40 @@ function ManageProductsContainer(props: any) {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[
-          {
-            label: "Upload Excel Sheet",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalType("upload");
-              setModalOpen(true);
-            },
-          },
-          {
-            label: "Add New",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalOpen(true);
-              setModalType("add");
-            },
-          },
-        ]}
+        actionButtons={conditionalActionButtons}
         onEditRow={(row: any, index: any) => {
-          let obj = { ...row };
+          if (hasEditPermission()) {
+            let obj = { ...row };
 
-          setSelectedTableRowIndex(index);
-          const formObj = {
-            _categoryId: obj._categoryId,
-            _variantId: obj._variantId,
-            variantName: obj.variantName,
-            brokenPercentage: obj.brokenPercentage,
-            HSNCode: obj.HSNCode,
-            tags: obj.tags,
-            images: obj.images,
-            sourceRates: [
-              {
-                _id: obj._id,
-                price: obj.price,
-                _sourceId: obj._sourceId,
-              },
-            ],
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
+            setSelectedTableRowIndex(index);
+            const formObj = {
+              _categoryId: obj._categoryId,
+              _variantId: obj._variantId,
+              variantName: obj.variantName,
+              brokenPercentage: obj.brokenPercentage,
+              HSNCode: obj.HSNCode,
+              tags: obj.tags,
+              images: obj.images,
+              sourceRates: [
+                {
+                  _id: obj._id,
+                  price: obj.price,
+                  _sourceId: obj._sourceId,
+                },
+              ],
+            };
+            setUpdateFormData(formObj);
+            setModalType("update");
+            setModalOpen(true);
+          }
         }}
-        onDeleteRow={(rowData: any) => {
-          openDeleteModal(rowData);
-        }}
+        onDeleteRow={
+          hasDeletePermission()
+            ? (rowData: any) => {
+                openDeleteModal(rowData);
+              }
+            : undefined
+        }
         handleRiceProfile={(row: any) => {
           handleGetVariantProfileData(row._variantId);
           setSelectedVariantData(row);

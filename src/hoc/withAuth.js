@@ -21,19 +21,10 @@ const withAuth = (WrappedComponent) => {
         let roleID = userResponse[0]?.role_id;
         sessionStorage.setItem("role", roleID);
 
-        if (roleID === 3) {
+        if (roleID === 3 || roleID === 55) {
           router("/admin/dashboard");
           handleGetPermissionIds(roleID);
-        }
-        else if (roleID === 56) {
-          router("/admin/dashboard");
-          handleGetPermissionIds(roleID);
-        }
-        else if (roleID === 57) {
-          router("/admin/dashboard");
-          handleGetPermissionIds(roleID);
-        }
-        else {
+        } else {
           router("/access-denied");
         }
       }

@@ -34,7 +34,7 @@ export const NavbarOptions = [
     label: "Dashboard",
     icon: Dashboard,
     link: "/dashboard",
-    role: [3, 57, 56],
+    role: [3, 55, 57, 56],
   },
   {
     label: "Apps",
@@ -47,7 +47,7 @@ export const NavbarOptions = [
       },
       // { label: "OFC (coming soon)", link: "#!" },
     ],
-    role: [3, 57, 56],
+    role: [3, 55, 57, 56],
   },
   {
     label: "Users",
@@ -73,12 +73,12 @@ export const NavbarOptions = [
     label: "Reporting",
     icon: PresentationAnalytics,
     link: "/reports",
-    role: [3, 57, 56],
+    role: [3, 55, 57, 56],
   },
   {
     label: "Support",
     icon: Help,
     link: "/customer-support",
-    role: [3, 57, 56],
+    role: [3, 55, 57, 56],
   },
 ];

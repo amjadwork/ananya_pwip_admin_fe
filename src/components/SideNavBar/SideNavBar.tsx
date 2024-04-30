@@ -22,7 +22,7 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
   //   ? parseInt(permissionsString, 10)
   //   : null;
 
-    const roleString = sessionStorage.getItem("role");
+  const roleString = sessionStorage.getItem("role");
   const role = roleString ? parseInt(roleString, 10) : 0;
   
     // Filter NavbarOptions based on user role
