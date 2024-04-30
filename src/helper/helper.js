@@ -192,3 +192,11 @@ export function hasDeletePermission() {
   return role === 3;
 }
 
+export function hasOnlyPriceUpdatePermission() {
+  const roleString = sessionStorage.getItem("role");
+  const role = roleString ? parseInt(roleString, 10) : 0;
+  // const permissionsString = sessionStorage.getItem("permissions");
+  // const permissions = permissionsString ? JSON.parse(permissionsString) : [];
+  return role === 55;
+}
+

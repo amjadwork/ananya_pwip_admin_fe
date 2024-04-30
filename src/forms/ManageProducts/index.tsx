@@ -25,9 +25,12 @@ import {
   uploadImageToS3,
   getChangedPropertiesFromObject,
   intersectObjects,
+  hasOnlyPriceUpdatePermission,
 } from "../../helper/helper";
 import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
-import { takeLatest } from "redux-saga/effects";
+import {
+  hasEditPermission,
+} from "../../helper/helper";
 
 const initialFormValues: any = {
   _categoryId: "",
@@ -161,6 +164,9 @@ function AddOrEditProductForm(props: any) {
   const [riceProfileObject, setRiceProfileObject] = useState<any>([]);
   const [riceProfileObjID, setRiceProfileObjID] = useState<any>(null);
 
+  const roleString = sessionStorage.getItem("role");
+  const role = roleString ? parseInt(roleString, 10) : 0;
+  
   const tagsOptions = [
     { value: "raw", label: "Raw" },
     { value: "steam", label: "Steam" },
@@ -293,7 +299,11 @@ function AddOrEditProductForm(props: any) {
     <ImageUpload
       key={index}
       imageUrl={imageUrl}
-      onDelete={() => handleDeleteImage(index)}
+      onDelete={() =>
+        hasOnlyPriceUpdatePermission()
+          ? null
+          : handleDeleteImage(index)
+      }
     />
   ));
 
@@ -453,6 +463,7 @@ function AddOrEditProductForm(props: any) {
             form.setFieldValue(`updateSource`, e);
           }}
           style={{ width: modalType === "update" ? "48%" : "43%" }}
+          disabled={hasOnlyPriceUpdatePermission()}
         />
 
         <NumberInput
@@ -519,6 +530,7 @@ function AddOrEditProductForm(props: any) {
               required
               label="Select Category"
               placeholder="Eg. Non-Basmati"
+              disabled={hasOnlyPriceUpdatePermission()}
               data={categoryOptions}
               {...form.getInputProps("_categoryId")}
             />
@@ -529,7 +541,11 @@ function AddOrEditProductForm(props: any) {
               data={tagsOptions || []}
               label="Tags"
               placeholder={isBasmatiCategory ? "Not Applicable" : "eg. steam"}
-              disabled={isBasmatiCategory || !form.values._categoryId}
+              disabled={
+                isBasmatiCategory ||
+                !form.values._categoryId ||
+                hasOnlyPriceUpdatePermission()
+              }
               {...form.getInputProps("tags")}
             />
           </Grid.Col>
@@ -540,6 +556,7 @@ function AddOrEditProductForm(props: any) {
               required
               label="Variant Name"
               placeholder="eg. 1509 Sella"
+              disabled={hasOnlyPriceUpdatePermission()}
               {...form.getInputProps("variantName")}
             />
           </Grid.Col>
@@ -548,6 +565,7 @@ function AddOrEditProductForm(props: any) {
             <TextInput
               label="HSN Code"
               placeholder="eg. CSQ212"
+              disabled={hasOnlyPriceUpdatePermission()}
               {...form.getInputProps("HSNCode")}
             />
           </Grid.Col>
@@ -560,6 +578,7 @@ function AddOrEditProductForm(props: any) {
               min={0}
               max={100}
               placeholder="5%"
+              disabled={hasOnlyPriceUpdatePermission()}
               {...form.getInputProps("brokenPercentage")}
             />
           </Grid.Col>
@@ -581,6 +600,7 @@ function AddOrEditProductForm(props: any) {
               <TextInput
                 label="Grain Color"
                 placeholder="white"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainColour")}
               />
             </Grid.Col>
@@ -588,6 +608,7 @@ function AddOrEditProductForm(props: any) {
               <TextInput
                 label="Grain Type"
                 placeholder="long grain"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainType")}
               />
             </Grid.Col>
@@ -600,6 +621,7 @@ function AddOrEditProductForm(props: any) {
                 label="Grain Length (mm)"
                 description="Range From"
                 placeholder="8.3 mm"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainLength.rangeFrom")}
               />
             </Grid.Col>
@@ -612,6 +634,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="8.7 mm"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainLength.rangeTo")}
               />
             </Grid.Col>
@@ -625,6 +648,7 @@ function AddOrEditProductForm(props: any) {
                 label="Grain Width (mm)"
                 description="Range From"
                 placeholder="1.7 mm"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainWidth.rangeFrom")}
               />
             </Grid.Col>
@@ -637,6 +661,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="1.8 mm"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("grainWidth.rangeTo")}
               />
             </Grid.Col>
@@ -650,6 +675,7 @@ function AddOrEditProductForm(props: any) {
                 label="Moisture (%)"
                 description="Range From"
                 placeholder="0"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("moisturePercentage.rangeFrom")}
               />
             </Grid.Col>
@@ -662,6 +688,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="2%"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("moisturePercentage.rangeTo")}
               />
             </Grid.Col>
@@ -675,6 +702,7 @@ function AddOrEditProductForm(props: any) {
                 label="Whiteness Reading (%)"
                 description="Range From"
                 placeholder="27%"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("whitenessReadingAverage.rangeFrom")}
               />
             </Grid.Col>
@@ -687,6 +715,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="28%"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("whitenessReadingAverage.rangeTo")}
               />
             </Grid.Col>
@@ -696,6 +725,7 @@ function AddOrEditProductForm(props: any) {
                 label="Chalky (%)"
                 autosize
                 description="Notes"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("chalkyPercentage.notes")}
               />
             </Grid.Col>
@@ -707,6 +737,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range From"
                 placeholder="0"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("chalkyPercentage.rangeFrom")}
               />
             </Grid.Col>
@@ -718,6 +749,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="2%"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps("chalkyPercentage.rangeTo")}
               />
             </Grid.Col>
@@ -731,6 +763,7 @@ function AddOrEditProductForm(props: any) {
                 label="Damaged and Discolored (%)"
                 description="Range From"
                 placeholder="0"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps(
                   "damagedAndDiscoloredPercentage.rangeFrom"
                 )}
@@ -745,6 +778,7 @@ function AddOrEditProductForm(props: any) {
                 max={100}
                 description="Range To"
                 placeholder="2%"
+                disabled={hasOnlyPriceUpdatePermission()}
                 {...form.getInputProps(
                   "damagedAndDiscoloredPercentage.rangeTo"
                 )}
@@ -777,14 +811,16 @@ function AddOrEditProductForm(props: any) {
             {existingImages}
             {updateFormImages.length < 4 && (
               <Grid.Col span={12}>
-                <FileInput
-                  disabled={!requiredFieldsFilled}
-                  accept="image/png,image/jpeg"
-                  label="Upload files (png/jpg)*"
-                  onChange={(e) => {
-                    handlePictureInputChange(e);
-                  }}
-                />
+                {hasOnlyPriceUpdatePermission() ? null : (
+                  <FileInput
+                    disabled={!requiredFieldsFilled}
+                    accept="image/png,image/jpeg"
+                    label="Upload files (png/jpg)*"
+                    onChange={(e) => {
+                      handlePictureInputChange(e);
+                    }}
+                  />
+                )}
               </Grid.Col>
             )}
           </Grid>
