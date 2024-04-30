@@ -167,36 +167,24 @@ export function camelCaseToTitleCase(str) {
   return titleCaseStr.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export function hasEditPermission() {
-  const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
+const roleString = sessionStorage.getItem("role");
+const role = roleString ? parseInt(roleString, 10) : 0;
+const permissionsString = sessionStorage.getItem("permissions");
+const permissions = permissionsString ? JSON.parse(permissionsString) : [];
 
-  const permissionsString = sessionStorage.getItem("permissions");
-  const permissions = permissionsString ? JSON.parse(permissionsString) : [];
+export function hasEditPermission() {
   return (role === 55 && permissions.includes(48)) || role === 3;
 }
 
 export function hasAddNewPermission() {
-  const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
-  // const permissionsString = sessionStorage.getItem("permissions");
-  // const permissions = permissionsString ? JSON.parse(permissionsString) : [];
-  return (role === 3);
+  return (role === 3); //only admin
 }
 
 export function hasDeletePermission() {
-  const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
-  // const permissionsString = sessionStorage.getItem("permissions");
-  // const permissions = permissionsString ? JSON.parse(permissionsString) : [];
-  return role === 3;
+  return (role === 3); //only admin
 }
 
 export function hasOnlyPriceUpdatePermission() {
-  const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
-  // const permissionsString = sessionStorage.getItem("permissions");
-  // const permissions = permissionsString ? JSON.parse(permissionsString) : [];
   return role === 55;
 }
 
