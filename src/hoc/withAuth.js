@@ -20,32 +20,50 @@ const withAuth = (WrappedComponent) => {
       if (userResponse) {
         let roleID = userResponse[0]?.role_id;
 
-        const permissionResponse = await APIRequest(
-          `rolepermission?role_id=${roleID}`,
-          "GET",
-          {},
-          {},
-          false
-        );
-        // Extracting permission IDs from permission responses
-        let permissionIDs = permissionResponse.map(
-          (response) => response.permission_id
-        );
-        // Store permission IDs in session storage as an array
-        sessionStorage.setItem("permissions", JSON.stringify(permissionIDs));
-
-        console.log(sessionStorage, "here");
         if (roleID === 3) {
           router("/admin/dashboard");
-        } else if (roleID === 56) {
+          handleGetPermissionIds(roleID);
+        }
+        else if (roleID === 56) {
           router("/admin/dashboard");
-        } else if (roleID === 57) {
+          handleGetPermissionIds(roleID);
+        }
+        else if (roleID === 57) {
           router("/admin/dashboard");
-        } else {
+          handleGetPermissionIds(roleID);
+        }
+        else {
           router("/access-denied");
         }
       }
     };
+
+const handleGetPermissionIds = async (roleID) => {
+  try {
+    const permissionResponse = await APIRequest(
+      `rolepermission?role_id=${roleID}`,
+      "GET",
+      {},
+      {},
+      false
+    );
+
+    if (permissionResponse && permissionResponse.length > 0) {
+      let permissionIDs = permissionResponse.map(
+        (response) => response.permission_id
+      );
+      sessionStorage.setItem("permissions", JSON.stringify(permissionIDs));
+      console.log("Permissions retrieved:", permissionIDs);
+    } else {
+      console.error(
+        "No permissions found or empty response:",
+        permissionResponse
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching permissions:", error);
+  }
+};
 
     useEffect(() => {
       handleGetUserData();
