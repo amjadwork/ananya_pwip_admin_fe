@@ -14,6 +14,11 @@ import {
   deleteOtherChargesData,
   putOtherChargesData,
 } from "../../services/export-costing/Others";
+import {
+  hasEditPermission,
+  hasAddNewPermission,
+  hasDeletePermission,
+} from "../../helper/helper";
 
 const columns = [
   {
@@ -202,6 +207,22 @@ function ManageOthers() {
     }
   }, [otherChargesData]);
 
+     const actionButtons = [
+       {
+         label: "Add New",
+         color: "gray",
+         type: "button",
+         onClickAction: () => {
+           setModalOpen(true);
+           setModalType("add");
+         },
+       },
+     ];
+
+     const conditionalActionButtons = hasAddNewPermission()
+       ? actionButtons
+       : [];
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -231,33 +252,29 @@ function ManageOthers() {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[
-          {
-            label: "Add New",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalOpen(true);
-              setModalType("add");
-            },
-          },
-        ]}
+        actionButtons={conditionalActionButtons}
         onEditRow={(row: any, index: any) => {
-          let obj = { ...row };
-          const formObj = {
-            typeOfCharge: obj.typeOfCharge,
-            typeOfValue: obj.typeOfValue,
-            applicableFor: obj.applicableFor,
-            value: obj.value,
-            _id: obj._id,
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
+          if (hasEditPermission()) {
+            let obj = { ...row };
+            const formObj = {
+              typeOfCharge: obj.typeOfCharge,
+              typeOfValue: obj.typeOfValue,
+              applicableFor: obj.applicableFor,
+              value: obj.value,
+              _id: obj._id,
+            };
+            setUpdateFormData(formObj);
+            setModalType("update");
+            setModalOpen(true);
+          }
         }}
-        onDeleteRow={(rowData: any) => {
-          openDeleteModal(rowData);
-        }}
+        onDeleteRow={
+          hasDeletePermission()
+            ? (rowData: any) => {
+                openDeleteModal(rowData);
+              }
+            : undefined
+        }
       />
     </PageWrapper>
   );

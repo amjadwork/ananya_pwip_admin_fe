@@ -26,10 +26,10 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
   const role = roleString ? parseInt(roleString, 10) : 0;
   
     // Filter NavbarOptions based on user role
-    const filteredNavbarOptions = NavbarOptions.filter((option) => {
-      // If the option has no role restriction or the user has the required role, include it
-      return !option.role || option.role.includes(role);
-    });
+   const filteredNavbarOptions = NavbarOptions.filter((option) => {
+     // If the option has no role restriction or the user has the required role, include it
+     return !option.role || option.role.includes(role.toString());
+   });
 
 
   console.log(filteredNavbarOptions, "filtered")

@@ -13,6 +13,12 @@ import {
   deleteContainerData,
   putContainerData,
 } from "../../services/export-costing/Container";
+import {
+  hasEditPermission,
+  hasAddNewPermission,
+  hasDeletePermission,
+} from "../../helper/helper";
+
 
 const columns = [
   {
@@ -191,6 +197,22 @@ function ManageContainer() {
     }
   }, [containerData]);
 
+
+    const actionButtons = [
+      {
+        label: "Add New",
+        color: "gray",
+        type: "button",
+        onClickAction: () => {
+          setModalOpen(true);
+          setModalType("add");
+        },
+      },
+    ];
+
+    const conditionalActionButtons = hasAddNewPermission() ? actionButtons : [];
+
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -217,34 +239,30 @@ function ManageContainer() {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[
-          {
-            label: "Add New",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalOpen(true);
-              setModalType("add");
-            },
-          },
-        ]}
+        actionButtons={conditionalActionButtons}
         onEditRow={(row: any, index: any) => {
-          let obj = { ...row };
-          setSelectedTableRowIndex(index);
-          const formObj = {
-            type: obj.type,
-            size: obj.size,
-            weight: obj.weight,
-            unit: obj.unit,
-            _id: obj._id,
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
+          if (hasEditPermission()) {
+            let obj = { ...row };
+            setSelectedTableRowIndex(index);
+            const formObj = {
+              type: obj.type,
+              size: obj.size,
+              weight: obj.weight,
+              unit: obj.unit,
+              _id: obj._id,
+            };
+            setUpdateFormData(formObj);
+            setModalType("update");
+            setModalOpen(true);
+          }
         }}
-        onDeleteRow={(rowData: any) => {
-          openDeleteModal(rowData);
-        }}
+        onDeleteRow={
+          hasDeletePermission()
+            ? (rowData: any) => {
+                openDeleteModal(rowData);
+              }
+            : undefined
+        }
       />
     </PageWrapper>
   );

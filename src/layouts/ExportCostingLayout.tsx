@@ -64,6 +64,9 @@ const ExportCostingLayout: React.FC<any> = () => {
 
   const [activeTab, setActiveTab] = React.useState<any>("");
 
+  const roleString = sessionStorage.getItem("role");
+  const role = roleString ? parseInt(roleString, 10) : 0;
+
   const tabRoutes = [
     "playground",
     "products",
@@ -76,6 +79,10 @@ const ExportCostingLayout: React.FC<any> = () => {
     "container",
     "others",
   ];
+
+  // Determine whether to show the "Locations" tab based on the user's role
+  const opsRoleId = parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10);
+  const showLocationsTab = !(role === opsRoleId);
 
   const handleNavigation = (path: string) => {
     navigate(path, { replace: true });
@@ -128,6 +135,12 @@ const ExportCostingLayout: React.FC<any> = () => {
           >
             <Tabs.List>
               {tabRoutes.map((list: any) => {
+                if (
+                  (list === "locations" || list === "playground") &&
+                  !showLocationsTab
+                ) {
+                  return null;
+                }
                 return (
                   <Tabs.Tab
                     onClick={(e) => {
@@ -149,7 +162,7 @@ const ExportCostingLayout: React.FC<any> = () => {
       </Box>
       <Container size={1200}>
         <Routes>
-          <Route path="/" element={<PlaygroundContainer />} />
+          <Route path="/" element={<ProductsContainer />} />
           <Route path="/products" element={<ProductsContainer />} />
           <Route path="/products/:id" element={<ManageProductsContainer />} />
           <Route path="/locations" element={<LocationsContainer />} />

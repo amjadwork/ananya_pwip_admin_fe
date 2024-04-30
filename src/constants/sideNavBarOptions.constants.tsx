@@ -91,7 +91,6 @@ export const NavbarOptions = [
     link: "/reports",
     role: [
       process.env.REACT_APP_ADMIN_ROLE_ID,
-      process.env.REACT_APP_OPS_ROLE_ID,
     ],
   },
   {

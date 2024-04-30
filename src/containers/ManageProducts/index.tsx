@@ -149,10 +149,6 @@ function ManageProductsContainer(props: any) {
     React.useState<any>(null);
   const containerType: any = "variant";
 
- 
-  console.log(hasEditPermission, hasAddNewPermission)
-
-
   const handleSaveCallback = (payload: any) => {
     setModalOpen(false);
     handleSave(payload);
