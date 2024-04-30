@@ -37,7 +37,9 @@ const withAuth = (WrappedComponent) => {
         console.log(sessionStorage, "here");
         if (roleID === 3) {
           router("/admin/dashboard");
-        } else if (roleID) {
+        } else if (roleID === 56) {
+          router("/admin/dashboard");
+        } else if (roleID === 57) {
           router("/admin/dashboard");
         } else {
           router("/access-denied");
