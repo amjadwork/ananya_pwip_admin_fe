@@ -18,13 +18,46 @@ const withAuth = (WrappedComponent) => {
     const handleGetUserData = async () => {
       const userResponse = await APIRequest("user", "GET", {}, {}, true);
       if (userResponse) {
-        if (userResponse[0]?.role_id === 3) {
+        let roleID = userResponse[0]?.role_id;
+        sessionStorage.setItem("role", roleID);
+        if (
+          roleID === parseInt(process.env.REACT_APP_OPS_ROLE_ID) ||
+          roleID === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID)
+        ) {
           router("/admin/dashboard");
+          handleGetPermissionIds(roleID);
         } else {
           router("/access-denied");
         }
       }
     };
+
+const handleGetPermissionIds = async (roleID) => {
+  try {
+    const permissionResponse = await APIRequest(
+      `rolepermission?role_id=${roleID}`,
+      "GET",
+      {},
+      {},
+      false
+    );
+
+    if (permissionResponse && permissionResponse.length > 0) {
+      let permissionIDs = permissionResponse.map(
+        (response) => response.permission_id
+      );
+      sessionStorage.setItem("permissions", JSON.stringify(permissionIDs));
+      console.log("Permissions retrieved:", permissionIDs);
+    } else {
+      console.error(
+        "No permissions found or empty response:",
+        permissionResponse
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching permissions:", error);
+  }
+};
 
     useEffect(() => {
       handleGetUserData();

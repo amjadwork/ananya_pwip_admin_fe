@@ -30,21 +30,76 @@ export const NavbarOptions = [
   //   ],
   // },
 
-  { label: "Dashboard", icon: Dashboard, link: "/dashboard" },
+  {
+    label: "Dashboard",
+    icon: Dashboard,
+    link: "/dashboard",
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
+  },
   {
     label: "Apps",
     icon: Apps,
     initiallyOpened: true,
     links: [
-      { label: "Export costing", link: "/export-costing" },
-      { label: "OFC (coming soon)", link: "#!" },
+      {
+        label: "Export costing",
+        link: "/export-costing",
+      },
+      // { label: "OFC (coming soon)", link: "#!" },
+    ],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
     ],
   },
-  { label: "Users", icon: User, link: "/user-management" },
-  { label: "Plans & Subscription", icon: Article, link: "/plans-management" },
-  { label: "Learn", icon: Video, link: "/learn-management" },
-  { label: "Tags", icon: Tags, link: "/tags-management" },
-  { label: "Logs", icon: ListDetails, link: "/logs-management" },
-  { label: "Reporting", icon: PresentationAnalytics, link: "/reports" },
-  { label: "Support", icon: Help, link: "/customer-support" },
+  {
+    label: "Users",
+    icon: User,
+    link: "/user-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Plans & Subscription",
+    icon: Article,
+    link: "/plans-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Learn",
+    icon: Video,
+    link: "/learn-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Tags",
+    icon: Tags,
+    link: "/tags-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Logs",
+    icon: ListDetails,
+    link: "/logs-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Reporting",
+    icon: PresentationAnalytics,
+    link: "/reports",
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+    ],
+  },
+  {
+    label: "Support",
+    icon: Help,
+    link: "/customer-support",
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
+  },
 ];

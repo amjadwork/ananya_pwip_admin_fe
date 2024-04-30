@@ -6,18 +6,20 @@ import { showNotification } from "@mantine/notifications";
 import { FileSpreadsheet, NewSection, FilePlus } from "tabler-icons-react";
 import { MessageTemplates, messages } from "../../constants/messages.constants";
 import {
+  hasEditPermission,
+  hasAddNewPermission,
+} from "../../helper/helper";
+
+import {
   createStyles,
   Card,
   Text,
   SimpleGrid,
   UnstyledButton,
-  Anchor,
   Group,
   Image,
   Button,
 } from "@mantine/core";
-
-import { useMantineTheme } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -195,19 +197,26 @@ function SheetUpload(props:any) {
   const [hoveredTabName, setHoveredTabName] = useState("update");
   const [selectedTabName, setSelectedTabName] = useState("");
   const items = mockdata.map((item) => {
-    return (
+    const requiresEditPermission =
+      item.title === "Upload Existing Variant Price" ||
+      item.title === `Upload Existing ${capitalContainerType} Charges`;
+    const requiresAddNewPermission =
+      item.title === "Add New Variant Price" ||
+      item.title === `Add New ${capitalContainerType} Charges`;
+
+    const shouldRender =
+      (requiresEditPermission && hasEditPermission()) ||
+      (requiresAddNewPermission && hasAddNewPermission());
+
+    return shouldRender ? (
       <UnstyledButton
         key={item.title}
         className={classes.item}
         onMouseOver={() => {
-          if (item.title === "Upload Existing Variant Price" || item.title === `Upload Existing ${capitalContainerType} Charges`) {
-            setHoveredTabName("update");
-          } else setHoveredTabName("add");
+          setHoveredTabName(requiresEditPermission ? "update" : "add");
         }}
         onClick={() => {
-          if (item.title === "Upload Existing Variant Price" || item.title === `Upload Existing ${capitalContainerType} Charges`) {
-            setSelectedTabName("update");
-          } else setSelectedTabName("add");
+          setSelectedTabName(requiresEditPermission ? "update" : "add");
         }}
       >
         <item.icon color={theme.colors[item.color][6]} size="3rem" />
@@ -215,9 +224,9 @@ function SheetUpload(props:any) {
           {item.title}
         </Text>
       </UnstyledButton>
-    );
+    ) : null;
   });
-
+  
   const updatePriceInfoCard = () => {
     return (
       <Card

@@ -20,6 +20,11 @@ import {
   deleteOfcData,
   patchOfcData,
 } from "../../services/export-costing/OFC";
+import {
+  hasEditPermission,
+  hasAddNewPermission,
+  hasDeletePermission,
+} from "../../helper/helper";
 
 const columns = [
   {
@@ -306,6 +311,31 @@ function ManageOfcContainer() {
     }
   }, [ofcData, destinationSelectOptions]);
 
+  const actionButtons = [
+    {
+      label: "Upload Excel Sheet",
+      color: "gray",
+      type: "button",
+      onClickAction: () => {
+        setModalType("upload");
+        setModalOpen(true);
+      },
+    },
+    {
+      label: "Add New",
+      color: "gray",
+      type: "button",
+      onClickAction: () => {
+        setModalOpen(true);
+        setModalType("add");
+      },
+    },
+  ];
+
+  const conditionalActionButtons = hasAddNewPermission()
+    ? actionButtons
+    : actionButtons.slice(0, 1);
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -342,46 +372,33 @@ function ManageOfcContainer() {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[
-          {
-            label: "Upload Excel Sheet",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalType("upload");
-              setModalOpen(true);
-            },
-          },
-          {
-            label: "Add New",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalOpen(true);
-              setModalType("add");
-            },
-          },
-        ]}
+        actionButtons={conditionalActionButtons}
         onEditRow={(row: any, index: any) => {
-          let obj = { ...row };
-          const formObj = {
-            _originPortId: obj._originPortId,
-            destinations: [
-              {
-                _destinationPortId: obj._destinationPortId,
-                _containerId: obj._containerId,
-                ofcCharge: obj.ofcCharge,
-                _ofcObjectId: obj._id,
-              },
-            ],
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
+          if (hasEditPermission()) {
+            let obj = { ...row };
+            const formObj = {
+              _originPortId: obj._originPortId,
+              destinations: [
+                {
+                  _destinationPortId: obj._destinationPortId,
+                  _containerId: obj._containerId,
+                  ofcCharge: obj.ofcCharge,
+                  _ofcObjectId: obj._id,
+                },
+              ],
+            };
+            setUpdateFormData(formObj);
+            setModalType("update");
+            setModalOpen(true);
+          }
         }}
-        onDeleteRow={(rowData: any) => {
-          openDeleteModal(rowData);
-        }}
+        onDeleteRow={
+          hasDeletePermission()
+            ? (rowData: any) => {
+                openDeleteModal(rowData);
+              }
+            : undefined
+        }
       />
     </PageWrapper>
   );

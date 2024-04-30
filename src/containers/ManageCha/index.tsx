@@ -20,6 +20,11 @@ import {
   deleteChaData,
   patchChaData,
 } from "../../services/export-costing/CHA";
+import {
+  hasEditPermission,
+  hasAddNewPermission,
+  hasDeletePermission,
+} from "../../helper/helper";
 
 const columns = [
   {
@@ -375,6 +380,32 @@ function ManageChaContainer() {
     }
   }, [chaData, destinationSelectOptions]);
 
+    const actionButtons = [
+      {
+        label: "Upload Excel Sheet",
+        color: "gray",
+        type: "button",
+        onClickAction: () => {
+          setModalType("upload");
+          setModalOpen(true);
+        },
+      },
+      {
+        label: "Add New",
+        color: "gray",
+        type: "button",
+        onClickAction: () => {
+          setModalOpen(true);
+          setModalType("add");
+        },
+      },
+    ];
+
+    const conditionalActionButtons = hasAddNewPermission()
+      ? actionButtons
+      : actionButtons.slice(0, 1);
+  
+
   return (
     <PageWrapper
       PageHeader={() => null}
@@ -412,55 +443,42 @@ function ManageChaContainer() {
       <ReactTable
         data={tableRowData}
         columns={columns}
-        actionButtons={[
-          {
-            label: "Upload Excel Sheet",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalType("upload");
-              setModalOpen(true);
-            },
-          },
-          {
-            label: "Add New",
-            color: "gray",
-            type: "button",
-            onClickAction: () => {
-              setModalOpen(true);
-              setModalType("add");
-            },
-          },
-        ]}
+        actionButtons={conditionalActionButtons}
         onEditRow={(row: any, index: any) => {
-          let obj = { ...row };
-          const formObj = {
-            _originPortId: obj._originPortId,
-            _id: obj._id,
-            destinations: [
-              {
-                _destinationPortId: obj._destinationPortId,
-                _containerId: obj._containerId,
-                chaCharge: obj.chaCharge,
-                silicaGel: obj.silicaGel,
-                craftPaper: obj.craftPaper,
-                transportCharge: obj.transportCharge,
-                loadingCharge: obj.loadingCharge,
-                customCharge: obj.customCharge,
-                serviceCharge: obj.serviceCharge,
-                fumigationCharge: obj.fumigationCharge,
-                pqc: obj.pqc,
-                coo: obj.coo,
-              },
-            ],
-          };
-          setUpdateFormData(formObj);
-          setModalType("update");
-          setModalOpen(true);
+          if (hasEditPermission()) {
+            let obj = { ...row };
+            const formObj = {
+              _originPortId: obj._originPortId,
+              _id: obj._id,
+              destinations: [
+                {
+                  _destinationPortId: obj._destinationPortId,
+                  _containerId: obj._containerId,
+                  chaCharge: obj.chaCharge,
+                  silicaGel: obj.silicaGel,
+                  craftPaper: obj.craftPaper,
+                  transportCharge: obj.transportCharge,
+                  loadingCharge: obj.loadingCharge,
+                  customCharge: obj.customCharge,
+                  serviceCharge: obj.serviceCharge,
+                  fumigationCharge: obj.fumigationCharge,
+                  pqc: obj.pqc,
+                  coo: obj.coo,
+                },
+              ],
+            };
+            setUpdateFormData(formObj);
+            setModalType("update");
+            setModalOpen(true);
+          }
         }}
-        onDeleteRow={(rowData: any) => {
-          openDeleteModal(rowData);
-        }}
+        onDeleteRow={
+          hasDeletePermission()
+            ? (rowData: any) => {
+                openDeleteModal(rowData);
+              }
+            : undefined
+        }
       />
     </PageWrapper>
   );
