@@ -21,7 +21,10 @@ const withAuth = (WrappedComponent) => {
         let roleID = userResponse[0]?.role_id;
         sessionStorage.setItem("role", roleID);
 
-        if (roleID === 3 || roleID === 55) {
+        if (
+          roleID === process.env.REACT_APP_OPS_ROLE_ID ||
+          roleID === process.env.REACT_APP_ADMIN_ROLE_ID
+        ) {
           router("/admin/dashboard");
           handleGetPermissionIds(roleID);
         } else {

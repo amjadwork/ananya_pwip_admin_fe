@@ -34,7 +34,10 @@ export const NavbarOptions = [
     label: "Dashboard",
     icon: Dashboard,
     link: "/dashboard",
-    role: [3, 55, 57, 56],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
   },
   {
     label: "Apps",
@@ -47,38 +50,57 @@ export const NavbarOptions = [
       },
       // { label: "OFC (coming soon)", link: "#!" },
     ],
-    role: [3, 55, 57, 56],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
   },
   {
     label: "Users",
     icon: User,
     link: "/user-management",
-    role: [3],
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
   },
   {
     label: "Plans & Subscription",
     icon: Article,
     link: "/plans-management",
-    role: [3],
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
   },
-  { label: "Learn", icon: Video, link: "/learn-management", role: [3] },
-  { label: "Tags", icon: Tags, link: "/tags-management", role: [3] },
+  {
+    label: "Learn",
+    icon: Video,
+    link: "/learn-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
+  {
+    label: "Tags",
+    icon: Tags,
+    link: "/tags-management",
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+  },
   {
     label: "Logs",
     icon: ListDetails,
     link: "/logs-management",
-    role: [3],
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
   },
   {
     label: "Reporting",
     icon: PresentationAnalytics,
     link: "/reports",
-    role: [3, 55, 57, 56],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
   },
   {
     label: "Support",
     icon: Help,
     link: "/customer-support",
-    role: [3, 55, 57, 56],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_OPS_ROLE_ID,
+    ],
   },
 ];

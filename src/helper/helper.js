@@ -173,18 +173,21 @@ const permissionsString = sessionStorage.getItem("permissions");
 const permissions = permissionsString ? JSON.parse(permissionsString) : [];
 
 export function hasEditPermission() {
-  return (role === 55 && permissions.includes(48)) || role === 3;
+  return (
+    (role === process.env.REACT_APP_OPS_ROLE_ID && permissions.includes(48)) ||
+     process.env.REACT_APP_ADMIN_ROLE_ID
+  );
 }
 
 export function hasAddNewPermission() {
-  return (role === 3); //only admin
+  return role === process.env.REACT_APP_ADMIN_ROLE_ID; //only admin
 }
 
 export function hasDeletePermission() {
-  return (role === 3); //only admin
+  return role === process.env.REACT_APP_ADMIN_ROLE_ID; //only admin
 }
 
 export function hasOnlyPriceUpdatePermission() {
-  return role === 55;
+  return role === process.env.REACT_APP_OPS_ROLE_ID;
 }
 
