@@ -19,6 +19,7 @@ const withAuth = (WrappedComponent) => {
       const userResponse = await APIRequest("user", "GET", {}, {}, true);
       if (userResponse) {
         let roleID = userResponse[0]?.role_id;
+        sessionStorage.setItem("role", roleID);
 
         if (roleID === 3) {
           router("/admin/dashboard");

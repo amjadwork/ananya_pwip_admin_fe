@@ -17,7 +17,24 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
   const { user } = useAuth0();
   const { classes } = useStyles();
 
-  const links = NavbarOptions.map((item) => {
+  // const permissionsString = sessionStorage.getItem("permissions");
+  // const permissions = permissionsString
+  //   ? parseInt(permissionsString, 10)
+  //   : null;
+
+    const roleString = sessionStorage.getItem("role");
+  const role = roleString ? parseInt(roleString, 10) : 0;
+  
+    // Filter NavbarOptions based on user role
+    const filteredNavbarOptions = NavbarOptions.filter((option) => {
+      // If the option has no role restriction or the user has the required role, include it
+      return !option.role || option.role.includes(role);
+    });
+
+
+  console.log(filteredNavbarOptions, "filtered")
+
+  const links = filteredNavbarOptions.map((item) => {
     return <LinksGroup {...item} key={item.label} action={action} />;
   });
 
