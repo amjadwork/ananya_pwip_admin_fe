@@ -20,29 +20,31 @@ const withAuth = (WrappedComponent) => {
       if (userResponse) {
         let roleID = userResponse[0]?.role_id;
 
+        const permissionResponse = await APIRequest(
+          `rolepermission?role_id=${roleID}`,
+          "GET",
+          {},
+          {},
+          false
+        );
+        // Extracting permission IDs from permission responses
+        let permissionIDs = permissionResponse.map(
+          (response) => response.permission_id
+        );
+        // Store permission IDs in session storage as an array
+        sessionStorage.setItem("permissions", JSON.stringify(permissionIDs));
+
+        console.log(sessionStorage, "here");
         if (roleID === 3) {
           router("/admin/dashboard");
-          handleGetPermissionData(roleID);
-
         } else if (roleID) {
-          handleGetPermissionData(roleID);
+          router("/admin/dashboard");
         } else {
           router("/access-denied");
         }
       }
     };
 
-  const handleGetPermissionData = async (roleID) => {
-    const permissionResponse = await APIRequest(
-      `rolepermission?role_id=${roleID}`,
-      "GET",
-      {},
-      {},
-      false
-    );
-    console.log(permissionResponse, "permissiion");
-  };
-    
     useEffect(() => {
       handleGetUserData();
     }, []);
