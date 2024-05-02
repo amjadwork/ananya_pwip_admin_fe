@@ -174,20 +174,20 @@ const permissions = permissionsString ? JSON.parse(permissionsString) : [];
 
 export function hasEditPermission() {
   return (
-    role === parseInt(process.env.REACT_APP_OPS_ROLE_ID) ||
-    role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID)
+    role === parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10) ||
+    role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10)
   );
 }
 
 export function hasAddNewPermission() {
-  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID); //only admin
+  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10); //only admin
 }
 
 export function hasDeletePermission() {
-  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID) //only admin
+  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10); //only admin
 }
 
 export function hasOnlyPriceUpdatePermission() {
-  return role === parseInt(process.env.REACT_APP_OPS_ROLE_ID);
+  return role === parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10);
 }
 
