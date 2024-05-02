@@ -31,9 +31,6 @@ const SideNavBar: React.FC<Props> = ({ action, opened }) => {
      return !option.role || option.role.includes(role.toString());
    });
 
-
-  console.log(filteredNavbarOptions, "filtered")
-
   const links = filteredNavbarOptions.map((item) => {
     return <LinksGroup {...item} key={item.label} action={action} />;
   });
