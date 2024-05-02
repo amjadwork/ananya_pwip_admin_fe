@@ -168,26 +168,26 @@ export function camelCaseToTitleCase(str) {
 }
 
 const roleString = sessionStorage.getItem("role");
-const role = roleString ? parseInt(roleString, 10) : 0;
+const role = roleString ? Number(roleString) : 0;
 const permissionsString = sessionStorage.getItem("permissions");
 const permissions = permissionsString ? JSON.parse(permissionsString) : [];
 
 export function hasEditPermission() {
   return (
-    role === parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10) ||
-    role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10)
+    role === Number(process.env.REACT_APP_OPS_ROLE_ID || 0) ||
+    role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0)
   );
 }
 
 export function hasAddNewPermission() {
-  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10); //only admin
+  return role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0); //only admin
 }
 
 export function hasDeletePermission() {
-  return role === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID || "", 10); //only admin
+  return role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0); //only admin
 }
 
 export function hasOnlyPriceUpdatePermission() {
-  return role === parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10);
+  return role === Number(process.env.REACT_APP_OPS_ROLE_ID || 0);
 }
 

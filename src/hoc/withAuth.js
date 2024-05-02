@@ -21,8 +21,8 @@ const withAuth = (WrappedComponent) => {
         let roleID = userResponse[0]?.role_id;
         sessionStorage.setItem("role", roleID);
         if (
-          roleID === parseInt(process.env.REACT_APP_OPS_ROLE_ID) ||
-          roleID === parseInt(process.env.REACT_APP_ADMIN_ROLE_ID)
+          roleID === Number(process.env.REACT_APP_OPS_ROLE_ID) ||
+          roleID === Number(process.env.REACT_APP_ADMIN_ROLE_ID)
         ) {
           router("/admin/dashboard");
           handleGetPermissionIds(roleID);
@@ -47,7 +47,6 @@ const handleGetPermissionIds = async (roleID) => {
         (response) => response.permission_id
       );
       sessionStorage.setItem("permissions", JSON.stringify(permissionIDs));
-      console.log("Permissions retrieved:", permissionIDs);
     } else {
       console.error(
         "No permissions found or empty response:",
