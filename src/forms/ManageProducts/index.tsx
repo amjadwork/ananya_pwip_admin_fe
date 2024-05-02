@@ -165,7 +165,7 @@ function AddOrEditProductForm(props: any) {
   const [riceProfileObjID, setRiceProfileObjID] = useState<any>(null);
 
   const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
+  const role = roleString ? Number(roleString) : 0;
   
   const tagsOptions = [
     { value: "raw", label: "Raw" },

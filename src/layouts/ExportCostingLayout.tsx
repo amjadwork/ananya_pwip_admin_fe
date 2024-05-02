@@ -65,7 +65,7 @@ const ExportCostingLayout: React.FC<any> = () => {
   const [activeTab, setActiveTab] = React.useState<any>("");
 
   const roleString = sessionStorage.getItem("role");
-  const role = roleString ? parseInt(roleString, 10) : 0;
+  const role = roleString ? Number(roleString) : 0;
 
   const tabRoutes = [
     "playground",
@@ -81,7 +81,7 @@ const ExportCostingLayout: React.FC<any> = () => {
   ];
 
   // Determine whether to show the "Locations" tab based on the user's role
-  const opsRoleId = parseInt(process.env.REACT_APP_OPS_ROLE_ID || "", 10);
+  const opsRoleId = Number(process.env.REACT_APP_OPS_ROLE_ID || 0);
   const showLocationsTab = !(role === opsRoleId);
 
   const handleNavigation = (path: string) => {

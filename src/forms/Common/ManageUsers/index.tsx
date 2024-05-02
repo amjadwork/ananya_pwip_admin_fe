@@ -93,27 +93,27 @@ function EditUsersForm(props: any) {
   const form: any = useForm({
     clearInputErrorOnChange: true,
     initialValues: { ...initialFormValues },
-    validate: {
-      phone: (value) => {
-        const string = value.toString();
-        return string.length === 10 ? null : "Phone number must be 10 digits";
-      },
-      gstin: (value) => {
-        return value.length !== 0 && value.length === 15
-          ? null
-          : value.length === 0
-          ? null
-          : "GST Number must be 15 characters";
-      },
-      zip_code: (value) => {
-        const string = value.toString();
-        return string.length > 1 && string.length === 6
-          ? null
-          : string.length === 0 || string.length === 1
-          ? null
-          : "zip code must be 6 digits";
-      },
-    },
+    // validate: {
+    //   phone: (value) => {
+    //     const string = value.toString();
+    //     return string.length === 10 ? null : "Phone number must be 10 digits";
+    //   },
+    //   gstin: (value) => {
+    //     return value.length !== 0 && value.length === 15
+    //       ? null
+    //       : value.length === 0
+    //       ? null
+    //       : "GST Number must be 15 characters";
+    //   },
+    //   zip_code: (value) => {
+    //     const string = value.toString();
+    //     return string.length > 1 && string.length === 6
+    //       ? null
+    //       : string.length === 0 || string.length === 1
+    //       ? null
+    //       : "zip code must be 6 digits";
+    //   },
+    // },
   });
 
   const roleOptions = rolesData.map((list: any) => ({
