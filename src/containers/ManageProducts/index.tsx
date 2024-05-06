@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Space, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
+import { useParams } from "react-router-dom";
 
 import APIRequest from "./../../helper/api";
 import AddOrEditProductForm from "../../forms/ManageProducts";
@@ -8,7 +9,12 @@ import PageWrapper from "../../components/Wrappers/PageWrapper";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import SheetUpload from "../../components/SheetUpload/SheetUpload";
 import RiceProfilePage from "../../components/RiceProfilePage/RiceProfilePage";
-import { getChangedPropertiesFromObject, hasEditPermission, hasAddNewPermission, hasDeletePermission } from "../../helper/helper";
+import {
+  getChangedPropertiesFromObject,
+  hasEditPermission,
+  hasAddNewPermission,
+  hasDeletePermission,
+} from "../../helper/helper";
 import { getSpecificVariantProfileData } from "../../services/rice-price/variant-profile";
 
 const columns = [
@@ -134,6 +140,8 @@ const RenderModalContent = (props: any) => {
 };
 
 function ManageProductsContainer(props: any) {
+  const { id: searchParamId } = useParams();
+
   const [modalOpen, setModalOpen] = React.useState<any>(false);
   const [modalType, setModalType] = React.useState<string>("add"); //add or update
   const [categoryData, setCategoryData] = useState<any>([]);
@@ -155,6 +163,7 @@ function ManageProductsContainer(props: any) {
   };
 
   useEffect(() => {
+    console.log("am i here 1");
     handleGetProductData();
   }, []);
 
@@ -254,7 +263,7 @@ function ManageProductsContainer(props: any) {
   };
 
   const handleGetProductData = async () => {
-    const selectedProductId = window.location.pathname.split("products/")[1];
+    const selectedProductId = searchParamId;
 
     if (selectedProductId) {
       setProductId(selectedProductId);
@@ -435,11 +444,10 @@ function ManageProductsContainer(props: any) {
       },
     },
   ];
-  
+
   const conditionalActionButtons = hasAddNewPermission()
     ? actionButtons
     : actionButtons.slice(0, 1);
-  
 
   return (
     <PageWrapper
