@@ -94,6 +94,8 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
               onClick={() => {
                 logout({ logoutParams: { returnTo: window.location.origin } });
                 deleteCookie("access_token");
+                sessionStorage.removeItem("role");
+                sessionStorage.removeItem("permissions");
                 // Router("/");
                 showNotification({
                   title: "Logged out succesfully",
