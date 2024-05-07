@@ -67,6 +67,8 @@ const handleGetPermissionIds = async (roleID) => {
       if (!isAuthenticated) {
         window.location.href = "/";
         deleteCookie("access_token");
+        sessionStorage.removeItem("role");
+        sessionStorage.removeItem("permissions");
       } else {
         fetchToken();
       }
