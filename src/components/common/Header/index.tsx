@@ -96,6 +96,7 @@ const Header: React.FC<Props> = ({ action, opened = false, onClickBurger }) => {
                 deleteCookie("access_token");
                 sessionStorage.removeItem("role");
                 sessionStorage.removeItem("permissions");
+                sessionStorage.removeItem("forexRate");
                 // Router("/");
                 showNotification({
                   title: "Logged out succesfully",

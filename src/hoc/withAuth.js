@@ -17,9 +17,11 @@ const withAuth = (WrappedComponent) => {
 
     const handleGetUserData = async () => {
       const userResponse = await APIRequest("user", "GET", {}, {}, true);
+      const forexRate = await APIRequest("forexrate?currency=usd", "GET", {}, {}, false);
       if (userResponse) {
         let roleID = userResponse[0]?.role_id;
         sessionStorage.setItem("role", roleID);
+        sessionStorage.setItem("forexRate", forexRate.rates.INR);
         if (
           roleID === Number(process.env.REACT_APP_OPS_ROLE_ID) ||
           roleID === Number(process.env.REACT_APP_ADMIN_ROLE_ID) ||
@@ -70,6 +72,7 @@ const handleGetPermissionIds = async (roleID) => {
         deleteCookie("access_token");
         sessionStorage.removeItem("role");
         sessionStorage.removeItem("permissions");
+        sessionStorage.removeItem("forexRate");
       } else {
         fetchToken();
       }
