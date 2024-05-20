@@ -72,6 +72,7 @@ const handleGetPermissionIds = async (roleID) => {
         deleteCookie("access_token");
         sessionStorage.removeItem("role");
         sessionStorage.removeItem("permissions");
+        sessionStorage.removeItem("forexRate");
       } else {
         fetchToken();
       }

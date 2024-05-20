@@ -65,6 +65,7 @@ function AccessDeniedScreen() {
                   deleteCookie("access_token");
                   sessionStorage.removeItem('role')
                   sessionStorage.removeItem('permissions')
+                  sessionStorage.removeItem("forexRate")
                 }}
                 variant="outline"
                 color="red"
