@@ -88,7 +88,11 @@ const LoginScreen = (props: any) => {
       setCookie("userData", JSON.stringify(loginResponse?.data), 7);
       setRoleId(loginResponse.data.role_id);
       setIsLoading(false);
-      if (loginResponse?.data.role_id === process.env.REACT_APP_ADMIN_ROLE_ID) {
+      if (
+        loginResponse?.data.role_id === process.env.REACT_APP_ADMIN_ROLE_ID ||
+        process.env.REACT_APP_MARKETING_ROLE_ID ||
+        process.env.REACT_APP_MARKETING_ROLE_ID
+      ) {
         router("/admin/dashboard");
       } else {
         router("/access-denied");
