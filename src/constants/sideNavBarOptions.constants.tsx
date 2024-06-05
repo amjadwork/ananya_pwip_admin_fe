@@ -37,6 +37,7 @@ export const NavbarOptions = [
     role: [
       process.env.REACT_APP_ADMIN_ROLE_ID,
       process.env.REACT_APP_OPS_ROLE_ID,
+      process.env.REACT_APP_MARKETING_ROLE_ID,
     ],
   },
   {
@@ -71,7 +72,10 @@ export const NavbarOptions = [
     label: "Learn",
     icon: Video,
     link: "/learn-management",
-    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
+    role: [
+      process.env.REACT_APP_ADMIN_ROLE_ID,
+      process.env.REACT_APP_MARKETING_ROLE_ID,
+    ],
   },
   {
     label: "Tags",
@@ -89,9 +93,7 @@ export const NavbarOptions = [
     label: "Reporting",
     icon: PresentationAnalytics,
     link: "/reports",
-    role: [
-      process.env.REACT_APP_ADMIN_ROLE_ID,
-    ],
+    role: [process.env.REACT_APP_ADMIN_ROLE_ID],
   },
   {
     label: "Support",
@@ -100,6 +102,7 @@ export const NavbarOptions = [
     role: [
       process.env.REACT_APP_ADMIN_ROLE_ID,
       process.env.REACT_APP_OPS_ROLE_ID,
+      process.env.REACT_APP_MARKETING_ROLE_ID,
     ],
   },
 ];

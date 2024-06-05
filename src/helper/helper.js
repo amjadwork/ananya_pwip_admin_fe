@@ -178,7 +178,8 @@ export function hasEditPermission() {
   }
   return (
     role === Number(process.env.REACT_APP_OPS_ROLE_ID || 0) ||
-    role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0)
+    role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0) ||
+    role === Number(process.env.REACT_APP_MARKETING_ROLE_ID || 0)
   );
 }
 
@@ -186,14 +187,20 @@ export function hasAddNewPermission() {
   if (!role) {
     role = Number(sessionStorage.getItem("role"));
   }
-  return role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0); //only admin
+  return (
+    role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0) ||
+    role === Number(process.env.REACT_APP_MARKETING_ROLE_ID || 0)
+  );
 }
 
 export function hasDeletePermission() {
   if (!role) {
     role = Number(sessionStorage.getItem("role"));
   }
-  return role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0); //only admin
+  return (
+    role === Number(process.env.REACT_APP_ADMIN_ROLE_ID || 0) ||
+    role === Number(process.env.REACT_APP_MARKETING_ROLE_ID || 0)
+  );
 }
 
 export function hasOnlyPriceUpdatePermission() {
